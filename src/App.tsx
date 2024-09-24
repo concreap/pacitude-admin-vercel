@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// Pages
+const Home = React.lazy(() => import('./pages/Home'));
+
+
+const App = () => {
+
+    const errorHandler = (err: any, info: any) => {
+        console.log(err, 'logged error');
+        console.log(info, 'logged error info');
+    }
+
+    return (
+
+        <Router>
+
+            <Suspense fallback={(<></>)}>
+
+                <ErrorBoundary FallbackComponent={() => (<></>)} onReset={() => { window.location.reload() }} onError={errorHandler}>
+
+                    <Routes>
+
+                        <Route path='/home' element={<Home />} />
+
+                    </Routes>
+
+                </ErrorBoundary>
+
+            </Suspense>
+
+        </Router>
+
+    )
+
 }
 
 export default App;
