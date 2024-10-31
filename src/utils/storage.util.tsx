@@ -100,7 +100,7 @@ const fetch = (key: string) => {
 
 const fetchLegacy = (key: string) => {
     const data = localStorage.getItem(key);
-    return data ? data : '';
+    return data ? data : null;
 }
 
 const deleteItem = (key: string, legacy: boolean = false) => {
@@ -136,6 +136,24 @@ const copyCode = (code: string) => {
 }
 
 const storage: IStorage = {
+
+    storeCreds: storeCreds,
+    checkToken: checkToken,
+    getToken: getToken,
+    checkUserID: checkUserID,
+    getUserID: getUserID,
+    checkUserEmail: checkUserEmail,
+    getUserEmail: getUserEmail,
+    getConfig: getConfig,
+    getConfigWithBearer: getConfigWithBearer,
+    clearAuth: clearAuth,
+    keep: keep,
+    keepLegacy: keepLegacy,
+    fetch: fetch,
+    fetchLegacy: fetchLegacy,
+    deleteItem: deleteItem,
+    trimSpace: trimSpace,
+    copyCode: copyCode
 
 }
 

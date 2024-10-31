@@ -1,7 +1,23 @@
 import { ChangeEvent, KeyboardEvent, RefObject } from "react";
 
 export interface IStorage {
-    
+    storeCreds(token: string, id: string): void,
+    checkToken(): boolean,
+    getToken(): string | null,
+    checkUserID(): boolean,
+    getUserID(): string,
+    checkUserEmail(): boolean,
+    getUserEmail(): string | null,
+    getConfig(): any,
+    getConfigWithBearer(): any,
+    clearAuth(): void,
+    keep(key: string, data: any): boolean,
+    keepLegacy(key: string, data: any): boolean,
+    fetch(key: string): any,
+    fetchLegacy(key: string): any,
+    deleteItem(key: string, legacy?: boolean): void,
+    trimSpace(str: string): void,
+    copyCode(code: string): void
 }
 
 export interface IDateToday {
