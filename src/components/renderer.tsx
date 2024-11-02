@@ -8,6 +8,7 @@ import NumberInput from "./partials/inputs/NumberInput";
 import CountryInput from "./partials/inputs/CountryInput";
 import SearchInput from "./partials/inputs/SearchInput";
 import FileInput from "./partials/inputs/FileInput";
+import PinInput from "./partials/inputs/PinInput";
 
 const CompRender = ({ }) => {
     useEffect(() => {
@@ -159,6 +160,20 @@ const CompRender = ({ }) => {
                             title: "Browse file"
                         }}
                         onChange={(e) => { }}
+                    />
+                </div>
+
+                <div style={{ width: '25%' }}>
+                    <PinInput
+                        type="password"
+                        showFocus={true}
+                        length={4}
+                        label={{
+                            required: true,
+                            fontSize: 14,
+                            title: "Enter your PIN"
+                        }}
+                        onChange={(pin) => { console.log(pin) }}
                     />
                 </div>
 

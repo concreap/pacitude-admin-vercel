@@ -114,3 +114,13 @@ input[type="number"]::-webkit-outer-spin-button{
     display: flex;
     align-items: center;
 }
+.pin-input input{
+    margin: 0 1.5%;
+    text-align: center;
+}
+.pin-input input:first-child{
+    margin-left: 0;
+}
+.pin-input input:last-child{
+    margin-right: 0;
+}

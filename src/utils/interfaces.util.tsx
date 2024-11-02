@@ -191,14 +191,14 @@ export interface IPinInput {
     size?: string,
     className?: string,
     showFocus?: boolean,
+    length: number
     label?: {
         title: string,
         className?: string,
         required?: boolean,
         fontSize?: number
     },
-    onKeyUp?(e: KeyboardEvent<HTMLInputElement>): void
-    onChange(e: ChangeEvent<HTMLInputElement>): void
+    onChange(pin: string): void
 
 }
 

@@ -27,7 +27,6 @@ class CookieService {
      */
     public setData(data: ISetCookie): void {
 
-        const cookie = new Cookies();
         let dataString: string = '';
 
         const { expireAt, key, payload, maxAge, path } = data;

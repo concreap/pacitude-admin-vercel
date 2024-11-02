@@ -21,20 +21,16 @@ const Home = ({ }) => {
             <section className="section comp">
 
                 <div style={{ width: '25%' }}>
-                    <FileInput
+                    <PinInput
+                        type="password"
                         showFocus={true}
-                        autoComplete={false}
-                        placeholder="No file chosen"
-                        file={{
-                            name: '',
-                            type: ''
-                        }}
+                        length={4}
                         label={{
                             required: true,
                             fontSize: 14,
-                            title: "Browse file"
+                            title: "Enter your PIN"
                         }}
-                        onChange={(e) => { }}
+                        onChange={(pin) => { console.log(pin) }}
                     />
                 </div>
 
