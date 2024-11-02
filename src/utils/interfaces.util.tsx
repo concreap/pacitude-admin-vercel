@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, RefObject } from "react";
+import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent } from "react";
 
 export interface IStorage {
     storeCreds(token: string, id: string): void,
@@ -106,7 +106,7 @@ export interface IAudioControls {
 }
 
 export interface IHelper {
-    init(): void,
+    init(type: string): void,
     scrollTo(id: string): void,
     addClass(id: string, cn: string): void,
     removeClass(id: string, cn: string): void,
@@ -116,8 +116,8 @@ export interface IHelper {
     isEmpty(data: any, type: 'object' | 'array'): boolean,
     capitalize(val: string): string,
     sort(data: Array<any>): Array<any>,
-    days(): Array<{id: number, name: string}>
-    months(): Array<{id: number, name: string}>,
+    days(): Array<{ id: number, name: string }>
+    months(): Array<{ id: number, name: string }>,
     random(size: number, isAlpha?: boolean): string,
     formatDate(date: any, type: 'basic' | 'datetime'): string,
     equalLength(id: string, childId: string, len?: number): void,
@@ -147,25 +147,346 @@ export interface IHelper {
 
 }
 
+export interface IICon {
+    type: 'feather' | 'polio',
+    name: string,
+    size?: number,
+    position?: 'absolute' | 'relative',
+    isActive?: boolean,
+    clickable: boolean,
+    url?: string,
+    height?: number,
+    className?: string,
+    style?: CSSProperties
+    onClick?(e: MouseEvent<HTMLAnchorElement>): void
+}
+
 export interface ITextInput {
     ref?: RefObject<HTMLInputElement>,
     type: 'text' | 'email',
     readonly?: boolean,
     name?: string,
     id?: string
-    default?: string,
+    defaultValue?: string,
     value?: string,
     size?: string,
-    classname?: string,
+    className?: string,
     autoComplete?: boolean,
     placeholder?: string,
+    showFocus?: boolean,
     label?: {
         title: string,
-        classname?: string,
+        className?: string,
         required?: boolean,
         fontSize?: number
     },
     onKeyUp?(e: KeyboardEvent<HTMLInputElement>): void
     onChange(e: ChangeEvent<HTMLInputElement>): void
 
+}
+
+export interface IPinInput {
+    type: 'text' | 'password',
+    readonly?: boolean,
+    size?: string,
+    className?: string,
+    showFocus?: boolean,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    onKeyUp?(e: KeyboardEvent<HTMLInputElement>): void
+    onChange(e: ChangeEvent<HTMLInputElement>): void
+
+}
+
+export interface IPasswordInput {
+    ref?: RefObject<HTMLInputElement>
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    value?: string,
+    size?: string,
+    className?: string,
+    autoComplete?: boolean,
+    placeholder?: string,
+    showFocus?: boolean,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    onKeyUp?(e: KeyboardEvent<HTMLInputElement>): void
+    onChange(e: ChangeEvent<HTMLInputElement>): void
+
+}
+
+export interface ISearchInput {
+    ref?: RefObject<HTMLInputElement>
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    value?: string,
+    size?: string,
+    className?: string,
+    autoComplete?: boolean,
+    placeholder?: string,
+    showFocus?: boolean,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    onSearch(e: MouseEvent<HTMLAnchorElement>): void
+    onChange(e: ChangeEvent<HTMLInputElement>): void
+
+}
+
+export interface ISelectInput {
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    size?: string,
+    className?: string,
+    selected?: boolean,
+    placeholder: {
+        value: string,
+        enable?: boolean
+    },
+    showFocus?: boolean,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    options: Array<{
+        name: string,
+        value: any
+    }>
+    onSelect(e: ChangeEvent<HTMLSelectElement>): void
+}
+
+export interface ITextAreaInput {
+    ref?: RefObject<HTMLTextAreaElement>
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    value?: string,
+    size?: string,
+    className?: string,
+    autoComplete?: boolean,
+    placeholder?: string,
+    showFocus?: boolean,
+    rows?: number,
+    cols?: number,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    onChange(e: ChangeEvent<HTMLTextAreaElement>): void
+
+}
+
+export interface IPhoneInput {
+    ref?: RefObject<HTMLInputElement>,
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    value?: string,
+    size?: string,
+    className?: string,
+    autoComplete?: boolean,
+    placeholder?: string,
+    showFocus?: boolean,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    dropdown: {
+        className?: string,
+        placeholder?: string,
+        countryCode?: boolean
+        contryName?: boolean,
+        size?: string,
+    }
+    onSelect(data: any): void
+    onChange(e: ChangeEvent<HTMLInputElement>): void
+
+}
+
+export interface ICountryInput {
+    ref?: RefObject<HTMLInputElement>,
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    value?: string,
+    size?: string,
+    className?: string,
+    autoComplete?: boolean,
+    placeholder?: string,
+    showFocus?: boolean,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    dropdown: {
+        countryCode?: boolean
+        contryName?: boolean,
+        size?: string,
+    }
+    onSelect(data: any): void
+
+}
+
+export interface INumberInput {
+    ref?: RefObject<HTMLInputElement>,
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    value?: string,
+    size?: string,
+    className?: string,
+    autoComplete?: boolean,
+    placeholder?: string,
+    showFocus?: boolean,
+    min?: string | number,
+    max?: string | number,
+    step?: string,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    }
+    onChange(e: ChangeEvent<HTMLInputElement>): void
+
+}
+
+export interface IFileInput {
+    ref?: RefObject<HTMLInputElement>
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    value?: string,
+    size?: string,
+    className?: string,
+    autoComplete?: boolean,
+    placeholder?: string,
+    showFocus?: boolean,
+    file: {
+        name: string,
+        type: string,
+        accept?: 'image' | 'file' | 'csv' | 'pdf' | 'zip'
+    }
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    onChange(e: ChangeEvent<HTMLInputElement>, type: string): void
+
+}
+
+export interface IDropSelect {
+    placeholder: string,
+    options: any,
+    onChange: any,
+    focus: boolean,
+    className: string,
+    controlClassName: string
+    isDisabled: boolean,
+    defaultValue: any,
+    controlDisplayImage: boolean,
+    optionDisplayImage: boolean,
+    controlDisplayLabel: boolean,
+    optionDisplayLabel: boolean,
+    controlDisplayLeft: boolean,
+    disableSeparator: boolean | undefined,
+    menuPosition: string,
+    isSearchable: boolean,
+    optionDisplayLeft: boolean,
+    menuBackground: string,
+    searchBackground: string,
+    searchColor: string,
+    optionColor: string
+}
+
+export interface IDropSelectState {
+    options: Array<any>,
+    selected: {
+        value: string,
+        label: string,
+        left: string,
+        image: string,
+    },
+    isOpen: boolean,
+    placeholder: string | undefined
+}
+
+export interface IDropdown {
+    options: any,
+    className: string,
+    selected: any,
+    defaultValue: any,
+    placeholder: string,
+    disabled: boolean,
+    control: {
+        left: boolean,
+        label: boolean,
+        image: boolean,
+        className?: string
+    },
+    menu: {
+        bgColor: string,
+        position: string,
+        itemColor: string,
+        itemLeft: boolean,
+        itemLabel: boolean
+    },
+    search: {
+        enable: boolean,
+        bgColor: string,
+        color: string
+    }
+}
+
+export interface IFileUpload {
+    data: any,
+    base64: string,
+    parsedSize: number,
+    name: string,
+    size: number,
+    type: string,
+    dur: number
+}
+
+export interface IListQuery {
+    limit?: number,
+    page?: number,
+    select?: string,
+    order?: string,
+    type?: string,
+    admin?: boolean,
+    mapped?: boolean,
+    from?: string,
+    to?: string,
 }

@@ -1,15 +1,16 @@
 import React, { useEffect, useState, useRef } from "react"
-import { ITextInput } from "../../../utils/interfaces.util";
+import { ISearchInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
+import Icon from "../icons/Icon";
 
-const TextInput = (props: ITextInput) => {
+const SearchInput = (props: ISearchInput) => {
 
     const {
-        name, id, value, defaultValue, type, placeholder,
+        name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
         size = 'sz-md',
         showFocus = false,
-        onChange, onKeyUp
+        onChange, onSearch
     } = props
 
     const [inputId, setInputId] = useState<string>(helper.random(8, true))
@@ -53,22 +54,32 @@ const TextInput = (props: ITextInput) => {
                     {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
             }
-            <input
-                ref={ref ? ref : inputRef}
-                id={id ? id : inputId}
-                name={name ? name : ''}
-                defaultValue={defaultValue ? defaultValue : ''}
-                type={type ? type : 'text'}
-                className={computeClass()}
-                placeholder={placeholder ? placeholder : 'Type here'}
-                autoComplete={autoComplete ? 'on' : 'off'}
-                readOnly={readonly ? readonly : false}
-                onChange={(e) => onChange(e)}
-                onKeyUp={(e) => onKeyUp ? onKeyUp(e) : {}}
-            />
+            <div className="search-input ui-relative">
+                <Icon 
+                    type="polio"
+                    name={'search'}
+                    size={20}
+                    clickable={true}
+                    position="absolute"
+                    style={{ top: '1rem', right: '1rem' }}
+                    onClick={onSearch}
+                />
+                <input
+                    ref={ref ? ref : inputRef}
+                    id={id ? id : inputId}
+                    name={name ? name : ''}
+                    defaultValue={defaultValue ? defaultValue : ''}
+                    type={'text'}
+                    className={computeClass()}
+                    placeholder={placeholder ? placeholder : 'Type here'}
+                    autoComplete={autoComplete ? 'on' : 'off'}
+                    readOnly={readonly ? readonly : false}
+                    onChange={(e) => { onChange(e) }}
+                />
+            </div>
         </>
     )
 
 };
 
-export default TextInput;
+export default SearchInput;

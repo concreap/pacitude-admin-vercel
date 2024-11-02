@@ -4,7 +4,12 @@ import { IDateToday, IHelper } from './interfaces.util';
 import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
 
-const init = () => {
+const init = (type: string) => {
+
+    if (type === 'drop-select') {
+        fitMenus()
+        hideMenu()
+    }
 
 }
 
@@ -26,11 +31,11 @@ const addClass = (id: string, cn: string) => {
         elem.classList.add(cn);
     }
 
-    
+
 }
 
 const removeClass = (id: string, cn: string) => {
-    
+
     const elem = document.querySelector(id);
 
     if (elem) {
@@ -52,7 +57,85 @@ const splitQueries = (query: any, key: string) => {
     }
 
     return value;
-    
+
+}
+
+const fitMenus = () => {
+
+    var boxMenus = document.querySelectorAll('#select-box');
+
+    for (let i = 0; i < boxMenus.length; i++) {
+
+        var selectBoxMenu = $(boxMenus[i]).children('.menu')[0];
+        var selectBoxSearch = $(selectBoxMenu).children('.menu-search')[0];
+        var selectBoxSearchInput = $(selectBoxSearch).children('.menu-search__input')[0];
+        var selectControl = $(boxMenus[i]).children('.control')[0];
+        var selectIndicator = $(selectControl).children('.indicator-box')[0];
+        var selectBoxSingle = $(selectControl).children('.single')[0];
+        var indicator = $(selectIndicator).children('.indicator')[0];
+        var arrow = $(indicator).children('.arrow')[0];
+        var path = $(arrow).children('path')[0];
+
+        $(selectControl).attr('id', `select-box-control-${i}`);
+        $(selectBoxMenu).attr('id', `select-box-menu-${i}`);
+        $(selectBoxSearch).attr('id', `select-box-search-${i}`)
+        $(selectBoxSearchInput).attr('id', `select-box-input-${i}`)
+        $(selectBoxSingle).attr('id', `select-box-single-${i}`);
+        $(indicator).attr('id', `select-box-indicator-${i}`);
+        $(arrow).attr('id', `select-box-arrow-${i}`);
+        $(path).attr('id', `select-box-path-${i}`);
+
+    }
+
+}
+
+const hideMenu = () => {
+
+    var boxMenus = document.querySelectorAll('#select-box');
+
+    window.onclick = function (e) {
+
+        // console.log(e.target);
+
+        for (let j = 0; j < boxMenus.length; j++) {
+
+            var selectBoxMenu = document.getElementById(`select-box-menu-${j}`);
+            var selectBoxSearch = document.getElementById(`select-box-search-${j}`);
+            var selectBoxInput = document.getElementById(`select-box-input-${j}`);
+            var selectBoxSingle = document.getElementById(`select-box-single-${j}`);
+            var indicator = document.getElementById(`select-box-indicator-${j}`);
+            var arrow = document.getElementById(`select-box-arrow-${j}`);
+            var path = document.getElementById(`select-box-path-${j}`);
+            var control = document.getElementById(`select-box-control-${j}`);
+
+            if (control) {
+
+                var singleLabel = $($(control).children()[0]).children('.single__label')[0];
+                var singlePlace = $($($(control).children()[0]).children('.single__placeholder')[0]).children('span');
+                var singleImage = $($($(control).children()[0]).children('.single__image')[0]).children('img')[0];
+
+                if (e.target !== selectBoxMenu && e.target !== selectBoxSingle &&
+                    e.target !== indicator && e.target !== arrow && e.target !== path && e.target !== singleImage
+                    && e.target !== selectBoxSearch && e.target !== selectBoxInput
+                    && e.target !== control && e.target !== singleLabel) {
+
+                    if (selectBoxMenu && $(selectBoxMenu).hasClass('is-open')) {
+                        $(selectBoxMenu).removeClass('is-open');
+                    }
+
+                } else {
+
+                    if (selectBoxMenu && $(selectBoxMenu).hasClass('is-open')) {
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
 }
 
 const navOnScroll = (data: { id: string, cn: string, limit?: number }) => {
@@ -65,7 +148,7 @@ const navOnScroll = (data: { id: string, cn: string, limit?: number }) => {
         const elem = $(id);
         let sl: number = limit && limit > 0 ? limit : 96;
 
-        if(elem){
+        if (elem) {
 
             if (window.scrollY > sl) {
                 elem.addClass(cn);
@@ -77,7 +160,7 @@ const navOnScroll = (data: { id: string, cn: string, limit?: number }) => {
 
 
     })
-    
+
 }
 
 const decodeBase64 = (data: string) => {
@@ -105,16 +188,16 @@ const isEmpty = (data: any, type: 'object' | 'array') => {
 
     let result: boolean = false;
 
-    if(type === 'object'){
+    if (type === 'object') {
         result = Object.getOwnPropertyNames(data).length === 0 ? true : false;
     }
 
-    if(type === 'array'){
+    if (type === 'array') {
         result = data.length <= 0 ? true : false;
     }
 
     return result;
-    
+
 }
 
 const capitalize = (val: string) => {
@@ -144,7 +227,7 @@ const days = () => {
         { id: 5, name: 'friday' },
         { id: 6, name: 'saturday' },
     ]
-    
+
 }
 
 const months = () => {
@@ -181,16 +264,16 @@ const formatDate = (date: any, type: 'basic' | 'datetime') => {
 
     let result: string = '';
 
-    if(type === 'basic'){
+    if (type === 'basic') {
         result = moment(date).format('Do MMM, YYYY')
     }
 
-    if(type === 'datetime'){
+    if (type === 'datetime') {
         result = moment(date).format('Do MMM, YYYY HH:mm:ss A')
     }
-    
+
     return result;
-    
+
 }
 
 const equalLength = (id: string, childId: string, len?: number) => {
@@ -202,7 +285,7 @@ const equalLength = (id: string, childId: string, len?: number) => {
 
     for (let i = 0; i < items.length; i++) {
         heigthList.push(Math.floor($(items[i]).height()!))
-    }                                                                      
+    }
     const height = Math.max(...heigthList); // get the highest length;
 
     for (let i = 0; i < items.length; i++) {
@@ -212,7 +295,7 @@ const equalLength = (id: string, childId: string, len?: number) => {
         }
 
     }
-    
+
 }
 
 const setWidth = (id: string, val: number) => {
@@ -232,7 +315,7 @@ const setHeight = (id: string, val: number) => {
     if (elem) {
         $(elem).height(val);
     }
-    
+
 }
 
 const isNAN = (val: any) => {
@@ -619,11 +702,11 @@ export const formatCurrency = (currency: string): string => {
 
     let result: string = '';
 
-    if(currency){
+    if (currency) {
 
         if (currency.toUpperCase() === CurrencyType.NGN) {
             result = `₦`
-        } else if(currency.toUpperCase() === CurrencyType.USD){
+        } else if (currency.toUpperCase() === CurrencyType.USD) {
             result = `$`
         }
 
@@ -638,19 +721,19 @@ const helper: IHelper = {
     init: init,
     scrollTo: scrollTo,
     addClass: addClass,
-    removeClass:removeClass,
+    removeClass: removeClass,
     splitQueries: splitQueries,
     navOnScroll: navOnScroll,
     decodeBase64: decodeBase64,
-    isEmpty:isEmpty,
+    isEmpty: isEmpty,
     capitalize: capitalize,
     sort: sort,
     days: days,
-    months:months,
+    months: months,
     random: random,
     formatDate: formatDate,
     equalLength: equalLength,
-    setWidth:setWidth,
+    setWidth: setWidth,
     setHeight: setHeight,
     isNAN: isNAN,
     reposition: reposition,

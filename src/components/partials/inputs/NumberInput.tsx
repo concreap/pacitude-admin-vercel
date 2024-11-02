@@ -1,15 +1,18 @@
 import React, { useEffect, useState, useRef } from "react"
-import { ITextInput } from "../../../utils/interfaces.util";
+import { INumberInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
 
-const TextInput = (props: ITextInput) => {
+const NumberInput = (props: INumberInput) => {
 
     const {
-        name, id, value, defaultValue, type, placeholder,
+        name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
         size = 'sz-md',
         showFocus = false,
-        onChange, onKeyUp
+        min = '',
+        max = '',
+        step = '',
+        onChange,
     } = props
 
     const [inputId, setInputId] = useState<string>(helper.random(8, true))
@@ -58,17 +61,19 @@ const TextInput = (props: ITextInput) => {
                 id={id ? id : inputId}
                 name={name ? name : ''}
                 defaultValue={defaultValue ? defaultValue : ''}
-                type={type ? type : 'text'}
+                type={'number'}
                 className={computeClass()}
                 placeholder={placeholder ? placeholder : 'Type here'}
                 autoComplete={autoComplete ? 'on' : 'off'}
                 readOnly={readonly ? readonly : false}
+                min={min ? min : ''}
+                max={max ? max : ''}
+                step={step ? step : ''}
                 onChange={(e) => onChange(e)}
-                onKeyUp={(e) => onKeyUp ? onKeyUp(e) : {}}
             />
         </>
     )
 
 };
 
-export default TextInput;
+export default NumberInput;

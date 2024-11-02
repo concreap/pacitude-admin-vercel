@@ -1,19 +1,19 @@
 @font-face {
   font-family: 'poliocons';
-  src:  url('fonts/poliocons.eot?b4tlyb');
-  src:  url('fonts/poliocons.eot?b4tlyb#iefix') format('embedded-opentype'),
-    url('fonts/poliocons.ttf?b4tlyb') format('truetype'),
-    url('fonts/poliocons.woff?b4tlyb') format('woff'),
-    url('fonts/poliocons.svg?b4tlyb#poliocons') format('svg');
+  src:  url('poliocons.eot?b4tlyb');
+  src:  url('poliocons.eot?b4tlyb#iefix') format('embedded-opentype'),
+    url('poliocons.ttf?b4tlyb') format('truetype'),
+    url('poliocons.woff?b4tlyb') format('woff'),
+    url('poliocons.svg?b4tlyb#poliocons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 
-[class^="po-"], [class*="po-"], [class*=" po-"] {
+.po {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'poliocons' !important;
-  speak: never;
+  speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;

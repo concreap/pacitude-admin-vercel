@@ -1,14 +1,44 @@
 import React, { useEffect, useState, useContext } from "react"
+import TextInput from "../components/partials/inputs/TextInput";
+import PasswordInput from "../components/partials/inputs/PasswordInput";
+import SelectInput from "../components/partials/inputs/SelectInput";
+import TextAreaInput from "../components/partials/inputs/TextAreaInput";
+import PhoneInput from "../components/partials/inputs/PhoneInput";
+import NumberInput from "../components/partials/inputs/NumberInput";
+import CountryInput from "../components/partials/inputs/CountryInput";
+import SearchInput from "../components/partials/inputs/SearchInput";
+import FileInput from "../components/partials/inputs/FileInput";
+import PinInput from "../components/partials/inputs/PinInput";
 
 const Home = ({ }) => {
 
     useEffect(() => {
 
     }, [])
-    
+
     return (
         <>
-            <h1 className="fs-38">This is a text heading</h1>
+            <section className="section comp">
+
+                <div style={{ width: '25%' }}>
+                    <FileInput
+                        showFocus={true}
+                        autoComplete={false}
+                        placeholder="No file chosen"
+                        file={{
+                            name: '',
+                            type: ''
+                        }}
+                        label={{
+                            required: true,
+                            fontSize: 14,
+                            title: "Browse file"
+                        }}
+                        onChange={(e) => { }}
+                    />
+                </div>
+
+            </section>
         </>
     )
 };

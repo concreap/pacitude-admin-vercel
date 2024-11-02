@@ -1,19 +1,21 @@
 import React, { useEffect, useState, useRef } from "react"
-import { ITextInput } from "../../../utils/interfaces.util";
+import { ITextAreaInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
 
-const TextInput = (props: ITextInput) => {
+const TextAreaInput = (props: ITextAreaInput) => {
 
     const {
-        name, id, value, defaultValue, type, placeholder,
+        name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
-        size = 'sz-md',
+        size = 'sz-xxlg',
+        rows = 4,
+        cols = 4,
         showFocus = false,
-        onChange, onKeyUp
+        onChange
     } = props
 
     const [inputId, setInputId] = useState<string>(helper.random(8, true))
-    const inputRef = useRef<HTMLInputElement>(null)
+    const inputRef = useRef<HTMLTextAreaElement>(null)
 
     useEffect(() => {
 
@@ -53,22 +55,22 @@ const TextInput = (props: ITextInput) => {
                     {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
             }
-            <input
+            <textarea
                 ref={ref ? ref : inputRef}
+                rows={rows}
+                cols={cols}
                 id={id ? id : inputId}
                 name={name ? name : ''}
                 defaultValue={defaultValue ? defaultValue : ''}
-                type={type ? type : 'text'}
                 className={computeClass()}
                 placeholder={placeholder ? placeholder : 'Type here'}
                 autoComplete={autoComplete ? 'on' : 'off'}
                 readOnly={readonly ? readonly : false}
                 onChange={(e) => onChange(e)}
-                onKeyUp={(e) => onKeyUp ? onKeyUp(e) : {}}
             />
         </>
     )
 
 };
 
-export default TextInput;
+export default TextAreaInput;
