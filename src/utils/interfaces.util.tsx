@@ -116,8 +116,8 @@ export interface IHelper {
     isEmpty(data: any, type: 'object' | 'array'): boolean,
     capitalize(val: string): string,
     sort(data: Array<any>): Array<any>,
-    days(): Array<{ id: number, name: string }>
-    months(): Array<{ id: number, name: string }>,
+    days(): Array<{ id: number, name: string, label: string }>
+    months(): Array<{ id: number, name: string, label: string }>,
     random(size: number, isAlpha?: boolean): string,
     formatDate(date: any, type: 'basic' | 'datetime'): string,
     equalLength(id: string, childId: string, len?: number): void,

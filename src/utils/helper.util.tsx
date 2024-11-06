@@ -219,13 +219,13 @@ const sort = (data: Array<any>) => {
 const days = () => {
 
     return [
-        { id: 0, name: 'sunday' },
-        { id: 1, name: 'monday' },
-        { id: 2, name: 'tuesday' },
-        { id: 3, name: 'wednesday' },
-        { id: 4, name: 'thursday' },
-        { id: 5, name: 'friday' },
-        { id: 6, name: 'saturday' },
+        { id: 0, name: 'sunday', label: 'sun' },
+        { id: 1, name: 'monday', label: 'mon' },
+        { id: 2, name: 'tuesday', label: 'tue' },
+        { id: 3, name: 'wednesday', label: 'wed' },
+        { id: 4, name: 'thursday', label: 'thur' },
+        { id: 5, name: 'friday', label: 'fri' },
+        { id: 6, name: 'saturday', label: 'sat' },
     ]
 
 }
@@ -233,18 +233,18 @@ const days = () => {
 const months = () => {
 
     return [
-        { id: 0, name: 'january' },
-        { id: 1, name: 'february' },
-        { id: 2, name: 'march' },
-        { id: 3, name: 'april' },
-        { id: 4, name: 'may' },
-        { id: 5, name: 'june' },
-        { id: 6, name: 'july' },
-        { id: 7, name: 'august' },
-        { id: 8, name: 'september' },
-        { id: 9, name: 'october' },
-        { id: 10, name: 'november' },
-        { id: 11, name: 'december' },
+        { id: 0, name: 'january', label: 'jan' },
+        { id: 1, name: 'february', label: 'feb' },
+        { id: 2, name: 'march', label: 'mar' },
+        { id: 3, name: 'april', label: 'apr' },
+        { id: 4, name: 'may', label: 'may' },
+        { id: 5, name: 'june', label: 'jun' },
+        { id: 6, name: 'july', label: 'jul' },
+        { id: 7, name: 'august', label: 'aug' },
+        { id: 8, name: 'september', label: 'sept' },
+        { id: 9, name: 'october', label: 'oct' },
+        { id: 10, name: 'november', label: 'nov' },
+        { id: 11, name: 'december', label: 'dec' },
     ]
 
 }
