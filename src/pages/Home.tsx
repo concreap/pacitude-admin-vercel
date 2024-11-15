@@ -9,6 +9,12 @@ import CountryInput from "../components/partials/inputs/CountryInput";
 import SearchInput from "../components/partials/inputs/SearchInput";
 import FileInput from "../components/partials/inputs/FileInput";
 import PinInput from "../components/partials/inputs/PinInput";
+import WebfixCalendar from "../components/layouts/WebfixCalendar";
+import DateInput from "../components/partials/inputs/DateInput";
+import Modal from "../components/layouts/CustomModal";
+import ForgotPasswordModal from "../components/partials/dialogs/ForgotPasswordModal";
+import Alert from "../components/partials/alerts/Alert";
+import Icon from "../components/partials/icons/Icon";
 
 const Home = ({ }) => {
 
@@ -16,25 +22,25 @@ const Home = ({ }) => {
 
     }, [])
 
+
     return (
         <>
             <section className="section comp">
 
-                <div style={{ width: '25%' }}>
-                    <PinInput
-                        type="password"
-                        showFocus={true}
-                        length={4}
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Enter your PIN"
-                        }}
-                        onChange={(pin) => { console.log(pin) }}
+                <div style={{ width: '35%' }}>
+                    {/* <Alert type="success" dismiss={true} /> */}
+                    <Icon
+                        type="polio"
+                        name={'search'}
+                        size={20}
+                        clickable={true}
+                        position="relative"
+                        onClick={() => {}}
                     />
                 </div>
 
             </section>
+
         </>
     )
 };

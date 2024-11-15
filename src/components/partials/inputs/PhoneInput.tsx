@@ -79,7 +79,7 @@ const PhoneInput = (props: IPhoneInput) => {
         result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
-            result = result + `${className}`
+            result = result + ` ${className}`
         }
 
         return result;

@@ -37,7 +37,7 @@ const TextInput = (props: ITextInput) => {
         result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
-            result = result + `${className}`
+            result = result + ` ${className}`
         }
 
         return result;

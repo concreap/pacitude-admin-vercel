@@ -39,7 +39,7 @@ const SelectInput = (props: ISelectInput) => {
         result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
-            result = result + `${className}`
+            result = result + ` ${className}`
         }
 
         return result;
@@ -67,7 +67,7 @@ const SelectInput = (props: ISelectInput) => {
                     {
                         placeholder.enable &&
                         <option value="">{helper.capitalize(placeholder.value)}</option>
-                    }
+                    } 
                     {
                         options.map((item, index) =>
                             <Fragment key={index}>

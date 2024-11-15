@@ -1,4 +1,5 @@
-import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent } from "react";
+import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement } from "react";
+import { SemanticType, SizeType } from "./types.util";
 
 export interface IStorage {
     storeCreds(token: string, id: string): void,
@@ -467,6 +468,73 @@ export interface IDropdown {
         bgColor: string,
         color: string
     }
+}
+
+export interface IDateInput {
+    name?: string,
+    id?: string
+    defaultValue?: Date,
+    size?: string,
+    className?: string,
+    selected?: boolean,
+    position?: 'top' | 'bottom',
+    placeholder: {
+        value: string,
+        enable?: boolean
+    },
+    showFocus?: boolean,
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
+    onChange(date: Date): void
+}
+
+export interface IAlert {
+    type: SemanticType,
+    className?: string,
+    message?: string,
+    dismiss?: boolean,
+}
+
+export interface ICustomModal {
+    show: boolean,
+    slim: string,
+    title: string,
+    stretch?: boolean,
+    flattened?: boolean,
+    className?: string,
+    size?: SizeType,
+    children: {
+        child?: ReactElement
+        main: ReactElement
+    }
+    closeModal(e?: any): void
+}
+
+export interface IModalProps {
+    show: boolean,
+    slim: string,
+    title: string,
+    stretch?: boolean,
+    flattened?: boolean,
+    className?: string,
+    size?: SizeType,
+    closeModal(e?: any): void
+}
+
+export interface IForgotPasswordModal extends IModalProps{
+
+}
+
+export interface IRoundButton {
+    icon: ReactElement
+    className?: string,
+    clickable?: boolean,
+    size?: SizeType,
+    onClick?(e: MouseEvent<HTMLAnchorElement>): void
 }
 
 export interface IFileUpload {

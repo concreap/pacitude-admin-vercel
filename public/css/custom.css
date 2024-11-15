@@ -1,17 +1,19 @@
-*{
+* {
     box-sizing: border-box;
-    font-family: "Manrope";
+    font-family: "PlusJakarta-Regular";
     font-size: 16px;
 }
 
 textarea {
     resize: none;
 }
-input[type="number"]{
-    -moz-appearance:textfield;
+
+input[type="number"] {
+    -moz-appearance: textfield;
 }
+
 input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button{
+input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
@@ -27,48 +29,60 @@ input[type="number"]::-webkit-outer-spin-button{
     justify-content: center;
 }
 
-.form-control{
+.form-control {
     min-height: 45px;
     font-size: 14px;
     padding: 0.5rem 1rem;
     border: 1px solid #dee2e6;
 }
-.form-control:focus{
+
+.form-control:focus {
     outline: none;
     box-shadow: none;
     border-color: none;
     border: 1px solid #dee2e6;
 }
-.form-control.show-focus:focus{
+
+.form-control.show-focus:focus,
+input.show-focus:focus {
     border: 1px solid var(--pab-400);
 }
-.form-control.sz-xsm{
+
+.form-control.sz-xsm {
     min-height: 30px;
     height: 30px;
 }
-.form-control.sz-sm{
+
+.form-control.sz-sm {
     min-height: 40px;
     height: 40px;
 }
-.form-control.sz-rg{
+
+.form-control.sz-rg {
     min-height: 45px;
 }
-.form-control.sz-md{
+
+.form-control.sz-md {
     min-height: 50px;
 }
-.form-control.sz-lg{
+
+.form-control.sz-lg {
     min-height: 56px;
 }
-.form-control.sz-xlg{
+
+.form-control.sz-xlg {
     min-height: 60px;
 }
-.form-control.sz-xxlg{
+
+.form-control.sz-xxlg {
     min-height: 68px;
 }
-.select-box.dropdown .menu{
+
+.select-box.dropdown .menu {
     max-height: 200px;
     overflow-y: scroll;
 }
+
 .phone-input {
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
@@ -76,51 +90,254 @@ input[type="number"]::-webkit-outer-spin-button{
     align-items: center;
     background-color: #fff;
 }
+
 .phone-input .select-box {
     width: auto;
     background-color: #fff;
     border-radius: 0.375rem;
 }
-.phone-input .select-box .menu{
+
+.phone-input .select-box .menu {
     width: 220px;
 }
-.phone-input .select-box .control .single{
+
+.phone-input .select-box .control .single {
     padding-right: 0 !important;
 }
+
 .phone-input .select-box .control .single .single__image,
-.phone-input .select-box .control .single .single__image img{
+.phone-input .select-box .control .single .single__image img {
     margin-right: 0;
 }
-.phone-input .select-box .control .indicator-box .indicator{
+
+.phone-input .select-box .control .indicator-box .indicator {
     padding: 5px 3px;
 }
-.phone-input .form-control{
+
+.phone-input .form-control {
     border: none;
 }
-.phone-input .form-control:focus{
+
+.phone-input .form-control:focus {
     border: none;
 }
+
 .country-input {
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
     background-color: #fff;
 }
+
 .country-input .select-box {
     background-color: #fff;
     border-radius: 0.375rem;
 }
-.pin-input{
+
+.pin-input {
     width: 100%;
     display: flex;
     align-items: center;
 }
-.pin-input input{
+
+.pin-input input {
     margin: 0 1.5%;
     text-align: center;
 }
-.pin-input input:first-child{
+
+.pin-input input:first-child {
     margin-left: 0;
 }
-.pin-input input:last-child{
+
+.pin-input input:last-child {
     margin-right: 0;
+}
+
+.custom-modal {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.custom-modal .modal-body {
+    border: none !important;
+    padding: 0 !important;
+}
+
+.custom-modal .modal-dialog {
+    max-width: 750px;
+    margin: 0 auto;
+}
+
+.custom-modal.slim-sm .modal-dialog {
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.custom-modal.slim-md .modal-dialog {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.custom-modal.slim-lg .modal-dialog {
+    max-width: 550px;
+    margin: 0 auto;
+}
+
+.custom-modal.slim-xlg .modal-dialog {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.custom-modal.slim-xxlg .modal-dialog {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.custom-modal .modal-content {
+    -webkit-border-radius: 16px;
+    -moz-border-radius: 16px;
+    -ms-border-radius: 16px;
+    -o-border-radius: 16px;
+    border-radius: 16px;
+    border: none !important;
+}
+
+.custom-modal .cm-body {
+    display: flex;
+}
+
+.custom-modal .cm-left-box,
+.custom-modal.rg .cm-left-box {
+    border-radius: 14px 0 0 14px;
+    width: 35%;
+    min-height: 300px;
+}
+
+.custom-modal .cm-right-box,
+.custom-modal.rg .cm-right-box {
+    padding: 1.4rem 2rem;
+    border-radius: 0 16px 16px 0;
+    position: relative;
+    width: 65%;
+    min-height: 300px;
+}
+
+.custom-modal.sm .cm-left-box,
+.custom-modal.sm .cm-right-box {
+    min-height: 250px !important;
+}
+
+.custom-modal.md .cm-left-box,
+.custom-modal.md .cm-right-box {
+    min-height: 380px !important;
+}
+
+.custom-modal.lg .cm-left-box,
+.custom-modal.lg .cm-right-box {
+    min-height: 450px !important;
+}
+
+.custom-modal.xlg .cm-left-box,
+.custom-modal.xlg .cm-right-box {
+    min-height: 500px !important;
+}
+
+.custom-modal.flat .cm-left-box {
+    display: none;
+}
+
+.custom-modal.flat .cm-right-box {
+    width: 100%;
+}
+
+.custom-modal .cm-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.custom-modal .cm-close-btn{
+    margin-left: auto;
+}
+
+.round-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    line-height: 34px;
+    background-color: var(--pas-100);
+    color: var(--pas-800);
+    border-radius: 100px;
+    outline: none !important;
+    -webkit-transition: all 0.15s ease;
+    -moz-transition: all 0.15s ease;
+    transition: all 0.15s ease;
+}
+
+.round-button.mini{
+    width: 16px;
+    height: 16px;
+    line-height: 18px;
+}
+
+.round-button.xsm{
+    width: 20px;
+    height: 20px;
+    line-height: 22px;
+}
+
+.round-button.sm{
+    width: 24px;
+    height: 24px;
+    line-height: 26px;
+}
+
+.round-button.rg{
+    width: 32px;
+    height: 32px;
+    line-height: 34px;
+}
+
+.round-button.md{
+    width: 40px;
+    height: 40px;
+    line-height: 42px;
+}
+
+.round-button.lg{
+    width: 48px;
+    height: 48px;
+    line-height: 50px;
+}
+
+.round-button.xlg{
+    width: 56px;
+    height: 56px;
+    line-height: 58px;
+}
+
+.round-button.xxlg{
+    width: 64px;
+    height: 64px;
+    line-height: 66px;
+}
+
+.alert{
+    margin-bottom: 0;
+    border-radius: 8px;
+    padding: 0.9rem 1.2rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.alert .icon-close{
+    position: relative;
+    top: 1px;
+}
+
+.alert .icon-alert{
+    position: relative;
+    top: 1px;
 }

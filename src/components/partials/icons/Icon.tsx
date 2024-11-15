@@ -31,10 +31,10 @@ const Icon = (props: IICon) => {
 
         let cl = type === 'feather' ? 'fe' : type === 'polio' ? 'po' : '';
 
-        let result: string = `${cl} ${cl}-${name} ui-${position} fs-${size}`;
+        let result: string = `icon ${cl} ${cl}-${name} ui-${position} fs-${size}`;
 
         if (!clickable) {
-            result = result + `${className ? className : ''}`
+            result = result + ` ${className ? className : ''}`
         }
 
         if (isActive) {
@@ -49,11 +49,11 @@ const Icon = (props: IICon) => {
 
         let cl = type === 'feather' ? 'fe' : type === 'polio' ? 'po' : '';
 
-        let icon: string = `${cl} ${cl}-${name} fs-${size}`;
-        let link: string = `ui-${position}`;
+        let icon: string = `icon ${cl} ${cl}-${name} fs-${size}`;
+        let link: string = `link-icon ui-${position}`;
 
         if (!clickable) {
-            link = link + `${className ? className : ''}`
+            link = link + ` ${className ? className : ''}`
         }
 
         if (isActive) {

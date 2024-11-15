@@ -9,11 +9,24 @@ import CountryInput from "./partials/inputs/CountryInput";
 import SearchInput from "./partials/inputs/SearchInput";
 import FileInput from "./partials/inputs/FileInput";
 import PinInput from "./partials/inputs/PinInput";
+import DateInput from "./partials/inputs/DateInput";
+import CustomModal from "./layouts/CustomModal";
+import ForgotPasswordModal from "./partials/dialogs/ForgotPasswordModal";
 
 const CompRender = ({ }) => {
+
+    const [show, setShow] = useState<boolean>(true)
+
     useEffect(() => {
 
     }, [])
+
+    const toggleShow = (e: any) => {
+        if (e) { e.preventDefault() }
+
+        setShow(!show)
+    }
+
     return (
         <>
 
@@ -177,8 +190,42 @@ const CompRender = ({ }) => {
                     />
                 </div>
 
+                <div style={{ width: '25%' }}>
+                    <DateInput
+                        showFocus={true}
+                        placeholder={{
+                            value: 'Select Date',
+                            enable: true
+                        }}
+                        label={{
+                            required: true,
+                            fontSize: 14,
+                            title: "Start date"
+                        }}
+                        onChange={(date) => { }}
+                    />
+                </div>
+
             </section>
 
+            <ForgotPasswordModal
+                show={show}
+                flattened={true}
+                title="Forgot Password"
+                closeModal={toggleShow}
+                slim="lg"
+            />
+
+            <CustomModal 
+                show={true}
+                flattened={true}
+                title="Modal Title"
+                closeModal={() => {}}
+                slim="lg"
+                children={{
+                    main: <>Help</>
+                }}
+            />
 
         </>
     )
