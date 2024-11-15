@@ -28,15 +28,7 @@ const Home = ({ }) => {
             <section className="section comp">
 
                 <div style={{ width: '35%' }}>
-                    {/* <Alert type="success" dismiss={true} /> */}
-                    <Icon
-                        type="polio"
-                        name={'search'}
-                        size={20}
-                        clickable={true}
-                        position="relative"
-                        onClick={() => {}}
-                    />
+                    <Alert type="success" dismiss={true} />
                 </div>
 
             </section>
