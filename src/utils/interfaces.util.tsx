@@ -1,5 +1,5 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement } from "react";
-import { SemanticType, SizeType } from "./types.util";
+import { ButtonType, SemanticType, SizeType } from "./types.util";
 
 export interface IStorage {
     storeCreds(token: string, id: string): void,
@@ -490,6 +490,26 @@ export interface IDateInput {
         fontSize?: number
     },
     onChange(date: Date): void
+}
+
+export interface IButton {
+    id?: string,
+    text: string,
+    type?: ButtonType,
+    size?: SizeType
+    loading?: boolean,
+    disabled?: boolean,
+    className?: string,
+    fontSize?: number,
+    lineHeight?: number,
+    icon?: {
+        enable?: boolean,
+        name?: string,
+        size?: number,
+        style?: CSSProperties
+        loaderColor?: string
+    },
+    onClick(e: MouseEvent<HTMLAnchorElement>): void
 }
 
 export interface IAlert {

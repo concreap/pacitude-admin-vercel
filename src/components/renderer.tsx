@@ -12,6 +12,9 @@ import PinInput from "./partials/inputs/PinInput";
 import DateInput from "./partials/inputs/DateInput";
 import CustomModal from "./layouts/CustomModal";
 import ForgotPasswordModal from "./partials/dialogs/ForgotPasswordModal";
+import RoundButton from "./partials/buttons/RoundButton";
+import Icon from "./partials/icons/Icon";
+import Button from "./partials/buttons/Button";
 
 const CompRender = ({ }) => {
 
@@ -204,6 +207,40 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(date) => { }}
                     />
+                </div>
+
+                <div style={{ width: '25%' }}>
+
+                    <RoundButton
+                        size="lg"
+                        icon={<Icon type="polio" name="cancel" clickable={false} size={25} />}
+                        className=""
+                        clickable={true}
+                        onClick={(e) => { }}
+                    />
+
+                </div>
+
+                <div style={{ width: '25%' }}>
+
+                    <Button 
+                        text="Get Started"
+                        type="primary"
+                        size="rg"
+                        loading={false}
+                        disabled={false}
+                        fontSize={14}
+                        lineHeight={16}
+                        className="form-button"
+                        icon={{
+                            enable: true,
+                            name: 'check',
+                            size: 20,
+                            loaderColor: 'primary'
+                        }}
+                        onClick={(e) => {}}
+                    />
+
                 </div>
 
             </section>

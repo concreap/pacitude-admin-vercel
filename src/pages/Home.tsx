@@ -15,6 +15,8 @@ import Modal from "../components/layouts/CustomModal";
 import ForgotPasswordModal from "../components/partials/dialogs/ForgotPasswordModal";
 import Alert from "../components/partials/alerts/Alert";
 import Icon from "../components/partials/icons/Icon";
+import RoundButton from "../components/partials/buttons/RoundButton";
+import Button from "../components/partials/buttons/Button";
 
 const Home = ({ }) => {
 
@@ -27,8 +29,26 @@ const Home = ({ }) => {
         <>
             <section className="section comp">
 
-                <div style={{ width: '35%' }}>
-                    <Alert type="success" dismiss={true} />
+                <div style={{ width: '25%' }}>
+
+                    <Button 
+                        text="Get Started"
+                        type="primary"
+                        size="rg"
+                        loading={false}
+                        disabled={false}
+                        fontSize={14}
+                        lineHeight={16}
+                        className="form-button"
+                        icon={{
+                            enable: true,
+                            name: 'check',
+                            size: 20,
+                            loaderColor: 'primary'
+                        }}
+                        onClick={(e) => { }}
+                    />
+
                 </div>
 
             </section>
