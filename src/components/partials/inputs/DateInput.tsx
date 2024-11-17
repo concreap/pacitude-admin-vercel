@@ -9,6 +9,7 @@ const DateInput = (props: IDateInput) => {
     const {
         name, id, defaultValue,
         className, label,
+        isError = false,
         size = 'sz-md',
         showFocus = false,
         position = 'bottom',
@@ -35,7 +36,7 @@ const DateInput = (props: IDateInput) => {
 
     const computeClass = () => {
 
-        let result: string = 'form-control';
+        let result: string = `form-control ${isError ? 'error' : ''}`;
 
         result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
 

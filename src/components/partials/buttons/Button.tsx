@@ -13,6 +13,7 @@ const Button = (props: IButton) => {
         size = 'rg',
         loading = false,
         disabled = false,
+        block = false,
         fontSize = 14,
         lineHeight = 16,
         className,
@@ -32,7 +33,7 @@ const Button = (props: IButton) => {
 
     const computeClass = () => {
 
-        let result: string = `button ${size ? size : 'md'} button-${type} ${disabled ? 'disabled' : loading ? 'disabled loading' : ''}`
+        let result: string = `button ${block ? 'block' : ''} ${size ? size : 'md'} button-${type} ${disabled ? 'disabled' : loading ? 'disabled loading' : ''}`
         let text: string = `font-hostgro-bold fs-${fontSize} lh-${lineHeight}`
 
         if (className) {
@@ -50,7 +51,7 @@ const Button = (props: IButton) => {
                 onClick={onClick}
                 to="" className={computeClass().button}>
                 {
-                    loading && <span className={`loader md ${icon.loaderColor}`}></span>
+                    loading && <span className={`loader md white ${icon.loaderColor}`}></span>
                 }
                 {
                     !loading &&

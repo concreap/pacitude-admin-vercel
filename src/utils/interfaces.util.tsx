@@ -1,5 +1,23 @@
-import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement } from "react";
-import { ButtonType, SemanticType, SizeType } from "./types.util";
+import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent } from "react";
+import { ButtonType, RouteParamType, SemanticType, SizeType, UserType } from "./types.util";
+import User from "../models/User.model";
+
+export interface IRoute {
+    name: string,
+    url: string,
+    isAuth: boolean,
+    icon?: ReactNode
+    params?: Array<{
+        type: RouteParamType,
+        name: string,
+        value?: string
+    }>
+    content: {
+        title?: string,
+        backButton?: boolean,
+        collapsed?: boolean
+    }
+}
 
 export interface IStorage {
     storeCreds(token: string, id: string): void,
@@ -144,7 +162,8 @@ export interface IHelper {
     displayBalance(value: number): string,
     parseInputNumber(value: string, type: 'number' | 'decimal'): number,
     toDecimal(value: number, places: number): number
-    formatCurrency(currency: string): string
+    formatCurrency(currency: string): string,
+    currentDate(): Date
 
 }
 
@@ -175,6 +194,7 @@ export interface ITextInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -192,7 +212,8 @@ export interface IPinInput {
     size?: string,
     className?: string,
     showFocus?: boolean,
-    length: number
+    length: number,
+    isError?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -215,6 +236,7 @@ export interface IPasswordInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -238,6 +260,7 @@ export interface ISearchInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -261,6 +284,7 @@ export interface ISelectInput {
         enable?: boolean
     },
     showFocus?: boolean,
+    isError?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -286,6 +310,7 @@ export interface ITextAreaInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     rows?: number,
     cols?: number,
     label?: {
@@ -310,6 +335,7 @@ export interface IPhoneInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -340,6 +366,7 @@ export interface ICountryInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -367,6 +394,7 @@ export interface INumberInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     min?: string | number,
     max?: string | number,
     step?: string,
@@ -392,6 +420,7 @@ export interface IFileInput {
     autoComplete?: boolean,
     placeholder?: string,
     showFocus?: boolean,
+    isError?: boolean,
     file: {
         name: string,
         type: string,
@@ -478,6 +507,7 @@ export interface IDateInput {
     className?: string,
     selected?: boolean,
     position?: 'top' | 'bottom',
+    isError?: boolean,
     placeholder: {
         value: string,
         enable?: boolean
@@ -499,6 +529,7 @@ export interface IButton {
     size?: SizeType
     loading?: boolean,
     disabled?: boolean,
+    block?: boolean,
     className?: string,
     fontSize?: number,
     lineHeight?: number,
@@ -510,6 +541,27 @@ export interface IButton {
         loaderColor?: string
     },
     onClick(e: MouseEvent<HTMLAnchorElement>): void
+}
+
+export interface ILinkButton {
+    id?: string,
+    text: string,
+    color?: string,
+    weight?: string,
+    size?: SizeType
+    loading?: boolean,
+    disabled?: boolean,
+    className?: string,
+    lineHeight?: number,
+    newtab?: boolean,
+    icon?: {
+        enable?: boolean,
+        name?: string,
+        size?: number,
+        style?: CSSProperties
+    },
+    url?: string,
+    onClick?(e: MouseEvent<HTMLAnchorElement>): void
 }
 
 export interface IAlert {
@@ -545,7 +597,7 @@ export interface IModalProps {
     closeModal(e?: any): void
 }
 
-export interface IForgotPasswordModal extends IModalProps{
+export interface IForgotPasswordModal extends IModalProps {
 
 }
 
@@ -577,4 +629,61 @@ export interface IListQuery {
     mapped?: boolean,
     from?: string,
     to?: string,
+}
+
+export interface IUserPermission {
+    entity: string,
+    actions: Array<string>
+}
+
+export interface IAPIKey {
+    secret: string,
+    public: string,
+    token: string,
+    publicToken: string,
+    domain: string,
+    isActive: boolean,
+    updatedAt: string
+}
+
+export interface IPagination {
+    next: { page: number, limit: number },
+    prev: { page: number, limit: number },
+}
+
+// contexts
+
+export interface IListData {
+    data: Array<any>,
+    count: number,
+    total: number,
+    pagination: IPagination,
+    loading: boolean
+}
+
+export interface IUserContext {
+    audits: IListData,
+    users: IListData,
+    admins: IListData,
+    user: User,
+    userDetails: User,
+    userType: UserType,
+    isSuper: boolean,
+    isAdmin: boolean,
+    loading: boolean,
+    total: number,
+    count: number,
+    pagination: any,
+    response: any,
+    getAudits(data: IListQuery): void,
+    getUser(id: string): void,
+    getUsers(limit: number, page: number): void,
+    getUserDetails(id: string): void
+    setUserType(n: string): void,
+    setSidebar(a: boolean, l: string): void,
+    getUserType(): string,
+    setUser(data: any): void,
+    unsetLoading(): void,
+    isLoggedIn(): void,
+    setResponse(data: any): void
 }

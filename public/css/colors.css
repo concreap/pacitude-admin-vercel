@@ -2,6 +2,23 @@
 [data-neutral="color-neutral"]{
     --color-black: #101010;
     --color-white: #ffffff;
+    --color-red: #ef0404;
+    --color-gray: #f3f4f7
+}
+
+:root,
+[data-gray="gray"]{
+    --pag-50: #f3f4f7;
+    --pag-100: #e9ebf0;
+    --pag-200: #d8dce5;
+    --pag-300: #bdc3d3;
+    --pag-400: #9ea5bc;
+    --pag-500: #868dab;
+    --pag-600: #747a9c;
+    --pag-700: #686b8d;
+    --pag-800: #585a75;
+    --pag-900: #494b5f;
+    --pag-950: #2f303c;
 }
 
 :root,
@@ -107,6 +124,40 @@
     color: var(--pas-950) !important;
 }
 
+.pag-50{
+    color: var(--pag-50) !important;
+}
+.pag-100{
+    color: var(--pag-100) !important;
+}
+.pag-200{
+    color: var(--pag-200) !important;
+}
+.pag-300{
+    color: var(--pag-300) !important;
+}
+.pag-400{
+    color: var(--pag-400) !important;
+}
+.pag-500{
+    color: var(--pag-500) !important;
+}
+.pag-600{
+    color: var(--pag-600) !important;
+}
+.pag-700{
+    color: var(--pag-700) !important;
+}
+.pag-800{
+    color: var(--pag-800) !important;
+}
+.pag-900{
+    color: var(--pag-900) !important;
+}
+.pag-950{
+    color: var(--pag-950) !important;
+}
+
 /* Start bg */
 
 .bg-pab-50{
@@ -183,9 +234,43 @@
     background-color: var(--pas-950) !important;
 }
 
+.bg-pag-50{
+    background-color: var(--pag-50) !important;
+}
+.bg-pag-100{
+    background-color: var(--pag-100) !important;
+}
+.bg-pag-200{
+    background-color: var(--pag-200) !important;
+}
+.bg-pag-300{
+    background-color: var(--pag-300) !important;
+}
+.bg-pag-400{
+    background-color: var(--pag-400) !important;
+}
+.bg-pag-500{
+    background-color: var(--pag-500) !important;
+}
+.bg-pag-600{
+    background-color: var(--pag-600) !important;
+}
+.bg-pag-700{
+    background-color: var(--pag-700) !important;
+}
+.bg-pag-800{
+    background-color: var(--pag-800) !important;
+}
+.bg-pag-900{
+    background-color: var(--pag-900) !important;
+}
+.bg-pag-950{
+    background-color: var(--pas-950) !important;
+}
+
 .color-red,
 .color-red span {
-    color: #DA164E !important
+    color: var(--color-red) !important
 }
 
 .color-black{

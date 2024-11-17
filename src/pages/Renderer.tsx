@@ -1,22 +1,23 @@
 import React, { useEffect, useState, useContext } from "react"
-import PasswordInput from "./partials/inputs/PasswordInput";
-import TextInput from "./partials/inputs/TextInput";
-import SelectInput from "./partials/inputs/SelectInput";
-import TextAreaInput from "./partials/inputs/TextAreaInput";
-import PhoneInput from "./partials/inputs/PhoneInput";
-import NumberInput from "./partials/inputs/NumberInput";
-import CountryInput from "./partials/inputs/CountryInput";
-import SearchInput from "./partials/inputs/SearchInput";
-import FileInput from "./partials/inputs/FileInput";
-import PinInput from "./partials/inputs/PinInput";
-import DateInput from "./partials/inputs/DateInput";
-import CustomModal from "./layouts/CustomModal";
-import ForgotPasswordModal from "./partials/dialogs/ForgotPasswordModal";
-import RoundButton from "./partials/buttons/RoundButton";
-import Icon from "./partials/icons/Icon";
-import Button from "./partials/buttons/Button";
+import PasswordInput from "../components/partials/inputs/PasswordInput";
+import TextInput from "../components/partials/inputs/TextInput";
+import SelectInput from "../components/partials/inputs/SelectInput";
+import TextAreaInput from "../components/partials/inputs/TextAreaInput";
+import PhoneInput from "../components/partials/inputs/PhoneInput";
+import NumberInput from "../components/partials/inputs/NumberInput";
+import CountryInput from "../components/partials/inputs/CountryInput";
+import SearchInput from "../components/partials/inputs/SearchInput";
+import FileInput from "../components/partials/inputs/FileInput";
+import PinInput from "../components/partials/inputs/PinInput";
+import DateInput from "../components/partials/inputs/DateInput";
+import CustomModal from "../components/layouts/CustomModal";
+import ForgotPasswordModal from "../components/partials/dialogs/ForgotPasswordModal";
+import RoundButton from "../components/partials/buttons/RoundButton";
+import Icon from "../components/partials/icons/Icon";
+import Button from "../components/partials/buttons/Button";
+import LinkButton from "../components/partials/buttons/LinkButton";
 
-const CompRender = ({ }) => {
+const ComponentRender = ({ }) => {
 
     const [show, setShow] = useState<boolean>(true)
 
@@ -35,11 +36,30 @@ const CompRender = ({ }) => {
 
             <section className="section comp">
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
+                    <LinkButton 
+                        text="Get Started"
+                        disabled={false}
+                        size="rg"
+                        lineHeight={16}
+                        loading={false}
+                        url=""
+                        onClick={(e) => {}}
+                        icon={{
+                            enable: true,
+                            name: 'nav-arrow-right',
+                            size: 16,
+                            style: {}
+                        }}
+                    />
+                </div> */}
+
+                {/* <div style={{ width: '25%' }}>
                     <TextInput
                         type="email"
                         showFocus={true}
                         autoComplete={false}
+                        isError={false}
                         placeholder="Ex. you@example.com"
                         label={{
                             required: true,
@@ -48,9 +68,9 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <PasswordInput
                         showFocus={true}
                         autoComplete={false}
@@ -62,9 +82,9 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <SelectInput
                         showFocus={true}
                         placeholder={{
@@ -79,9 +99,9 @@ const CompRender = ({ }) => {
                         options={[{ name: 'Male', value: 'male' }]}
                         onSelect={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <TextAreaInput
                         showFocus={true}
                         autoComplete={false}
@@ -93,9 +113,9 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <PhoneInput
                         showFocus={true}
                         autoComplete={false}
@@ -111,9 +131,9 @@ const CompRender = ({ }) => {
                         onSelect={(data) => { }}
                         onChange={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <NumberInput
                         showFocus={true}
                         autoComplete={false}
@@ -126,9 +146,9 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <CountryInput
                         showFocus={true}
                         autoComplete={false}
@@ -144,9 +164,9 @@ const CompRender = ({ }) => {
                         }}
                         onSelect={(data) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <SearchInput
                         showFocus={true}
                         autoComplete={false}
@@ -159,9 +179,9 @@ const CompRender = ({ }) => {
                         onChange={(e) => { }}
                         onSearch={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <FileInput
                         showFocus={true}
                         autoComplete={false}
@@ -177,9 +197,9 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(e) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <PinInput
                         type="password"
                         showFocus={true}
@@ -191,9 +211,9 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(pin) => { console.log(pin) }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <DateInput
                         showFocus={true}
                         placeholder={{
@@ -207,9 +227,9 @@ const CompRender = ({ }) => {
                         }}
                         onChange={(date) => { }}
                     />
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
 
                     <RoundButton
                         size="lg"
@@ -219,9 +239,9 @@ const CompRender = ({ }) => {
                         onClick={(e) => { }}
                     />
 
-                </div>
+                </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
 
                     <Button 
                         text="Get Started"
@@ -236,17 +256,17 @@ const CompRender = ({ }) => {
                             enable: true,
                             name: 'check',
                             size: 20,
-                            loaderColor: 'primary'
+                            loaderColor: ''
                         }}
                         onClick={(e) => {}}
                     />
 
-                </div>
+                </div> */}
 
             </section>
 
             <ForgotPasswordModal
-                show={show}
+                show={false}
                 flattened={true}
                 title="Forgot Password"
                 closeModal={toggleShow}
@@ -254,7 +274,7 @@ const CompRender = ({ }) => {
             />
 
             <CustomModal 
-                show={true}
+                show={false}
                 flattened={true}
                 title="Modal Title"
                 closeModal={() => {}}
@@ -268,4 +288,4 @@ const CompRender = ({ }) => {
     )
 };
 
-export default CompRender;
+export default ComponentRender;

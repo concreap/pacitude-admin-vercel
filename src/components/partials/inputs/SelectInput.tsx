@@ -9,6 +9,7 @@ const SelectInput = (props: ISelectInput) => {
         name, id, defaultValue,
         selected, className, label,
         options,
+        isError = false,
         size = 'sz-md',
         showFocus = false,
         placeholder = { value: 'Choose', enable: true },
@@ -34,7 +35,7 @@ const SelectInput = (props: ISelectInput) => {
 
     const computeClass = () => {
 
-        let result: string = 'form-select form-control font-manrope pas-950 fs-14';
+        let result: string = `form-select ${isError ? 'error' : ''} form-control font-manrope pas-950 fs-14`;
 
         result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
 

@@ -7,6 +7,7 @@ const TextInput = (props: ITextInput) => {
     const {
         name, id, value, defaultValue, type, placeholder,
         autoComplete, className, label, ref, readonly,
+        isError = false,
         size = 'sz-md',
         showFocus = false,
         onChange, onKeyUp
@@ -32,7 +33,7 @@ const TextInput = (props: ITextInput) => {
 
     const computeClass = () => {
 
-        let result: string = 'form-control font-manrope pas-950 fs-14';
+        let result: string = `form-control font-manrope pas-950 fs-14 ${isError ? 'error' : ''}`;
 
         result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
 

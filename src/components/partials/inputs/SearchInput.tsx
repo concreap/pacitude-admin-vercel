@@ -8,6 +8,7 @@ const SearchInput = (props: ISearchInput) => {
     const {
         name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
+        isError = false,
         size = 'sz-md',
         showFocus = false,
         onChange, onSearch
@@ -33,7 +34,7 @@ const SearchInput = (props: ISearchInput) => {
 
     const computeClass = () => {
 
-        let result: string = 'form-control font-manrope pas-950 fs-14';
+        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14`;
 
         result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
 

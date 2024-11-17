@@ -3796,10 +3796,10 @@ span.ui-separate {
 	padding: 2rem 0;
 }
 
-.ui-separate-md {
-	display: block;
+.ui-separate-mini {
 	width: 100%;
-	padding: 1.3rem 0;
+	padding: 0.55rem 0;
+	display: block;
 }
 
 .ui-separate-small, .ui-separate-sm {
@@ -3808,10 +3808,10 @@ span.ui-separate {
 	display: block;
 }
 
-.ui-separate-mini {
-	width: 100%;
-	padding: 0.55rem 0;
+.ui-separate-md {
 	display: block;
+	width: 100%;
+	padding: 1.3rem 0;
 }
 
 span.separate-small {

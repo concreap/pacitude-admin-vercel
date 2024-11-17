@@ -5,7 +5,18 @@ export enum CurrencyType{
 export enum HeaderType {
     IDEMPOTENT = 'x-idempotent-key'
 }
-
 export enum CookieKeyType {
     XHIT = 'x-hit'
+}
+export enum UserEnumType{
+    SUPER = 'superadmin',
+    ADMIN = 'admin',
+    BUSINESS = 'business',
+    TALENT = 'talent',
+    USER = 'user'
+}
+export enum PasswordType{
+    SELF = 'self',
+    GENERATED = 'generated',
+    SELF_GENERATED = 'self-changed'
 }

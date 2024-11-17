@@ -8,6 +8,7 @@ const CountryInput = (props: ICountryInput) => {
     const {
         id, defaultValue, placeholder,
         className, label, dropdown,
+        isError = false,
         readonly = false,
         onSelect
     } = props
@@ -85,7 +86,7 @@ const CountryInput = (props: ICountryInput) => {
                 <DropDown
                     options={getOptions}
                     selected={getSelected}
-                    className={`font-manrope dropdown ${className ? className : ''}`}
+                    className={`font-manrope ${isError ? 'error' : ''} dropdown ${className ? className : ''}`}
                     placeholder={placeholder ? placeholder : 'Select'}
                     disabled={readonly ? true : false}
                     search={{

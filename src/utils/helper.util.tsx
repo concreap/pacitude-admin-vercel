@@ -716,6 +716,10 @@ export const formatCurrency = (currency: string): string => {
 
 }
 
+const currentDate = () => {
+    return new Date()
+}
+
 
 const helper: IHelper = {
     init: init,
@@ -756,7 +760,7 @@ const helper: IHelper = {
     parseInputNumber: parseInputNumber,
     toDecimal: toDecimal,
     formatCurrency: formatCurrency,
-
+    currentDate: currentDate
 }
 
 export default helper;
