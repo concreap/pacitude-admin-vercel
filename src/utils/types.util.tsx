@@ -4,3 +4,5 @@ export type SemanticType = 'info' | 'warning' | 'success' | 'error' | 'ongoing'
 export type ButtonType = 'primary' | 'ghost' | 'icon' | 'link'
 export type RouteParamType = 'url' | 'query'
 export type UserType = 'superadmin' | 'admin' | 'business' | 'talent' | 'user';
+export type ApiServiceType = 'identity' | 'core' | 'genius' | 'resource';
+export type ApiMethodType = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'

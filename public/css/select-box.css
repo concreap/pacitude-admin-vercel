@@ -346,11 +346,11 @@
 }
 
 .select-box .menu .menu__option:hover {
-    background-color: #F9F6FF;
+    background-color: #f4f7fe;
 }
 
 .select-box .menu .menu__option:active {
-    background-color: #F9F6FF;
+    background-color: #f4f7fe;
 }
 
 .select-box .menu .menu__option .left {

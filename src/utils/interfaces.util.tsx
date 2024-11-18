@@ -651,6 +651,27 @@ export interface IPagination {
     prev: { page: number, limit: number },
 }
 
+export interface IDashboardMaster {
+    component: ReactNode,
+    title: string,
+    back: boolean,
+    sidebar: {
+        collapsed: boolean
+    }
+}
+
+export interface IAPIResponse {
+    error: boolean,
+    errors: Array<any>,
+    count?: number,
+    total?: number,
+    pagination?: IPagination,
+    data: any,
+    message: string,
+    token?: string,
+    status: number
+}
+
 // contexts
 
 export interface IListData {
