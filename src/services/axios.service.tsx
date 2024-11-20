@@ -58,7 +58,7 @@ class AxiosService {
     public async call(params: CallApiDTO): Promise<IAPIResponse> {
 
         let result: any = {};
-        const { isAuth, method, path, type, payload } = params;
+        const { isAuth = false, method, path, type, payload } = params;
 
         let urlpath = this.getFullUrl(type, path);
 

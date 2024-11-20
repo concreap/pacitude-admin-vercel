@@ -4,6 +4,6 @@ export interface CallApiDTO {
     type: ApiServiceType,
     method: ApiMethodType,
     path: string,
-    isAuth: boolean,
+    isAuth?: boolean,
     payload?: any
 }
