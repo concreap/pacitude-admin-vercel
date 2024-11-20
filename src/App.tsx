@@ -6,7 +6,7 @@ import routes from './routes/routes'
 // Context:States
 import UserState from './context/user/userState'
 
-// Pages
+// Pages | Routes
 const Home = React.lazy(() => import('./pages/Home'));
 const Components = React.lazy(() => import('./pages/Renderer'))
 const Login = React.lazy(() => import('./pages/auth/Login'))
