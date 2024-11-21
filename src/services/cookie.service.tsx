@@ -84,6 +84,13 @@ class CookieService {
 
     }
 
+    public getUserType(): string {
+
+        let result: string = this.getData({ key: 'userType', parse: false });
+        return result;
+
+    }
+
 }
 
 export default new CookieService()

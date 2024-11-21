@@ -57,6 +57,10 @@ button:-moz-focusring,
 	clear: both
 }
 
+.ui-ml-auto{
+    margin-left: auto !important;
+}
+
 /*form resize*/
 form textarea {
 	resize: none;

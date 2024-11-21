@@ -4,9 +4,10 @@ import User from "../models/User.model";
 
 export interface IRoute {
     name: string,
+    title?: string,
     url: string,
     isAuth: boolean,
-    icon?: ReactNode
+    iconName?: string
     params?: Array<{
         type: RouteParamType,
         name: string,
@@ -20,7 +21,7 @@ export interface IRoute {
 }
 
 export interface IStorage {
-    storeCreds(token: string, id: string): void,
+    storeAuth(token: string, id: string): void,
     checkToken(): boolean,
     getToken(): string | null,
     checkUserID(): boolean,
@@ -566,6 +567,7 @@ export interface ILinkButton {
 
 export interface IAlert {
     type: SemanticType,
+    show: boolean,
     className?: string,
     message?: string,
     dismiss?: boolean,
@@ -670,6 +672,10 @@ export interface IAPIResponse {
     message: string,
     token?: string,
     status: number
+}
+
+export interface ISidebar {
+    pageTitle: string
 }
 
 // contexts

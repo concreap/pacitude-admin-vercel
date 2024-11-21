@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useContext } from "react"
 import { IDashboardMaster } from "../../utils/interfaces.util";
+import useNetwork from "../../hooks/useNetwork";
+import useRedirect from "../../hooks/useRedirect";
+import Sidebar from "../partials/navs/Sidebar";
 
 const DashboardMaster = ({ component, back, sidebar, title }: IDashboardMaster) => {
 
@@ -7,9 +10,13 @@ const DashboardMaster = ({ component, back, sidebar, title }: IDashboardMaster) 
 
     }, [])
 
+    useNetwork()
+    useRedirect(['admin', 'superadmin'])
+
     return (
         <>
             {/* sidebar here */}
+            <Sidebar pageTitle={title} />
             <main id="ui-dashboard-body" className="ui-dashboard-body">
 
                 {/* topbar here */}

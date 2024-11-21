@@ -8,6 +8,7 @@ const Alert = (props: IAlert) => {
 
     const {
         type,
+        show,
         dismiss = true,
         message = 'Checkout this alert!',
         className
@@ -58,7 +59,7 @@ const Alert = (props: IAlert) => {
 
         const alert = getAlertType(type)
 
-        let result: string = `alert ${alert.type}`
+        let result: string = `alert ${alert.type} ${show === false ? 'ui-hide':''}`
 
         if (className) {
             result = result + ` ${className}`
@@ -81,7 +82,7 @@ const Alert = (props: IAlert) => {
                 />
 
                 <span className="pdl"></span>
-                <span>{message}</span>
+                <span className="fs-14">{message}</span>
 
                 {
                     dismiss &&

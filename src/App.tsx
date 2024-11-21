@@ -2,6 +2,7 @@ import React, { Fragment, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import routes from './routes/routes'
+import DashboardMaster from './components/layouts/DashboardMaster'
 
 // Context:States
 import UserState from './context/user/userState'
@@ -10,11 +11,11 @@ import UserState from './context/user/userState'
 const Home = React.lazy(() => import('./pages/Home'));
 const Components = React.lazy(() => import('./pages/Renderer'))
 const Login = React.lazy(() => import('./pages/auth/Login'))
-const Register = React.lazy(() => import('./pages/auth/Register'))
 const ResetPassword = React.lazy(() => import('./pages/auth/ResetPassword'))
 const About: any = React.lazy(() => import('./pages/About'))
 const Contact: any = React.lazy(() => import('./pages/Contact'))
 const NotFoundPage = React.lazy(() => import('./pages/404'));
+const Dashboard = React.lazy(() => import('./pages/dashboard/Dashboard'));
 
 
 const App = () => {
@@ -29,20 +30,22 @@ const App = () => {
         switch (name) {
             case 'components':
                 return <Components />
+            case '/':
+                return <Login />
             case 'login':
                 return <Login />
-            case 'register':
-                return <Register />
             case 'reset-password':
                 return <ResetPassword />
             case 'home':
-                return <Home />
+                return <Login />
             case 'not-found':
                 return <NotFoundPage />
             case 'about':
                 return <About />
             case 'contact':
                 return <Contact />
+            case 'dashboard':
+                return <Dashboard />
             default:
                 return <NotFoundPage />
         }
@@ -63,8 +66,8 @@ const App = () => {
 
                             {
                                 routes.map((route, index) =>
-                                    <Fragment key={`route-${index+1}`}>
-                                        
+                                    <Fragment key={`route-${index + 1}`}>
+
                                         {
                                             !route.isAuth &&
                                             <Route
@@ -74,11 +77,20 @@ const App = () => {
                                         }
 
                                         {
-                                            route.isAuth &&
+                                            route.isAuth && route.name !== 'divider' &&
                                             <>
                                                 <Route
                                                     path={route.url}
-                                                    element={getAppPages(route.name)}
+                                                    element={
+                                                        <DashboardMaster
+                                                            component={getAppPages(route.name)}
+                                                            title={route.title ? route.title : route.name}
+                                                            back={true}
+                                                            sidebar={{
+                                                                collapsed: false
+                                                            }}
+                                                        />
+                                                    }
                                                 />
                                             </>
                                         }

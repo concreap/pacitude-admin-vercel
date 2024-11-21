@@ -66,7 +66,7 @@ class AxiosService {
             method: method,
             url: urlpath,
             data: payload,
-            headers: isAuth ? storage.getConfigWithBearer() : storage.getConfig()
+            headers: isAuth ? storage.getConfigWithBearer().headers : storage.getConfig().headers
         }).then((resp) => {
             result = resp.data;
         }).catch((err) => {
@@ -77,4 +77,21 @@ class AxiosService {
 
     }
 
+    /**
+     * @name logout
+     */
+    public async logout(): Promise<void> {
+
+        const response = await this.call({
+            method: 'POST',
+            type: 'identity',
+            path: '/auth/logout',
+            isAuth: false,
+            payload: {}
+        });
+
+    }
+
 }
+
+export default new AxiosService()

@@ -18,5 +18,5 @@ export enum UserEnumType{
 export enum PasswordType{
     SELF = 'self',
     GENERATED = 'generated',
-    SELF_GENERATED = 'self-changed'
+    SELF_CHANGED = 'self-changed'
 }

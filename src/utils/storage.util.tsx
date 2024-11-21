@@ -1,10 +1,25 @@
+import CookieService from "../services/cookie.service";
 import IdempotentService  from "../services/idempotent.service";
 import { HeaderType } from "./enums.util";
 import { IStorage } from "./interfaces.util";
 
-const storeCreds = (token: string, id: string) => {
+const storeAuth = (token: string, id: string) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userId', id);
+
+    CookieService.setData({
+        key: 'token',
+        payload: token,
+        expireAt: new Date( Date.now() + 24 * 60 * 60 * 1000 ),
+        path: '/'
+    })
+
+    CookieService.setData({
+        key: 'userId',
+        payload: id,
+        expireAt: new Date( Date.now() + 24 * 60 * 60 * 1000 ),
+        path: '/'
+    })
 }
 
 const checkToken = () => {
@@ -137,7 +152,7 @@ const copyCode = (code: string) => {
 
 const storage: IStorage = {
 
-    storeCreds: storeCreds,
+    storeAuth: storeAuth,
     checkToken: checkToken,
     getToken: getToken,
     checkUserID: checkUserID,

@@ -1,15 +1,122 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState, MouseEvent } from "react"
 import TextInput from "../../components/partials/inputs/TextInput";
 import PasswordInput from "../../components/partials/inputs/PasswordInput";
 import Button from "../../components/partials/buttons/Button";
 import LinkButton from "../../components/partials/buttons/LinkButton";
 import helper from "../../utils/helper.util";
+import { IAlert } from "../../utils/interfaces.util";
+import AxiosService from "../../services/axios.service";
+import { PasswordType, UserEnumType } from "../../utils/enums.util";
+import storage from "../../utils/storage.util";
+import CookieService from "../../services/cookie.service";
+import { useNavigate } from 'react-router-dom'
+import Alert from "../../components/partials/alerts/Alert";
 
 const Login = ({ }) => {
+
+    const navigate = useNavigate()
+
+    const [login, setLogin] = useState({
+        email: '',
+        password: '',
+        method: 'email',
+        error: ''
+    })
+    const [loading, setLoading] = useState<boolean>(false);
+    const [alert, setAlert] = useState<IAlert>({
+        type: 'success',
+        show: false,
+        message: ''
+    });
 
     useEffect(() => {
 
     }, [])
+
+    const handleLogin = async (e: MouseEvent<HTMLAnchorElement>) => {
+
+        e.preventDefault();
+
+        if (!login.email) {
+            setAlert({ ...alert, type: 'error', show: true, message: 'email is required' });
+            setLogin({ ...login, error: 'email' })
+        } else if (!login.password) {
+            setAlert({ ...alert, type: 'error', show: true, message: 'password is required' });
+            setLogin({ ...login, error: 'password' })
+        } else {
+
+            setLoading(true)
+            const response = await AxiosService.call({
+                type: 'identity',
+                method: 'POST',
+                path: '/auth/login',
+                payload: { email: login.email, password: login.password, method: login.method }
+            });
+
+            if (!response.error) {
+
+                if (response.status === 200) {
+
+                    if (response.data.isUser && response.data.isActive) {
+
+                        if (response.data.userType === UserEnumType.SUPER || response.data.userType === UserEnumType.ADMIN) {
+
+                            // store auth credentials
+                            storage.storeAuth(response.token!, response.data._id);
+
+                            if (response.data.passwordType === PasswordType.SELF || response.data.passwordType === PasswordType.SELF_CHANGED) {
+
+                                CookieService.setData({
+                                    key: 'userType',
+                                    payload: response.data.userType,
+                                    expireAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                                    path: '/'
+                                })
+
+                                navigate('/dashboard')
+
+                            }
+
+                            if (response.data.passwordType === PasswordType.GENERATED) {
+
+                            }
+
+                        } else {
+                            setAlert({ ...alert, type: 'error', show: true, message: 'incorrect login details' });
+                        }
+
+                    } else {
+                        setAlert({ ...alert, type: 'error', show: true, message: 'account currently inactive.' });
+                    }
+
+                }
+
+                if (response.status === 206) {
+
+                }
+
+            }
+
+            if (response.error) {
+
+                setLoading(false)
+
+                if (response.errors.length > 0) {
+                    setAlert({ ...alert, type: 'error', show: true, message: response.errors.join(',') });
+                } else {
+                    setAlert({ ...alert, type: 'error', show: true, message: response.message });
+                }
+
+            }
+
+        }
+
+        setTimeout(() => {
+            setAlert({ ...alert, show: false });
+            setLogin({ ...login, error: '' })
+        }, 2000)
+
+    }
 
     return (
         <>
@@ -33,18 +140,21 @@ const Login = ({ }) => {
 
                         <div className="auth-form">
 
+                            <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
+
                             <div className="form-field">
                                 <TextInput
                                     type="email"
                                     showFocus={true}
                                     autoComplete={false}
                                     placeholder="Ex. you@example.com"
+                                    isError={login.error === 'email' ? true : false}
                                     label={{
                                         required: true,
                                         fontSize: 14,
                                         title: "Email address"
                                     }}
-                                    onChange={(e) => { }}
+                                    onChange={(e) => { setLogin({ ...login, email: e.target.value }) }}
                                 />
                             </div>
 
@@ -53,12 +163,13 @@ const Login = ({ }) => {
                                     showFocus={true}
                                     autoComplete={false}
                                     placeholder="Type Here"
+                                    isError={login.error === 'password' ? true : false}
                                     label={{
                                         required: true,
                                         fontSize: 14,
                                         title: "Password"
                                     }}
-                                    onChange={(e) => { }}
+                                    onChange={(e) => { setLogin({ ...login, password: e.target.value }) }}
                                 />
                             </div>
 
@@ -66,10 +177,10 @@ const Login = ({ }) => {
 
                             <div className="form-field">
                                 <Button
-                                    text="Get Started"
+                                    text="Login"
                                     type="primary"
                                     size="md"
-                                    loading={false}
+                                    loading={loading}
                                     disabled={false}
                                     block={true}
                                     fontSize={15}
@@ -81,7 +192,7 @@ const Login = ({ }) => {
                                         size: 18,
                                         loaderColor: ''
                                     }}
-                                    onClick={(e) => { }}
+                                    onClick={(e) => handleLogin(e)}
                                 />
                             </div>
 
@@ -105,18 +216,6 @@ const Login = ({ }) => {
                     </form>
 
                     <div className="ui-text-center ui-absolute auth-footer" style={{ bottom: '1.5rem' }}>
-                        <LinkButton
-                            text="Create Your Account"
-                            disabled={false}
-                            lineHeight={16}
-                            loading={false}
-                            icon={{
-                                enable: true,
-                                name: 'nav-arrow-right'
-                            }}
-                            url=""
-                            onClick={(e) => { }}
-                        />
                         <div className="font-hostgro copyright">
                             <span className="pag-400 fs-13 pdr">
                                 Copyright&copy;{helper.currentDate().getFullYear()},
