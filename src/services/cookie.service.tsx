@@ -1,17 +1,7 @@
-import Cookies, { CookieSetOptions, CookieGetOptions } from 'universal-cookie';
+import Cookies, { CookieSetOptions } from 'universal-cookie';
+import { IGetCookie, IRemoveCookie, ISetCookie } from '../utils/interfaces.util';
 
-interface ISetCookie {
-    key: string,
-    payload: any,
-    expireAt?: Date,
-    maxAge?: number,
-    path?: string
-}
 
-interface IGetCookie {
-    key: string,
-    parse?: boolean
-}
 
 class CookieService {
 
@@ -66,7 +56,7 @@ class CookieService {
 
         let result: any = null;
 
-        const { key, parse } = data;
+        const { key, parse = false } = data;
 
         const cookieData = this.cookie.get(key, { doNotParse: true });
 
@@ -84,6 +74,24 @@ class CookieService {
 
     }
 
+    /**
+     * @name removeData
+     * @param data 
+     */
+    public removeData(data: IRemoveCookie): void {
+
+        const cookieData = this.getData({ key: data.key, parse: data.parse });
+
+        if(cookieData){
+            this.cookie.remove(data.key, { path: '/' })
+        }
+
+    }
+
+    /**
+     * @name getUserType
+     * @returns 
+     */
     public getUserType(): string {
 
         let result: string = this.getData({ key: 'userType', parse: false });

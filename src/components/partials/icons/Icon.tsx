@@ -52,7 +52,7 @@ const Icon = (props: IICon) => {
         let icon: string = `icon ${cl} ${cl}-${name} fs-${size}`;
         let link: string = `link-icon ui-${position}`;
 
-        if (!clickable) {
+        if (clickable) {
             link = link + ` ${className ? className : ''}`
         }
 

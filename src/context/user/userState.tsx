@@ -54,6 +54,9 @@ const UserState = (props: any) => {
         count: 0,
         pagination: {},
         response: {},
+        sidebar: {
+            collapsed: true
+        }
     }
 
     const [state, dispatch] = useReducer(UserReducer, initialState);
@@ -79,6 +82,8 @@ const UserState = (props: any) => {
 
         await Axios.get(`${process.env.REACT_APP_AUTH_URL}/audits?${q}`, storage.getConfigWithBearer())
             .then((resp) => {
+
+                
 
                 dispatch({
                     type: GET_AUDITS,
@@ -424,10 +429,10 @@ const UserState = (props: any) => {
 
     }
 
-    const setSidebar = (a: boolean, l: string) => {
+    const setSidebar = (data: any) => {
         dispatch({
             type: SET_SIDEBAR,
-            payload: { active: a, label: l }
+            payload: data
         })
     }
 
@@ -462,6 +467,7 @@ const UserState = (props: any) => {
             count: state.count,
             pagination: state.pagination,
             response: state.response,
+            sidebar: state.sidebar,
             getAudits,
             getUser,
             getUserDetails,

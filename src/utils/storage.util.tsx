@@ -82,6 +82,9 @@ const clearAuth = () => {
     
     if(checkToken() && checkUserID()){
         localStorage.clear();
+        CookieService.removeData({ key: 'token' });
+        CookieService.removeData({ key: 'userId' })
+        CookieService.removeData({ key: 'userType' })
     }
 }
 

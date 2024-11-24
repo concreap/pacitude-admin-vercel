@@ -1,23 +1,63 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent } from "react";
-import { ButtonType, RouteParamType, SemanticType, SizeType, UserType } from "./types.util";
+import { ButtonType, NavItemType, RouteActionType, RouteParamType, SemanticType, SizeType, UserType } from "./types.util";
 import User from "../models/User.model";
 
-export interface IRoute {
+export interface ISetCookie {
+    key: string,
+    payload: any,
+    expireAt?: Date,
+    maxAge?: number,
+    path?: string
+}
+
+export interface IGetCookie {
+    key: string,
+    parse?: boolean
+}
+
+export interface IRemoveCookie {
+    key: string,
+    parse?: boolean
+}
+
+export interface IRouteItem {
     name: string,
     title?: string,
     url: string,
     isAuth: boolean,
-    iconName?: string
+    iconName?: string,
+    action?: RouteActionType,
+    content: {
+        backButton?: boolean,
+        sidebar?: boolean
+    }
     params?: Array<{
         type: RouteParamType,
         name: string,
         value?: string
     }>
-    content: {
-        title?: string,
-        backButton?: boolean,
-        collapsed?: boolean
+}
+
+export interface IRoute extends IRouteItem {
+    subroutes?: Array<IRouteItem>
+}
+
+export interface INavItem {
+    type: NavItemType,
+    label: string,
+    path?: string,
+    active?: boolean,
+    icon: {
+        enable?: boolean,
+        name: string,
+        className?: string
     }
+    onClick(e: MouseEvent<HTMLAnchorElement>): void
+}
+
+export interface INavDivider {
+    type: NavItemType,
+    show?: boolean
 }
 
 export interface IStorage {
@@ -675,6 +715,11 @@ export interface IAPIResponse {
 }
 
 export interface ISidebar {
+    pageTitle: string,
+    collapsed: boolean
+}
+
+export interface ITopbar {
     pageTitle: string
 }
 
@@ -702,12 +747,15 @@ export interface IUserContext {
     count: number,
     pagination: any,
     response: any,
+    sidebar: {
+        collapsed: boolean
+    }
     getAudits(data: IListQuery): void,
     getUser(id: string): void,
     getUsers(limit: number, page: number): void,
     getUserDetails(id: string): void
     setUserType(n: string): void,
-    setSidebar(a: boolean, l: string): void,
+    setSidebar(data: any): void,
     getUserType(): string,
     setUser(data: any): void,
     unsetLoading(): void,

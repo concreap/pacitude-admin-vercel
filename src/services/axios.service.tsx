@@ -82,6 +82,7 @@ class AxiosService {
      */
     public async logout(): Promise<void> {
 
+        storage.clearAuth()
         const response = await this.call({
             method: 'POST',
             type: 'identity',

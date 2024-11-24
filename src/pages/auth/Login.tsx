@@ -83,10 +83,12 @@ const Login = ({ }) => {
 
                         } else {
                             setAlert({ ...alert, type: 'error', show: true, message: 'incorrect login details' });
+                            AxiosService.logout() // logout
                         }
 
                     } else {
                         setAlert({ ...alert, type: 'error', show: true, message: 'account currently inactive.' });
+                        AxiosService.logout() // logout
                     }
 
                 }

@@ -3,107 +3,103 @@ import { Link, useNavigate } from 'react-router-dom'
 import Icon from "../icons/Icon";
 import routes from '../../../routes/sidebar.route'
 import helper from "../../../utils/helper.util";
-import { ISidebar } from "../../../utils/interfaces.util";
+import { IRouteItem, ISidebar, IUserContext } from "../../../utils/interfaces.util";
 import useGoTo from "../../../hooks/useGoTo";
 import RoundButton from "../buttons/RoundButton";
-
-interface INavItem {
-    active?: boolean,
-    icon: string,
-    label: string,
-    action: string,
-    path?: string
-}
+import AxiosService from "../../../services/axios.service";
+import NavItem from "./NavItem";
+import NavDivider from "./NavDivider";
+import { RouteActionType } from "../../../utils/types.util";
+import UserContext from "../../../context/user/userContext";
 
 const Sidebar = (props: ISidebar) => {
 
-    const navigate = useNavigate()
-
     const {
-        pageTitle
+        pageTitle,
+        collapsed
     } = props;
 
-    useEffect(() => {
+    const userContext = useContext<IUserContext>(UserContext)
 
+    const navigate = useNavigate()
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [subroutes, setSubroutes] = useState<Array<IRouteItem>>([])
+    const [currentRoute, setCurrentRoute] = useState<IRouteItem>(routes[0])
+    const [ticon, setTicon] = useState<string>('menu')
+
+    useEffect(() => {
+        userContext.setSidebar({ collapsed })
     }, [])
 
     // functions
-    const getAction = (name: string) => {
+    const setNavAction = (action?: RouteActionType) => {
+        let result: string = action ? action : 'navigate';
+        return result;
+    }
 
-        let result: string = 'navigate';
+    const getSubroutes = (name: string): Array<IRouteItem> => {
 
-        if (name === 'account') {
-            result = 'toggle-subnav'
-        } else if (name === 'logout') {
-            result = 'toggle-subnav'
-        } else {
-            result = 'navigate'
+        let result: Array<IRouteItem> = [];
+
+        const route = routes.find((x) => x.name === name);
+
+        if (route && route.subroutes && route.subroutes.length > 0) {
+            result = route.subroutes;
         }
 
         return result;
 
     }
 
-    const handleNav = (e: MouseEvent<HTMLAnchorElement>, nav: INavItem) => {
+    const getRoute = (name: string): IRouteItem => {
+
+        let result = currentRoute;
+
+        const route = routes.find((x) => x.name === name);
+
+        if (route) {
+            result = route;
+        }
+
+        return result;
+
+    }
+
+    const handleNav = (e: MouseEvent<HTMLAnchorElement>, nav: { name: string, path: string, action: string }) => {
 
         e.preventDefault();
 
         if (nav.action === 'navigate' && nav.path) {
             navigate(nav.path)
-        } else if (nav.action === 'toggle-subnav') {
-            alert('toggled')
+        } else if (nav.action === 'open-secondary') {
+            setCurrentRoute(getRoute(nav.name))
+            setSubroutes(getSubroutes(nav.name))
+            setIsOpen(true)
+        } else if (nav.action === 'logout') {
+            navigate('/login');
+            AxiosService.logout()
         }
 
     }
 
-    // components 
+    const toggleSidebar = (e: MouseEvent<HTMLAnchorElement>) => {
 
-    const NavItem = (params: INavItem) => {
+        e.preventDefault();
 
-        const {
-            active = false,
-            icon = 'layout-left',
-            label,
-            action
-        } = params;
+        if(userContext.sidebar.collapsed){
+            setTicon('nav-arrow-right')
+        }else {
+            setTicon('menu')
+        }
+        userContext.setSidebar({ collapsed: !userContext.sidebar.collapsed })
 
-        return (
-            <>
-                <li className="nav-item">
-                    <Link onClick={(e) => handleNav(e, params)} to="" className={`nav-link ${active ? 'active' : ''}`}>
-                        <Icon
-                            type="polio"
-                            clickable={false}
-                            name={icon}
-                            size={18}
-                            className="nav-icon ui-relative pdr1"
-                            style={{
-                                top: '0px'
-                            }}
-                        />
-                        <span className="nav-text font-hostgro fs-14">{label}</span>
-                    </Link>
-                </li>
-            </>
-        )
-
-    }
-
-    const NavDivider = () => {
-        return (
-            <>
-                <div className="nav-divider">
-                    <div className="line"></div>
-                </div>
-            </>
-        )
     }
 
     return (
         <>
-            <section className="ui-sidebar">
+            <section className={`ui-sidebar ${userContext.sidebar.collapsed ? 'expand' : 'collapsed'}`}>
 
-                <div className="sidebar-secondary">
+                <div className={`sidebar-secondary ${isOpen ? 'open' : 'close'}`}>
 
                     <div className="bar-header">
                         <RoundButton
@@ -117,16 +113,56 @@ const Sidebar = (props: ISidebar) => {
                                     size={16}
                                 />
                             }
-                            onClick={(e) => {}}
+                            onClick={(e) => { setIsOpen(false) }}
                         />
+                    </div>
+
+                    <div className="bar-body">
+
+                        <ul className="nav-list main-list">
+
+                            {
+                                subroutes.length > 0 && subroutes.map((route, index) =>
+                                    <Fragment key={route.name + `${index + 1}`}>
+
+                                        {
+                                            route.name !== 'divider' &&
+                                            <NavItem
+                                                type="sidebar"
+                                                label={route.title ? route.title : helper.capitalize(route.name)}
+                                                icon={{ enable: true, name: route.iconName!, className: 'pdr1' }}
+                                                active={route.title && route.title === pageTitle ? true : false}
+                                                path={currentRoute.url + route.url}
+                                                onClick={(e) => handleNav(e, { name: route.name, path: currentRoute.url + route.url, action: setNavAction(route.action) })}
+                                            />
+                                        }
+
+                                    </Fragment>
+                                )
+                            }
+
+                        </ul>
+
                     </div>
 
                 </div>
 
-                <div className="sidebar-primary open">
+                <div className="sidebar-primary">
 
                     <div className="bar-header">
-                        <img className="logo" src="../../../images/assets/logo.svg" alt="logo" />
+                        { userContext.sidebar.collapsed && <img className="logo" src="../../../images/assets/logo.svg" alt="logo" /> }
+                        { !userContext.sidebar.collapsed && <img className="logo-icon" src="../../../images/assets/logo-icon.svg" alt="logo" /> }
+                        <Icon
+                            type="polio"
+                            clickable={true}
+                            name={ticon}
+                            size={18}
+                            className={`ui-relative ui-ml-auto`}
+                            style={{
+                                top: '0px'
+                            }}
+                            onClick={(e) => toggleSidebar(e)}
+                        />
                     </div>
 
                     <div className="bar-body">
@@ -139,17 +175,18 @@ const Sidebar = (props: ISidebar) => {
                                         {
                                             route.name !== 'divider' &&
                                             <NavItem
+                                                type="sidebar"
                                                 label={route.title ? route.title : helper.capitalize(route.name)}
-                                                icon={route.iconName!}
+                                                icon={{ enable: true, name: route.iconName!, className: 'pdr1' }}
                                                 active={route.title && route.title === pageTitle ? true : false}
-                                                action={getAction(route.name)}
                                                 path={route.url}
+                                                onClick={(e) => handleNav(e, { name: route.name, path: route.url, action: setNavAction(route.action) })}
                                             />
                                         }
 
                                         {
                                             route.name === 'divider' &&
-                                            <NavDivider />
+                                            <NavDivider type="sidebar" show={true} />
                                         }
 
                                     </Fragment>
@@ -160,9 +197,10 @@ const Sidebar = (props: ISidebar) => {
 
                         <ul className="nav-list">
                             <NavItem
+                                type="sidebar"
                                 label={'Logout'}
-                                icon={'layout-left'}
-                                action={getAction('logout')}
+                                icon={{ enable: true, name: 'layout-left', className: 'pdr1' }}
+                                onClick={(e) => handleNav(e, { name: 'logout', path: '/logout', action: setNavAction('logout') })}
                             />
                         </ul>
 

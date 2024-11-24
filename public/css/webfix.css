@@ -415,18 +415,6 @@ a {
 .ui-full-bg {
 
 	width: 100%;
-	min-height: 100%;
-	background-size: cover !important;
-	background-repeat: no-repeat !important;
-	background-position: 50% 50% !important;
-	-webkit-transition: all 0.5s ease;
-	-moz-transition: all 0.5s ease;
-	transition: all 0.5s ease;
-}
-
-.ui-full-bg-norm {
-
-	width: 100%;
 	background-size: cover !important;
 	background-repeat: no-repeat !important;
 	-webkit-transition: all 0.5s ease;
@@ -434,13 +422,11 @@ a {
 	transition: all 0.5s ease;
 }
 
-.ui-full-bg.ui-bg-fixed,
-.ui-full-bg-norm.ui-bg-fixed {
+.ui-full-bg.ui-bg-fixed {
 	background-attachment: fixed !important;
 }
 
-.ui-full-bg.ui-bg-center,
-.ui-full-bg-norm.ui-bg-center {
+.ui-full-bg.center{
 	background-position: center !important;
 }
 

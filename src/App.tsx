@@ -16,6 +16,9 @@ const About: any = React.lazy(() => import('./pages/About'))
 const Contact: any = React.lazy(() => import('./pages/Contact'))
 const NotFoundPage = React.lazy(() => import('./pages/404'));
 const Dashboard = React.lazy(() => import('./pages/dashboard/Dashboard'));
+const AccountProfile = React.lazy(() => import('./pages/dashboard/account/Profile'));
+const AccountBilling = React.lazy(() => import('./pages/dashboard/account/Billing'));
+const AccountPreferences = React.lazy(() => import('./pages/dashboard/account/Preferences'));
 
 
 const App = () => {
@@ -46,6 +49,12 @@ const App = () => {
                 return <Contact />
             case 'dashboard':
                 return <Dashboard />
+            case 'account-profile':
+                return <AccountProfile />
+            case 'account-billing':
+                return <AccountBilling />
+            case 'account-preferences':
+                return <AccountPreferences />
             default:
                 return <NotFoundPage />
         }
@@ -87,11 +96,34 @@ const App = () => {
                                                             title={route.title ? route.title : route.name}
                                                             back={true}
                                                             sidebar={{
-                                                                collapsed: false
+                                                                collapsed: route.content.sidebar !== undefined ? route.content.sidebar : false
                                                             }}
                                                         />
                                                     }
                                                 />
+
+                                                {
+                                                    route.subroutes && route.subroutes.length > 0 &&
+                                                    route.subroutes.map((subroute, index) =>
+                                                        <Fragment key={`${subroute.name}-route-${index + 1}`}>
+
+                                                            <Route
+                                                                path={route.url + subroute.url}
+                                                                element={
+                                                                    <DashboardMaster
+                                                                        component={getAppPages(`${route.name}-${subroute.name}`)}
+                                                                        title={subroute.title ? subroute.title : subroute.name}
+                                                                        back={true}
+                                                                        sidebar={{
+                                                                            collapsed: subroute.content.sidebar !== undefined ? subroute.content.sidebar : false
+                                                                        }}
+                                                                    />
+                                                                }
+                                                            />
+
+                                                        </Fragment>
+                                                    )
+                                                }
                                             </>
                                         }
 
