@@ -3,15 +3,22 @@ import { ITopbar, IUserContext } from "../../../utils/interfaces.util";
 import UserContext from "../../../context/user/userContext";
 import RoundButton from "../buttons/RoundButton";
 import Icon from "../icons/Icon";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import NavItem from "./NavItem";
+import NavDivider from "./NavDivider";
 
 const Topbar = (props: ITopbar) => {
 
     const {
-        pageTitle
+        pageTitle,
+        showBack
     } = props;
 
+    const navigate = useNavigate()
+
     const userContext = useContext<IUserContext>(UserContext)
+
+    const [dropBar, setDropbar] = useState<boolean>(false)
 
     useEffect(() => {
 
@@ -25,13 +32,16 @@ const Topbar = (props: ITopbar) => {
 
 
                     <div className="page-bar">
-                        <RoundButton
-                            size="rg"
-                            icon={<Icon type="polio" name="arrow-left" clickable={false} size={16} />}
-                            className=""
-                            clickable={true}
-                            onClick={(e) => { }}
-                        />
+                        {
+                            showBack &&
+                            <RoundButton
+                                size="rg"
+                                icon={<Icon type="polio" name="arrow-left" clickable={false} size={16} />}
+                                className=""
+                                clickable={true}
+                                onClick={(e) => { navigate(-1) }}
+                            />
+                        }
                         <h3 className="font-hostgro-medium mrgb0 fs-18 pas-950">{pageTitle}</h3>
                     </div>
 
@@ -49,7 +59,7 @@ const Topbar = (props: ITopbar) => {
                             />
                         </div>
 
-                        <Link to="" className="user-bar">
+                        <Link onClick={(e) => { setDropbar(!dropBar) }} to="" className="user-bar">
                             <div className="topbar-avatar ui-full-bg" style={{ backgroundImage: 'url("../../../images/assets/avatar_vivek.png")' }}>
                                 <span className="empty">OI</span>
                             </div>
@@ -62,6 +72,50 @@ const Topbar = (props: ITopbar) => {
                                 style={{ transform: 'rotate(90deg)', top: '3px', color: 'var(--pas-900)' }}
                             />
                         </Link>
+
+                        <div className={`user-bar-drop ${dropBar ? 'active' : ''}`}>
+                            <NavItem
+                                type="topbar"
+                                label={'Profile'}
+                                icon={{ enable: true, name: 'user', className: 'pdr1' }}
+                                active={false}
+                                path={''}
+                                onClick={(e) => () => { }}
+                            />
+                            <NavItem
+                                type="topbar"
+                                label={'Tasks'}
+                                icon={{ enable: true, name: 'user', className: 'pdr1' }}
+                                active={false}
+                                path={''}
+                                onClick={(e) => () => { }}
+                            />
+                            <NavItem
+                                type="topbar"
+                                label={'Billing'}
+                                icon={{ enable: true, name: 'user', className: 'pdr1' }}
+                                active={false}
+                                path={''}
+                                onClick={(e) => () => { }}
+                            />
+                            <NavItem
+                                type="topbar"
+                                label={'Settings'}
+                                icon={{ enable: true, name: 'user', className: 'pdr1' }}
+                                active={false}
+                                path={''}
+                                onClick={(e) => () => { }}
+                            />
+                            <NavDivider type="sidebar" show={true} />
+                            <NavItem
+                                type="topbar"
+                                label={'Logout'}
+                                icon={{ enable: true, name: 'user', className: 'pdr1' }}
+                                active={false}
+                                path={''}
+                                onClick={(e) => () => { }}
+                            />
+                        </div>
 
                     </div>
 

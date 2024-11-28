@@ -14,6 +14,7 @@ const NavItem = (props: INavItem) => {
             className: ''
         },
         label,
+        path = '',
         onClick
     } = props;
 
@@ -47,6 +48,29 @@ const NavItem = (props: INavItem) => {
                             <span className="nav-text font-hostgro fs-14">{label}</span>
                         </Link>
                     </li>
+                </>
+            }
+
+            {
+                type === 'topbar' &&
+                <>
+                    <Link  to={path} className={`nav-item`}>
+                        {
+                            icon.enable &&
+                            <Icon
+                                type="polio"
+                                clickable={false}
+                                name={icon.name}
+                                size={18}
+                                className={`nav-icon ui-relative ${icon.className ? icon.className : ''}`}
+                                style={{
+                                    top: '0px'
+                                }}
+                            />
+
+                        }
+                        <span className="nav-text font-hostgro fs-14">{label}</span>
+                    </Link>
                 </>
             }
         </>

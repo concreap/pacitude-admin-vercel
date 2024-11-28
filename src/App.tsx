@@ -94,7 +94,7 @@ const App = () => {
                                                         <DashboardMaster
                                                             component={getAppPages(route.name)}
                                                             title={route.title ? route.title : route.name}
-                                                            back={true}
+                                                            back={ route.content.backButton ? route.content.backButton : false }
                                                             sidebar={{
                                                                 collapsed: route.content.sidebar !== undefined ? route.content.sidebar : false
                                                             }}

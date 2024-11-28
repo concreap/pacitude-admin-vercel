@@ -86,9 +86,9 @@ const Sidebar = (props: ISidebar) => {
 
         e.preventDefault();
 
-        if(userContext.sidebar.collapsed){
+        if (userContext.sidebar.collapsed) {
             setTicon('nav-arrow-right')
-        }else {
+        } else {
             setTicon('menu')
         }
         userContext.setSidebar({ collapsed: !userContext.sidebar.collapsed })
@@ -137,6 +137,11 @@ const Sidebar = (props: ISidebar) => {
                                             />
                                         }
 
+                                        {
+                                            route.name === 'divider' &&
+                                            <NavDivider type="sidebar" show={true} />
+                                        }
+
                                     </Fragment>
                                 )
                             }
@@ -150,8 +155,8 @@ const Sidebar = (props: ISidebar) => {
                 <div className="sidebar-primary">
 
                     <div className="bar-header">
-                        { userContext.sidebar.collapsed && <img className="logo" src="../../../images/assets/logo.svg" alt="logo" /> }
-                        { !userContext.sidebar.collapsed && <img className="logo-icon" src="../../../images/assets/logo-icon.svg" alt="logo" /> }
+                        {userContext.sidebar.collapsed && <img className="logo" src="../../../images/assets/logo.svg" alt="logo" />}
+                        {!userContext.sidebar.collapsed && <img className="logo-icon" src="../../../images/assets/logo-icon.svg" alt="logo" />}
                         <Icon
                             type="polio"
                             clickable={true}

@@ -720,7 +720,8 @@ export interface ISidebar {
 }
 
 export interface ITopbar {
-    pageTitle: string
+    pageTitle: string,
+    showBack: boolean
 }
 
 // contexts

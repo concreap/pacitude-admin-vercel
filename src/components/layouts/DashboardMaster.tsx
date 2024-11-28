@@ -25,7 +25,7 @@ const DashboardMaster = ({ component, back, sidebar, title }: IDashboardMaster) 
             <main id="ui-dashboard-body" className={`ui-dashboard-body ${ userContext.sidebar.collapsed ? 'collapsed' : 'expand' }`}>
 
                 {/* topbar here */}
-                <Topbar pageTitle={title} />
+                <Topbar showBack={back} pageTitle={title} />
 
                 <div className="ui-body-content">
                     <div className="ui-body-wrapper">
