@@ -57,7 +57,7 @@ class AxiosService {
      */
     public async call(params: CallApiDTO): Promise<IAPIResponse> {
 
-        let result: any = {};
+        let result: any = {}
         const { isAuth = false, method, path, type, payload } = params;
 
         let urlpath = this.getFullUrl(type, path);
@@ -70,7 +70,19 @@ class AxiosService {
         }).then((resp) => {
             result = resp.data;
         }).catch((err) => {
-            result = err.response.data;
+
+            if (err.response.data) {
+                result = err.response.data;
+            } else if (typeof (err) === 'object') {
+                result.error = true;
+                result.message = 'Error';
+                result.data = err;
+            } else if (typeof (err) === 'string') {
+                result.error = true;
+                result.message = err.toString();
+                result.data = err.toString()
+            }
+
         })
 
         return result;

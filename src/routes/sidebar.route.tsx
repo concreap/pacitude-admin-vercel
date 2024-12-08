@@ -13,44 +13,191 @@ const sidebarRoutes: Array<IRoute> = [
         content: { sidebar: true }
     },
     {
+        name: 'users',
+        title: 'Users',
+        iconName: 'user',
+        url: '/users',
+        action: 'open-secondary',
+        isAuth: true,
+        params: [],
+        content: { sidebar: true },
+        subroutes: [
+            {
+                name: 'all-users',
+                title: 'All Users',
+                iconName: 'user',
+                url: '/all-users',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'talents',
+                title: 'Talents',
+                iconName: 'user',
+                url: '/talents',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'businesses',
+                title: 'Businesses',
+                iconName: 'user',
+                url: '/businesses',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'divider',
+                url: '/',
+                isAuth: true,
+                params: [],
+                content: {}
+            },
+            {
+                name: 'admins',
+                title: 'Admins',
+                iconName: 'user',
+                url: '/admins',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            }
+        ]
+    },
+    {
+        name: 'core',
+        title: 'Core',
+        iconName: 'send',
+        url: '/core',
+        action: 'open-secondary',
+        isAuth: true,
+        params: [],
+        content: { sidebar: true },
+        subroutes: [
+            {
+                name: 'industries',
+                title: 'Industries',
+                iconName: 'star',
+                url: '/industries',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'careers',
+                title: 'Careers',
+                iconName: 'shopping-bag',
+                url: '/careers',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'fields',
+                title: 'Fields',
+                iconName: 'sidebar-expand',
+                url: '/fields',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'skills',
+                title: 'Skills',
+                iconName: 'single-tap-gesture',
+                url: '/skills',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'divider',
+                url: '/',
+                isAuth: true,
+                params: [],
+                content: {}
+            },
+            {
+                name: 'questions',
+                title: 'Questions',
+                iconName: 'chat-remove',
+                url: '/questions',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'topics',
+                title: 'Topics',
+                iconName: 'flash',
+                url: '/topics',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            }
+        ]
+    },
+    {
         name: 'assessments',
         title: 'Assessments',
         url: '/assessments',
-        iconName: 'layout-left',
+        iconName: 'chat-bubble',
         action: 'navigate',
         isAuth: true,
         params: [],
         content: { sidebar: true, backButton: true }
     },
     {
-        name: 'tasks',
-        title: 'Tasks',
-        iconName: 'layout-left',
-        url: '/tasks',
-        action: 'navigate',
+        name: 'payments',
+        title: 'Payments',
+        iconName: 'credit-card',
+        url: '/payments',
+        action: 'open-secondary',
         isAuth: true,
         params: [],
-        content: { sidebar: true, backButton: true }
-    },
-    {
-        name: 'leaderboard',
-        title: 'Leaderboard',
-        iconName: 'layout-left',
-        url: '/leaderboard',
-        action: 'navigate',
-        isAuth: true,
-        params: [],
-        content: { sidebar: true, backButton: true }
-    },
-    {
-        name: 'billing',
-        title: 'Billing',
-        iconName: 'layout-left',
-        url: '/billing',
-        action: 'navigate',
-        isAuth: true,
-        params: [],
-        content: { sidebar: true, backButton: true }
+        content: { sidebar: true },
+        subroutes: [
+            {
+                name: 'transactions',
+                title: 'Transactions',
+                iconName: 'star',
+                url: '/transactions',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'subscriptions',
+                title: 'Subscriptions',
+                iconName: 'shopping-bag',
+                url: '/subscriptions',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                name: 'divider',
+                url: '/',
+                isAuth: true,
+                params: [],
+                content: {}
+            }
+        ]
     },
     {
         name: 'divider',
@@ -119,20 +266,20 @@ const sidebarRoutes: Array<IRoute> = [
         content: { sidebar: true, backButton: true }
     },
     {
-        name: 'feedback',
-        title: 'Feedback',
+        name: 'feedbacks',
+        title: 'Feedbacks',
         iconName: 'layout-left',
-        url: '/feedback',
+        url: '/feedbacks',
         action: 'navigate',
         isAuth: true,
         params: [],
         content: { sidebar: true, backButton: true }
     },
     {
-        name: 'referral',
-        title: 'Referral',
+        name: 'referrals',
+        title: 'Referrals',
         iconName: 'gift',
-        url: '/referral',
+        url: '/referrals',
         action: 'navigate',
         isAuth: true,
         params: [],

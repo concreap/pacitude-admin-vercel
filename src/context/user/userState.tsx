@@ -29,6 +29,8 @@ import {
     GET_AUDITS
 } from '../types'
 import { IListQuery, IUserPermission } from '../../utils/interfaces.util';
+import AxiosService from '../../services/axios.service';
+import User from '../../models/User.model';
 
 const UserState = (props: any) => {
 
@@ -126,44 +128,48 @@ const UserState = (props: any) => {
 
         let userId = id ? id : storage.getUserID();
 
-        setLoading()
+        setLoading();
 
-        await Axios.get(`${process.env.REACT_APP_AUTH_URL}/auth/user/${userId}`, storage.getConfigWithBearer())
-            .then((resp) => {
+        const response = await AxiosService.call({
+            type: 'identity',
+            method: 'GET',
+            path: `/auth/user/${userId}`,
+            isAuth: true
+        });
+
+        if(response.error === false){
+
+            if(response.status === 200){
+                
+                const user: User = response.data;
 
                 dispatch({
                     type: GET_LOGGEDIN_USER,
-                    payload: resp.data.data
-                });
+                    payload: user
+                })
 
-                cookie.set("userType", resp.data.data.userType, {
+                cookie.set("userType", user.userType, {
                     path: '/',
                     expires: exp
                 });
 
-            }).catch((err: any) => {
+            }
 
-                if (err && err.response && err.response.data && err.response.data.status === 401) {
+        }
 
-                    logout();
+        if(response.error === true){
 
-                } else if (err && err.response && err.response.data) {
+            if(response.status === 401){
+                logout()
+            }else if(response.message && response.message === 'Error: Network Error'){
+                loader.popNetwork();
+            }else if(response.data){
+                console.log(`Error! Could not get logged in user ${response.data}`)
+            }
 
-                    console.log(`Error! Could not get logged in user ${err.response.data}`)
+            unsetLoading()
 
-                } else if (err && err.toString() === 'Error: Network Error') {
-
-                    loader.popNetwork();
-
-                } else if (err) {
-
-                    console.log(`Error! Could not get logged in user ${err}`)
-
-                }
-
-                unsetLoading()
-
-            })
+        }
 
     }
 

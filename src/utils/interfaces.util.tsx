@@ -763,3 +763,10 @@ export interface IUserContext {
     isLoggedIn(): void,
     setResponse(data: any): void
 }
+
+export interface IResourceContext{
+    countries: Array<any>,
+    country: any,
+    loading: boolean,
+    getCountries(): Promise<void>
+}

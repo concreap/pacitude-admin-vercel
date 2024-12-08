@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState, useContext, useRef } from "react"
 import { ITopbar, IUserContext } from "../../../utils/interfaces.util";
 import UserContext from "../../../context/user/userContext";
 import RoundButton from "../buttons/RoundButton";
@@ -14,13 +14,34 @@ const Topbar = (props: ITopbar) => {
         showBack
     } = props;
 
+    const dropRef = useRef<any>(null)
     const navigate = useNavigate()
 
     const userContext = useContext<IUserContext>(UserContext)
-
     const [dropBar, setDropbar] = useState<boolean>(false)
 
     useEffect(() => {
+
+    }, [])
+
+    // use-effect to close drop-bar when clicking outside
+    useEffect(() => {
+
+        const dropBarOut = (e: any) => {
+            if(!dropRef.current){
+                return;
+            }
+
+            if(!dropRef.current.contains(e.target)){
+                setDropbar(false)
+            }
+        }
+
+        window.addEventListener('mousedown', dropBarOut, true)
+
+        return () => {
+            window.removeEventListener('mousedown', dropBarOut)
+        }
 
     }, [])
 
@@ -73,7 +94,7 @@ const Topbar = (props: ITopbar) => {
                             />
                         </Link>
 
-                        <div className={`user-bar-drop ${dropBar ? 'active' : ''}`}>
+                        <div ref={dropRef} className={`user-bar-drop ${dropBar ? 'active' : ''}`}>
                             <NavItem
                                 type="topbar"
                                 label={'Profile'}

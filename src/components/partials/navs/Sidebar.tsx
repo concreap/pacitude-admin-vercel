@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import Icon from "../icons/Icon";
 import routes from '../../../routes/sidebar.route'
 import helper from "../../../utils/helper.util";
-import { IRouteItem, ISidebar, IUserContext } from "../../../utils/interfaces.util";
+import { IResourceContext, IRouteItem, ISidebar, IUserContext } from "../../../utils/interfaces.util";
 import useGoTo from "../../../hooks/useGoTo";
 import RoundButton from "../buttons/RoundButton";
 import AxiosService from "../../../services/axios.service";
@@ -11,8 +11,12 @@ import NavItem from "./NavItem";
 import NavDivider from "./NavDivider";
 import { RouteActionType } from "../../../utils/types.util";
 import UserContext from "../../../context/user/userContext";
+import ResourceContext from "../../../context/resource/resourceContext";
+import storage from "../../../utils/storage.util";
 
 const Sidebar = (props: ISidebar) => {
+
+    const DASHBOARD_ROUTE = process.env.REACT_APP_DASHBOARD_ROUTE || '/dashboard';
 
     const {
         pageTitle,
@@ -20,6 +24,7 @@ const Sidebar = (props: ISidebar) => {
     } = props;
 
     const userContext = useContext<IUserContext>(UserContext)
+    const resourceContext = useContext<IResourceContext>(ResourceContext)
 
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -31,7 +36,29 @@ const Sidebar = (props: ISidebar) => {
         userContext.setSidebar({ collapsed })
     }, [])
 
+    useEffect(() => {
+
+        if(resourceContext.countries.length === 0){
+            resourceContext.getCountries()
+        }
+
+        if(helper.isEmpty(userContext.user, 'object')){
+            userContext.getUser(storage.getUserID())
+        }
+
+    }, [userContext.user])
+
     // functions
+    const computePath = (route: string) => {
+
+        if(route === '/dashboard'){
+            return route;
+        }else {
+            return DASHBOARD_ROUTE + route
+        }
+        
+    }
+
     const setNavAction = (action?: RouteActionType) => {
         let result: string = action ? action : 'navigate';
         return result;
@@ -70,6 +97,7 @@ const Sidebar = (props: ISidebar) => {
         e.preventDefault();
 
         if (nav.action === 'navigate' && nav.path) {
+            setCurrentRoute(getRoute(nav.name))
             navigate(nav.path)
         } else if (nav.action === 'open-secondary') {
             setCurrentRoute(getRoute(nav.name))
@@ -132,8 +160,8 @@ const Sidebar = (props: ISidebar) => {
                                                 label={route.title ? route.title : helper.capitalize(route.name)}
                                                 icon={{ enable: true, name: route.iconName!, className: 'pdr1' }}
                                                 active={route.title && route.title === pageTitle ? true : false}
-                                                path={currentRoute.url + route.url}
-                                                onClick={(e) => handleNav(e, { name: route.name, path: currentRoute.url + route.url, action: setNavAction(route.action) })}
+                                                path={computePath(currentRoute.url + route.url)}
+                                                onClick={(e) => handleNav(e, { name: route.name, path: computePath(currentRoute.url + route.url), action: setNavAction(route.action) })}
                                             />
                                         }
 
@@ -183,9 +211,9 @@ const Sidebar = (props: ISidebar) => {
                                                 type="sidebar"
                                                 label={route.title ? route.title : helper.capitalize(route.name)}
                                                 icon={{ enable: true, name: route.iconName!, className: 'pdr1' }}
-                                                active={route.title && route.title === pageTitle ? true : false}
-                                                path={route.url}
-                                                onClick={(e) => handleNav(e, { name: route.name, path: route.url, action: setNavAction(route.action) })}
+                                                active={currentRoute.name === route.name ? true : false}
+                                                path={computePath(route.url)}
+                                                onClick={(e) => handleNav(e, { name: route.name, path: computePath(route.url), action: setNavAction(route.action) })}
                                             />
                                         }
 
