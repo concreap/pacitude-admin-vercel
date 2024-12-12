@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, Fragment } from "react"
 import { IDateInput, ISelectInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
-import Icon from "../icons/Icon";
 import WebfixCalendar from "../../layouts/WebfixCalendar";
 
 const DateInput = (props: IDateInput) => {
@@ -10,7 +9,7 @@ const DateInput = (props: IDateInput) => {
         name, id, defaultValue,
         className, label,
         isError = false,
-        size = 'sz-md',
+        size = 'md',
         showFocus = false,
         position = 'bottom',
         placeholder = { value: 'Choose', enable: true },
@@ -36,9 +35,7 @@ const DateInput = (props: IDateInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''}`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control ${isError ? 'error' : ''} sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`

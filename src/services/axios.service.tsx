@@ -37,13 +37,13 @@ class AxiosService {
         let result: string = '';
 
         if (type === 'identity') {
-            result = `${this.identityUrl}/${path}`
+            result = `${this.identityUrl}${path}`
         } else if (type === 'core') {
-            result = `${this.coreUrl}/${path}`
+            result = `${this.coreUrl}${path}`
         } else if (type === 'genius') {
-            result = `${this.geniusUrl}/${path}`
+            result = `${this.geniusUrl}${path}`
         } else if (type === 'resource') {
-            result = `${this.resourceUrl}/${path}`
+            result = `${this.resourceUrl}${path}`
         }
 
         return result
@@ -71,8 +71,28 @@ class AxiosService {
             result = resp.data;
         }).catch((err) => {
 
-            if (err.response.data) {
-                result = err.response.data;
+            if (err.response) {
+
+                if (err.response.status === 404) {
+                    result.error = true;
+                    result.message = 'Could not find the requested resource';
+                    result.data = null;
+                } else if (err.response.status === 502) {
+                    result.error = true;
+                    result.message = 'Unable to get requested resource';
+                    result.data = null;
+                } else {
+
+                    if (err.response.data) {
+                        result = err.response.data;
+                    } else {
+                        result.error = true;
+                        result.message = 'An error occured';
+                        result.data = null;
+                    }
+
+                }
+
             } else if (typeof (err) === 'object') {
                 result.error = true;
                 result.message = 'Error';
@@ -95,7 +115,7 @@ class AxiosService {
     public async logout(): Promise<void> {
 
         storage.clearAuth()
-        const response = await this.call({
+        await this.call({
             method: 'POST',
             type: 'identity',
             path: '/auth/logout',

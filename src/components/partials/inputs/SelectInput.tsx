@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef, Fragment } from "react"
 import { ISelectInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
-import Icon from "../icons/Icon";
 
 const SelectInput = (props: ISelectInput) => {
 
@@ -10,7 +9,7 @@ const SelectInput = (props: ISelectInput) => {
         selected, className, label,
         options,
         isError = false,
-        size = 'sz-md',
+        size = 'md',
         showFocus = false,
         placeholder = { value: 'Choose', enable: true },
         onSelect
@@ -35,9 +34,7 @@ const SelectInput = (props: ISelectInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-select ${isError ? 'error' : ''} form-control font-manrope pas-950 fs-14`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-select ${isError ? 'error' : ''} form-control font-manrope pas-950 fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`

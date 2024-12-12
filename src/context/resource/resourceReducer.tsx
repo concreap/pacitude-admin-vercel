@@ -1,4 +1,4 @@
-import { GET_COUNTRIES, SET_LOADING } from "../types";
+import { GET_COUNTRIES, SET_LOADING, SET_TOAST } from "../types";
 
 const reducer = (state: any, action: any) => {
 
@@ -8,6 +8,11 @@ const reducer = (state: any, action: any) => {
             return {
                 ...state,
                 countries: action.payload
+            }
+        case SET_TOAST:
+            return {
+                ...state,
+                toast: action.payload
             }
         case SET_LOADING:
             return {

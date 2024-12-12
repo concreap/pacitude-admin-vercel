@@ -1,6 +1,7 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent } from "react";
-import { ButtonType, NavItemType, RouteActionType, RouteParamType, SemanticType, SizeType, UserType } from "./types.util";
+import { ButtonType, FlexReverseType, FontWeightType, IconFamilyType, IconName, LoadingType, NavItemType, PositionType, QueryOrderType, RouteActionType, RouteParamType, SemanticType, SizeType, StatusType, UserType } from "./types.util";
 import User from "../models/User.model";
+import Industry from "../models/Industry.model";
 
 export interface ISetCookie {
     key: string,
@@ -20,6 +21,13 @@ export interface IRemoveCookie {
     parse?: boolean
 }
 
+export interface IRouteParam {
+    type: RouteParamType,
+    name: string,
+    value?: string
+}
+
+
 export interface IRouteItem {
     name: string,
     title?: string,
@@ -31,15 +39,17 @@ export interface IRouteItem {
         backButton?: boolean,
         sidebar?: boolean
     }
-    params?: Array<{
-        type: RouteParamType,
-        name: string,
-        value?: string
-    }>
+    params?: Array<IRouteParam>
+}
+
+export interface IInRoute extends IRouteItem {
+    route: string,
+    parent: string,
 }
 
 export interface IRoute extends IRouteItem {
     subroutes?: Array<IRouteItem>
+    inroutes?: Array<IInRoute>
 }
 
 export interface INavItem {
@@ -168,6 +178,7 @@ export interface IAudioControls {
 export interface IHelper {
     init(type: string): void,
     scrollTo(id: string): void,
+    scrollToTop(): void,
     addClass(id: string, cn: string): void,
     removeClass(id: string, cn: string): void,
     splitQueries(query: any, key: string): any,
@@ -204,12 +215,22 @@ export interface IHelper {
     parseInputNumber(value: string, type: 'number' | 'decimal'): number,
     toDecimal(value: number, places: number): number
     formatCurrency(currency: string): string,
-    currentDate(): Date
+    currentDate(): Date,
+    getCurrentPage(data: IPagination): number;
+    getInitials(value: string): string
 
 }
 
+export interface IRoutil {
+    computePath(route: string): string,
+    computeSubPath(route: IRoute, subroute: IRouteItem): string,
+    computeInPath(inroute: IInRoute): string,
+    inRoute(payload: { route: string, name: string, params?: Array<IRouteParam> }): string,
+    resolveRouteParams(params: Array<IRouteParam>, stickTo: 'app' | 'page'): string
+}
+
 export interface IICon {
-    type: 'feather' | 'polio',
+    type: IconFamilyType,
     name: string,
     size?: number,
     position?: 'absolute' | 'relative',
@@ -230,7 +251,7 @@ export interface ITextInput {
     id?: string
     defaultValue?: string,
     value?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     autoComplete?: boolean,
     placeholder?: string,
@@ -250,7 +271,7 @@ export interface ITextInput {
 export interface IPinInput {
     type: 'text' | 'password',
     readonly?: boolean,
-    size?: string,
+    size?: SizeType,
     className?: string,
     showFocus?: boolean,
     length: number,
@@ -272,7 +293,7 @@ export interface IPasswordInput {
     id?: string
     defaultValue?: string,
     value?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     autoComplete?: boolean,
     placeholder?: string,
@@ -296,7 +317,7 @@ export interface ISearchInput {
     id?: string
     defaultValue?: string,
     value?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     autoComplete?: boolean,
     placeholder?: string,
@@ -317,7 +338,7 @@ export interface ISelectInput {
     name?: string,
     id?: string
     defaultValue?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     selected?: boolean,
     placeholder: {
@@ -346,7 +367,7 @@ export interface ITextAreaInput {
     id?: string
     defaultValue?: string,
     value?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     autoComplete?: boolean,
     placeholder?: string,
@@ -371,7 +392,7 @@ export interface IPhoneInput {
     id?: string
     defaultValue?: string,
     value?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     autoComplete?: boolean,
     placeholder?: string,
@@ -430,7 +451,7 @@ export interface INumberInput {
     id?: string
     defaultValue?: string,
     value?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     autoComplete?: boolean,
     placeholder?: string,
@@ -456,7 +477,7 @@ export interface IFileInput {
     id?: string
     defaultValue?: string,
     value?: string,
-    size?: string,
+    size?: SizeType,
     className?: string,
     autoComplete?: boolean,
     placeholder?: string,
@@ -544,7 +565,7 @@ export interface IDateInput {
     name?: string,
     id?: string
     defaultValue?: Date,
-    size?: string,
+    size?: SizeType,
     className?: string,
     selected?: boolean,
     position?: 'top' | 'bottom',
@@ -567,19 +588,23 @@ export interface IButton {
     id?: string,
     text: string,
     type?: ButtonType,
+    semantic?: SemanticType,
     size?: SizeType
     loading?: boolean,
     disabled?: boolean,
     block?: boolean,
     className?: string,
     fontSize?: number,
+    fontWeight?: FontWeightType,
     lineHeight?: number,
+    reverse?: FlexReverseType,
     icon?: {
         enable?: boolean,
         name?: string,
         size?: number,
         style?: CSSProperties
-        loaderColor?: string
+        loaderColor?: string,
+        type?: IconFamilyType
     },
     onClick(e: MouseEvent<HTMLAnchorElement>): void
 }
@@ -605,12 +630,77 @@ export interface ILinkButton {
     onClick?(e: MouseEvent<HTMLAnchorElement>): void
 }
 
+export interface IFilter {
+    ref?: RefObject<HTMLInputElement>
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    size?: SizeType,
+    className?: string,
+    placeholder?: string,
+    showFocus?: boolean,
+    isError?: boolean,
+    position?: PositionType,
+    noFilter?: boolean,
+    icon?: {
+        type: IconFamilyType,
+        name: string,
+    }
+    items: Array<IFilterItem>,
+    onChange(item: IFilterItem): void
+}
+
+export interface IFilterItem {
+    label: string,
+    value: any
+}
+
+export interface IPopout {
+    ref?: RefObject<HTMLInputElement>
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    className?: string,
+    position?: PositionType,
+    items: Array<IPopoutItem>,
+}
+
+export interface IPopoutItem {
+    label: string,
+    value: any,
+    icon?: {
+        type: IconFamilyType,
+        name: string,
+        size?: number
+    }
+    onClick(e: MouseEvent<HTMLAnchorElement>): void
+}
+
 export interface IAlert {
     type: SemanticType,
     show: boolean,
     className?: string,
     message?: string,
     dismiss?: boolean,
+}
+
+export interface IToast {
+    show: boolean,
+    title?: string,
+    message: string,
+    type: SemanticType,
+    position: PositionType,
+    close(e: MouseEvent<HTMLAnchorElement>): void,
+}
+
+export interface IToastState {
+    show: boolean,
+    title?: string,
+    message: string,
+    type: SemanticType,
+    position: PositionType
 }
 
 export interface ICustomModal {
@@ -665,7 +755,7 @@ export interface IListQuery {
     limit?: number,
     page?: number,
     select?: string,
-    order?: string,
+    order?: QueryOrderType,
     type?: string,
     admin?: boolean,
     mapped?: boolean,
@@ -719,25 +809,82 @@ export interface ISidebar {
     collapsed: boolean
 }
 
+export interface ISidebarAttrs {
+    collapsed: boolean,
+    route: IRouteItem,
+    subroutes: Array<IRouteItem>,
+    isOpen: boolean
+}
+
 export interface ITopbar {
     pageTitle: string,
     showBack: boolean
 }
 
+export interface ISetLoading {
+    option: LoadingType,
+    type?: string
+}
+
+export interface IUnsetLoading {
+    option: LoadingType,
+    type?: string,
+    message: string
+}
+
+export interface IEmptyState {
+    children: any,
+    bgColor: string,
+    size: SizeType,
+    className?: string,
+    bound?: boolean
+}
+export interface ITableHead {
+    className?: string,
+    items: Array<ICellHead>
+}
+export interface ICellHead {
+    fontSize?: number,
+    className?: string,
+    label: string,
+    style?: CSSProperties
+}
+export interface ICellData {
+    fontSize?: number,
+    className?: string,
+    status?: {
+        enable: boolean,
+        type: StatusType,
+        value: boolean | string,
+    },
+    render: any,
+    onClick?(e: MouseEvent<any>): void
+}
+export interface IBadge {
+    className?: string,
+    style?: CSSProperties,
+    size?: SizeType,
+    type: SemanticType,
+    label: string
+}
+
+
+
 // contexts
 
-export interface IListData {
+export interface ICollection {
     data: Array<any>,
     count: number,
     total: number,
     pagination: IPagination,
-    loading: boolean
+    loading: boolean,
+    message?: string
 }
 
 export interface IUserContext {
-    audits: IListData,
-    users: IListData,
-    admins: IListData,
+    audits: ICollection,
+    users: ICollection,
+    admins: ICollection,
     user: User,
     userDetails: User,
     userType: UserType,
@@ -748,15 +895,14 @@ export interface IUserContext {
     count: number,
     pagination: any,
     response: any,
-    sidebar: {
-        collapsed: boolean
-    }
+    sidebar: ISidebarAttrs
     getAudits(data: IListQuery): void,
     getUser(id: string): void,
     getUsers(limit: number, page: number): void,
     getUserDetails(id: string): void
     setUserType(n: string): void,
-    setSidebar(data: any): void,
+    setSidebar(data: ISidebarAttrs): void,
+    currentSidebar(collapse: boolean): ISidebarAttrs | null,
     getUserType(): string,
     setUser(data: any): void,
     unsetLoading(): void,
@@ -764,9 +910,41 @@ export interface IUserContext {
     setResponse(data: any): void
 }
 
-export interface IResourceContext{
+export interface IGeniusContext {
+    industries: ICollection,
+    industry: Industry,
+    careers: ICollection,
+    career: Industry,
+    fields: ICollection,
+    field: Industry,
+    skills: ICollection,
+    skill: any,
+    questions: ICollection,
+    question: any,
+    topics: ICollection,
+    topic: any,
+    message: string,
+    loading: boolean,
+    total: number,
+    count: number,
+    pagination: any,
+    getIndustries(data: IListQuery): Promise<void>,
+    getCareers(data: IListQuery): Promise<void>,
+    getFields(data: IListQuery): Promise<void>,
+    getSkills(data: IListQuery): Promise<void>,
+    getQuestions(data: IListQuery): Promise<void>,
+    getTopics(data: IListQuery): Promise<void>,
+    getTopic(id: string): Promise<void>,
+    setLoading(data: ISetLoading): Promise<void>,
+    unsetLoading(data: IUnsetLoading): Promise<void>,
+}
+
+export interface IResourceContext {
     countries: Array<any>,
     country: any,
+    toast: IToastState,
     loading: boolean,
+    setToast(data: IToastState): void,
+    clearToast(): void,
     getCountries(): Promise<void>
 }

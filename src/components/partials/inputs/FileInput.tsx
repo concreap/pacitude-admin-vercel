@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, CSSProperties } from "react"
 import { IFileInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
 import Icon from "../icons/Icon";
@@ -9,7 +9,7 @@ const FileInput = (props: IFileInput) => {
         name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, file,
         isError = false,
-        size = 'sz-md',
+        size = 'md',
         showFocus = false,
         onChange
     } = props
@@ -35,9 +35,7 @@ const FileInput = (props: IFileInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -56,6 +54,30 @@ const FileInput = (props: IFileInput) => {
         }
     }
 
+    const iconPosition = (): CSSProperties => {
+        let result: CSSProperties = { top: '1rem', right: '1rem' }
+
+        if (size === 'md') {
+            result = { top: '1rem', right: '1rem' }
+        } else if (size === 'sm') {
+            result = { top: '0.6rem', right: '1rem' }
+        }
+
+        return result;
+    }
+
+    const iconSize = (): number => {
+        let result: number = 20;
+
+        if (size === 'md') {
+            result = 20;
+        } else if (size === 'sm') {
+            result = 16
+        }
+
+        return result;
+    }
+
     return (
         <>
             {
@@ -69,13 +91,13 @@ const FileInput = (props: IFileInput) => {
             <input ref={fileRef} type="file" className="ui-hide" onChange={(e) => { onChange(e, file.type) }} />
 
             <div className="search-input ui-relative">
-                <Icon 
+                <Icon
                     type="polio"
                     name={'cloud-upload'}
-                    size={20}
+                    size={iconSize()}
                     clickable={true}
                     position="absolute"
-                    style={{ top: '1rem', right: '1rem' }}
+                    style={iconPosition()}
                     onClick={(e) => openDialogue(e)}
                 />
                 <input
@@ -88,7 +110,7 @@ const FileInput = (props: IFileInput) => {
                     placeholder={placeholder ? placeholder : 'No file chosen'}
                     autoComplete={autoComplete ? 'on' : 'off'}
                     readOnly={true}
-                    onChange={(e) => {  }}
+                    onChange={(e) => { }}
                 />
             </div>
         </>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, CSSProperties } from "react"
 import { ISearchInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
 import Icon from "../icons/Icon";
@@ -9,7 +9,7 @@ const SearchInput = (props: ISearchInput) => {
         name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
         isError = false,
-        size = 'sz-md',
+        size = 'md',
         showFocus = false,
         onChange, onSearch
     } = props
@@ -34,9 +34,7 @@ const SearchInput = (props: ISearchInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control ${isError ? 'error' : ''} pas-950 fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -44,6 +42,30 @@ const SearchInput = (props: ISearchInput) => {
 
         return result;
 
+    }
+
+    const iconPosition = (): CSSProperties => {
+        let result: CSSProperties = { top: '1rem', right: '1rem' }
+
+        if(size === 'md'){
+            result = { top: '1rem', right: '1rem' }
+        }else if(size === 'sm'){
+            result = { top: '0.6rem', right: '1rem' }
+        }
+
+        return result;
+    }
+
+    const iconSize = (): number => {
+        let result: number = 20;
+
+        if(size === 'md'){
+            result = 20;
+        }else if(size === 'sm') {
+            result = 16
+        }
+
+        return result;
     }
 
     return (
@@ -59,10 +81,10 @@ const SearchInput = (props: ISearchInput) => {
                 <Icon 
                     type="polio"
                     name={'search'}
-                    size={20}
+                    size={iconSize()}
                     clickable={true}
                     position="absolute"
-                    style={{ top: '1rem', right: '1rem' }}
+                    style={iconPosition()}
                     onClick={onSearch}
                 />
                 <input

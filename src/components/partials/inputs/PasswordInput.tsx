@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, CSSProperties } from "react"
 import { IPasswordInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
 import Icon from "../icons/Icon";
@@ -9,7 +9,7 @@ const PasswordInput = (props: IPasswordInput) => {
         name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
         isError = false,
-        size = 'sz-md',
+        size = 'md',
         showFocus = false,
         onChange, onKeyUp
     } = props
@@ -44,9 +44,7 @@ const PasswordInput = (props: IPasswordInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -54,6 +52,30 @@ const PasswordInput = (props: IPasswordInput) => {
 
         return result;
 
+    }
+
+    const iconPosition = (): CSSProperties => {
+        let result: CSSProperties = { top: '1rem', right: '1rem' }
+
+        if (size === 'md') {
+            result = { top: '1rem', right: '1rem' }
+        } else if (size === 'sm') {
+            result = { top: '0.6rem', right: '1rem' }
+        }
+
+        return result;
+    }
+
+    const iconSize = (): number => {
+        let result: number = 20;
+
+        if (size === 'md') {
+            result = 20;
+        } else if (size === 'sm') {
+            result = 16
+        }
+
+        return result;
     }
 
     return (
@@ -66,13 +88,13 @@ const PasswordInput = (props: IPasswordInput) => {
                 </label>
             }
             <div className="password-input ui-relative">
-                <Icon 
+                <Icon
                     type="polio"
                     name={type === 'password' ? 'eye-alt' : 'eye-close'}
-                    size={20}
+                    size={iconSize()}
                     clickable={true}
                     position="absolute"
-                    style={{ top: '1rem', right: '1rem' }}
+                    style={iconPosition()}
                     onClick={toggleType}
                 />
                 <input

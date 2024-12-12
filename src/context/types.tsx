@@ -9,6 +9,18 @@ export const GET_AUDITS = 'GET_AUDITS';
 export const GET_AUDIT = 'GET_AUDIT';
 export const GET_USERS = 'GET_USERS';
 export const GET_ADMINS = 'GET_ADMINS';
+export const GET_INDUSTRIES = 'GET_INDUSTRIES';
+export const GET_INDUSTRY = 'GET_INDUSTRY';
+export const GET_CAREERS = 'GET_CAREERS';
+export const GET_CAREER = 'GET_CAREER';
+export const GET_FIELDS = 'GET_FIELDS';
+export const GET_FIELD = 'GET_FIELD';
+export const GET_SKILLS = 'GET_SKILLS';
+export const GET_SKILL = 'GET_SKILL';
+export const GET_QUESTIONS = 'GET_QUESTIONS';
+export const GET_QUESTION = 'GET_QUESTION';
+export const GET_TOPICS = 'GET_TOPICS';
+export const GET_TOPIC = 'GET_TOPIC';
 
 // generics
 export const SET_PAGINATION = 'SET_PAGINATION';
@@ -17,6 +29,7 @@ export const SET_SEARCH = 'SET_SEARCH';
 export const SET_TOTAL = 'SET_TOTAL';
 export const SET_COUNT = 'SET_COUNT';
 export const SET_LOADING = 'SET_LOADING';
+export const SET_TOAST = 'SET_TOAST';
 export const UNSET_LOADING = 'UNSET_LOADING';
 export const SET_USERTYPE = 'SET_USERTYPE';
 export const SET_RESPONSE = 'SET_RESPONSE';

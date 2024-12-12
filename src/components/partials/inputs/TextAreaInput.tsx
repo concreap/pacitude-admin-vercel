@@ -8,7 +8,7 @@ const TextAreaInput = (props: ITextAreaInput) => {
         name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
         isError = false,
-        size = 'sz-xxlg',
+        size = 'xxlg',
         rows = 4,
         cols = 4,
         showFocus = false,
@@ -35,9 +35,7 @@ const TextAreaInput = (props: ITextAreaInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`

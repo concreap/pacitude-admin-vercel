@@ -5,35 +5,21 @@ import { IResourceContext } from "../../utils/interfaces.util";
 
 const Dashboard = ({ }) => {
 
-    const resourceContext = useContext<IResourceContext>(ResourceContext)
-
     useEffect(() => {
-
-        
 
     }, [])
 
+    const da = {
+        name: 'john',
+        age: 31,
+        bla: 'bla'
+    }
+
+    const { name, ...rest } = da;
+
     return (
         <>
-            <h1>This is Dashboard</h1>
-
-                {
-                    resourceContext.loading &&
-                    <> <span className="loader primary"></span> </>
-                }
-
-
-                {
-                    !resourceContext.loading &&
-                    resourceContext.countries.map((country, index) => 
-                    
-                        <Fragment key={country._id}>
-                            <div>{ country.name }</div>
-                        </Fragment>
-
-                    )
-                }
-
+            <h1 onClick={(e) => { console.log(rest) }}>This is Dashboard</h1>
         </>
     )
 };

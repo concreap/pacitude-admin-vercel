@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import moment from 'moment'
-import { IDateToday, IHelper } from './interfaces.util';
+import { IDateToday, IHelper, IPagination, IRoundButton, IRoute, IRouteParam, ISidebarAttrs } from './interfaces.util';
 import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
 
@@ -21,6 +21,10 @@ const scrollTo = (id: string) => {
         elem.scrollIntoView({ behavior: 'smooth' });
     }
 
+}
+
+const scrollToTop = () => {
+    window.scrollTo(0, 0)
 }
 
 const addClass = (id: string, cn: string) => {
@@ -570,13 +574,29 @@ const attachPhoneCode = (code: string, phone: string, include: boolean): string 
 
 const capitalizeWord = (value: string): string => {
 
-    const split = value.toLowerCase().split(" ");
+    let result: string = '';
 
-    for (var i = 0; i < split.length; i++) {
-        split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+    if (value.includes('-')) {
+
+        const split = value.toLowerCase().split("-");
+
+        for (var i = 0; i < split.length; i++) {
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+
+        result = split.join('-')
+
+    } else {
+        const split = value.toLowerCase().split(" ");
+
+        for (var i = 0; i < split.length; i++) {
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+
+        result = split.join(' ')
     }
 
-    return split.join(' ');
+    return result;
 
 }
 
@@ -720,10 +740,57 @@ const currentDate = () => {
     return new Date()
 }
 
+const getCurrentPage = (data: IPagination) => {
+
+    let result = 1;
+
+    if (data.next && data.next.page && data.prev && data.prev.page) {
+        const page = data.next.page - 1;
+        result = page === 0 ? 1 : page;
+    } else {
+        if (data.next && data.next.page) {
+            const page = data.next.page - 1;
+            result = page === 0 ? 1 : page;
+        } else if (data.prev && data.prev.page) {
+            const page = data.prev.page - 1;
+            result = page === 0 ? 1 : page;
+        }
+    }
+
+    return result;
+
+}
+
+const getInitials = (value: string): string => {
+
+    let result = '';
+
+    if(value.includes('-')){
+
+        const split = value.split('-');
+        result = split[0].substring(0, 1)
+
+        if(split[1]){
+            result = result + split[1].substring(0, 1)
+        }
+
+    }else {
+        const split = value.split(' ')
+        result = split[0].substring(0, 1)
+
+        if(split[1]){
+            result = result + split[1].substring(0, 1)
+        }
+    }
+
+    return result;
+
+}
 
 const helper: IHelper = {
     init: init,
     scrollTo: scrollTo,
+    scrollToTop: scrollToTop,
     addClass: addClass,
     removeClass: removeClass,
     splitQueries: splitQueries,
@@ -760,7 +827,9 @@ const helper: IHelper = {
     parseInputNumber: parseInputNumber,
     toDecimal: toDecimal,
     formatCurrency: formatCurrency,
-    currentDate: currentDate
+    currentDate: currentDate,
+    getCurrentPage: getCurrentPage,
+    getInitials: getInitials
 }
 
 export default helper;

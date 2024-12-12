@@ -411,6 +411,12 @@ a {
 .ui-flexbox {
 	display: flex !important;
 }
+.ui-flexbox.align-center{
+    align-content: center !important;
+}
+.ui-flexbox.justify-center{
+    justify-content: center !important;
+}
 
 .ui-full-bg {
 
@@ -2965,8 +2971,20 @@ a.ondimgray
 	width: 10%;
 }
 
+.wp-15 {
+	width: 15%;
+}
+
+.wp-17 {
+	width: 17%;
+}
+
 .wp-20 {
 	width: 20%;
+}
+
+.wp-25 {
+	width: 25%;
 }
 
 .wp-32 {

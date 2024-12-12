@@ -10,19 +10,23 @@ const Button = (props: IButton) => {
         id = helper.random(6, true),
         text,
         type = 'primary',
+        semantic = 'normal',
         size = 'rg',
         loading = false,
         disabled = false,
         block = false,
         fontSize = 14,
+        fontWeight = 'bold',
         lineHeight = 16,
+        reverse = 'default',
         className,
         icon = {
             enable: true,
             name: 'check',
             size: 16,
             loaderColor: 'white',
-            style: { position: 'relative' }
+            style: { position: 'relative' },
+            type: 'polio'
         },
         onClick
     } = props;
@@ -33,8 +37,8 @@ const Button = (props: IButton) => {
 
     const computeClass = () => {
 
-        let result: string = `button ${block ? 'block' : ''} ${size ? size : 'md'} button-${type} ${disabled ? 'disabled' : loading ? 'disabled loading' : ''}`
-        let text: string = `font-hostgro-bold fs-${fontSize} lh-${lineHeight}`
+        let result: string = `button ${block ? 'block' : ''} ${size ? size : 'md'} button-${type} ${semantic} reverse-${reverse} ${disabled ? 'disabled' : loading ? 'disabled loading' : ''}`
+        let text: string = `font-hostgro-${typeof(fontWeight) === 'string' ? fontWeight : 'bold'} fs-${fontSize} lh-${lineHeight}`
 
         if (className) {
             result = result + ` ${className}`
@@ -62,7 +66,7 @@ const Button = (props: IButton) => {
                         {
                             icon.enable &&
                             <Icon
-                                type="polio"
+                                type={icon.type!}
                                 name={icon.name!}
                                 clickable={false}
                                 size={icon.size!}

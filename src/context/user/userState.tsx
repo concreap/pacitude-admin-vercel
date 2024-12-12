@@ -1,10 +1,14 @@
 import React, { useReducer } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'universal-cookie';
-
 import Axios from 'axios';
 import storage from '../../utils/storage.util'
 import loader from '../../utils/loader.util'
+import { IListQuery, ISidebarAttrs, IUserPermission } from '../../utils/interfaces.util';
+import AxiosService from '../../services/axios.service';
+import User from '../../models/User.model';
+import { sidebar } from '../../_data/seed';
+import sidebarRoutes from '../../routes/sidebar.route';
 
 import UserContext from './userContext';
 import UserReducer from './userReducer';
@@ -28,9 +32,6 @@ import {
     GET_ADMINS,
     GET_AUDITS
 } from '../types'
-import { IListQuery, IUserPermission } from '../../utils/interfaces.util';
-import AxiosService from '../../services/axios.service';
-import User from '../../models/User.model';
 
 const UserState = (props: any) => {
 
@@ -56,9 +57,7 @@ const UserState = (props: any) => {
         count: 0,
         pagination: {},
         response: {},
-        sidebar: {
-            collapsed: true
-        }
+        sidebar: sidebar
     }
 
     const [state, dispatch] = useReducer(UserReducer, initialState);
@@ -85,7 +84,7 @@ const UserState = (props: any) => {
         await Axios.get(`${process.env.REACT_APP_AUTH_URL}/audits?${q}`, storage.getConfigWithBearer())
             .then((resp) => {
 
-                
+
 
                 dispatch({
                     type: GET_AUDITS,
@@ -137,10 +136,10 @@ const UserState = (props: any) => {
             isAuth: true
         });
 
-        if(response.error === false){
+        if (response.error === false) {
 
-            if(response.status === 200){
-                
+            if (response.status === 200) {
+
                 const user: User = response.data;
 
                 dispatch({
@@ -157,13 +156,13 @@ const UserState = (props: any) => {
 
         }
 
-        if(response.error === true){
+        if (response.error === true) {
 
-            if(response.status === 401){
+            if (response.status === 401) {
                 logout()
-            }else if(response.message && response.message === 'Error: Network Error'){
+            } else if (response.message && response.message === 'Error: Network Error') {
                 loader.popNetwork();
-            }else if(response.data){
+            } else if (response.data) {
                 console.log(`Error! Could not get logged in user ${response.data}`)
             }
 
@@ -274,15 +273,15 @@ const UserState = (props: any) => {
 
         let _data: any = {};
 
-        if(payload ){
+        if (payload) {
 
-            if(payload.loading !== undefined){
+            if (payload.loading !== undefined) {
                 const { loading, ...rest } = payload;
                 _data = rest;
-            }else{
+            } else {
                 _data = payload;
             }
-            
+
         }
 
         if (type && type === 'audit') {
@@ -290,7 +289,7 @@ const UserState = (props: any) => {
             dispatch({
                 type: GET_AUDITS,
                 payload: {
-                    ..._data, 
+                    ..._data,
                     loading: true
                 }
             })
@@ -300,7 +299,7 @@ const UserState = (props: any) => {
             dispatch({
                 type: GET_USERS,
                 payload: {
-                    ..._data, 
+                    ..._data,
                     loading: true
                 }
             })
@@ -310,7 +309,7 @@ const UserState = (props: any) => {
             dispatch({
                 type: GET_ADMINS,
                 payload: {
-                    ..._data, 
+                    ..._data,
                     loading: true
                 }
             })
@@ -328,15 +327,15 @@ const UserState = (props: any) => {
 
         let _data: any = {};
 
-        if(payload ){
+        if (payload) {
 
-            if(payload.loading !== undefined){
+            if (payload.loading !== undefined) {
                 const { loading, ...rest } = payload;
                 _data = rest;
-            }else{
+            } else {
                 _data = payload;
             }
-            
+
         }
 
         if (type && type === 'audit') {
@@ -344,7 +343,7 @@ const UserState = (props: any) => {
             dispatch({
                 type: GET_AUDITS,
                 payload: {
-                    ..._data, 
+                    ..._data,
                     loading: false
                 }
             })
@@ -354,7 +353,7 @@ const UserState = (props: any) => {
             dispatch({
                 type: GET_USERS,
                 payload: {
-                    ..._data, 
+                    ..._data,
                     loading: false
                 }
             })
@@ -364,7 +363,7 @@ const UserState = (props: any) => {
             dispatch({
                 type: GET_ADMINS,
                 payload: {
-                    ..._data, 
+                    ..._data,
                     loading: false
                 }
             })
@@ -435,11 +434,46 @@ const UserState = (props: any) => {
 
     }
 
-    const setSidebar = (data: any) => {
+    const setSidebar = (data: ISidebarAttrs) => {
         dispatch({
             type: SET_SIDEBAR,
             payload: data
         })
+    }
+
+    const currentSidebar = (collapse:boolean): ISidebarAttrs | null => {
+
+        let result: ISidebarAttrs | null = null;
+    
+        const name = storage.fetch('route.name');
+        const sub = storage.fetch('route.subroute');
+    
+        const route = sidebarRoutes.find((x) => x.name === name);
+    
+        if(route && route.subroutes && route.subroutes.length > 0){
+    
+            const subroute = route.subroutes.find((m) => m.name === sub);
+    
+            if(subroute){
+                result = {
+                    collapsed: collapse,
+                    route: route,
+                    subroutes: route.subroutes,
+                    isOpen: true
+                }
+            }
+    
+        } else if(route) {
+            result = {
+                collapsed: collapse,
+                route: route,
+                subroutes: [],
+                isOpen: false
+            }
+        }
+    
+        return result;
+    
     }
 
     const setUser = (data: any) => {
@@ -480,6 +514,7 @@ const UserState = (props: any) => {
             getUsers,
             setUserType,
             setSidebar,
+            currentSidebar,
             getUserType,
             setUser,
             unsetLoading,

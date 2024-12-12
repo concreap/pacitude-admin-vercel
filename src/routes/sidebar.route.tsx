@@ -29,7 +29,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/all-users',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
@@ -39,7 +39,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/talents',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
@@ -49,7 +49,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/businesses',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
@@ -66,7 +66,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/admins',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             }
         ]
@@ -88,7 +88,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/industries',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
@@ -98,7 +98,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/careers',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
@@ -108,7 +108,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/fields',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
@@ -118,7 +118,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/skills',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
@@ -135,12 +135,26 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/questions',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { sidebar: true, backButton: true }
             },
             {
                 name: 'topics',
                 title: 'Topics',
+                iconName: 'flash',
+                url: '/topics',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
+                content: { sidebar: true, backButton: true }
+            }
+        ],
+        inroutes: [
+            {
+                route: 'core',
+                parent: 'topics',
+                name: 'topic-details',
+                title: 'Topic Details',
                 iconName: 'flash',
                 url: '/topics',
                 action: 'navigate',

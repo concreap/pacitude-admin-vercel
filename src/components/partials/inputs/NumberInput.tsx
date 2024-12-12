@@ -8,7 +8,7 @@ const NumberInput = (props: INumberInput) => {
         name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly,
         isError = false,
-        size = 'sz-md',
+        size = 'md',
         showFocus = false,
         min = '',
         max = '',
@@ -36,9 +36,7 @@ const NumberInput = (props: INumberInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`

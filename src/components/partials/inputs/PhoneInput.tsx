@@ -9,7 +9,7 @@ const PhoneInput = (props: IPhoneInput) => {
         name, id, value, defaultValue, placeholder,
         autoComplete, className, label, ref, readonly, dropdown,
         isError = false,
-        size = 'sz-md',
+        size = 'md',
         showFocus = false,
         onChange, onSelect
     } = props
@@ -75,9 +75,7 @@ const PhoneInput = (props: IPhoneInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14`;
-
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`

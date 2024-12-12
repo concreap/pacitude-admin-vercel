@@ -98,7 +98,7 @@ const PinInput = (props: IPinInput) => {
                                 maxLength={1}
                                 max={1}
                                 min={1}
-                                className={`form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 ${size ? size : 'sz-md'} ${showFocus ? 'show-focus' : ''}`}
+                                className={`form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 ${size ? 'sz-' + size : 'sz-md'} ${showFocus ? 'show-focus' : ''}`}
                                 placeholder={'0'}
                                 autoComplete={'off'}
                                 readOnly={readonly ? true : false}
