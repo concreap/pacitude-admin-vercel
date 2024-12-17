@@ -200,6 +200,7 @@ const TopicsPage = ({ }) => {
                                                                 <Popout
                                                                     position="left"
                                                                     items={[
+                                                                        { label: 'Details', value: 'details', icon: { name: 'chevron-right', size: 16, type: 'feather' }, onClick: (e) => { } },
                                                                         { label: 'Edit', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => { } },
                                                                         { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
                                                                     ]}

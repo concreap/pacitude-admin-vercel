@@ -35,10 +35,7 @@ const TopicDetailsPage = ({ }) => {
     useEffect(() => {
 
         initSidebar()
-
-        if (helper.isEmpty(geniusContext.topic, 'object')) {
-            getTopic()
-        }
+        getTopic()
 
     }, [])
 
@@ -114,7 +111,7 @@ const TopicDetailsPage = ({ }) => {
                     <div className="details-header">
 
                         <div className="avatar">
-                            <span className="font-hostgro-bold pab-900 fs-18">{helper.getInitials(topic.name || 'NA')}</span>
+                            <span className="font-hostgro-bold pab-900 fs-18 ui-upcase">{helper.getInitials(topic.name || 'NA')}</span>
                         </div>
 
                         <div className="pdl mrgl1">
