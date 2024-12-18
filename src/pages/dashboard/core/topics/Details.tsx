@@ -12,6 +12,9 @@ import AxiosService from "../../../../services/axios.service";
 import Toast from "../../../../components/partials/alerts/Toast";
 import { PositionType, SemanticType } from "../../../../utils/types.util";
 import ResourceContext from "../../../../context/resource/resourceContext";
+import PanelBox from "../../../../components/layouts/PanelBox";
+import TextInput from "../../../../components/partials/inputs/TextInput";
+import TextAreaInput from "../../../../components/partials/inputs/TextAreaInput";
 
 const TopicDetailsPage = ({ }) => {
 
@@ -23,14 +26,8 @@ const TopicDetailsPage = ({ }) => {
 
     const [topic, setTopic] = useState<Topic>(geniusContext.topic)
     const [loading, setLoading] = useState<boolean>(false)
-    const [toast, setToast] = useState<IToastState>({
-        type: 'success',
-        show: false,
-        message: '',
-        title: 'Feedback',
-        position: 'top-right',
-
-    })
+    const [showPanel, setShowPanel] = useState<boolean>(false);
+    const [error, setError] = useState<string>('')
 
     useEffect(() => {
 
@@ -50,6 +47,11 @@ const TopicDetailsPage = ({ }) => {
             userContext.setSidebar(result)
         }
 
+    }
+
+    const togglePanel = (e: any) => {
+        if (e) { e.preventDefault() }
+        setShowPanel(!showPanel)
     }
 
     const getTopic = () => {
@@ -72,15 +74,15 @@ const TopicDetailsPage = ({ }) => {
             payload: { isEnabled: topic.isEnabled ? false : true }
         });
 
-        if(response.error === false && response.status === 200){
+        if (response.error === false && response.status === 200) {
             setLoading(false)
-            resourceContext.setToast({ ...resourceContext.toast, show: true, message: `Topic ${topic.isEnabled ? 'disabled' : 'enabled' } successfully` })
+            resourceContext.setToast({ ...resourceContext.toast, show: true, message: `Topic ${topic.isEnabled ? 'disabled' : 'enabled'} successfully` })
             getTopic();
         }
-        
-        if(response.error === true){
+
+        if (response.error === true) {
             setLoading(false)
-            if(response.errors.length > 0){
+            if (response.errors.length > 0) {
                 resourceContext.setToast({ ...resourceContext.toast, show: true, type: 'error', message: response.errors.join(',') })
             } else {
                 resourceContext.setToast({ ...resourceContext.toast, show: true, type: 'error', message: response.message })
@@ -90,6 +92,10 @@ const TopicDetailsPage = ({ }) => {
         setTimeout(() => {
             resourceContext.setToast({ ...resourceContext.toast, show: false })
         }, 2500)
+
+    }
+
+    const updateTopic = async (e: any) => {
 
     }
 
@@ -148,7 +154,7 @@ const TopicDetailsPage = ({ }) => {
                                     name: 'edit',
                                     size: 13
                                 }}
-                                onClick={(e) => { }}
+                                onClick={(e) => togglePanel(e)}
                             />
                             <Button
                                 text={topic.isEnabled ? 'Disable' : 'Enable'}
@@ -231,7 +237,7 @@ const TopicDetailsPage = ({ }) => {
                             <div className="col-md-3">
                                 <div className="mrgb1">
                                     <span className="font-hostgro fs-14 pag-950 pdr1">Fields:</span>
-                                    <span className="font-hostgro fs-14 pag-500 ui-upcase pdr">{ topic.fields ? topic.fields.length : 0}</span>
+                                    <span className="font-hostgro fs-14 pag-500 ui-upcase pdr">{topic.fields ? topic.fields.length : 0}</span>
                                 </div>
                                 <div className="mrgb0">
                                     <span className="font-hostgro fs-14 pag-950 pdr1">Questions:</span>
@@ -257,6 +263,91 @@ const TopicDetailsPage = ({ }) => {
 
                 </>
             }
+
+            <PanelBox
+                show={showPanel}
+                title={'Edit Topic'}
+                animate={true}
+                closePanel={(e) => togglePanel(e)}
+            >
+
+                <form className="form" onSubmit={(e) => e.preventDefault()}>
+
+                    <div className="form-field mrgb">
+                        <TextInput
+                            type="email"
+                            showFocus={true}
+                            size="sm"
+                            defaultValue={topic.name}
+                            autoComplete={false}
+                            placeholder="Ex. Sample Topic"
+                            isError={error === 'name' ? true : false}
+                            label={{
+                                required: false,
+                                fontSize: 13,
+                                title: "Topic name"
+                            }}
+                            onChange={(e) => { }}
+                        />
+                    </div>
+
+                    <div className="form-field mrgb">
+                        <TextInput
+                            type="email"
+                            showFocus={true}
+                            size="sm"
+                            defaultValue={topic.label}
+                            autoComplete={false}
+                            placeholder="Ex. Sample Label"
+                            isError={error === 'name' ? true : false}
+                            label={{
+                                required: false,
+                                fontSize: 13,
+                                title: "Topic label"
+                            }}
+                            onChange={(e) => { }}
+                        />
+                    </div>
+
+                    <div className="form-field mrgb1">
+                        <TextAreaInput
+                            showFocus={true}
+                            autoComplete={false}
+                            defaultValue={topic.description}
+                            placeholder="Type here"
+                            label={{
+                                required: false,
+                                fontSize: 13,
+                                title: "Topic description"
+                            }}
+                            onChange={(e) => { }}
+                        />
+                    </div>
+
+                    <div className="form-field ui-flexbox align-center mrgt1">
+
+                        <Button
+                            text={'Save Changes'}
+                            type="primary"
+                            reverse="row"
+                            size="sm"
+                            loading={false}
+                            disabled={false}
+                            fontSize={13}
+                            lineHeight={16}
+                            className="ui-ml-auto"
+                            icon={{
+                                enable: false
+                            }}
+                            onClick={(e) => {}}
+                        />
+
+                    </div>
+
+                </form>
+
+            </PanelBox>
+
         </>
     )
 };

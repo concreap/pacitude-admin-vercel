@@ -79,7 +79,7 @@ const PinInput = (props: IPinInput) => {
         <>
             {
                 label &&
-                <label htmlFor={inputId} className={`fs-${labelFontSize()} font-manrope-medium pas-950 mrgb0 ${label.className}`}>
+                <label htmlFor={inputId} className={`fs-${labelFontSize()} font-manrope-medium color-black mrgb0 ${label.className}`}>
                     {label.title}
                     {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
@@ -98,7 +98,7 @@ const PinInput = (props: IPinInput) => {
                                 maxLength={1}
                                 max={1}
                                 min={1}
-                                className={`form-control ${isError ? 'error' : ''} font-manrope pas-950 fs-14 ${size ? 'sz-' + size : 'sz-md'} ${showFocus ? 'show-focus' : ''}`}
+                                className={`form-control ${isError ? 'error' : ''} font-manrope color-black fs-14 ${size ? 'sz-' + size : 'sz-md'} ${showFocus ? 'show-focus' : ''}`}
                                 placeholder={'0'}
                                 autoComplete={'off'}
                                 readOnly={readonly ? true : false}

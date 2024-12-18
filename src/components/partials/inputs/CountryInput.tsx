@@ -76,7 +76,7 @@ const CountryInput = (props: ICountryInput) => {
         <>
             {
                 label &&
-                <label htmlFor={id ? id : inputId} className={`fs-${labelFontSize()} font-manrope-medium pas-950 mrgb0 ${label.className}`}>
+                <label htmlFor={id ? id : inputId} className={`fs-${labelFontSize()} font-manrope-medium color-black mrgb0 ${label.className}`}>
                     {label.title}
                     {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>

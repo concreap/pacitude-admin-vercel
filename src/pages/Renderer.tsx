@@ -213,7 +213,7 @@ const ComponentRender = ({ }) => {
                     />
                 </div> */}
 
-                <div style={{ width: '25%' }}>
+                {/* <div style={{ width: '25%' }}>
                     <DateInput
                         showFocus={true}
                         placeholder={{
@@ -228,7 +228,7 @@ const ComponentRender = ({ }) => {
                         }}
                         onChange={(date) => { }}
                     />
-                </div>
+                </div> */}
 
                 {/* <div style={{ width: '25%' }}>
 
@@ -264,6 +264,47 @@ const ComponentRender = ({ }) => {
 
                 </div> */}
 
+                {/* <form className="form" onSubmit={(e) => e.preventDefault()}>
+
+                    <div className="form-field">
+                        <div className="row">
+                            <div className="col-6">
+                                <TextInput
+                                    type="email"
+                                    showFocus={true}
+                                    size="sm"
+                                    autoComplete={false}
+                                    placeholder="Ex. Sample Topic"
+                                    isError={error === 'name' ? true : false}
+                                    label={{
+                                        required: true,
+                                        fontSize: 13,
+                                        title: "Topic name"
+                                    }}
+                                    onChange={(e) => { }}
+                                />
+                            </div>
+                            <div className="col-6">
+                                <TextInput
+                                    type="email"
+                                    showFocus={true}
+                                    size="sm"
+                                    autoComplete={false}
+                                    placeholder="Ex. Sample Topic"
+                                    isError={error === 'name' ? true : false}
+                                    label={{
+                                        required: true,
+                                        fontSize: 13,
+                                        title: "Topic name"
+                                    }}
+                                    onChange={(e) => { }}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                </form> */}
+
             </section>
 
             <ForgotPasswordModal
@@ -274,11 +315,11 @@ const ComponentRender = ({ }) => {
                 slim="lg"
             />
 
-            <CustomModal 
+            <CustomModal
                 show={false}
                 flattened={true}
                 title="Modal Title"
-                closeModal={() => {}}
+                closeModal={() => { }}
                 slim="lg"
                 children={{
                     main: <>Help</>

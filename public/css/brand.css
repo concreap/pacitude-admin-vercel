@@ -252,6 +252,10 @@
     color: var(--pas-950) !important;
 }
 
+.pag-25 {
+    color: var(--pag-25) !important;
+}
+
 .pag-50 {
     color: var(--pag-50) !important;
 }
@@ -392,6 +396,10 @@
 
 .bg-pas-950 {
     background-color: var(--pas-950) !important;
+}
+
+.bg-pag-25 {
+    background-color: var(--pag-25) !important;
 }
 
 .bg-pag-50 {

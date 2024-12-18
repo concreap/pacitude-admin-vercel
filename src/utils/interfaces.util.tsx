@@ -243,6 +243,15 @@ export interface IICon {
     onClick?(e: MouseEvent<HTMLAnchorElement>): void
 }
 
+export interface IPanelBox {
+    show: boolean,
+    title: string,
+    animate?: boolean,
+    width?: number,
+    children?: React.ReactNode,
+    closePanel(e: any): void
+}
+
 export interface ITextInput {
     ref?: RefObject<HTMLInputElement>,
     type: 'text' | 'email',

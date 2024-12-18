@@ -33,7 +33,7 @@ const TextInput = (props: ITextInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-control font-manrope pas-950 fs-14 ${isError ? 'error' : ''} sz-${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control font-manrope color-black fs-14 ${isError ? 'error' : ''} sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -47,7 +47,7 @@ const TextInput = (props: ITextInput) => {
         <>
             {
                 label &&
-                <label htmlFor={id ? id : inputId} className={`fs-${labelFontSize()} font-manrope-medium pas-950 mrgb0 ${label.className}`}>
+                <label htmlFor={id ? id : inputId} className={`fs-${labelFontSize()} font-manrope-medium color-black mrgb0 ${label.className}`}>
                     {label.title}
                     {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
