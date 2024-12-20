@@ -24,12 +24,12 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .disabled {
-    opacity: .35 !important;
+    opacity: .15 !important;
     pointer-events: none !important;
 }
 
 .disabled-light {
-    opacity: .65 !important;
+    opacity: .55 !important;
     pointer-events: none !important;
 }
 
@@ -122,9 +122,14 @@ input.error.show-focus:focus {
     min-height: 68px;
 }
 
-.select-box.dropdown .menu {
-    max-height: 200px;
-    overflow-y: scroll;
+/* select box */
+.select-box.dropdown .control.sm {
+    min-height: 38px;
+    height: 38px;
+}
+
+.select-box.dropdown .control.sm .single {
+    padding-left: 0.2rem;
 }
 
 .phone-input {
@@ -516,12 +521,12 @@ input.error.show-focus:focus {
 }
 
 .button.disabled {
-    opacity: .65 !important;
+    opacity: .55 !important;
     pointer-events: none !important;
 }
 
 .button.blind {
-    opacity: .258 !important;
+    opacity: .15 !important;
     pointer-events: none !important;
 }
 
@@ -1294,6 +1299,8 @@ td {
     padding: 1rem 0;
 }
 
+
+
 /* panel box */
 .panel-box {
     position: fixed !important;
@@ -1327,4 +1334,36 @@ td {
 .panel-box .panel-footer {
     display: flex;
     align-items: center;
+}
+
+/* react-tabs */
+.react-tabs__tab-list {
+    border-bottom: 1px solid var(--pag-100) !important;
+}
+
+.react-tabs__tab-list {
+    display: flex;
+    padding-inline: 0 !important;
+}
+
+.react-tabs__tab {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding: 3px 12px !important;
+    padding-bottom: 12px;
+    background: transparent !important;
+    line-height: 23px;
+    font-size: 14px;
+    margin-right: 1.5rem;
+    list-style: none;
+    cursor: pointer;
+    color: #15082F !important;
+}
+.react-tabs__tab--selected {
+    border-radius: 0 !important;
+    background: transparent;
+    border-bottom: 3px solid var(--pab-400) !important;
+
+    color: var(--pab-500) !important;
 }

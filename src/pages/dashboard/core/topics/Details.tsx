@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState, useContext, useRef } from "react"
 import { useParams } from "react-router-dom";
 import GeniusContext from "../../../../context/genius/geniusContext";
-import { IGeniusContext, IResourceContext, IToast, IToastState, IUserContext } from "../../../../utils/interfaces.util";
+import { IAlert, IGeniusContext, IResourceContext, IToast, IToastState, IUserContext } from "../../../../utils/interfaces.util";
 import helper from "../../../../utils/helper.util";
 import Topic from "../../../../models/Topic.model";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
@@ -9,15 +9,12 @@ import Icon from "../../../../components/partials/icons/Icon";
 import UserContext from "../../../../context/user/userContext";
 import Button from "../../../../components/partials/buttons/Button";
 import AxiosService from "../../../../services/axios.service";
-import Toast from "../../../../components/partials/alerts/Toast";
-import { PositionType, SemanticType } from "../../../../utils/types.util";
 import ResourceContext from "../../../../context/resource/resourceContext";
-import PanelBox from "../../../../components/layouts/PanelBox";
-import TextInput from "../../../../components/partials/inputs/TextInput";
-import TextAreaInput from "../../../../components/partials/inputs/TextAreaInput";
+import TopicForm from "./TopicForm";
 
 const TopicDetailsPage = ({ }) => {
 
+    const panelRef = useRef<any>();
     const { id } = useParams()
 
     const userContext = useContext<IUserContext>(UserContext)
@@ -25,9 +22,15 @@ const TopicDetailsPage = ({ }) => {
     const resourceContext = useContext<IResourceContext>(ResourceContext)
 
     const [topic, setTopic] = useState<Topic>(geniusContext.topic)
+    const [updated, setUpdated] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(false)
-    const [showPanel, setShowPanel] = useState<boolean>(false);
-    const [error, setError] = useState<string>('')
+    const [showPanel, setShowPanel] = useState<boolean>(false)
+    const [error, setError] = useState<string>('');
+    const [alert, setAlert] = useState<IAlert>({
+        type: 'success',
+        show: false,
+        message: ''
+    });
 
     useEffect(() => {
 
@@ -76,26 +79,38 @@ const TopicDetailsPage = ({ }) => {
 
         if (response.error === false && response.status === 200) {
             setLoading(false)
-            resourceContext.setToast({ ...resourceContext.toast, show: true, message: `Topic ${topic.isEnabled ? 'disabled' : 'enabled'} successfully` })
+            resourceContext.setToast({
+                ...resourceContext.toast,
+                show: true,
+                message: `Topic ${topic.isEnabled ? 'disabled' : 'enabled'} successfully`
+            })
             getTopic();
         }
 
         if (response.error === true) {
+
             setLoading(false)
+
             if (response.errors.length > 0) {
-                resourceContext.setToast({ ...resourceContext.toast, show: true, type: 'error', message: response.errors.join(',') })
+                resourceContext.setToast({
+                    ...resourceContext.toast,
+                    show: true,
+                    type: 'error',
+                    message: response.errors.join(',')
+                })
             } else {
-                resourceContext.setToast({ ...resourceContext.toast, show: true, type: 'error', message: response.message })
+                resourceContext.setToast({
+                    ...resourceContext.toast,
+                    show: true,
+                    type: 'error',
+                    message: response.message
+                })
             }
         }
 
         setTimeout(() => {
             resourceContext.setToast({ ...resourceContext.toast, show: false })
         }, 2500)
-
-    }
-
-    const updateTopic = async (e: any) => {
 
     }
 
@@ -187,7 +202,7 @@ const TopicDetailsPage = ({ }) => {
                                 fontSize={13}
                                 fontWeight={'medium'}
                                 lineHeight={16}
-                                className="export-btn"
+                                className="export-btn blind"
                                 icon={{
                                     enable: true,
                                     type: 'feather',
@@ -203,6 +218,20 @@ const TopicDetailsPage = ({ }) => {
                     <div className="ui-separate-mini">
                         <div className="ui-line bg-pag-50"></div>
                     </div>
+
+                    {
+                        topic.description &&
+                        <>
+                            <div className="details-block">
+                                <span className="font-hostgro fs-14 pag-950">Topic Description:</span>
+                                <div className="font-hostgro fs-15 pag-500 mrgt">{topic.description}</div>
+                            </div>
+
+                            <div className="ui-separate-mini">
+                                <div className="ui-line bg-pag-50"></div>
+                            </div>
+                        </>
+                    }
 
                     <div className="details-block">
                         <div className="row">
@@ -264,89 +293,14 @@ const TopicDetailsPage = ({ }) => {
                 </>
             }
 
-            <PanelBox
+            <TopicForm
                 show={showPanel}
-                title={'Edit Topic'}
-                animate={true}
-                closePanel={(e) => togglePanel(e)}
-            >
-
-                <form className="form" onSubmit={(e) => e.preventDefault()}>
-
-                    <div className="form-field mrgb">
-                        <TextInput
-                            type="email"
-                            showFocus={true}
-                            size="sm"
-                            defaultValue={topic.name}
-                            autoComplete={false}
-                            placeholder="Ex. Sample Topic"
-                            isError={error === 'name' ? true : false}
-                            label={{
-                                required: false,
-                                fontSize: 13,
-                                title: "Topic name"
-                            }}
-                            onChange={(e) => { }}
-                        />
-                    </div>
-
-                    <div className="form-field mrgb">
-                        <TextInput
-                            type="email"
-                            showFocus={true}
-                            size="sm"
-                            defaultValue={topic.label}
-                            autoComplete={false}
-                            placeholder="Ex. Sample Label"
-                            isError={error === 'name' ? true : false}
-                            label={{
-                                required: false,
-                                fontSize: 13,
-                                title: "Topic label"
-                            }}
-                            onChange={(e) => { }}
-                        />
-                    </div>
-
-                    <div className="form-field mrgb1">
-                        <TextAreaInput
-                            showFocus={true}
-                            autoComplete={false}
-                            defaultValue={topic.description}
-                            placeholder="Type here"
-                            label={{
-                                required: false,
-                                fontSize: 13,
-                                title: "Topic description"
-                            }}
-                            onChange={(e) => { }}
-                        />
-                    </div>
-
-                    <div className="form-field ui-flexbox align-center mrgt1">
-
-                        <Button
-                            text={'Save Changes'}
-                            type="primary"
-                            reverse="row"
-                            size="sm"
-                            loading={false}
-                            disabled={false}
-                            fontSize={13}
-                            lineHeight={16}
-                            className="ui-ml-auto"
-                            icon={{
-                                enable: false
-                            }}
-                            onClick={(e) => {}}
-                        />
-
-                    </div>
-
-                </form>
-
-            </PanelBox>
+                closeForm={togglePanel}
+                topicId={topic._id}
+                display="details"
+                type="edit-resource"
+                title="Edit Topic"
+            />
 
         </>
     )

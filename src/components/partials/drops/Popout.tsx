@@ -96,7 +96,7 @@ const Popout = (props: IPopout) => {
                             {
                                 items.map((item, index) =>
                                     <Fragment key={`${item.value}-${index + 1}`}>
-                                        <Link onClick={(e) => handleClick(e, item)} to="" className="popout-item">
+                                        <Link onClick={(e) => handleClick(e, item)} to="" className={`popout-item ${item.disabled ? 'disabled' : ''} ${item.className}`}>
                                             <span className="fs-14 pag-800">{item.label}</span>
                                             {
                                                 item.icon &&

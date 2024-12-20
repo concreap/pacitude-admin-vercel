@@ -244,12 +244,12 @@ export interface IICon {
 }
 
 export interface IPanelBox {
-    show: boolean,
     title: string,
     animate?: boolean,
     width?: number,
     children?: React.ReactNode,
-    closePanel(e: any): void
+    onClose?(e: any): void,
+    onOpen?(e: any): void
 }
 
 export interface ITextInput {
@@ -526,6 +526,8 @@ export interface IDropSelect {
     isSearchable: boolean,
     optionDisplayLeft: boolean,
     menuBackground: string,
+    menuStyle: CSSProperties,
+    menuClassName: string,
     searchBackground: string,
     searchColor: string,
     optionColor: string
@@ -550,6 +552,7 @@ export interface IDropdown {
     defaultValue: any,
     placeholder: string,
     disabled: boolean,
+    size: SizeType,
     control: {
         left: boolean,
         label: boolean,
@@ -561,7 +564,9 @@ export interface IDropdown {
         position: string,
         itemColor: string,
         itemLeft: boolean,
-        itemLabel: boolean
+        itemLabel: boolean,
+        style?: CSSProperties,
+        className?: string
     },
     search: {
         enable: boolean,
@@ -607,6 +612,7 @@ export interface IButton {
     fontWeight?: FontWeightType,
     lineHeight?: number,
     reverse?: FlexReverseType,
+    style?: CSSProperties,
     icon?: {
         enable?: boolean,
         name?: string,
@@ -679,6 +685,8 @@ export interface IPopout {
 export interface IPopoutItem {
     label: string,
     value: any,
+    disabled?: boolean,
+    className?: string,
     icon?: {
         type: IconFamilyType,
         name: string,

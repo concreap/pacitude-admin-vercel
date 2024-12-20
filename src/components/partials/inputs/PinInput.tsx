@@ -79,8 +79,8 @@ const PinInput = (props: IPinInput) => {
         <>
             {
                 label &&
-                <label htmlFor={inputId} className={`fs-${labelFontSize()} font-manrope-medium color-black mrgb0 ${label.className}`}>
-                    {label.title}
+                <label htmlFor={inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
+                    <span className={`fs-${labelFontSize()} font-manrope-medium color-black`}>{label.title}</span>
                     {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
             }

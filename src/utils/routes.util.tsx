@@ -104,8 +104,6 @@ const inRoute = (payload: { route: string, name: string, params?: Array<IRoutePa
 
     if(_route && _route.inroutes && _route.inroutes.length > 0){
 
-        console.log(_route)
-
         const inroute = _route.inroutes.find((m) => m.name === name);
 
         if(inroute && _route.subroutes && _route.subroutes.length > 0){

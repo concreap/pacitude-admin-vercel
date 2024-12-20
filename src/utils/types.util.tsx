@@ -18,3 +18,5 @@ export type DifficultyType = 'random' | 'easy' | 'normal' | 'hard' | 'difficult'
 export type QuestionType = 'trivial' | 'career' | 'general'
 export type FlexReverseType = 'row' | 'column' | 'default';
 export type FontWeightType = 100 | 'thin' | 200 | 'xlight' | 300 | 'light' | 400 | 'regular' | 500 | 'medium' | 600 | 'semibold' | 700 | 'bold' | 800 | 'xbold' | 900 | 'black' | 'heavy'; 
+export type FormActionType = 'edit-resource' | 'add-resource';
+export type UIDisplayType = 'list' | 'table' | 'single' | 'details';

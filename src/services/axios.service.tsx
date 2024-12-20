@@ -75,11 +75,13 @@ class AxiosService {
 
                 if (err.response.status === 404) {
                     result.error = true;
+                    result.errors = ['could not find the requested resource'];
                     result.message = 'Could not find the requested resource';
                     result.data = null;
                 } else if (err.response.status === 502) {
                     result.error = true;
-                    result.message = 'Unable to get requested resource';
+                    result.errors = ['unable to get requested resource'];
+                    result.message = 'unable to get requested resource';
                     result.data = null;
                 } else {
 
@@ -87,6 +89,7 @@ class AxiosService {
                         result = err.response.data;
                     } else {
                         result.error = true;
+                        result.errors = ['an error occured'];
                         result.message = 'An error occured';
                         result.data = null;
                     }
@@ -95,10 +98,12 @@ class AxiosService {
 
             } else if (typeof (err) === 'object') {
                 result.error = true;
+                result.errors = ['an error occurred. please try again']
                 result.message = 'Error';
                 result.data = err;
             } else if (typeof (err) === 'string') {
                 result.error = true;
+                result.errors = [err.toString()]
                 result.message = err.toString();
                 result.data = err.toString()
             }

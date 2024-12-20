@@ -17,6 +17,17 @@
     pointer-events: none !important;
 }
 
+.select-box .menu {
+    max-height: 200px;
+    overflow-y: scroll;
+}
+.select-box{
+    background-color: #fff;
+    border-radius: 0.375rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+
 .select-box .control {
     display: flex;
     position: relative;

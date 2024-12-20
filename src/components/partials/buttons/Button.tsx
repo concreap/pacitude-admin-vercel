@@ -20,6 +20,7 @@ const Button = (props: IButton) => {
         lineHeight = 16,
         reverse = 'default',
         className,
+        style = {},
         icon = {
             enable: true,
             name: 'check',
@@ -53,7 +54,9 @@ const Button = (props: IButton) => {
             <Link
                 id={id}
                 onClick={onClick}
-                to="" className={computeClass().button}>
+                to="" className={computeClass().button}
+                style={style}
+                >
                 {
                     loading && <span className={`loader md white ${icon.loaderColor}`}></span>
                 }

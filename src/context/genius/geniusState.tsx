@@ -115,7 +115,7 @@ const GeniusState = (props: any) => {
             if (response.status === 200) {
 
                 const result: ICollection = {
-                    data: helper.sortData(response.data, 'name'),
+                    data: response.data,
                     count: response.count!,
                     total: response.total!,
                     pagination: response.pagination!,
@@ -171,7 +171,7 @@ const GeniusState = (props: any) => {
             if (response.status === 200) {
 
                 const result: ICollection = {
-                    data: helper.sortData(response.data, 'name'),
+                    data: response.data,
                     count: response.count!,
                     total: response.total!,
                     pagination: response.pagination!,
@@ -339,7 +339,7 @@ const GeniusState = (props: any) => {
             if (response.status === 200) {
 
                 const result: ICollection = {
-                    data: helper.sortData(response.data, 'name'),
+                    data: response.data,
                     count: response.count!,
                     total: response.total!,
                     pagination: response.pagination!,

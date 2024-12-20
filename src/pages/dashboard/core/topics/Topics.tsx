@@ -15,16 +15,19 @@ import Topic from "../../../../models/Topic.model";
 import UserContext from "../../../../context/user/userContext";
 import routil from "../../../../utils/routes.util";
 import { useNavigate } from "react-router-dom";
+import TopicForm from "./TopicForm";
+import { FormActionType } from "../../../../utils/types.util";
 
 const TopicsPage = ({ }) => {
-    
+
     const LIMIT = 25;
     const navigate = useNavigate()
 
     const userContext = useContext<IUserContext>(UserContext)
     const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const [showPanel, setShowPanel] = useState<boolean>(false);
+    const [form, setForm] = useState<{ action: FormActionType, topicId: string }>({ action: 'add-resource', topicId: '' })
 
-    const [topics, setTopics] = useState<ICollection>(geniusContext.topics)
 
     useEffect(() => {
 
@@ -36,16 +39,10 @@ const TopicsPage = ({ }) => {
 
     }, [])
 
-    useEffect(() => {
-
-        setTopics(geniusContext.topics)
-
-    }, [geniusContext.topics])
-
     const initSidebar = () => {
 
         const result = userContext.currentSidebar(userContext.sidebar.collapsed);
-        if(result){
+        if (result) {
             userContext.setSidebar(result)
         }
 
@@ -54,14 +51,14 @@ const TopicsPage = ({ }) => {
 
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { next } = topics.pagination;
+        const { next } = geniusContext.topics.pagination;
         await geniusContext.getTopics({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { prev } = topics.pagination;
+        const { prev } = geniusContext.topics.pagination;
         await geniusContext.getTopics({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
@@ -70,13 +67,24 @@ const TopicsPage = ({ }) => {
 
         e.preventDefault();
 
-        const route = routil.inRoute({ 
-            route: 'core', 
-            name: 'topic-details', 
-            params: [ { type: 'url', name: 'details', value: id } ] 
+        const route = routil.inRoute({
+            route: 'core',
+            name: 'topic-details',
+            params: [{ type: 'url', name: 'details', value: id }]
         });
 
         navigate(route);
+
+    }
+
+    const togglePanel = (e: any, form?: { action: FormActionType, id?: string } ) => {
+        if (e) { e.preventDefault() }
+        
+        if(!showPanel && form){
+            setForm({ action: form.action, topicId: form.id ? form.id : '' })
+        }
+
+        setShowPanel(!showPanel)
 
     }
 
@@ -119,7 +127,7 @@ const TopicsPage = ({ }) => {
                                 size: 20,
                                 loaderColor: ''
                             }}
-                            onClick={(e) => { }}
+                            onClick={(e) => togglePanel(e, { action: 'add-resource' })}
                         />
                         <span className="pdl"></span>
                         <Button
@@ -144,29 +152,29 @@ const TopicsPage = ({ }) => {
                 <div className="body">
 
                     {
-                        topics.loading &&
+                        geniusContext.topics.loading &&
                         <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                             <span className="loader lg primary"></span>
                         </EmptyState>
                     }
 
                     {
-                        !topics.loading &&
+                        !geniusContext.topics.loading &&
                         <div className="tablebox responsive">
 
                             {
-                                topics.data.length === 0 &&
+                                geniusContext.topics.data.length === 0 &&
                                 <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                                     <span className={`ts-icon terra-link`}>
                                         <i className='path1 fs-28'></i>
                                         <i className='path2 fs-28'></i>
                                     </span>
-                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{topics.message}</div>
+                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{geniusContext.topics.message}</div>
                                 </EmptyState>
                             }
 
                             {
-                                topics.data.length > 0 &&
+                                geniusContext.topics.data.length > 0 &&
                                 <table className="table" style={{ borderCollapse: 'collapse' }}>
 
                                     <TableHead
@@ -185,13 +193,13 @@ const TopicsPage = ({ }) => {
                                     <tbody>
 
                                         {
-                                            topics.data.map((topic: Topic, index) =>
+                                            geniusContext.topics.data.map((topic: Topic, index) =>
                                                 <Fragment key={topic._id}>
                                                     <tr className="table-row">
                                                         <CellData fontSize={13} className="wp-15" render={helper.formatDate(topic.createdAt, 'basic')} />
                                                         <CellData fontSize={13} onClick={(e) => toDetails(e, topic._id)} render={helper.capitalizeWord(topic.name)} />
-                                                        <CellData fontSize={13} render={helper.capitalizeWord(topic.label)} />
-                                                        <CellData fontSize={13} className="ui-upcase" render={topic.code} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, topic._id)} render={helper.capitalizeWord(topic.label)} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, topic._id)} className="ui-upcase" render={topic.code} />
                                                         <CellData fontSize={13} className="ui-upcase ui-text-center" render={topic.questions.length} />
                                                         <CellData fontSize={13} className="ui-upcase ui-text-center" render={topic.fields.length} />
                                                         <CellData fontSize={13} className="" status={{ enable: true, type: 'enabled', value: topic.isEnabled }} render={<></>} />
@@ -200,9 +208,9 @@ const TopicsPage = ({ }) => {
                                                                 <Popout
                                                                     position="left"
                                                                     items={[
-                                                                        { label: 'Details', value: 'details', icon: { name: 'chevron-right', size: 16, type: 'feather' }, onClick: (e) => { } },
-                                                                        { label: 'Edit', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => { } },
-                                                                        { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
+                                                                        { label: 'Details', value: 'details', icon: { name: 'chevron-right', size: 16, type: 'feather' }, onClick: (e) => toDetails(e, topic._id) },
+                                                                        { label: 'Edit', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => { togglePanel(e, { action: 'edit-resource', id: topic._id }); } },
+                                                                        { label: 'Delete', value: 'delete', disabled: true, icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
                                                                     ]}
                                                                 />
                                                             </div>
@@ -225,7 +233,7 @@ const TopicsPage = ({ }) => {
 
                 <div className="ui-separate-small"></div>
 
-                <div className={`footer pdb2 ${topics.loading ? 'disabled-light' : ''}`}>
+                <div className={`footer pdb2 ${geniusContext.topics.loading ? 'disabled-light' : ''}`}>
 
                     <div className="left-halve">
                         <Filter
@@ -238,7 +246,7 @@ const TopicsPage = ({ }) => {
                             onChange={(item) => { }}
                         />
                         <div className="pdl1">
-                            <span className="fs-13 pas-950">Displaying {topics.count} topics on page {helper.getCurrentPage(topics.pagination)}</span>
+                            <span className="fs-13 pas-950">Displaying {geniusContext.topics.count} topics on page {helper.getCurrentPage(geniusContext.topics.pagination)}</span>
                         </div>
                     </div>
 
@@ -246,7 +254,7 @@ const TopicsPage = ({ }) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${topics.pagination.prev && topics.pagination.prev.limit ? '' : 'disabled'}`}
+                            className={`${geniusContext.topics.pagination.prev && geniusContext.topics.pagination.prev.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiPrev(e)}
                         />
@@ -254,7 +262,7 @@ const TopicsPage = ({ }) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${topics.pagination.next && topics.pagination.next.limit ? '' : 'disabled'}`}
+                            className={`${geniusContext.topics.pagination.next && geniusContext.topics.pagination.next.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiNext(e)}
                         />
@@ -263,6 +271,15 @@ const TopicsPage = ({ }) => {
                 </div>
 
             </div>
+
+            <TopicForm
+                show={showPanel}
+                closeForm={togglePanel}
+                type={form.action}
+                topicId={form.topicId}
+                display="table"
+                title={form.action === 'add-resource' ? 'Add Topic(s)' : 'Edit Topic'}
+            />
         </>
     )
 

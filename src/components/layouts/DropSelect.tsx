@@ -220,9 +220,10 @@ class DropSelect extends Component<Partial<IDropSelect>, IDropSelectState> {
     
                     <div ref={this.menuRef} 
                     style={{ 
-                        backgroundColor: this.props.menuBackground ? this.props.menuBackground : '#fff' 
+                        backgroundColor: this.props.menuBackground ? this.props.menuBackground : '#fff',
+                        ...this.props.menuStyle
                     }}
-                    className={`menu ${this.state.isOpen ? 'is-open' : ''} ${this.props.menuPosition ? this.props.menuPosition : 'bottom'}`}>
+                    className={`menu ${this.props.menuClassName ? this.props.menuClassName : ''} ${this.state.isOpen ? 'is-open' : ''} ${this.props.menuPosition ? this.props.menuPosition : 'bottom'}`}>
 
                         {
                             this.props.isSearchable === true &&

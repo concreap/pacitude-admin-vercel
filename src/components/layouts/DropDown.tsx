@@ -9,6 +9,7 @@ const DropDown = ({
     defaultValue,
     placeholder,
     disabled,
+    size = 'rg',
     search = {
         bgColor: '#fff',
         color: '#000',
@@ -25,7 +26,9 @@ const DropDown = ({
         itemColor: '000',
         itemLabel: true,
         itemLeft: true,
-        position: 'bottom'
+        position: 'bottom',
+        style: {},
+        className: ''
     },
 }: Partial<IDropdown>) => {
 
@@ -46,7 +49,17 @@ const DropDown = ({
 
     }
 
+    const computeControlClass = () => {
 
+        let result: string = `${size}`
+
+        if(control && control.className){
+            result = `${result} ${control.className}`;
+        }
+
+        return result;
+
+    }
 
     return (
         <>
@@ -55,7 +68,7 @@ const DropDown = ({
                 isSearchable={search ? search.enable : true}
                 disableSeparator={true}
                 className={className ? className : ''}
-                controlClassName={control && control.className ? control.className : ''}
+                controlClassName={computeControlClass()}
                 controlDisplayImage={control ? control.image : false}
                 controlDisplayLabel={control ? control.label : false}
                 controlDisplayLeft={control ? control.left : false}
@@ -69,6 +82,8 @@ const DropDown = ({
                 isDisabled={disabled ? disabled : false}
                 menuPosition={menu ? menu.position : 'bottom'}
                 menuBackground={menu ? menu.bgColor : ''}
+                menuClassName={menu.className}
+                menuStyle={menu.style}
                 searchBackground={search ? search.bgColor : ''}
                 searchColor={search ? search.color : ''}
                 optionColor={menu ? menu.itemColor : ''}

@@ -1,30 +1,25 @@
-import React, { useEffect, useState, useContext, CSSProperties } from "react"
+import React, { useEffect, useState, useContext, CSSProperties, forwardRef, ForwardedRef, useImperativeHandle } from "react"
 import RoundButton from "../partials/buttons/RoundButton";
 import Icon from "../partials/icons/Icon";
 import { IPanelBox } from "../../utils/interfaces.util";
 
-const PanelBox = (props: IPanelBox) => {
+const PanelBox = forwardRef((props: IPanelBox, ref: ForwardedRef<any>) => {
 
     const {
-        show,
         title,
         animate = true,
         width = 442,
         children = <></>,
-        closePanel
+        onOpen = (e: any) => {},
+        onClose = (e: any) => {}
     } = props;
 
-    const [anitex, setAnitex] = useState<boolean>(false)
+    const [anitex, setAnitex] = useState<boolean>(false);
+    const [show, setShow] = useState<boolean>(false)
 
     useEffect(() => {
 
-        if (show && animate) {
-            setTimeout(() => {
-                setAnitex(true)
-            }, 130)
-        }
-
-    }, [show])
+    }, [])
 
     const computeStyle = (type: 'open' | 'close' = 'open') => {
 
@@ -66,9 +61,28 @@ const PanelBox = (props: IPanelBox) => {
         if (e) { e.preventDefault() }
         computeStyle('close');
         setTimeout(() => {
-            closePanel(e);
-        }, 70)
+            setAnitex(false)
+            setShow(false)
+            onClose(e)
+        }, 130)
     }
+
+    const handleOpen = (e: any) => {
+        if (e) { e.preventDefault() }
+        computeStyle('open');
+        setShow(true)
+        setTimeout(() => {
+            setAnitex(true)
+            onOpen(e)
+        }, 130)
+    }
+
+    // expose child component functions to parent component
+    useImperativeHandle(ref, () => ({
+        close: handleClose,
+        open: handleOpen,
+        isOpen: show
+    }))
 
     return (
         <>
@@ -88,7 +102,7 @@ const PanelBox = (props: IPanelBox) => {
                     <div className="ui-line bg-pag-50"></div>
 
                     <div className="panel-body">
-                        { children }
+                        {children}
                     </div>
 
                     <div className="panel-footer"></div>
@@ -98,6 +112,6 @@ const PanelBox = (props: IPanelBox) => {
             </div>
         </>
     )
-};
+})
 
 export default PanelBox;
