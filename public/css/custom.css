@@ -975,12 +975,17 @@ input.error.show-focus:focus {
 /* badge */
 .badge {
     display: inline-flex;
+    align-items: center;
     background-color: var(--pag-100);
     padding: 0.3rem 0.8rem;
     align-items: center;
     justify-content: center;
     color: var(--pag-900);
     border-radius: 5px;
+}
+
+.badge.badge-close{
+    padding: 0.3rem 0.5rem;
 }
 
 .badge.error {
@@ -1019,9 +1024,17 @@ input.error.show-focus:focus {
     font-size: 10px !important;
 }
 
+.badge.badge-close.sm{
+    padding: 0.3rem 0.6rem;
+}
+
 .badge.rg {
     padding: 0.3rem 0.8rem;
     height: 21px;
+}
+
+.badge.badge-close.rg{
+    padding: 0.3rem 0.5rem;
 }
 
 .badge.md {
@@ -1029,10 +1042,18 @@ input.error.show-focus:focus {
     height: 25px;
 }
 
+.badge.badge-close.md{
+    padding: 0.3rem 0.7rem;
+}
+
 .badge.lg {
     padding: 0.4rem 1.5rem;
     height: 34px;
     font-size: 12px !important;
+}
+
+.badge.badge-close.lg{
+    padding: 0.3rem 1rem;
 }
 
 /* toast */
@@ -1360,10 +1381,42 @@ td {
     cursor: pointer;
     color: #15082F !important;
 }
+
 .react-tabs__tab--selected {
     border-radius: 0 !important;
     background: transparent;
     border-bottom: 3px solid var(--pab-400) !important;
 
     color: var(--pab-500) !important;
+}
+
+/* drag zone */
+.drag-zone {
+    width: 100%;
+    min-height: 154px;
+    padding: 0.4rem;
+    position: relative;
+    
+    background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='15' ry='15' stroke='%23C5CDD9FF' stroke-width='2' stroke-dasharray='4%2c 8' stroke-dashoffset='5' stroke-linecap='square'/%3e%3c/svg%3e");
+    border-radius: 15px;
+}
+
+.drag-zone .zone{
+    width: 100%;
+    min-height: 154px;
+    border-radius: 12px;
+    background-color: var(--pag-25);
+    display: flex;
+    align-items: center;
+    padding: 0 1.3rem;
+}
+.drag-zone .zone-file{
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    border: 1px solid var(--pag-200);
+    background-color: var(--pag-25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

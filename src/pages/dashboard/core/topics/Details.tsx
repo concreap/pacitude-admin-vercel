@@ -11,6 +11,8 @@ import Button from "../../../../components/partials/buttons/Button";
 import AxiosService from "../../../../services/axios.service";
 import ResourceContext from "../../../../context/resource/resourceContext";
 import TopicForm from "./TopicForm";
+import DropDown from "../../../../components/layouts/DropDown";
+import Badge from "../../../../components/partials/badges/Badge";
 
 const TopicDetailsPage = ({ }) => {
 
@@ -25,17 +27,13 @@ const TopicDetailsPage = ({ }) => {
     const [updated, setUpdated] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(false)
     const [showPanel, setShowPanel] = useState<boolean>(false)
-    const [error, setError] = useState<string>('');
-    const [alert, setAlert] = useState<IAlert>({
-        type: 'success',
-        show: false,
-        message: ''
-    });
 
     useEffect(() => {
 
         initSidebar()
         getTopic()
+
+        geniusContext.getFields({ limit: 9999, page: 1, order: 'desc' })
 
     }, [])
 
@@ -61,6 +59,29 @@ const TopicDetailsPage = ({ }) => {
         if (id) {
             geniusContext.getTopic(id);
         }
+    }
+
+    const getFields = () => {
+
+        let result: Array<any> = [];
+
+        if (geniusContext.fields.data.length > 0) {
+
+            result = geniusContext.fields.data.map((f) => {
+                let c = {
+                    value: f._id,
+                    label: helper.capitalizeWord(f.name),
+                    left: '',
+                    image: ''
+                }
+                return c;
+            })
+
+        }
+
+
+        return result;
+
     }
 
     const toggleTopicState = async (e: any) => {
@@ -288,6 +309,59 @@ const TopicDetailsPage = ({ }) => {
 
                     <div className="ui-separate-mini">
                         <div className="ui-line bg-pag-50"></div>
+                    </div>
+
+                    <div className="details-block">
+                        <div className="row">
+
+                            <div className="col-3 pdr1">
+                                <span className="font-hostgro fs-14 pag-950">Add/Remove Feilds:</span>
+                                <div className="mrgt">
+                                    <DropDown
+                                        options={getFields}
+                                        selected={(data: any) => {
+                                            
+                                        }}
+                                        className={`font-manrope dropdown`}
+                                        placeholder={'Select'}
+                                        size="sm"
+                                        disabled={false}
+                                        search={{
+                                            enable: true,
+                                            bgColor: '#fff',
+                                            color: '#1E1335'
+                                        }}
+                                        menu={{
+                                            bgColor: '#fff',
+                                            itemColor: '#000',
+                                            itemLabel: true,
+                                            itemLeft: true,
+                                            position: 'bottom',
+                                            style: { width: '100%' }
+                                        }}
+                                        control={{
+                                            image: false,
+                                            label: true,
+                                            left: false
+                                        }}
+                                        defaultValue={0}
+                                    />
+                                </div>
+
+                            </div>
+
+                            <div className="col pdl1" style={{ borderLeft: '1px solid #e9ebf0' }}>
+
+                                <Badge 
+                                    type="info"
+                                    size="md"
+                                    label="Dubar"
+                                    close={true}
+                                />
+
+                            </div>
+
+                        </div>
                     </div>
 
                 </>

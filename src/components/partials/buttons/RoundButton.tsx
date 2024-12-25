@@ -9,6 +9,7 @@ const RoundButton = (props: IRoundButton) => {
         size = 'default',
         clickable = true,
         className = '',
+        style = {},
         onClick = (e: MouseEvent<HTMLAnchorElement>) => { }
     } = props;
 
@@ -32,14 +33,14 @@ const RoundButton = (props: IRoundButton) => {
         <>
             {
                 clickable &&
-                <Link onClick={(e) => onClick(e)} to="" className={computeClass()}>
+                <Link onClick={(e) => onClick(e)} to="" className={computeClass()} style={style}>
                     {icon}
                 </Link>
             }
 
             {
                 !clickable &&
-                <span className={computeClass()}>
+                <span className={computeClass()} style={style}>
                     {icon}
                 </span>
             }

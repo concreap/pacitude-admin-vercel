@@ -1,5 +1,5 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent } from "react";
-import { ButtonType, FlexReverseType, FontWeightType, IconFamilyType, IconName, LoadingType, NavItemType, PositionType, QueryOrderType, RouteActionType, RouteParamType, SemanticType, SizeType, StatusType, UserType } from "./types.util";
+import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PDFAcceptType, PositionType, QueryOrderType, RouteActionType, RouteParamType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 
@@ -755,17 +755,25 @@ export interface IRoundButton {
     className?: string,
     clickable?: boolean,
     size?: SizeType,
+    style?: CSSProperties,
     onClick?(e: MouseEvent<HTMLAnchorElement>): void
 }
 
 export interface IFileUpload {
-    data: any,
+    raw: any,
     base64: string,
     parsedSize: number,
     name: string,
     size: number,
     type: string,
     dur: number
+}
+
+export interface IFileog {
+    sizeLimit?: number,
+    accept: Array<CSVAcceptType> | Array<ImageAcceptType> | Array<PDFAcceptType> | Array<VideoAcceptType> | Array<AudioAcceptType>,
+    type: FileAcceptType,
+    onSelect(file: IFileUpload): void
 }
 
 export interface IListQuery {
@@ -878,11 +886,13 @@ export interface ICellData {
     onClick?(e: MouseEvent<any>): void
 }
 export interface IBadge {
+    type: SemanticType,
+    label: string
     className?: string,
     style?: CSSProperties,
     size?: SizeType,
-    type: SemanticType,
-    label: string
+    close?: boolean,
+    onClose?(e: any): void
 }
 
 

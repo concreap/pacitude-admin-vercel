@@ -75,7 +75,8 @@ const Icon = (props: IICon) => {
                         className={computeIconClass().link}
                         style={{
                             ...style,
-                            display: 'inline-block',
+                            display: 'inline-flex',
+                            alignItems: 'center',
                             height: height
                         }}
                         onClick={(e) => onClick ? fireOnClick(e) : {}}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from "react"
 import GeniusContext from "../../../../context/genius/geniusContext";
-import { IAlert, IGeniusContext, IResourceContext } from "../../../../utils/interfaces.util";
+import { IAlert, IFileUpload, IGeniusContext, IResourceContext } from "../../../../utils/interfaces.util";
 import helper from "../../../../utils/helper.util";
 import Topic from "../../../../models/Topic.model";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
@@ -15,6 +15,11 @@ import Alert from "../../../../components/partials/alerts/Alert";
 import { TabList, TabPanel, Tabs, Tab } from 'react-tabs'
 import storage from "../../../../utils/storage.util";
 import DropDown from "../../../../components/layouts/DropDown";
+import Icon from "../../../../components/partials/icons/Icon";
+import { Link } from "react-router-dom";
+import Fileog from "../../../../components/partials/dialogs/Fileog";
+import RoundButton from "../../../../components/partials/buttons/RoundButton";
+import { FileLinks } from "../../../../utils/enums.util";
 
 interface ITopicForm {
     show: boolean,
@@ -28,13 +33,16 @@ interface ITopicForm {
 const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }: ITopicForm) => {
 
     const panelRef = useRef<any>();
+    const bulkRef = useRef<any>();
 
     const geniusContext = useContext<IGeniusContext>(GeniusContext)
     const resourceContext = useContext<IResourceContext>(ResourceContext)
 
     const [topic, setTopic] = useState({ name: '', label: '', description: '', isEnabled: true, fieldId: '' })
+    const [step, setStep] = useState<number>(0)
     const [updated, setUpdated] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(false)
+    const [file, setFile] = useState<IFileUpload | null>(null)
     const [error, setError] = useState<string>('');
     const [alert, setAlert] = useState<IAlert>({
         type: 'success',
@@ -91,6 +99,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
 
     const clearTopic = () => {
         setTopic({} as any)
+        setFile(null)
     }
 
     const configTab = (e: any, val: any) => {
@@ -246,6 +255,61 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
 
     }
 
+    const uploadTopics = async (e: any) => {
+
+        if (e) { e.preventDefault(); }
+
+        const formData = new FormData();
+        formData.append('file', file!.raw);
+
+        setLoading(true);
+
+        const response = await AxiosService.call({
+            type: 'genius',
+            method: 'POST',
+            path: `/topics/bulk`,
+            isAuth: true,
+            payload: formData
+        });
+
+        if (response.error === false && response.status === 200) {
+
+            setLoading(false);
+
+            if (display === 'table' || display === 'list') {
+                geniusContext.getTopics({ limit: 35, page: 1, order: 'desc' })
+            } else if (display === 'single' || display === 'details') {
+                getTopic(geniusContext.topic._id);
+            }
+
+            setTimeout(() => {
+                setUpdated({})
+                clearTopic()
+            }, 1000)
+        }
+
+        if (response.error === true) {
+
+            setLoading(false)
+
+            if (response.errors.length > 0) {
+                setAlert({ ...alert, type: 'error', show: true, message: response.errors.join(',') });
+            } else {
+                setAlert({ ...alert, type: 'error', show: true, message: response.message });
+            }
+
+            setTimeout(() => {
+                setAlert({ ...alert, show: false });
+                setUpdated({})
+            }, 2000)
+
+        }
+
+
+
+
+    }
+
     return (
         <>
 
@@ -364,6 +428,8 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
 
                                     <TabPanel tabIndex={0}>
 
+                                        <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
+
                                         <form className="form" onSubmit={(e) => e.preventDefault()}>
 
                                             <div className="form-field">
@@ -481,9 +547,118 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
 
                                     <TabPanel tabIndex={1}>
 
-                                        <div className="drag-zone">
-                                            
+                                        <div className="mrgb2 mrgt1">
+                                            <p className="pag-700 mrgb0 font-hostgro fs-14">You can add multiple Topics at once. This means adding them in bulk by uploading a CSV file using the instructions below</p>
                                         </div>
+
+                                        <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
+
+                                        <div className="drag-zone">
+
+                                            <Fileog
+                                                ref={bulkRef}
+                                                type="image"
+                                                accept={['.csv', '.xls']}
+                                                sizeLimit={8}
+                                                onSelect={(file) => {
+                                                    setFile(file);
+                                                }}
+                                            />
+
+                                            <div className={`zone ${loading || step === 1 ? 'flex-justify-center' : ''}`}>
+
+                                                {
+                                                    loading &&
+                                                    <>
+                                                        <span className="loader md primary"></span>
+                                                        <span className="pag-600 pdl1 fs-13">Uploading file</span>
+                                                    </>
+                                                }
+
+                                                {
+                                                    !loading &&
+                                                    <>
+
+                                                        {
+                                                            step === 0 &&
+                                                            <>
+
+                                                                <RoundButton
+                                                                    size="rg"
+                                                                    icon={<Icon type="feather" name="edit-2" style={{ color: '#fff' }} clickable={false} size={14} />}
+                                                                    className="bg-pab-500 ui-absolute"
+                                                                    clickable={true}
+                                                                    style={{ top: '1rem', right: '1rem' }}
+                                                                    onClick={(e) => { bulkRef.current.open(e) }}
+                                                                />
+
+                                                                <div className="zone-file">
+                                                                    <Icon
+                                                                        type="polio"
+                                                                        name="doc-search"
+                                                                        clickable={false}
+                                                                        position="relative"
+                                                                        size={20}
+                                                                    />
+                                                                </div>
+
+                                                                <div className="zone-content pdl1 ui-line-height-mini">
+                                                                    {!file && <h4 className="font-hostgro-medium fs-14">No file chosen</h4>}
+                                                                    {file && <h4 className="font-hostgro-medium fs-14">{file.name}</h4>}
+                                                                    <div className="ui-line-height-small">
+                                                                        <p className="pag-400 fs-13 mrgb0">Select a ".csv" file to upload bulk topics</p>
+                                                                        <a href={FileLinks.TOPIC_CSV} target="_blank" className="pab-600 fs-13 mrgb0">Download a sample csv file</a>
+                                                                    </div>
+                                                                </div>
+
+                                                            </>
+                                                        }
+
+                                                        {
+                                                            step === 1 &&
+                                                            <>
+                                                                <RoundButton
+                                                                    size="lg"
+                                                                    icon={<Icon type="feather" name="check" style={{ color: '#fff' }} clickable={false} size={18} />}
+                                                                    className="bg-color-green"
+                                                                    clickable={false}
+                                                                    onClick={(e) => { }}
+                                                                />
+                                                            </>
+                                                        }
+                                                    </>
+                                                }
+
+                                            </div>
+
+                                            <div className="ui-text-center ui-line-height-small">
+                                                <span className="pag-400 fs-11">File size: </span>
+                                                <span className="pag-400 fs-11">{file ? file.parsedSize + 'MB' : '0MB'}</span>
+                                            </div>
+
+                                        </div>
+
+                                        <div className="mrgt1 ui-flexbox align-center">
+
+                                            <Button
+                                                text={'Upload Topics'}
+                                                type="primary"
+                                                reverse="row"
+                                                size="sm"
+                                                loading={false}
+                                                disabled={(loading || !file) ? true : false}
+                                                fontSize={13}
+                                                lineHeight={16}
+                                                className="ui-ml-auto"
+                                                icon={{ enable: false }}
+                                                style={{ minWidth: '122px' }}
+                                                onClick={(e) => uploadTopics(e)}
+
+                                            />
+
+                                        </div>
+
+
 
                                     </TabPanel>
 

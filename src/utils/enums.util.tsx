@@ -20,3 +20,7 @@ export enum PasswordType{
     GENERATED = 'generated',
     SELF_CHANGED = 'self-changed'
 }
+
+export enum FileLinks {
+    TOPIC_CSV = 'https://docs.google.com/spreadsheets/d/1kJxsETglcWDsRSlHyO7MQEcJHBn9tHiUWnNKW4p1myQ/edit?usp=sharing'
+}

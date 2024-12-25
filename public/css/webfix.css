@@ -411,10 +411,10 @@ a {
 .ui-flexbox {
 	display: flex !important;
 }
-.ui-flexbox.align-center{
+.ui-flexbox.align-center, .flex-align-center{
     align-content: center !important;
 }
-.ui-flexbox.justify-center{
+.ui-flexbox.justify-center, .flex-justify-center{
     justify-content: center !important;
 }
 
@@ -3957,8 +3957,6 @@ span.separate-small {
 .ui-font-normal {
 	font-style: normal !important;
 }
-
-
 
 .ui-btn-ghost {
 	background-color: transparent !important;
