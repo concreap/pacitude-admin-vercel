@@ -220,7 +220,7 @@ const ComponentRender = ({ }) => {
                             value: 'Select Date',
                             enable: true
                         }}
-                        position="bottom"
+                        position="top"
                         label={{
                             required: true,
                             fontSize: 14,

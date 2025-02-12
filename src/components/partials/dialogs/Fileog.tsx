@@ -67,11 +67,9 @@ const Fileog = forwardRef((props: IFileog, ref) => {
 
     const getFileSource = (data: any) => {
 
-        let result: IFileUpload | null = null;
+        if (type !== 'image') {
 
-        if (type !== 'image' && type !== 'pdf') {
-
-            result = {
+            setFile({
                 raw: data,
                 name: data.name,
                 size: data.size,
@@ -79,45 +77,56 @@ const Fileog = forwardRef((props: IFileog, ref) => {
                 base64: '',
                 parsedSize: getSize(data.size).MB,
                 dur: 0
-            }
+            });
+
+            onSelect({
+                raw: data,
+                name: data.name,
+                size: data.size,
+                type: data.type,
+                base64: '',
+                parsedSize: getSize(data.size).MB,
+                dur: 0
+            })
 
         } else {
 
             let reader = new FileReader();
 
-            result = {
-                ...file,
-                raw: data,
-                name: data.name,
-                size: data.size,
-                type: data.type,
-                base64: '',
-                parsedSize: getSize(data.size).MB,
-                dur: 0
-            }
-
+            // as base64
             reader.onloadend = (e: any) => {
-                if(result){
-                    result.base64 = e.target.result;
-                }
+
+                setFile({
+                    raw: data,
+                    name: data.name,
+                    size: data.size,
+                    type: data.type,
+                    base64: e.target.result,
+                    parsedSize: getSize(data.size).MB,
+                    dur: 0
+                });
+                
+                onSelect({
+                    raw: data,
+                    name: data.name,
+                    size: data.size,
+                    type: data.type,
+                    base64: e.target.result,
+                    parsedSize: getSize(data.size).MB,
+                    dur: 0
+                })
+
             };
             reader.readAsDataURL(data);
 
         }
-
-        setFile(result);
-
-        if (result) {
-            onSelect(result)
-        }
-
 
     }
 
     // expose child component functions to parent component
     useImperativeHandle(ref, () => ({
         open: openDialog,
-        browse: browseFile
+        browse: browseFile,
     }))
 
     return (

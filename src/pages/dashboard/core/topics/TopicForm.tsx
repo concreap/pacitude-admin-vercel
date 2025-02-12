@@ -557,7 +557,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
 
                                             <Fileog
                                                 ref={bulkRef}
-                                                type="image"
+                                                type="csv"
                                                 accept={['.csv', '.xls']}
                                                 sizeLimit={8}
                                                 onSelect={(file) => {
