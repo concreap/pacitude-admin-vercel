@@ -1,10 +1,15 @@
 import $ from 'jquery';
 import moment from 'moment'
-import { IDateToday, IHelper } from './interfaces.util';
+import { IDateToday, IHelper, IPagination, IRoundButton, IRoute, IRouteParam, ISidebarAttrs } from './interfaces.util';
 import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
 
-const init = () => {
+const init = (type: string) => {
+
+    if (type === 'drop-select') {
+        fitMenus()
+        hideMenu()
+    }
 
 }
 
@@ -18,6 +23,10 @@ const scrollTo = (id: string) => {
 
 }
 
+const scrollToTop = () => {
+    window.scrollTo(0, 0)
+}
+
 const addClass = (id: string, cn: string) => {
 
     const elem = document.querySelector(id);
@@ -26,11 +35,11 @@ const addClass = (id: string, cn: string) => {
         elem.classList.add(cn);
     }
 
-    
+
 }
 
 const removeClass = (id: string, cn: string) => {
-    
+
     const elem = document.querySelector(id);
 
     if (elem) {
@@ -52,7 +61,85 @@ const splitQueries = (query: any, key: string) => {
     }
 
     return value;
-    
+
+}
+
+const fitMenus = () => {
+
+    var boxMenus = document.querySelectorAll('#select-box');
+
+    for (let i = 0; i < boxMenus.length; i++) {
+
+        var selectBoxMenu = $(boxMenus[i]).children('.menu')[0];
+        var selectBoxSearch = $(selectBoxMenu).children('.menu-search')[0];
+        var selectBoxSearchInput = $(selectBoxSearch).children('.menu-search__input')[0];
+        var selectControl = $(boxMenus[i]).children('.control')[0];
+        var selectIndicator = $(selectControl).children('.indicator-box')[0];
+        var selectBoxSingle = $(selectControl).children('.single')[0];
+        var indicator = $(selectIndicator).children('.indicator')[0];
+        var arrow = $(indicator).children('.arrow')[0];
+        var path = $(arrow).children('path')[0];
+
+        $(selectControl).attr('id', `select-box-control-${i}`);
+        $(selectBoxMenu).attr('id', `select-box-menu-${i}`);
+        $(selectBoxSearch).attr('id', `select-box-search-${i}`)
+        $(selectBoxSearchInput).attr('id', `select-box-input-${i}`)
+        $(selectBoxSingle).attr('id', `select-box-single-${i}`);
+        $(indicator).attr('id', `select-box-indicator-${i}`);
+        $(arrow).attr('id', `select-box-arrow-${i}`);
+        $(path).attr('id', `select-box-path-${i}`);
+
+    }
+
+}
+
+const hideMenu = () => {
+
+    var boxMenus = document.querySelectorAll('#select-box');
+
+    window.onclick = function (e) {
+
+        // console.log(e.target);
+
+        for (let j = 0; j < boxMenus.length; j++) {
+
+            var selectBoxMenu = document.getElementById(`select-box-menu-${j}`);
+            var selectBoxSearch = document.getElementById(`select-box-search-${j}`);
+            var selectBoxInput = document.getElementById(`select-box-input-${j}`);
+            var selectBoxSingle = document.getElementById(`select-box-single-${j}`);
+            var indicator = document.getElementById(`select-box-indicator-${j}`);
+            var arrow = document.getElementById(`select-box-arrow-${j}`);
+            var path = document.getElementById(`select-box-path-${j}`);
+            var control = document.getElementById(`select-box-control-${j}`);
+
+            if (control) {
+
+                var singleLabel = $($(control).children()[0]).children('.single__label')[0];
+                var singlePlace = $($($(control).children()[0]).children('.single__placeholder')[0]).children('span');
+                var singleImage = $($($(control).children()[0]).children('.single__image')[0]).children('img')[0];
+
+                if (e.target !== selectBoxMenu && e.target !== selectBoxSingle &&
+                    e.target !== indicator && e.target !== arrow && e.target !== path && e.target !== singleImage
+                    && e.target !== selectBoxSearch && e.target !== selectBoxInput
+                    && e.target !== control && e.target !== singleLabel) {
+
+                    if (selectBoxMenu && $(selectBoxMenu).hasClass('is-open')) {
+                        $(selectBoxMenu).removeClass('is-open');
+                    }
+
+                } else {
+
+                    if (selectBoxMenu && $(selectBoxMenu).hasClass('is-open')) {
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
 }
 
 const navOnScroll = (data: { id: string, cn: string, limit?: number }) => {
@@ -65,7 +152,7 @@ const navOnScroll = (data: { id: string, cn: string, limit?: number }) => {
         const elem = $(id);
         let sl: number = limit && limit > 0 ? limit : 96;
 
-        if(elem){
+        if (elem) {
 
             if (window.scrollY > sl) {
                 elem.addClass(cn);
@@ -77,7 +164,7 @@ const navOnScroll = (data: { id: string, cn: string, limit?: number }) => {
 
 
     })
-    
+
 }
 
 const decodeBase64 = (data: string) => {
@@ -105,16 +192,16 @@ const isEmpty = (data: any, type: 'object' | 'array') => {
 
     let result: boolean = false;
 
-    if(type === 'object'){
+    if (type === 'object') {
         result = Object.getOwnPropertyNames(data).length === 0 ? true : false;
     }
 
-    if(type === 'array'){
+    if (type === 'array') {
         result = data.length <= 0 ? true : false;
     }
 
     return result;
-    
+
 }
 
 const capitalize = (val: string) => {
@@ -136,32 +223,32 @@ const sort = (data: Array<any>) => {
 const days = () => {
 
     return [
-        { id: 0, name: 'sunday' },
-        { id: 1, name: 'monday' },
-        { id: 2, name: 'tuesday' },
-        { id: 3, name: 'wednesday' },
-        { id: 4, name: 'thursday' },
-        { id: 5, name: 'friday' },
-        { id: 6, name: 'saturday' },
+        { id: 0, name: 'sunday', label: 'sun' },
+        { id: 1, name: 'monday', label: 'mon' },
+        { id: 2, name: 'tuesday', label: 'tue' },
+        { id: 3, name: 'wednesday', label: 'wed' },
+        { id: 4, name: 'thursday', label: 'thur' },
+        { id: 5, name: 'friday', label: 'fri' },
+        { id: 6, name: 'saturday', label: 'sat' },
     ]
-    
+
 }
 
 const months = () => {
 
     return [
-        { id: 0, name: 'january' },
-        { id: 1, name: 'february' },
-        { id: 2, name: 'march' },
-        { id: 3, name: 'april' },
-        { id: 4, name: 'may' },
-        { id: 5, name: 'june' },
-        { id: 6, name: 'july' },
-        { id: 7, name: 'august' },
-        { id: 8, name: 'september' },
-        { id: 9, name: 'october' },
-        { id: 10, name: 'november' },
-        { id: 11, name: 'december' },
+        { id: 0, name: 'january', label: 'jan' },
+        { id: 1, name: 'february', label: 'feb' },
+        { id: 2, name: 'march', label: 'mar' },
+        { id: 3, name: 'april', label: 'apr' },
+        { id: 4, name: 'may', label: 'may' },
+        { id: 5, name: 'june', label: 'jun' },
+        { id: 6, name: 'july', label: 'jul' },
+        { id: 7, name: 'august', label: 'aug' },
+        { id: 8, name: 'september', label: 'sept' },
+        { id: 9, name: 'october', label: 'oct' },
+        { id: 10, name: 'november', label: 'nov' },
+        { id: 11, name: 'december', label: 'dec' },
     ]
 
 }
@@ -181,16 +268,16 @@ const formatDate = (date: any, type: 'basic' | 'datetime') => {
 
     let result: string = '';
 
-    if(type === 'basic'){
+    if (type === 'basic') {
         result = moment(date).format('Do MMM, YYYY')
     }
 
-    if(type === 'datetime'){
+    if (type === 'datetime') {
         result = moment(date).format('Do MMM, YYYY HH:mm:ss A')
     }
-    
+
     return result;
-    
+
 }
 
 const equalLength = (id: string, childId: string, len?: number) => {
@@ -202,7 +289,7 @@ const equalLength = (id: string, childId: string, len?: number) => {
 
     for (let i = 0; i < items.length; i++) {
         heigthList.push(Math.floor($(items[i]).height()!))
-    }                                                                      
+    }
     const height = Math.max(...heigthList); // get the highest length;
 
     for (let i = 0; i < items.length; i++) {
@@ -212,7 +299,7 @@ const equalLength = (id: string, childId: string, len?: number) => {
         }
 
     }
-    
+
 }
 
 const setWidth = (id: string, val: number) => {
@@ -232,7 +319,7 @@ const setHeight = (id: string, val: number) => {
     if (elem) {
         $(elem).height(val);
     }
-    
+
 }
 
 const isNAN = (val: any) => {
@@ -487,13 +574,29 @@ const attachPhoneCode = (code: string, phone: string, include: boolean): string 
 
 const capitalizeWord = (value: string): string => {
 
-    const split = value.toLowerCase().split(" ");
+    let result: string = '';
 
-    for (var i = 0; i < split.length; i++) {
-        split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+    if (value.includes('-')) {
+
+        const split = value.toLowerCase().split("-");
+
+        for (var i = 0; i < split.length; i++) {
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+
+        result = split.join('-')
+
+    } else {
+        const split = value.toLowerCase().split(" ");
+
+        for (var i = 0; i < split.length; i++) {
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+
+        result = split.join(' ')
     }
 
-    return split.join(' ');
+    return result;
 
 }
 
@@ -619,11 +722,11 @@ export const formatCurrency = (currency: string): string => {
 
     let result: string = '';
 
-    if(currency){
+    if (currency) {
 
         if (currency.toUpperCase() === CurrencyType.NGN) {
             result = `₦`
-        } else if(currency.toUpperCase() === CurrencyType.USD){
+        } else if (currency.toUpperCase() === CurrencyType.USD) {
             result = `$`
         }
 
@@ -633,24 +736,75 @@ export const formatCurrency = (currency: string): string => {
 
 }
 
+const currentDate = () => {
+    return new Date()
+}
+
+const getCurrentPage = (data: IPagination) => {
+
+    let result = 1;
+
+    if (data.next && data.next.page && data.prev && data.prev.page) {
+        const page = data.next.page - 1;
+        result = page === 0 ? 1 : page;
+    } else {
+        if (data.next && data.next.page) {
+            const page = data.next.page - 1;
+            result = page === 0 ? 1 : page;
+        } else if (data.prev && data.prev.page) {
+            const page = data.prev.page - 1;
+            result = page === 0 ? 1 : page;
+        }
+    }
+
+    return result;
+
+}
+
+const getInitials = (value: string): string => {
+
+    let result = '';
+
+    if(value.includes('-')){
+
+        const split = value.split('-');
+        result = split[0].substring(0, 1)
+
+        if(split[1]){
+            result = result + split[1].substring(0, 1)
+        }
+
+    }else {
+        const split = value.split(' ')
+        result = split[0].substring(0, 1)
+
+        if(split[1]){
+            result = result + split[1].substring(0, 1)
+        }
+    }
+
+    return result;
+
+}
 
 const helper: IHelper = {
     init: init,
     scrollTo: scrollTo,
+    scrollToTop: scrollToTop,
     addClass: addClass,
-    removeClass:removeClass,
+    removeClass: removeClass,
     splitQueries: splitQueries,
     navOnScroll: navOnScroll,
     decodeBase64: decodeBase64,
-    isEmpty:isEmpty,
+    isEmpty: isEmpty,
     capitalize: capitalize,
     sort: sort,
     days: days,
-    months:months,
+    months: months,
     random: random,
     formatDate: formatDate,
     equalLength: equalLength,
-    setWidth:setWidth,
+    setWidth: setWidth,
     setHeight: setHeight,
     isNAN: isNAN,
     reposition: reposition,
@@ -673,7 +827,9 @@ const helper: IHelper = {
     parseInputNumber: parseInputNumber,
     toDecimal: toDecimal,
     formatCurrency: formatCurrency,
-
+    currentDate: currentDate,
+    getCurrentPage: getCurrentPage,
+    getInitials: getInitials
 }
 
 export default helper;

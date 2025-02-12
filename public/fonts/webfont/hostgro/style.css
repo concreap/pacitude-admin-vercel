@@ -1,0 +1,104 @@
+@font-face {
+    font-family: 'HostGrotesk-Bold';
+    src: url('HostGrotesk-Bold.woff2') format('woff2'),
+        url('HostGrotesk-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HostGrotesk-Medium';
+    src: url('HostGrotesk-Medium.woff2') format('woff2'),
+        url('HostGrotesk-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HostGrotesk-ExtraBold';
+    src: url('HostGrotesk-ExtraBold.woff2') format('woff2'),
+        url('HostGrotesk-ExtraBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HostGrotesk-Light';
+    src: url('HostGrotesk-Light.woff2') format('woff2'),
+        url('HostGrotesk-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HostGrotesk-Italic';
+    src: url('HostGrotesk-Italic.woff2') format('woff2'),
+        url('HostGrotesk-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HostGrotesk-Bold-Italic';
+    src: url('HostGrotesk-BoldItalic.woff2') format('woff2'),
+        url('HostGrotesk-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HostGrotesk-Semibold';
+    src: url('HostGrotesk-SemiBold.woff2') format('woff2'),
+        url('HostGrotesk-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'HostGrotesk-Regular';
+    src: url('HostGrotesk-Regular.woff2') format('woff2'),
+        url('HostGrotesk-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.font-hostgro-bold, .font-hostgro-bold a, .font-hostgro-bold span{
+    font-family: 'HostGrotesk-Bold';
+}
+
+.font-hostgro-medium, .font-hostgro-medium a, .font-hostgro-medium span{
+    font-family: 'HostGrotesk-Medium';
+}
+
+.font-hostgro-xbold, .font-hostgro-xbold a, .font-hostgro-xbold span{
+    font-family: 'HostGrotesk-ExtraBold';
+}
+
+.font-hostgro-light, .font-hostgro-light a, .font-hostgro-light span{
+    font-family: 'HostGrotesk-Light';
+}
+
+.font-ihostgro, .font-ihostgro a, .font-ihostgro span{
+    font-family: 'HostGrotesk-Italic';
+}
+
+.font-hostgro-ibold, .font-hostgro-ibold a, .font-hostgro-ibold span{
+    font-family: 'HostGrotesk-Bold-Italic';
+}
+
+.font-hostgro-semibold, .font-hostgro-semibold a, .font-hostgro-semibold span{
+    font-family: 'HostGrotesk-Semibold';
+}
+
+.font-hostgro, .font-hostgro a, .font-hostgro span{
+    font-family: 'HostGrotesk-Regular';
+}
+
