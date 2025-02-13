@@ -9,35 +9,36 @@ import TableHead from "../../../../components/app/table/TableHead";
 import CellData from "../../../../components/app/table/CellData";
 import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
+import { ICollection, ICoreContext, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
 import Popout from "../../../../components/partials/drops/Popout";
 import Field from "../../../../models/Field.model";
 import UserContext from "../../../../context/user/userContext";
+import CoreContext from "../../../../context/core/coreContext";
 
 const FieldsPage = ({ }) => {
 
     const LIMIT = 25;
 
     const userContext = useContext<IUserContext>(UserContext)
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
 
-    const [fields, setFields] = useState<ICollection>(geniusContext.fields)
+    const [fields, setFields] = useState<ICollection>(coreContext.fields)
 
     useEffect(() => {
 
         initSidebar()
 
-        if (helper.isEmpty(geniusContext.fields.data, 'array')) {
-            geniusContext.getFields({ limit: LIMIT, page: 1, order: 'desc' })
+        if (helper.isEmpty(coreContext.fields.data, 'array')) {
+            coreContext.getFields({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
 
     useEffect(() => {
 
-        setFields(geniusContext.fields)
+        setFields(coreContext.fields)
 
-    }, [geniusContext.fields])
+    }, [coreContext.fields])
 
     const initSidebar = () => {
 
@@ -52,14 +53,14 @@ const FieldsPage = ({ }) => {
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
         const { next } = fields.pagination;
-        await geniusContext.getFields({ limit: next.limit, page: next.page, order: 'desc' })
+        await coreContext.getFields({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
         const { prev } = fields.pagination;
-        await geniusContext.getFields({ limit: prev.limit, page: prev.page, order: 'desc' })
+        await coreContext.getFields({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
 

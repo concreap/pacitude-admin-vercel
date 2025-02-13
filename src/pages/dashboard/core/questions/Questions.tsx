@@ -9,35 +9,36 @@ import TableHead from "../../../../components/app/table/TableHead";
 import CellData from "../../../../components/app/table/CellData";
 import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
+import { ICollection, ICoreContext, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
 import Popout from "../../../../components/partials/drops/Popout";
 import Question from "../../../../models/Question.model";
 import UserContext from "../../../../context/user/userContext";
+import CoreContext from "../../../../context/core/coreContext";
 
 const QuestionsPage = ({ }) => {
     
     const LIMIT = 25;
 
     const userContext = useContext<IUserContext>(UserContext)
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
 
-    const [questions, setQuestions] = useState<ICollection>(geniusContext.questions)
+    const [questions, setQuestions] = useState<ICollection>(coreContext.questions)
 
     useEffect(() => {
 
         initSidebar()
         
-        if (helper.isEmpty(geniusContext.questions.data, 'array')) {
-            geniusContext.getQuestions({ limit: LIMIT, page: 1, order: 'desc' })
+        if (helper.isEmpty(coreContext.questions.data, 'array')) {
+            coreContext.getQuestions({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
 
     useEffect(() => {
 
-        setQuestions(geniusContext.questions)
+        setQuestions(coreContext.questions)
 
-    }, [geniusContext.questions])
+    }, [coreContext.questions])
 
     const initSidebar = () => {
 
@@ -52,14 +53,14 @@ const QuestionsPage = ({ }) => {
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
         const { next } = questions.pagination;
-        await geniusContext.getQuestions({ limit: next.limit, page: next.page, order: 'desc' })
+        await coreContext.getQuestions({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
         const { prev } = questions.pagination;
-        await geniusContext.getQuestions({ limit: prev.limit, page: prev.page, order: 'desc' })
+        await coreContext.getQuestions({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
 

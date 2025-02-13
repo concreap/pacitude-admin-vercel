@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext, useRef } from "react"
 import GeniusContext from "../../../../context/genius/geniusContext";
-import { IAlert, IFileUpload, IGeniusContext, IResourceContext } from "../../../../utils/interfaces.util";
+import { IAlert, ICoreContext, IFileUpload, IGeniusContext, IResourceContext } from "../../../../utils/interfaces.util";
 import helper from "../../../../utils/helper.util";
 import Topic from "../../../../models/Topic.model";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
@@ -20,6 +20,7 @@ import { Link } from "react-router-dom";
 import Fileog from "../../../../components/partials/dialogs/Fileog";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
 import { FileLinks } from "../../../../utils/enums.util";
+import CoreContext from "../../../../context/core/coreContext";
 
 interface ITopicForm {
     show: boolean,
@@ -35,7 +36,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
     const panelRef = useRef<any>();
     const bulkRef = useRef<any>();
 
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
     const resourceContext = useContext<IResourceContext>(ResourceContext)
 
     const [topic, setTopic] = useState({ name: '', label: '', description: '', isEnabled: true, fieldId: '' })
@@ -63,7 +64,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
             }
 
             if (type === 'add-resource') {
-                geniusContext.getFields({ limit: 9999, page: 1, order: 'desc' })
+                coreContext.getFields({ limit: 9999, page: 1, order: 'desc' })
             }
 
         }
@@ -71,16 +72,16 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
     }, [show])
 
     useEffect(() => {
-        setTopic(geniusContext.topic)
-    }, [geniusContext.topic])
+        setTopic(coreContext.topic)
+    }, [coreContext.topic])
 
     const getFields = () => {
 
         let result: Array<any> = [];
 
-        if (geniusContext.fields.data.length > 0) {
+        if (coreContext.fields.data.length > 0) {
 
-            result = geniusContext.fields.data.map((f) => {
+            result = coreContext.fields.data.map((f) => {
                 let c = {
                     value: f._id,
                     label: helper.capitalizeWord(f.name),
@@ -108,7 +109,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
     }
 
     const getTopic = (id: string) => {
-        geniusContext.getTopic(id);
+        coreContext.getTopic(id);
     }
 
     const updateTopic = async (e: any) => {
@@ -116,7 +117,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
         if (e) { e.preventDefault(); }
 
         // close panel
-        if (helper.isEmpty(updated, 'object') || helper.isEmpty(geniusContext.topic, 'object')) {
+        if (helper.isEmpty(updated, 'object') || helper.isEmpty(coreContext.topic, 'object')) {
             if (panelRef.current) {
                 panelRef.current.close(e)
             }
@@ -126,9 +127,9 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'core',
             method: 'PUT',
-            path: `/topics/${geniusContext.topic._id}`,
+            path: `/topics/${coreContext.topic._id}`,
             isAuth: true,
             payload: updated
         });
@@ -142,9 +143,9 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
             }
 
             if (display === 'table' || display === 'list') {
-                geniusContext.getTopics({ limit: 35, page: 1, order: 'desc' })
+                coreContext.getTopics({ limit: 35, page: 1, order: 'desc' })
             } else if (display === 'single' || display === 'details') {
-                getTopic(geniusContext.topic._id);
+                getTopic(coreContext.topic._id);
             }
 
             setTimeout(() => {
@@ -194,7 +195,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'core',
             method: 'POST',
             path: `/topics`,
             isAuth: true,
@@ -210,9 +211,9 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
             }
 
             if (display === 'table' || display === 'list') {
-                geniusContext.getTopics({ limit: 35, page: 1, order: 'desc' })
+                coreContext.getTopics({ limit: 35, page: 1, order: 'desc' })
             } else if (display === 'single' || display === 'details') {
-                getTopic(geniusContext.topic._id);
+                getTopic(coreContext.topic._id);
             }
 
             setTimeout(() => {
@@ -265,7 +266,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'core',
             method: 'POST',
             path: `/topics/bulk`,
             isAuth: true,
@@ -277,9 +278,9 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
             setLoading(false);
 
             if (display === 'table' || display === 'list') {
-                geniusContext.getTopics({ limit: 35, page: 1, order: 'desc' })
+                coreContext.getTopics({ limit: 35, page: 1, order: 'desc' })
             } else if (display === 'single' || display === 'details') {
-                getTopic(geniusContext.topic._id);
+                getTopic(coreContext.topic._id);
             }
 
             setTimeout(() => {
@@ -322,7 +323,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
             >
 
                 {
-                    geniusContext.loading &&
+                    coreContext.loading &&
                     <>
                         <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                             <span className="loader lg primary"></span>
@@ -331,7 +332,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                 }
 
                 {
-                    !geniusContext.loading &&
+                    !coreContext.loading &&
                     <>
 
                         {
@@ -346,7 +347,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                                             type="email"
                                             showFocus={true}
                                             size="sm"
-                                            defaultValue={geniusContext.topic.name}
+                                            defaultValue={coreContext.topic.name}
                                             autoComplete={false}
                                             placeholder="Ex. Sample Topic"
                                             isError={error === 'name' ? true : false}
@@ -364,7 +365,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                                             type="email"
                                             showFocus={true}
                                             size="sm"
-                                            defaultValue={geniusContext.topic.label}
+                                            defaultValue={coreContext.topic.label}
                                             autoComplete={false}
                                             placeholder="Ex. Sample Label"
                                             isError={error === 'name' ? true : false}
@@ -381,7 +382,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                                         <TextAreaInput
                                             showFocus={true}
                                             autoComplete={false}
-                                            defaultValue={geniusContext.topic.description}
+                                            defaultValue={coreContext.topic.description}
                                             placeholder="Type here"
                                             label={{
                                                 required: false,
@@ -435,7 +436,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                                             <div className="form-field">
                                                 <div className="row">
 
-                                                    <div className={`col-6 ${geniusContext.fields.loading ? 'disabled-light' : ''}`}>
+                                                    <div className={`col-6 ${coreContext.fields.loading ? 'disabled-light' : ''}`}>
                                                         <label className={`mrgb0`}>
                                                             <span className={`fs-13 font-manrope-medium color-black`}>Select Field</span>
                                                             <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span>

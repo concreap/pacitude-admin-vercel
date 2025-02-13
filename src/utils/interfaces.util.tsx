@@ -966,6 +966,35 @@ export interface IGeniusContext {
     unsetLoading(data: IUnsetLoading): Promise<void>,
 }
 
+export interface ICoreContext {
+    industries: ICollection,
+    industry: Industry,
+    careers: ICollection,
+    career: Industry,
+    fields: ICollection,
+    field: Industry,
+    skills: ICollection,
+    skill: any,
+    questions: ICollection,
+    question: any,
+    topics: ICollection,
+    topic: any,
+    message: string,
+    loading: boolean,
+    total: number,
+    count: number,
+    pagination: any,
+    getIndustries(data: IListQuery): Promise<void>,
+    getCareers(data: IListQuery): Promise<void>,
+    getFields(data: IListQuery): Promise<void>,
+    getSkills(data: IListQuery): Promise<void>,
+    getQuestions(data: IListQuery): Promise<void>,
+    getTopics(data: IListQuery): Promise<void>,
+    getTopic(id: string): Promise<void>,
+    setLoading(data: ISetLoading): Promise<void>,
+    unsetLoading(data: IUnsetLoading): Promise<void>,
+}
+
 export interface IResourceContext {
     countries: Array<any>,
     country: any,
