@@ -34,6 +34,7 @@ const Careers = React.lazy(() => import('./pages/dashboard/core/careers/Careers'
 const Fields = React.lazy(() => import('./pages/dashboard/core/fields/Fields'));
 const Skills = React.lazy(() => import('./pages/dashboard/core/skills/Skills'));
 const Questions = React.lazy(() => import('./pages/dashboard/core/questions/Questions'));
+const AIQuestions = React.lazy(() => import('./pages/dashboard/core/questions/AIQuestions'));
 const Topics = React.lazy(() => import('./pages/dashboard/core/topics/Topics'));
 const TopicDetails = React.lazy(() => import('./pages/dashboard/core/topics/Details'));
 const Subscriptions = React.lazy(() => import('./pages/dashboard/payments/subscriptions/Subscriptions'));
@@ -95,6 +96,8 @@ const App = () => {
                 return <Skills />
             case 'questions':
                 return <Questions />
+            case 'ai-questions':
+                return <AIQuestions />
             case 'topics':
                 return <Topics />
             case 'topic-details':

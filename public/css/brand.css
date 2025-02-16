@@ -107,6 +107,12 @@
     --digit-15rem: 0.938rem;
     --digit-16: 16px;
     --digit-16rem: 1rem;
+    --digit-24: 24px;
+    --digit-24rem: 1.5rem;
+    --digit-32: 32px;
+    --digit-32rem: 2rem;
+    --digit-48: 48px;
+    --digit-48rem: 3rem;
     --digit-100: 100px;
 }
 

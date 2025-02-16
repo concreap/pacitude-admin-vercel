@@ -12,6 +12,7 @@ const SelectInput = (props: ISelectInput) => {
         size = 'md',
         showFocus = false,
         placeholder = { value: 'Choose', enable: true },
+        readonly = false,
         onSelect
     } = props
 
@@ -34,7 +35,7 @@ const SelectInput = (props: ISelectInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-select ${isError ? 'error' : ''} form-control font-manrope color-black fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-select ${isError ? 'error' : ''} form-control font-golos color-black fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -49,16 +50,16 @@ const SelectInput = (props: ISelectInput) => {
             {
                 label &&
                 <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
-                    <span className={`fs-${labelFontSize()} font-manrope-medium color-black`}>{label.title}</span>
-                    {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
+                    <span className={`fs-${labelFontSize()} font-golos`}>{label.title}</span>
+                    {label.required ? <span className="color-red font-golos-semibold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
             }
-            <div className="select-input ui-relative">
+            <div className={`select-input ui-relative ${readonly ? 'readonly' : ''}`}>
                 <select
                     id={id ? id : inputId}
                     name={name ? name : ''}
                     className={computeClass()}
-                    defaultValue={defaultValue ? defaultValue : ''}
+                    // defaultValue={''}
                     aria-label="drop-down combobox"
                     onChange={(e) => { onSelect(e) }}
                 >

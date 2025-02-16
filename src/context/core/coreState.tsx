@@ -2,16 +2,27 @@ import { Children, useReducer, useState } from 'react'
 import GeniusContext from './coreContext'
 import GeniusReducer from './coreReducer'
 import AxiosService from '../../services/axios.service'
-import { GET_CAREERS, GET_FIELDS, GET_INDUSTRIES, GET_QUESTIONS, GET_SKILLS, GET_TOPIC, GET_TOPICS, SET_LOADING, UNSET_LOADING } from '../types'
-import { ICollection, IListQuery, IPagination, ISetLoading, IUnsetLoading } from '../../utils/interfaces.util'
+import { IAIQuestion, ICollection, IListQuery, IPagination, ISetLoading, IUnsetLoading } from '../../utils/interfaces.util'
 import { useNavigate } from 'react-router-dom'
 import storage from '../../utils/storage.util'
 import loader from '../../utils/loader.util'
 import { LoadingType } from '../../utils/types.util'
-import { collection } from '../../_data/seed'
+import { aiquestion, collection } from '../../_data/seed'
 import helper from '../../utils/helper.util'
+import { 
+    GET_CAREERS, 
+    GET_FIELDS, 
+    GET_INDUSTRIES, 
+    GET_QUESTIONS, 
+    GET_SKILLS, 
+    GET_TOPIC, 
+    GET_TOPICS, 
+    SET_AIQUESTION, 
+    SET_LOADING, 
+    UNSET_LOADING 
+} from '../types'
 
-const GeniusState = (props: any) => {
+const CoreState = (props: any) => {
 
     const navigate = useNavigate()
 
@@ -26,6 +37,7 @@ const GeniusState = (props: any) => {
         skill: {},
         questions: collection,
         question: {},
+        aiQuestions: aiquestion,
         topics: collection,
         topic: {},
         message: '',
@@ -424,6 +436,15 @@ const GeniusState = (props: any) => {
 
     }
 
+    const setAIQuestions = async (data: Array<IAIQuestion>) => {
+
+        dispatch({
+            type: SET_AIQUESTION,
+            payload: data
+        })
+
+    }
+
     const setLoading = async (data: ISetLoading) => {
 
         if (data.option === 'default') {
@@ -486,12 +507,14 @@ const GeniusState = (props: any) => {
             skill: state.skill,
             questions: state.questions,
             question: state.question,
+            aiQuestions: state.aiQuestions,
             topics: state.topics,
             topic: state.topic,
             message: state.message,
             loading: state.loading,
             setLoading: setLoading,
             unsetLoading: unsetLoading,
+            setAIQuestions: setAIQuestions,
             getIndustries: getIndustries,
             getCareers: getCareers,
             getSkills: getSkills,
@@ -506,4 +529,4 @@ const GeniusState = (props: any) => {
 
 }
 
-export default GeniusState;
+export default CoreState;

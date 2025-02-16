@@ -14,36 +14,37 @@ import Popout from "../../../../components/partials/drops/Popout";
 import Question from "../../../../models/Question.model";
 import UserContext from "../../../../context/user/userContext";
 import CoreContext from "../../../../context/core/coreContext";
+import { FormActionType } from "../../../../utils/types.util";
+import TopicForm from "../topics/TopicForm";
+import QuestionForm from "./QuestionForm";
+import routil from "../../../../utils/routes.util";
+import { useNavigate } from "react-router-dom";
 
 const QuestionsPage = ({ }) => {
-    
+
     const LIMIT = 25;
+    const navigate = useNavigate()
 
     const userContext = useContext<IUserContext>(UserContext)
     const coreContext = useContext<ICoreContext>(CoreContext)
 
-    const [questions, setQuestions] = useState<ICollection>(coreContext.questions)
+    const [showPanel, setShowPanel] = useState<boolean>(false);
+    const [form, setForm] = useState<{ action: FormActionType, questionId: string }>({ action: 'add-resource', questionId: '' })
 
     useEffect(() => {
 
         initSidebar()
-        
+
         if (helper.isEmpty(coreContext.questions.data, 'array')) {
             coreContext.getQuestions({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
 
-    useEffect(() => {
-
-        setQuestions(coreContext.questions)
-
-    }, [coreContext.questions])
-
     const initSidebar = () => {
 
         const result = userContext.currentSidebar(userContext.sidebar.collapsed);
-        if(result){
+        if (result) {
             userContext.setSidebar(result)
         }
 
@@ -52,16 +53,41 @@ const QuestionsPage = ({ }) => {
 
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { next } = questions.pagination;
+        const { next } = coreContext.questions.pagination;
         await coreContext.getQuestions({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { prev } = questions.pagination;
+        const { prev } = coreContext.questions.pagination;
         await coreContext.getQuestions({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
+    }
+
+    const togglePanel = (e: any, form?: { action: FormActionType, id?: string }) => {
+        if (e) { e.preventDefault() }
+
+        if (!showPanel && form) {
+            setForm({ action: form.action, questionId: form.id ? form.id : '' })
+        }
+
+        setShowPanel(!showPanel)
+
+    }
+
+    const toDetails = (e: any) => {
+
+        e.preventDefault();
+
+        const route = routil.inRoute({
+            route: 'core',
+            name: 'ai-questions',
+            params: []
+        });
+
+        navigate(route);
+
     }
 
     return (
@@ -89,7 +115,7 @@ const QuestionsPage = ({ }) => {
                     </div>
                     <div className="right-halve">
                         <Button
-                            text="Add New"
+                            text="Add Question"
                             type="primary"
                             size="xsm"
                             loading={false}
@@ -103,11 +129,11 @@ const QuestionsPage = ({ }) => {
                                 size: 20,
                                 loaderColor: ''
                             }}
-                            onClick={(e) => { }}
+                            onClick={(e) => togglePanel(e, { action: 'add-resource' })}
                         />
                         <span className="pdl"></span>
                         <Button
-                            text="Export"
+                            text="AI Tool"
                             type="ghost"
                             size="xsm"
                             loading={false}
@@ -118,7 +144,7 @@ const QuestionsPage = ({ }) => {
                             icon={{
                                 enable: false,
                             }}
-                            onClick={(e) => { }}
+                            onClick={(e) => toDetails(e)}
                         />
                     </div>
                 </div>
@@ -128,29 +154,29 @@ const QuestionsPage = ({ }) => {
                 <div className="body">
 
                     {
-                        questions.loading &&
+                        coreContext.questions.loading &&
                         <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                             <span className="loader lg primary"></span>
                         </EmptyState>
                     }
 
                     {
-                        !questions.loading &&
+                        !coreContext.questions.loading &&
                         <div className="tablebox responsive">
 
                             {
-                                questions.data.length === 0 &&
+                                coreContext.questions.data.length === 0 &&
                                 <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                                     <span className={`ts-icon terra-link`}>
                                         <i className='path1 fs-28'></i>
                                         <i className='path2 fs-28'></i>
                                     </span>
-                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{questions.message}</div>
+                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{coreContext.questions.message}</div>
                                 </EmptyState>
                             }
 
                             {
-                                questions.data.length > 0 &&
+                                coreContext.questions.data.length > 0 &&
                                 <table className="table" style={{ borderCollapse: 'collapse' }}>
 
                                     <TableHead
@@ -169,7 +195,7 @@ const QuestionsPage = ({ }) => {
                                     <tbody>
 
                                         {
-                                            questions.data.map((question: Question, index) =>
+                                            coreContext.questions.data.map((question: Question, index) =>
                                                 <Fragment key={question._id}>
                                                     <tr className="table-row">
                                                         <CellData fontSize={13} className="wp-15" render={helper.formatDate(question.createdAt, 'basic')} />
@@ -208,7 +234,7 @@ const QuestionsPage = ({ }) => {
 
                 <div className="ui-separate-small"></div>
 
-                <div className={`footer pdb2 ${questions.loading ? 'disabled-light' : ''}`}>
+                <div className={`footer pdb2 ${coreContext.questions.loading ? 'disabled-light' : ''}`}>
 
                     <div className="left-halve">
                         <Filter
@@ -221,7 +247,7 @@ const QuestionsPage = ({ }) => {
                             onChange={(item) => { }}
                         />
                         <div className="pdl1">
-                            <span className="fs-13 pas-950">Displaying {questions.count} questions on page {helper.getCurrentPage(questions.pagination)}</span>
+                            <span className="fs-13 pas-950">Displaying {coreContext.questions.count} questions on page {helper.getCurrentPage(coreContext.questions.pagination)}</span>
                         </div>
                     </div>
 
@@ -229,7 +255,7 @@ const QuestionsPage = ({ }) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${questions.pagination.prev && questions.pagination.prev.limit ? '' : 'disabled'}`}
+                            className={`${coreContext.questions.pagination.prev && coreContext.questions.pagination.prev.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiPrev(e)}
                         />
@@ -237,7 +263,7 @@ const QuestionsPage = ({ }) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${questions.pagination.next && questions.pagination.next.limit ? '' : 'disabled'}`}
+                            className={`${coreContext.questions.pagination.next && coreContext.questions.pagination.next.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiNext(e)}
                         />
@@ -246,6 +272,16 @@ const QuestionsPage = ({ }) => {
                 </div>
 
             </div>
+
+            <QuestionForm
+                show={showPanel}
+                closeForm={togglePanel}
+                type={form.action}
+                questionId={form.questionId}
+                display="table"
+                title={form.action === 'add-resource' ? 'Add Questions' : 'Edit Question'}
+            />
+
         </>
     )
 

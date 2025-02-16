@@ -399,3 +399,21 @@
     padding: var(--m4-24rem) var(--m4-32rem);
     min-height: calc(100vh - 5rem);
 }
+
+.ui-dashboard-card {
+    width: 100%;
+    min-height: 250px;
+    padding: var(--digit-24rem);
+    border: 1px solid var(--pag-200);
+    border-radius: var(--digit-16);
+}
+.ui-dashboard-card.pad-sm{
+    padding: var(--digit-16rem);
+}
+.ui-dashboard-card.auto-height {
+    min-height: auto;
+}
+.ui-dashboard-card.flat{
+    padding: var(--digit-0);
+    border: none;
+}

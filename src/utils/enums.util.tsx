@@ -24,3 +24,34 @@ export enum PasswordType{
 export enum FileLinks {
     TOPIC_CSV = 'https://docs.google.com/spreadsheets/d/1kJxsETglcWDsRSlHyO7MQEcJHBn9tHiUWnNKW4p1myQ/edit?usp=sharing'
 }
+
+export enum LevelEnum{
+    DEFAULT = 'default',
+    NOVICE = 'novice',
+    BEGINNER = 'beginner',
+    INTERMEDIATE = 'intermediate',
+    ADVANCED = 'advanced',
+    PROFESSIONAL = 'professional',
+    LEADER = 'leader',
+    EXPERT = 'expert'
+}
+
+export enum TimeHandleEnum {
+    SECONDS = 'second',
+    MINUTE = 'minute',
+    HOUR = 'hour'
+}
+
+export enum DifficultyEnum {
+    RANDOM = 'random',
+    EASY = 'easy',
+    NORMAL = 'normal',
+    HARD = 'hard',
+    DIFFICULT = 'difficult'
+}
+
+export enum QuestionTypeEnum {
+    TRIVIAL = 'trivial',
+    PRACTICAL = 'practical',
+    GENERAL = 'general'
+}

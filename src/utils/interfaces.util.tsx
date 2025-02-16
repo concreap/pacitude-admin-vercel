@@ -1,4 +1,4 @@
-import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent } from "react";
+import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
 import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PDFAcceptType, PositionType, QueryOrderType, RouteActionType, RouteParamType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
@@ -217,7 +217,9 @@ export interface IHelper {
     formatCurrency(currency: string): string,
     currentDate(): Date,
     getCurrentPage(data: IPagination): number;
-    getInitials(value: string): string
+    getInitials(value: string): string,
+    splitGenTime(value: string): { value: string, handle: string },
+    randomNum(min: number, max: number): number
 
 }
 
@@ -253,7 +255,7 @@ export interface IPanelBox {
 }
 
 export interface ITextInput {
-    ref?: RefObject<HTMLInputElement>,
+    ref?: LegacyRef<HTMLInputElement>,
     type: 'text' | 'email',
     readonly?: boolean,
     name?: string,
@@ -349,12 +351,13 @@ export interface ISelectInput {
     defaultValue?: string,
     size?: SizeType,
     className?: string,
-    selected?: boolean,
+    selected?: string,
     placeholder: {
         value: string,
         enable?: boolean
     },
     showFocus?: boolean,
+    readonly?: boolean,
     isError?: boolean,
     label?: {
         title: string,
@@ -646,7 +649,6 @@ export interface ILinkButton {
 }
 
 export interface IFilter {
-    ref?: RefObject<HTMLInputElement>
     readonly?: boolean,
     name?: string,
     id?: string
@@ -661,14 +663,25 @@ export interface IFilter {
     icon?: {
         type: IconFamilyType,
         name: string,
+        style?: CSSProperties
     }
     items: Array<IFilterItem>,
-    onChange(item: IFilterItem): void
+    onChange(item: ISelectedFilter): void
 }
 
 export interface IFilterItem {
     label: string,
-    value: any
+    value: any,
+    subitems?: Array<{
+        label: string,
+        value: any
+    }>
+}
+
+export interface ISelectedFilter {
+    label: string,
+    value: any,
+    item?: IFilterItem
 }
 
 export interface IPopout {
@@ -895,6 +908,52 @@ export interface IBadge {
     onClose?(e: any): void
 }
 
+export interface IGeneratedQuestion {
+    body: string,
+    answers: Array<IGenAnswer>,
+    correct: string,
+    level: string,
+    score: string,
+    time: string
+    difficulty: string,
+    type: string
+}
+
+export interface IGenAnswer {
+    alphabet: string,
+    answer: string
+}
+
+export interface IAIQuestion {
+    code: string,
+    body: string,
+    answers: Array<IGenAnswer>,
+    correct: string,
+    levels: Array<string>,
+    score: string,
+    time: {
+        value: string,
+        handle: string,
+    },
+    difficulties: Array<string>,
+    types: Array<string>,
+    fieldId?: string,
+}
+
+export interface IAddQuestion {
+    body: string,
+    answers: Array<IGenAnswer>,
+    correct: string,
+    levels: Array<string>,
+    score: string,
+    time: {
+        value: string,
+        handle: string,
+    },
+    difficulties: Array<string>,
+    types: Array<string>,
+    fieldId: string,
+}
 
 
 // contexts
@@ -977,6 +1036,7 @@ export interface ICoreContext {
     skill: any,
     questions: ICollection,
     question: any,
+    aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
     topic: any,
     message: string,
@@ -991,8 +1051,9 @@ export interface ICoreContext {
     getQuestions(data: IListQuery): Promise<void>,
     getTopics(data: IListQuery): Promise<void>,
     getTopic(id: string): Promise<void>,
-    setLoading(data: ISetLoading): Promise<void>,
-    unsetLoading(data: IUnsetLoading): Promise<void>,
+    setAIQuestions(data: Array<IAIQuestion>): void,
+    setLoading(data: ISetLoading): void,
+    unsetLoading(data: IUnsetLoading): void,
 }
 
 export interface IResourceContext {

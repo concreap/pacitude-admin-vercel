@@ -161,6 +161,18 @@ const sidebarRoutes: Array<IRoute> = [
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
                 content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'questions',
+                name: 'ai-questions',
+                title: 'Generate Questions',
+                iconName: 'flash',
+                url: '/ai-questions',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
+                content: { sidebar: true, backButton: true }
             }
         ]
     },

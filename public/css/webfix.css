@@ -417,6 +417,9 @@ a {
 .ui-flexbox.justify-center, .flex-justify-center{
     justify-content: center !important;
 }
+.ui-flexbox.wrap{
+    flex-wrap: wrap !important;
+}
 
 .ui-full-bg {
 

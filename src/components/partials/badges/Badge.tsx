@@ -21,7 +21,7 @@ const Badge = (props: IBadge) => {
     return (
         <>
             <div className={`badge ${close ? 'badge-close' : ''} ${size} ${type} fs-11 font-hostgro-light ${className}`} style={style}>
-                <span className={`fs-11 font-hostgro-light`}>{label}</span>
+                <span className={`fs-11 font-hostgro-light ${ close ? 'pdr' : '' }`}>{label}</span>
                 {
                     close &&
                     <Icon
@@ -30,7 +30,8 @@ const Badge = (props: IBadge) => {
                         clickable={true}
                         size={13}
                         className="color-black ui-ml-auto"
-                        style={{ position: 'relative'}}
+                        style={{ position: 'relative', top: '1px'}}
+                        onClick={(e) => onClose(e)}
                     />
                 }
             </div>
