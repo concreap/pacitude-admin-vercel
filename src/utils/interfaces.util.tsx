@@ -937,12 +937,15 @@ export interface IAIQuestion {
     },
     difficulties: Array<string>,
     types: Array<string>,
-    fieldId?: string,
+    fields: Array<{ name: string, id: string }>,
 }
 
 export interface IAddQuestion {
     body: string,
-    answers: Array<IGenAnswer>,
+    answers: Array<{
+        alphabet: string,
+        body: string
+    }>,
     correct: string,
     levels: Array<string>,
     score: string,
@@ -952,7 +955,7 @@ export interface IAddQuestion {
     },
     difficulties: Array<string>,
     types: Array<string>,
-    fieldId: string,
+    fields: Array<string>,
 }
 
 

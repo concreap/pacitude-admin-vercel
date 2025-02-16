@@ -14,7 +14,7 @@ const TextInput = (props: ITextInput) => {
     } = props
 
     const [inputId, setInputId] = useState<string>(helper.random(8, true))
-    const inputRef = useRef<HTMLInputElement>(null)
+    const inputRef = useRef<any>(null)
 
     useEffect(() => {
 
@@ -53,7 +53,7 @@ const TextInput = (props: ITextInput) => {
                 </label>
             }
             <input
-                ref={ref ? ref : inputRef}
+                ref={inputRef}
                 id={id ? id : inputId}
                 name={name ? name : ''}
                 defaultValue={defaultValue ? defaultValue : ''}

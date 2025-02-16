@@ -77,6 +77,289 @@ const AIQuestionsPage = ({ }) => {
 
     }
 
+    const editQuestion = (type: string, val: string) => {
+
+        let currList = coreContext.aiQuestions;
+
+        if (!code) {
+            resourceContext.setToast({
+                ...resourceContext.toast,
+                show: true,
+                type: 'error',
+                message: 'Select a question!'
+            })
+            setTimeout(() => {
+                resourceContext.setToast({ ...resourceContext.toast, show: false })
+            }, 2500)
+        } else {
+
+            let question = currList.find((x) => x.code === code);
+            let questionI = currList.findIndex((x) => x.code === code);
+
+            if (question) {
+
+                if (type === 'body') {
+                    question.body = val;
+                } else if (type === 'time-value') {
+                    question.time.value = val;
+                } else if (type === 'time-handle') {
+                    question.time.handle = val;
+                } else if (type === 'score') {
+                    question.score = val;
+                }
+
+                currList.splice(questionI, 1, question);
+
+            }
+
+            coreContext.setAIQuestions(currList)
+
+        }
+
+    }
+
+    const editOption = (alpha: string, val: string) => {
+
+        let currList = coreContext.aiQuestions;
+
+        if (!code) {
+            resourceContext.setToast({
+                ...resourceContext.toast,
+                show: true,
+                type: 'error',
+                message: 'Select a question!'
+            })
+            setTimeout(() => {
+                resourceContext.setToast({ ...resourceContext.toast, show: false })
+            }, 2500)
+        } else {
+
+            let question = currList.find((x) => x.code === code);
+            let questionI = currList.findIndex((x) => x.code === code);
+
+            if (question) {
+
+                let option = question.answers.find((x) => x.alphabet === alpha)
+                let optionIndex = question.answers.findIndex((x) => x.alphabet === alpha)
+
+                if (option) {
+                    option.answer = val
+                    question.answers[optionIndex] = option;
+                }
+
+                currList.splice(questionI, 1, question);
+
+            }
+
+            coreContext.setAIQuestions(currList)
+
+        }
+
+    }
+
+    const addRubric = (type: string, val: any) => {
+
+        let currList = coreContext.aiQuestions;
+
+        if (!code) {
+            resourceContext.setToast({
+                ...resourceContext.toast,
+                show: true,
+                type: 'error',
+                message: 'Select a question!'
+            })
+            setTimeout(() => {
+                resourceContext.setToast({ ...resourceContext.toast, show: false })
+            }, 2500)
+        } else {
+
+            let question = currList.find((x) => x.code === code);
+            let questionI = currList.findIndex((x) => x.code === code);
+
+            if (question) {
+
+                let fieldIds = question.fields.map((x) => x.id);
+
+                if (type === 'level' && !question.levels.includes(val)) {
+                    question.levels.push(val)
+                }
+
+                if (type === 'difficulty' && !question.difficulties.includes(val)) {
+                    question.difficulties.push(val)
+                }
+
+                if (type === 'type' && !question.types.includes(val)) {
+                    question.types.push(val)
+                }
+
+                if (type === 'field' && !fieldIds.includes(val.id)) {
+                    question.fields.push({ name: val.name, id: val.id })
+                }
+
+                currList.splice(questionI, 1, question);
+
+            }
+
+            coreContext.setAIQuestions(currList)
+
+        }
+
+    }
+
+    const removeRubric = (type: string, val: string) => {
+
+        let currList = coreContext.aiQuestions;
+
+        if (!code) {
+            resourceContext.setToast({
+                ...resourceContext.toast,
+                show: true,
+                type: 'error',
+                message: 'Select a question!'
+            })
+        } else {
+
+            let question = currList.find((x) => x.code === code);
+            let questionI = currList.findIndex((x) => x.code === code);
+
+            if (question) {
+
+                let fieldIds = question.fields.map((x) => x.id);
+
+                if (type === 'level' && question.levels.includes(val)) {
+                    if (question.levels.length === 1) {
+                        resourceContext.setToast({
+                            ...resourceContext.toast,
+                            show: true,
+                            type: 'error',
+                            message: 'Cannot remove last skill level!'
+                        })
+                    } else {
+                        question.levels = question.levels.filter((x) => x !== val)
+                    }
+                }
+
+                if (type === 'difficulty' && question.difficulties.includes(val)) {
+                    if (question.difficulties.length === 1) {
+                        resourceContext.setToast({
+                            ...resourceContext.toast,
+                            show: true,
+                            type: 'error',
+                            message: 'Cannot remove last difficulty level!'
+                        })
+                    } else {
+                        question.difficulties = question.difficulties.filter((x) => x !== val)
+                    }
+                }
+
+                if (type === 'type' && question.types.includes(val)) {
+                    if (question.types.length === 1) {
+                        resourceContext.setToast({
+                            ...resourceContext.toast,
+                            show: true,
+                            type: 'error',
+                            message: 'Cannot remove last question type!'
+                        })
+                    } else {
+                        question.types = question.types.filter((x) => x !== val)
+                    }
+                }
+
+                if (type === 'field' && fieldIds.includes(val)) {
+                    if (question.fields.length === 1) {
+                        resourceContext.setToast({
+                            ...resourceContext.toast,
+                            show: true,
+                            type: 'error',
+                            message: 'Cannot remove last question field!'
+                        })
+                    } else {
+                        question.fields = question.fields.filter((x) => x.id !== val)
+                    }
+                }
+
+                currList.splice(questionI, 1, question);
+
+            }
+
+            coreContext.setAIQuestions(currList)
+
+        }
+
+        setTimeout(() => {
+            resourceContext.setToast({ ...resourceContext.toast, show: false })
+        }, 2500)
+
+    }
+
+    const validateQuestions = async (e: any): Promise<{ error: boolean, message: string }> => {
+
+        if (e) { e.preventDefault(); }
+        let result: { error: boolean, message: string } = { error: false, message: '' };
+
+        for (let i = 0; i < coreContext.aiQuestions.length; i++) {
+
+            let question = coreContext.aiQuestions[i]
+
+            if (!question.fields || question.fields.length === 0) {
+                result.error = true;
+                result.message = `Select at least one field for question ${i + 1}`;
+                break;
+            } else if (!question.body) {
+                result.error = true;
+                result.message = `Enter question body for question ${i + 1}`;
+                break;
+            } else if (!question.score) {
+                result.error = true;
+                result.message = `Enter score for question ${i + 1}`;
+                break;
+            } else if (!question.time.value) {
+                result.error = true;
+                result.message = `Enter time value for question ${i + 1}`;
+                break;
+            } else if (!question.time.handle) {
+                result.error = true;
+                result.message = `Select time handle for question ${i + 1}`;
+                break;
+            } else {
+                result.error = false;
+                result.message = ``;
+                continue;
+            }
+
+        }
+
+        return result;
+
+    }
+
+    const mapQuestions = async (): Promise<Array<IAddQuestion>> => {
+
+        let questions: Array<IAddQuestion> = [];
+
+        for (let i = 0; i < coreContext.aiQuestions.length; i++) {
+
+            let fieldIds = coreContext.aiQuestions[i].fields.map((x) => x.id);
+            let answers = coreContext.aiQuestions[i].answers.map((x) => { return { alphabet: x.alphabet, body: x.answer } })
+
+            questions.push({
+                body: coreContext.aiQuestions[i].body,
+                answers: answers,
+                levels: coreContext.aiQuestions[i].levels,
+                difficulties: coreContext.aiQuestions[i].difficulties,
+                types: coreContext.aiQuestions[i].types,
+                correct: coreContext.aiQuestions[i].correct,
+                score: coreContext.aiQuestions[i].score,
+                time: coreContext.aiQuestions[i].time,
+                fields: fieldIds,
+            })
+
+        }
+
+        return questions;
+
+    }
+
     const generateQuestions = async (e: any) => {
 
         if (e) { e.preventDefault(); }
@@ -138,7 +421,7 @@ const AIQuestionsPage = ({ }) => {
                             value: helper.splitGenTime(item.time).value,
                             handle: helper.splitGenTime(item.time).handle
                         },
-                        fieldId: ''
+                        fields: []
                     })
                 }
 
@@ -174,267 +457,6 @@ const AIQuestionsPage = ({ }) => {
 
     }
 
-    const editQuestion = (type: string, val: string) => {
-
-        let currList = coreContext.aiQuestions;
-
-        if (!code) {
-            resourceContext.setToast({
-                ...resourceContext.toast,
-                show: true,
-                type: 'error',
-                message: 'Select a question!'
-            })
-            setTimeout(() => {
-                resourceContext.setToast({ ...resourceContext.toast, show: false })
-            }, 2500)
-        } else {
-
-            let question = currList.find((x) => x.code === code);
-            let questionI = currList.findIndex((x) => x.code === code);
-
-            if (question) {
-
-                if (type === 'body') {
-                    question.body = val;
-                } else if (type === 'time-value') {
-                    question.time.value = val;
-                } else if (type === 'time-handle') {
-                    question.time.handle = val;
-                } else if (type === 'score') {
-                    question.score = val;
-                } else if (type === 'field') {
-                    question.fieldId = val;
-                }
-
-                currList.splice(questionI, 1, question);
-
-            }
-
-            coreContext.setAIQuestions(currList)
-
-        }
-
-    }
-
-    const editOption = (alpha: string, val: string) => {
-
-        let currList = coreContext.aiQuestions;
-
-        if (!code) {
-            resourceContext.setToast({
-                ...resourceContext.toast,
-                show: true,
-                type: 'error',
-                message: 'Select a question!'
-            })
-            setTimeout(() => {
-                resourceContext.setToast({ ...resourceContext.toast, show: false })
-            }, 2500)
-        } else {
-
-            let question = currList.find((x) => x.code === code);
-            let questionI = currList.findIndex((x) => x.code === code);
-
-            if (question) {
-
-                let option = question.answers.find((x) => x.alphabet === alpha)
-                let optionIndex = question.answers.findIndex((x) => x.alphabet === alpha)
-
-                if (option) {
-                    option.answer = val
-                    question.answers[optionIndex] = option;
-                }
-
-                currList.splice(questionI, 1, question);
-
-            }
-
-            coreContext.setAIQuestions(currList)
-
-        }
-
-    }
-
-    const addRubric = (type: string, val: string) => {
-
-        let currList = coreContext.aiQuestions;
-
-        if (!code) {
-            resourceContext.setToast({
-                ...resourceContext.toast,
-                show: true,
-                type: 'error',
-                message: 'Select a question!'
-            })
-            setTimeout(() => {
-                resourceContext.setToast({ ...resourceContext.toast, show: false })
-            }, 2500)
-        } else {
-
-            let question = currList.find((x) => x.code === code);
-            let questionI = currList.findIndex((x) => x.code === code);
-
-            if (question) {
-
-                if (type === 'level' && !question.levels.includes(val)) {
-                    question.levels.push(val)
-                }
-
-                if (type === 'difficulty' && !question.difficulties.includes(val)) {
-                    question.difficulties.push(val)
-                }
-
-                if (type === 'type' && !question.types.includes(val)) {
-                    question.types.push(val)
-                }
-
-                currList.splice(questionI, 1, question);
-
-            }
-
-            coreContext.setAIQuestions(currList)
-
-        }
-
-    }
-
-    const removeRubric = (type: string, val: string) => {
-
-        let currList = coreContext.aiQuestions;
-
-        if (!code) {
-            resourceContext.setToast({
-                ...resourceContext.toast,
-                show: true,
-                type: 'error',
-                message: 'Select a question!'
-            })
-        } else {
-
-            let question = currList.find((x) => x.code === code);
-            let questionI = currList.findIndex((x) => x.code === code);
-
-            if (question) {
-
-                if (type === 'level' && question.levels.includes(val)) {
-                    if (question.levels.length === 1) {
-                        resourceContext.setToast({
-                            ...resourceContext.toast,
-                            show: true,
-                            type: 'error',
-                            message: 'Cannot remove last skill level!'
-                        })
-                    } else {
-                        question.levels = question.levels.filter((x) => x !== val)
-                    }
-                }
-
-                if (type === 'difficulty' && !question.difficulties.includes(val)) {
-                    if (question.difficulties.length === 1) {
-                        resourceContext.setToast({
-                            ...resourceContext.toast,
-                            show: true,
-                            type: 'error',
-                            message: 'Cannot remove last difficulty level!'
-                        })
-                    } else {
-                        question.difficulties = question.difficulties.filter((x) => x !== val)
-                    }
-                }
-
-                if (type === 'type' && !question.types.includes(val)) {
-                    if (question.types.length === 1) {
-                        resourceContext.setToast({
-                            ...resourceContext.toast,
-                            show: true,
-                            type: 'error',
-                            message: 'Cannot remove last question type!'
-                        })
-                    } else {
-                        question.types = question.types.filter((x) => x !== val)
-                    }
-                }
-
-                currList.splice(questionI, 1, question);
-
-            }
-
-            coreContext.setAIQuestions(currList)
-
-        }
-
-        setTimeout(() => {
-            resourceContext.setToast({ ...resourceContext.toast, show: false })
-        }, 2500)
-
-    }
-
-    const validateQuestions = async (e: any): Promise<{ error: boolean, message: string }> => {
-
-        if (e) { e.preventDefault(); }
-        let result: { error: boolean, message: string } = { error: false, message: '' };
-
-        for (let i = 0; i < coreContext.aiQuestions.length; i++) {
-
-            let question = coreContext.aiQuestions[i]
-
-            if (!question.fieldId) {
-                result.error = true;
-                result.message = `Select field for question ${i + 1}`;
-                break;
-            } else if (!question.body) {
-                result.error = true;
-                result.message = `Enter question body for question ${i + 1}`;
-                break;
-            } else if (!question.score) {
-                result.error = true;
-                result.message = `Enter score for question ${i + 1}`;
-                break;
-            } else if (!question.time.value) {
-                result.error = true;
-                result.message = `Enter time value for question ${i + 1}`;
-                break;
-            } else if (!question.time.handle) {
-                result.error = true;
-                result.message = `Select time handle for question ${i + 1}`;
-                break;
-            } else {
-                result.error = false;
-                result.message = ``;
-                continue;
-            }
-
-        }
-
-        return result;
-
-    }
-
-    const mapQuestions = async (): Promise<Array<IAddQuestion>> => {
-
-        let questions: Array<IAddQuestion> = [];
-
-        for (let i = 0; i < coreContext.aiQuestions.length; i++) {
-
-            questions.push({
-                body: coreContext.aiQuestions[i].body,
-                answers: coreContext.aiQuestions[i].answers,
-                levels: coreContext.aiQuestions[i].levels,
-                difficulties: coreContext.aiQuestions[i].difficulties,
-                types: coreContext.aiQuestions[i].types,
-                correct: coreContext.aiQuestions[i].correct,
-                score: coreContext.aiQuestions[i].score,
-                time: coreContext.aiQuestions[i].time,
-                fieldId: coreContext.aiQuestions[i].fieldId!,
-            })
-
-        }
-
-        return questions;
-
-    }
-
     const addQuestions = async (e: any) => {
 
         if (e) { e.preventDefault(); }
@@ -451,8 +473,46 @@ const AIQuestionsPage = ({ }) => {
         } else {
 
             const questions = await mapQuestions();
+            setLoading(true);
 
-            console.log(questions)
+            const response = await AxiosService.call({
+                type: 'core',
+                method: 'POST',
+                path: `/questions/add-generated`,
+                isAuth: true,
+                payload: {
+                    generated: questions
+                }
+            });
+
+            if (response.error === false && response.status === 200) {
+
+                setLoading(false);
+
+                resourceContext.setToast({
+                    ...resourceContext.toast,
+                    show: true,
+                    type: 'success',
+                    message: 'Questions saved successfully'
+                });
+
+                coreContext.setAIQuestions([]);
+                setQuestions([]);
+                setAiData({ ...aiData, error: '', model: 'anthropic', prompt: '', total: '3' })
+            }
+
+            if (response.error === true) {
+
+                setLoading(false)
+
+                resourceContext.setToast({
+                    ...resourceContext.toast,
+                    show: true,
+                    type: 'error',
+                    message: response.errors.join(',')
+                })
+
+            }
 
         }
 
@@ -471,7 +531,6 @@ const AIQuestionsPage = ({ }) => {
 
                     <div className={`ui-flexbox align-center wp-80 ${coreContext.aiQuestions.length > 0 ? 'disabled-light' : ''}`}>
                         <TextInput
-                            ref={promptRef}
                             type="text"
                             showFocus={true}
                             size="rg"
@@ -552,7 +611,8 @@ const AIQuestionsPage = ({ }) => {
                                     }}
                                     onClick={(e) => {
                                         coreContext.setAIQuestions([]);
-                                        setQuestions([])
+                                        setQuestions([]);
+                                        setAiData({ ...aiData, error: '', model: 'anthropic', prompt: '', total: '3' })
                                         if (promptRef.current) {
                                             promptRef.current.value = ''
                                         }
@@ -649,20 +709,16 @@ const AIQuestionsPage = ({ }) => {
                                         question.code === code &&
                                         <>
 
-                                            <div className="form-field mrgb2">
+                                            <div className="mrgb0">
+                                                <h3 className="mrgb font-hostgro fs-14">Select Fields</h3>
 
-                                                <div className="row">
+                                                <div className="row mrgb2">
 
-                                                    <div className="col">
-
-                                                        <label className={`mrgb0`}>
-                                                            <span className={`fs-14 font-manrope-medium color-black`}>Select Field</span>
-                                                            <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span>
-                                                        </label>
+                                                    <div className="col-4">
                                                         <DropDown
                                                             options={getFields}
                                                             selected={(data: any) => {
-                                                                editQuestion('field', data.value)
+                                                                addRubric('field', { name: data.label, id: data.value })
                                                             }}
                                                             className={`font-manrope dropdown topic-field-dropdown`}
                                                             placeholder={'Select'}
@@ -688,26 +744,28 @@ const AIQuestionsPage = ({ }) => {
                                                             }}
                                                             defaultValue={0}
                                                         />
-
                                                     </div>
 
                                                     <div className="col">
-
-                                                        <TextInput
-                                                            type="email"
-                                                            showFocus={true}
-                                                            size="sm"
-                                                            defaultValue={question.score}
-                                                            autoComplete={false}
-                                                            placeholder="Type score value"
-                                                            label={{
-                                                                fontSize: 14,
-                                                                title: 'Enter Score'
-                                                            }}
-                                                            isError={false}
-                                                            onChange={(e) => editQuestion('score', e.target.value)}
-                                                        />
-
+                                                        <div className="ui-flexbox wrap">
+                                                            {
+                                                                question.fields.map((field) =>
+                                                                    <Fragment key={field.id}>
+                                                                        <Badge
+                                                                            type='info'
+                                                                            size="md"
+                                                                            label={helper.capitalize(field.name)}
+                                                                            close={true}
+                                                                            style={{ marginBottom: '0.15rem' }}
+                                                                            onClose={(e) => {
+                                                                                removeRubric('field', field.id)
+                                                                            }}
+                                                                        />
+                                                                        <span className="pdr"></span>
+                                                                    </Fragment>
+                                                                )
+                                                            }
+                                                        </div>
                                                     </div>
 
                                                 </div>
@@ -780,7 +838,7 @@ const AIQuestionsPage = ({ }) => {
                                                         />
                                                     </div>
 
-                                                    <div className="col-6">
+                                                    <div className="col">
                                                         <div className="ui-flexbox wrap">
                                                             {
                                                                 question.levels.map((level: string) =>
@@ -790,6 +848,7 @@ const AIQuestionsPage = ({ }) => {
                                                                             size="md"
                                                                             label={helper.capitalize(level)}
                                                                             close={true}
+                                                                            style={{ marginBottom: '0.15rem' }}
                                                                             onClose={(e) => {
                                                                                 removeRubric('level', level)
                                                                             }}
@@ -825,7 +884,7 @@ const AIQuestionsPage = ({ }) => {
                                                         />
                                                     </div>
 
-                                                    <div className="col-6">
+                                                    <div className="col">
                                                         <div className="ui-flexbox wrap">
                                                             {
                                                                 question.difficulties.map((diff: string) =>
@@ -835,6 +894,7 @@ const AIQuestionsPage = ({ }) => {
                                                                             size="md"
                                                                             label={helper.capitalize(diff)}
                                                                             close={true}
+                                                                            style={{ marginBottom: '0.15rem' }}
                                                                             onClose={(e) => {
                                                                                 removeRubric('difficulty', diff)
                                                                             }}
@@ -870,7 +930,7 @@ const AIQuestionsPage = ({ }) => {
                                                         />
                                                     </div>
 
-                                                    <div className="col-6">
+                                                    <div className="col">
                                                         <div className="ui-flexbox wrap">
                                                             {
                                                                 question.types.map((type: string) =>
@@ -880,6 +940,7 @@ const AIQuestionsPage = ({ }) => {
                                                                             size="md"
                                                                             label={helper.capitalize(type)}
                                                                             close={true}
+                                                                            style={{ marginBottom: '0.15rem' }}
                                                                             onClose={(e) => {
                                                                                 removeRubric('type', type)
                                                                             }}
@@ -936,6 +997,35 @@ const AIQuestionsPage = ({ }) => {
                                                     </div>
 
                                                 </div>
+                                            </div>
+
+                                            <div className="ui-line bg-pag-50"></div>
+
+                                            <div className="form-field mrgb0">
+
+                                                <div className="row">
+
+                                                    <div className="col">
+
+                                                        <TextInput
+                                                            type="email"
+                                                            showFocus={true}
+                                                            size="sm"
+                                                            defaultValue={question.score}
+                                                            autoComplete={false}
+                                                            placeholder="Type score value"
+                                                            label={{
+                                                                fontSize: 14,
+                                                                title: 'Enter Score'
+                                                            }}
+                                                            isError={false}
+                                                            onChange={(e) => editQuestion('score', e.target.value)}
+                                                        />
+
+                                                    </div>
+
+                                                </div>
+
                                             </div>
 
                                         </>

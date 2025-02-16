@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import { IDropSelect, IDropSelectState } from '../../utils/interfaces.util';
 import helper from '../../utils/helper.util';
 
@@ -248,7 +248,7 @@ class DropSelect extends Component<Partial<IDropSelect>, IDropSelectState> {
                                 this.state.options.length > 0 &&
                                 this.state.options.map((p) => 
     
-                                    <>
+                                    <Fragment key={p.value}>
                                         <div className="menu__option"
                                         onClick={(e) => this.handleSelected(e, p)} ref={this.optionRef}>
                                             {
@@ -276,7 +276,7 @@ class DropSelect extends Component<Partial<IDropSelect>, IDropSelectState> {
                                                 </div>
                                             }
                                         </div>
-                                    </>
+                                    </Fragment>
                                 
                                 )
                             }

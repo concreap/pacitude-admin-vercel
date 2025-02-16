@@ -36,7 +36,7 @@ const aiquestion: Array<IAIQuestion> = []
 //             handle: 'minute'
 //         },
 //         types: ['trivial'],
-//         fieldId: '',
+//         fields: [],
 //     },
 //     {
 //         code: '2',
@@ -56,7 +56,7 @@ const aiquestion: Array<IAIQuestion> = []
 //             handle: 'minute'
 //         },
 //         types: ['trivial'],
-//         fieldId: '',
+//         fields: [],
 //     }
 // ]
 
