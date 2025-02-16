@@ -1,4 +1,9 @@
 import { DifficultyType, LevelType, QuestionType } from "../utils/types.util"
+import Career from "./Career.model"
+import Field from "./Field.model"
+import Skill from "./Skill.model"
+import Topic from "./Topic.model"
+import User from "./User.model"
 
 export interface IQuestionScore {
     cutoff: number,
@@ -26,18 +31,27 @@ interface Question {
     slug: string,
     time: IQuestionTime,
     isEnabled: boolean,
-    difficulty: DifficultyType,
-    level: LevelType,
-    type: QuestionType,
+    difficulties: Array<DifficultyType>,
+    levels: Array<LevelType>,
+    types: Array<QuestionType>,
     score: IQuestionScore,
+
+    // object properties
     answers: Array<IQuestionAnswer>
-    createdBy: any,
-    topic: any,
-    careers: Array<any>,
-    fields: Array<any>,
-    skills: Array<any>
+
+    // relationships
+    createdBy: User | any,
+    topic: Topic | any,
+    career: Career | any,
+    fields: Array<Field | any>,
+    skills: Array<Skill | any>
+
+    // time stamps
     createdAt: string;
     updatedAt: string;
+
+    // unique ids
+    _version: number;
     _id: string;
     id: string;
 }

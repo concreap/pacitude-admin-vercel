@@ -200,8 +200,8 @@ const QuestionsPage = ({ }) => {
                                                     <tr className="table-row">
                                                         <CellData fontSize={13} className="wp-15" render={helper.formatDate(question.createdAt, 'basic')} />
                                                         <CellData fontSize={13} render={helper.addElipsis(question.body, 10)} />
-                                                        <CellData fontSize={13} render={helper.capitalizeWord(question.level)} />
-                                                        <CellData fontSize={13} className="ui-upcase" render={question.difficulty} />
+                                                        <CellData fontSize={13} render={helper.capitalizeWord(question.levels[0])} />
+                                                        <CellData fontSize={13} className="ui-upcase" render={question.difficulties[0]} />
                                                         <CellData fontSize={13} className="ui-upcase ui-text-center" render={question.answers.length} />
                                                         <CellData fontSize={13} className="ui-upcase ui-text-center" render={question.fields.length} />
                                                         <CellData fontSize={13} className="" status={{ enable: true, type: 'enabled', value: question.isEnabled }} render={<></>} />
