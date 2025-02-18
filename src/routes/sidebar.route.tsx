@@ -152,6 +152,18 @@ const sidebarRoutes: Array<IRoute> = [
         inroutes: [
             {
                 route: 'core',
+                parent: 'questions',
+                name: 'question-details',
+                title: 'Question Details',
+                iconName: 'flash',
+                url: '/questions',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
                 parent: 'topics',
                 name: 'topic-details',
                 title: 'Topic Details',

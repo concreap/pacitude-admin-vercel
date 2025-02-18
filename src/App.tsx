@@ -35,8 +35,9 @@ const Fields = React.lazy(() => import('./pages/dashboard/core/fields/Fields'));
 const Skills = React.lazy(() => import('./pages/dashboard/core/skills/Skills'));
 const Questions = React.lazy(() => import('./pages/dashboard/core/questions/Questions'));
 const AIQuestions = React.lazy(() => import('./pages/dashboard/core/questions/AIQuestions'));
+const QuestionDetails = React.lazy(() => import('./pages/dashboard/core/questions/QuestionDetails'));
 const Topics = React.lazy(() => import('./pages/dashboard/core/topics/Topics'));
-const TopicDetails = React.lazy(() => import('./pages/dashboard/core/topics/Details'));
+const TopicDetails = React.lazy(() => import('./pages/dashboard/core/topics/TopicDetails'));
 const Subscriptions = React.lazy(() => import('./pages/dashboard/payments/subscriptions/Subscriptions'));
 const Transactions = React.lazy(() => import('./pages/dashboard/payments/transactions/Transactions'));
 const Settings = React.lazy(() => import('./pages/dashboard/settings/Settings'));
@@ -98,6 +99,8 @@ const App = () => {
                 return <Questions />
             case 'ai-questions':
                 return <AIQuestions />
+            case 'question-details':
+                return <QuestionDetails />
             case 'topics':
                 return <Topics />
             case 'topic-details':

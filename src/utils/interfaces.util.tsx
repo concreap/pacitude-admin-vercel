@@ -1,7 +1,8 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
-import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PDFAcceptType, PositionType, QueryOrderType, RouteActionType, RouteParamType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
+import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
+import Question, { IQuestionTime } from "../models/Question.model";
 
 export interface ISetCookie {
     key: string,
@@ -224,11 +225,18 @@ export interface IHelper {
 }
 
 export interface IRoutil {
+    computeAppRoute(route: IRoute): string,
     computePath(route: string): string,
     computeSubPath(route: IRoute, subroute: IRouteItem): string,
     computeInPath(inroute: IInRoute): string,
     inRoute(payload: { route: string, name: string, params?: Array<IRouteParam> }): string,
     resolveRouteParams(params: Array<IRouteParam>, stickTo: 'app' | 'page'): string
+}
+
+export interface IQuestionUtil{
+    shortenRubric(question: Question, type: RubricType): string,
+    rubricBadge(type: RubricType): SemanticType,
+    formatTime(time: IQuestionTime): string,
 }
 
 export interface IICon {
@@ -322,7 +330,6 @@ export interface IPasswordInput {
 }
 
 export interface ISearchInput {
-    ref?: RefObject<HTMLInputElement>
     readonly?: boolean,
     name?: string,
     id?: string
@@ -334,6 +341,7 @@ export interface ISearchInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    hasResult?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -342,7 +350,6 @@ export interface ISearchInput {
     },
     onSearch(e: MouseEvent<HTMLAnchorElement>): void
     onChange(e: ChangeEvent<HTMLInputElement>): void
-
 }
 
 export interface ISelectInput {
@@ -799,6 +806,27 @@ export interface IListQuery {
     mapped?: boolean,
     from?: string,
     to?: string,
+    resource?: ResourceType,
+    resourceId?: string,
+    key?: string,
+    payload?: any
+}
+
+export interface IListUI {
+    type: 'self' | 'resource',
+    resource?: ResourceType
+    resourceId?: string,
+    headers?: Array<{ label: string, style?: CSSProperties }>,
+    rows?: Array<IListUIRow>
+
+}
+
+export interface IListUIRow {
+    option: 'status' | 'data',
+    resource: ResourceType,
+    type?: StatusType,
+    data: any,
+    callback?(data: any): void
 }
 
 export interface IUserPermission {
@@ -958,8 +986,28 @@ export interface IAddQuestion {
     fields: Array<string>,
 }
 
+export interface IPlaceholder {
+    className: string,
+    height: string,
+    bgColor: string,
+    width: string,
+    minWidth: string,
+    minHeight: string,
+    animate: boolean,
+    radius: string | number,
+    marginTop: string
+    marginBottom: string,
+    top: string
+    left: string
+    right: string
+}
+
 
 // contexts
+export interface IClearResource {
+    type: string,
+    resource: 'multiple' | 'single'
+}
 
 export interface ICollection {
     data: Array<any>,
@@ -1038,10 +1086,12 @@ export interface ICoreContext {
     skills: ICollection,
     skill: any,
     questions: ICollection,
-    question: any,
+    question: Question,
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
     topic: any,
+    search: ICollection,
+    items: Array<any>
     message: string,
     loading: boolean,
     total: number,
@@ -1052,9 +1102,16 @@ export interface ICoreContext {
     getFields(data: IListQuery): Promise<void>,
     getSkills(data: IListQuery): Promise<void>,
     getQuestions(data: IListQuery): Promise<void>,
+    getQuestion(id: string): Promise<void>,
     getTopics(data: IListQuery): Promise<void>,
     getTopic(id: string): Promise<void>,
     setAIQuestions(data: Array<IAIQuestion>): void,
+    clearResource(data: IClearResource): void,
+    setItems(data: Array<any>): void,
+    getResourceQuestions(data: IListQuery): Promise<void>,
+    searchResource(data: IListQuery): Promise<void>,
+    filterResource(data: IListQuery): Promise<void>,
+    clearSearch(): void,
     setLoading(data: ISetLoading): void,
     unsetLoading(data: IUnsetLoading): void,
 }

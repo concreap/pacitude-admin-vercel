@@ -10,7 +10,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
     const {
         id = helper.random(6, true),
         readonly = false,
-        noFilter = true,
+        noFilter = false,
         name = 'filter-box',
         defaultValue = '',
         size = 'md',
