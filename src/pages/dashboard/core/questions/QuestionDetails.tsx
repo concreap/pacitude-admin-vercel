@@ -100,7 +100,7 @@ const QuestionDetailsPage = ({ }) => {
                             <h3 className="font-hostgro-bold fs-16 mrgb0">{coreContext.question.code || '--'}</h3>
                             <span className="font-hostgro fs-13 pag-500">{qHelper.shortenRubric(coreContext.question, 'level')}</span>
                             <span className="font-hostgro fs-14 pag-500 pdr pdl">|</span>
-                            <span className="font-hostgro fs-14 pag-500">{qHelper.shortenRubric(coreContext.question, 'difficulty')}</span>
+                            <span className="font-hostgro fs-13 pag-500">{qHelper.shortenRubric(coreContext.question, 'difficulty')}</span>
                         </div>
 
                         <div className={`actions ${loading ? 'disabled-light' : ''}`}>

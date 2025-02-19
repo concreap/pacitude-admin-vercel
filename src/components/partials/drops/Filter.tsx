@@ -10,6 +10,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
     const {
         id = helper.random(6, true),
         readonly = false,
+        disabled = false,
         noFilter = false,
         name = 'filter-box',
         defaultValue = '',
@@ -73,7 +74,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
     const computeClass = () => {
 
-        let result: string = `filter ${isError ? 'error' : ''} fs-14 ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `filter ${isError ? 'error' : ''} fs-14 ${showFocus ? 'show-focus' : ''} ${disabled ? 'disabled-light' : ''}`;
 
         if (className) {
             result = result + ` ${className}`

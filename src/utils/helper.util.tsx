@@ -770,6 +770,30 @@ const getCurrentPage = (data: IPagination) => {
 
 }
 
+const canNext = (data: IPagination): boolean => {
+
+    let result: boolean = false;
+
+    if(data.next && data.next.limit){
+        result = true;
+    }
+
+    return result;
+
+}
+
+const canPrev = (data: IPagination): boolean => {
+
+    let result: boolean = false;
+
+    if(data.prev && data.prev.limit){
+        result = true;
+    }
+
+    return result;
+
+}
+
 const getInitials = (value: string): string => {
 
     let result = '';
@@ -832,7 +856,6 @@ const splitGenTime = (value: string): { value: string, handle: string } => {
 }
 
 
-
 const helper: IHelper = {
     init: init,
     scrollTo: scrollTo,
@@ -877,7 +900,9 @@ const helper: IHelper = {
     getCurrentPage: getCurrentPage,
     getInitials: getInitials,
     splitGenTime: splitGenTime,
-    randomNum: randomNum
+    randomNum: randomNum,
+    canNext: canNext,
+    canPrev: canPrev
 }
 
 export default helper;

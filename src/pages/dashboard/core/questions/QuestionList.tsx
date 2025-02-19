@@ -21,12 +21,15 @@ import routil from "../../../../utils/routes.util";
 import { useNavigate } from "react-router-dom";
 import qHelper from "../../../../utils/question.util";
 import useGoTo from "../../../../hooks/useGoTo";
+import { difficulties, questionTypes, skillLevels } from "../../../../_data/seed";
+import Field from "../../../../models/Field.model";
 
 const QuestionList = (props: IListUI) => {
 
     const { type, resource, resourceId } = props;
 
     const filtRef = useRef<any>(null)
+    const fieldRef = useRef<any>(null)
     const { goTo } = useGoTo()
 
     const LIMIT = 25;
@@ -36,7 +39,7 @@ const QuestionList = (props: IListUI) => {
 
     const [showPanel, setShowPanel] = useState<boolean>(false);
     const [form, setForm] = useState<{ action: FormActionType, questionId: string }>({ action: 'add-resource', questionId: '' })
-    const [search, setSearch] = useState({ key: '', hasResult: false })
+    const [search, setSearch] = useState({ key: '', hasResult: false, type: 'search', payload: {}, resourceId: '' })
 
     useEffect(() => {
 
@@ -44,9 +47,18 @@ const QuestionList = (props: IListUI) => {
 
     }, [resourceId])
 
+    useEffect(() => {
+        if (coreContext.search.data.length > 0) {
+            setSearch({ ...search, key: search.key, hasResult: true, resourceId: search.resourceId, type: search.type })
+        } else {
+            setSearch({ ...search, key: search.key, hasResult: false, resourceId: '', type: 'search' })
+        }
+    }, [coreContext.search])
+
     const initList = () => {
         if (type === 'self') {
             coreContext.getQuestions({ limit: LIMIT, page: 1, order: 'desc' })
+            coreContext.getFields({ limit: 9999, page: 1, order: 'desc' })
         }
 
         if (type === 'resource' && resource && resourceId) {
@@ -86,8 +98,30 @@ const QuestionList = (props: IListUI) => {
         if (e) { e.preventDefault() }
         const { next } = coreContext.questions.pagination;
 
+
         if (type === 'self') {
-            await coreContext.getQuestions({ limit: next.limit, page: next.page, order: 'desc' })
+
+            if (search.hasResult) {
+
+                const { next: sn } = coreContext.search.pagination;
+
+                if (search.type === 'search') {
+                    await coreContext.searchResource({
+                        limit: sn.limit, page: sn.page, order: 'desc',
+                        resource: 'questions',
+                        payload: search.key
+                    })
+                } else if (search.type === 'filter') {
+                    await coreContext.filterResource({
+                        limit: sn.limit, page: sn.page, order: 'desc',
+                        resource: 'questions',
+                        payload: search.payload
+                    });
+                }
+
+            } else {
+                await coreContext.getQuestions({ limit: next.limit, page: next.page, order: 'desc' })
+            }
         }
 
         if (type === 'resource') {
@@ -103,7 +137,29 @@ const QuestionList = (props: IListUI) => {
         const { prev } = coreContext.questions.pagination;
 
         if (type === 'self') {
-            await coreContext.getQuestions({ limit: prev.limit, page: prev.page, order: 'desc' })
+
+            if (search.hasResult) {
+
+                const { prev: sp } = coreContext.search.pagination;
+
+                if (search.type === 'search') {
+                    await coreContext.searchResource({
+                        limit: sp.limit, page: sp.page, order: 'desc',
+                        resource: 'questions',
+                        payload: search.key
+                    })
+                } else if (search.type === 'filter') {
+                    await coreContext.filterResource({
+                        limit: sp.limit, page: sp.page, order: 'desc',
+                        resource: 'questions',
+                        payload: search.payload
+                    });
+                }
+
+            } else {
+                await coreContext.getQuestions({ limit: prev.limit, page: prev.page, order: 'desc' })
+            }
+
         }
 
         if (type === 'resource') {
@@ -141,28 +197,101 @@ const QuestionList = (props: IListUI) => {
 
                                 if (search.hasResult) {
                                     coreContext.clearSearch();
+                                    setSearch({ ...search, key: '', hasResult: false, type: 'search' })
+                                    if (filtRef.current) {
+                                        filtRef.current.clear()
+                                    }
+                                    if(fieldRef.current){
+                                        fieldRef.current.clear()
+                                    }
                                 } else {
                                     if (search.key) {
                                         await coreContext.searchResource({
                                             resource: 'questions',
                                             key: search.key
                                         });
-
-                                        if (filtRef.current) {
-                                            filtRef.current.clear()
-                                        }
                                     }
                                 }
                             }}
                         />
+
+                        <span className="pdl1"></span>
+                        <Filter
+                            ref={fieldRef}
+                            size="sm"
+                            position="bottom"
+                            disabled={search.hasResult}
+                            noFilter={false}
+                            placeholder="Select Field"
+                            icon={{ type: 'polio', name: 'filter-2', style: { color: '#0a6d9a' } }}
+                            items={
+                                coreContext.fields.data.map((x: Field) => {
+                                    return {
+                                        value: x._id,
+                                        label: helper.capitalize(x.name)
+                                    }
+                                })
+                            }
+                            onChange={async (data) => {
+
+                                let payload: any = { type: 'field', resourceId: data.value, resource: 'field' }
+
+                                setSearch({ ...search, type: 'filter', resourceId: data.value });
+                                await coreContext.filterResource({
+                                    resource: 'questions',
+                                    payload: payload
+                                });
+
+                            }}
+                        />
+
                         <span className="pdl1"></span>
                         <Filter
                             ref={filtRef}
                             size="sm"
                             position="bottom"
-                            icon={{ type: 'polio', name: 'filter-2' }}
-                            items={[{ label: 'Today', value: 'today' }, { label: 'Last 7 days', value: 7 }]}
-                            onChange={(item) => { }}
+                            disabled={search.hasResult}
+                            icon={{ type: 'polio', name: 'filter-2', style: { color: '#0a6d9a' } }}
+                            items={[
+                                {
+                                    value: 'level',
+                                    label: 'By Level',
+                                    subitems: skillLevels.map((x) => { return { label: x.name, value: x.value } })
+                                },
+                                {
+                                    value: 'difficulty',
+                                    label: 'By Difficulty',
+                                    subitems: difficulties.map((x) => { return { label: x.name, value: x.value } })
+                                },
+                                {
+                                    value: 'type',
+                                    label: 'By Type',
+                                    subitems: questionTypes.map((x) => { return { label: x.name, value: x.value } })
+                                },
+                            ]}
+                            onChange={async (data) => {
+
+                                let payload: any = { type: 'default', fieldId: '' }
+
+                                if (data.item) {
+
+                                    if (data.item.value === 'level') {
+                                        payload.levels = [data.value]
+                                    } else if (data.item.value === 'difficulty') {
+                                        payload.difficulties = [data.value]
+                                    } else if (data.item.value === 'type') {
+                                        payload.types = [data.value]
+                                    }
+
+                                    setSearch({ ...search, type: 'filter', payload });
+                                    await coreContext.filterResource({
+                                        resource: 'questions',
+                                        payload: payload
+                                    });
+
+                                }
+
+                            }}
                         />
                     </div>
                     <div className="right-halve">
@@ -206,14 +335,14 @@ const QuestionList = (props: IListUI) => {
                 <div className="body">
 
                     {
-                        coreContext.questions.loading &&
+                        (coreContext.questions.loading || coreContext.search.loading) &&
                         <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                             <span className="loader lg primary"></span>
                         </EmptyState>
                     }
 
                     {
-                        !coreContext.questions.loading &&
+                        (!coreContext.questions.loading && !coreContext.search.loading) &&
                         <div className="tablebox responsive">
 
                             {
@@ -247,6 +376,35 @@ const QuestionList = (props: IListUI) => {
                                     <tbody>
 
                                         {
+                                            coreContext.search.data.length > 0 &&
+                                            coreContext.search.data.map((question: Question, index) =>
+                                                <Fragment key={question._id}>
+                                                    <tr className="table-row">
+                                                        <CellData fontSize={13} className="wp-15" render={helper.formatDate(question.createdAt, 'basic')} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} className="wp-25" render={helper.addElipsis(question.body, 38)} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'level')} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'difficulty')} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'question-type')} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} className="ui-upcase ui-text-center" render={question.answers.length} />
+                                                        <CellData fontSize={13} className="" status={{ enable: true, type: 'enabled', value: question.isEnabled }} render={<></>} />
+                                                        <CellData fontSize={13} render={
+                                                            <div className="popout-wrapper">
+                                                                <Popout
+                                                                    position="left"
+                                                                    items={[
+                                                                        { label: 'Details', value: 'details', icon: { name: 'menu', size: 16, type: 'polio' }, onClick: (e) => { } },
+                                                                        { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
+                                                                    ]}
+                                                                />
+                                                            </div>
+                                                        } />
+                                                    </tr>
+                                                </Fragment>
+                                            )
+                                        }
+
+                                        {
+                                            coreContext.search.data.length === 0 &&
                                             coreContext.questions.data.map((question: Question, index) =>
                                                 <Fragment key={question._id}>
                                                     <tr className="table-row">
@@ -307,7 +465,7 @@ const QuestionList = (props: IListUI) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${coreContext.questions.pagination.prev && coreContext.questions.pagination.prev.limit ? '' : 'disabled'}`}
+                            className={`${helper.canPrev(search.hasResult ? coreContext.search.pagination : coreContext.questions.pagination) ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiPrev(e)}
                         />
@@ -315,7 +473,7 @@ const QuestionList = (props: IListUI) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${coreContext.questions.pagination.next && coreContext.questions.pagination.next.limit ? '' : 'disabled'}`}
+                            className={`${helper.canNext(search.hasResult ? coreContext.search.pagination : coreContext.questions.pagination) ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiNext(e)}
                         />

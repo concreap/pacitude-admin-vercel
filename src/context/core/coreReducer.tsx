@@ -13,7 +13,8 @@ import {
     GET_QUESTION,
     GET_TOPICS,
     GET_TOPIC,
-    SET_AIQUESTION
+    SET_AIQUESTION,
+    SET_SEARCH
 } from "../types";
 
 const reducer = (state: any, action: any) => {
@@ -83,6 +84,11 @@ const reducer = (state: any, action: any) => {
             return {
                 ...state,
                 aiQuestions: action.payload
+            }
+        case SET_SEARCH:
+            return {
+                ...state,
+                search: action.payload
             }
         case SET_LOADING:
             return {

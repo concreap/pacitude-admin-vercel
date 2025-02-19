@@ -912,7 +912,7 @@ input.error.show-focus:focus {
 
 .filter .menu .filter-item:hover,
 .filter .menu .filter-item span:hover {
-    color: var(--pag-600) !important;
+    color: var(--pab-600) !important;
 }
 
 .la-filter {

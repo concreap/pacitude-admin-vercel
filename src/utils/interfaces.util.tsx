@@ -220,7 +220,9 @@ export interface IHelper {
     getCurrentPage(data: IPagination): number;
     getInitials(value: string): string,
     splitGenTime(value: string): { value: string, handle: string },
-    randomNum(min: number, max: number): number
+    randomNum(min: number, max: number): number,
+    canNext(data: IPagination): boolean,
+    canPrev(data: IPagination): boolean
 
 }
 
@@ -667,6 +669,7 @@ export interface IFilter {
     isError?: boolean,
     position?: PositionType,
     noFilter?: boolean,
+    disabled?: boolean,
     icon?: {
         type: IconFamilyType,
         name: string,
