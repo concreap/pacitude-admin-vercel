@@ -1,19 +1,19 @@
 @font-face {
   font-family: 'poliocons';
-  src:  url('poliocons.eot?b4tlyb');
-  src:  url('poliocons.eot?b4tlyb#iefix') format('embedded-opentype'),
-    url('poliocons.ttf?b4tlyb') format('truetype'),
-    url('poliocons.woff?b4tlyb') format('woff'),
-    url('poliocons.svg?b4tlyb#poliocons') format('svg');
+  src:  url('poliocons.eot?vettu8');
+  src:  url('poliocons.eot?vettu8#iefix') format('embedded-opentype'),
+    url('poliocons.ttf?vettu8') format('truetype'),
+    url('poliocons.woff?vettu8') format('woff'),
+    url('poliocons.svg?vettu8#poliocons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
 }
 
-.po {
+[class^="po-"], [class*=" po-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'poliocons' !important;
-  speak: none;
+  speak: never;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -25,6 +25,48 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.po-d-select-edge1:before {
+  content: "\ea43";
+}
+.po-app-notification:before {
+  content: "\ea44";
+}
+.po-bed:before {
+  content: "\ea45";
+}
+.po-closet:before {
+  content: "\ea46";
+}
+.po-clutery:before {
+  content: "\ea47";
+}
+.po-drawer:before {
+  content: "\ea48";
+}
+.po-handbag:before {
+  content: "\ea49";
+}
+.po-home-alt-slim:before {
+  content: "\ea4a";
+}
+.po-filter-2:before {
+  content: "\ea3d";
+}
+.po-events:before {
+  content: "\ea3e";
+}
+.po-layer:before {
+  content: "\ea3f";
+}
+.po-bin:before {
+  content: "\ea40";
+}
+.po-branch:before {
+  content: "\ea41";
+}
+.po-settings:before {
+  content: "\ea42";
+}
 .po-st-medal:before {
   content: "\e900";
 }

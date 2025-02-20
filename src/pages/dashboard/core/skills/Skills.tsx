@@ -9,35 +9,36 @@ import TableHead from "../../../../components/app/table/TableHead";
 import CellData from "../../../../components/app/table/CellData";
 import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
+import { ICollection, ICoreContext, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
 import Popout from "../../../../components/partials/drops/Popout";
 import Skill from "../../../../models/Skill.model";
 import UserContext from "../../../../context/user/userContext";
+import CoreContext from "../../../../context/core/coreContext";
 
 const SkillsPage = ({ }) => {
 
     const LIMIT = 25;
 
     const userContext = useContext<IUserContext>(UserContext)
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
 
-    const [skills, setSkills] = useState<ICollection>(geniusContext.skills)
+    const [skills, setSkills] = useState<ICollection>(coreContext.skills)
 
     useEffect(() => {
 
         initSidebar()
 
-        if (helper.isEmpty(geniusContext.skills.data, 'array')) {
-            geniusContext.getSkills({ limit: LIMIT, page: 1, order: 'desc' })
+        if (helper.isEmpty(coreContext.skills.data, 'array')) {
+            coreContext.getSkills({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
 
     useEffect(() => {
 
-        setSkills(geniusContext.skills)
+        setSkills(coreContext.skills)
 
-    }, [geniusContext.skills])
+    }, [coreContext.skills])
 
 
     const initSidebar = () => {
@@ -53,14 +54,14 @@ const SkillsPage = ({ }) => {
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
         const { next } = skills.pagination;
-        await geniusContext.getSkills({ limit: next.limit, page: next.page, order: 'desc' })
+        await coreContext.getSkills({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
         const { prev } = skills.pagination;
-        await geniusContext.getSkills({ limit: prev.limit, page: prev.page, order: 'desc' })
+        await coreContext.getSkills({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
 

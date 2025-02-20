@@ -7,6 +7,7 @@ import DashboardMaster from './components/layouts/DashboardMaster'
 // Context:States
 import UserState from './context/user/userState'
 import GeniusState from './context/genius/geniusState'
+import CoreState from './context/core/coreState'
 import ResourceState from './context/resource/resourceState'
 import { IInRoute, IRoute, IRouteItem } from './utils/interfaces.util';
 import helper from './utils/helper.util';
@@ -33,8 +34,10 @@ const Careers = React.lazy(() => import('./pages/dashboard/core/careers/Careers'
 const Fields = React.lazy(() => import('./pages/dashboard/core/fields/Fields'));
 const Skills = React.lazy(() => import('./pages/dashboard/core/skills/Skills'));
 const Questions = React.lazy(() => import('./pages/dashboard/core/questions/Questions'));
+const AIQuestions = React.lazy(() => import('./pages/dashboard/core/questions/AIQuestions'));
+const QuestionDetails = React.lazy(() => import('./pages/dashboard/core/questions/QuestionDetails'));
 const Topics = React.lazy(() => import('./pages/dashboard/core/topics/Topics'));
-const TopicDetails = React.lazy(() => import('./pages/dashboard/core/topics/Details'));
+const TopicDetails = React.lazy(() => import('./pages/dashboard/core/topics/TopicDetails'));
 const Subscriptions = React.lazy(() => import('./pages/dashboard/payments/subscriptions/Subscriptions'));
 const Transactions = React.lazy(() => import('./pages/dashboard/payments/transactions/Transactions'));
 const Settings = React.lazy(() => import('./pages/dashboard/settings/Settings'));
@@ -94,6 +97,10 @@ const App = () => {
                 return <Skills />
             case 'questions':
                 return <Questions />
+            case 'ai-questions':
+                return <AIQuestions />
+            case 'question-details':
+                return <QuestionDetails />
             case 'topics':
                 return <Topics />
             case 'topic-details':
@@ -122,102 +129,106 @@ const App = () => {
 
                 <GeniusState>
 
-                    <ResourceState>
+                    <CoreState>
 
-                        <Suspense fallback={(<></>)}>
+                        <ResourceState>
 
-                            <ErrorBoundary FallbackComponent={() => (<></>)} onReset={() => { window.location.reload() }} onError={errorHandler}>
+                            <Suspense fallback={(<></>)}>
 
-                                <Routes>
+                                <ErrorBoundary FallbackComponent={() => (<></>)} onReset={() => { window.location.reload() }} onError={errorHandler}>
 
-                                    {
-                                        routes.map((route, index) =>
-                                            <Fragment key={`route-${index + 1}`}>
+                                    <Routes>
 
-                                                {
-                                                    !route.isAuth &&
-                                                    <Route
-                                                        path={route.url}
-                                                        element={getAppPages(route.name)}
-                                                    />
-                                                }
+                                        {
+                                            routes.map((route, index) =>
+                                                <Fragment key={`route-${index + 1}`}>
 
-                                                {
-                                                    route.isAuth && route.name !== 'divider' &&
-                                                    <>
+                                                    {
+                                                        !route.isAuth &&
                                                         <Route
-                                                            path={routil.computePath(route.url)}
-                                                            element={
-                                                                <DashboardMaster
-                                                                    component={getAppPages(route.name)}
-                                                                    title={route.title ? route.title : route.name}
-                                                                    back={route.content.backButton ? route.content.backButton : false}
-                                                                    sidebar={{
-                                                                        collapsed: route.content.sidebar !== undefined ? route.content.sidebar : false
-                                                                    }}
-                                                                />
-                                                            }
+                                                            path={route.url}
+                                                            element={getAppPages(route.name)}
                                                         />
+                                                    }
 
-                                                        {
-                                                            route.subroutes && route.subroutes.length > 0 &&
-                                                            route.subroutes.map((subroute, index) =>
-                                                                <Fragment key={`${subroute.name}-route-${index + 1}`}>
-
-                                                                    <Route
-                                                                        path={routil.computeSubPath(route, subroute)}
-                                                                        element={
-                                                                            <DashboardMaster
-                                                                                component={getAppPages(`${subroute.name}`)}
-                                                                                title={subroute.title ? subroute.title : subroute.name}
-                                                                                back={true}
-                                                                                sidebar={{
-                                                                                    collapsed: subroute.content.sidebar !== undefined ? subroute.content.sidebar : false
-                                                                                }}
-                                                                            />
-                                                                        }
+                                                    {
+                                                        route.isAuth && route.name !== 'divider' &&
+                                                        <>
+                                                            <Route
+                                                                path={routil.computePath(route.url)}
+                                                                element={
+                                                                    <DashboardMaster
+                                                                        component={getAppPages(route.name)}
+                                                                        title={route.title ? route.title : route.name}
+                                                                        back={route.content.backButton ? route.content.backButton : false}
+                                                                        sidebar={{
+                                                                            collapsed: route.content.sidebar !== undefined ? route.content.sidebar : false
+                                                                        }}
                                                                     />
+                                                                }
+                                                            />
 
-                                                                </Fragment>
-                                                            )
-                                                        }
+                                                            {
+                                                                route.subroutes && route.subroutes.length > 0 &&
+                                                                route.subroutes.map((subroute, index) =>
+                                                                    <Fragment key={`${subroute.name}-route-${index + 1}`}>
 
-                                                        {
-                                                            route.inroutes && route.inroutes.length > 0 &&
-                                                            route.inroutes.map((inroute, index) =>
-                                                                <Fragment key={`${inroute.name}-route-${index + 1}`}>
+                                                                        <Route
+                                                                            path={routil.computeSubPath(route, subroute)}
+                                                                            element={
+                                                                                <DashboardMaster
+                                                                                    component={getAppPages(`${subroute.name}`)}
+                                                                                    title={subroute.title ? subroute.title : subroute.name}
+                                                                                    back={true}
+                                                                                    sidebar={{
+                                                                                        collapsed: subroute.content.sidebar !== undefined ? subroute.content.sidebar : false
+                                                                                    }}
+                                                                                />
+                                                                            }
+                                                                        />
 
-                                                                    <Route
-                                                                        path={routil.computeInPath(inroute)}
-                                                                        element={
-                                                                            <DashboardMaster
-                                                                                component={getAppPages(`${inroute.name}`)}
-                                                                                title={inroute.title ? inroute.title : inroute.name}
-                                                                                back={true}
-                                                                                sidebar={{
-                                                                                    collapsed: inroute.content.sidebar !== undefined ? inroute.content.sidebar : false
-                                                                                }}
-                                                                            />
-                                                                        }
-                                                                    />
+                                                                    </Fragment>
+                                                                )
+                                                            }
 
-                                                                </Fragment>
-                                                            )
-                                                        }
-                                                    </>
-                                                }
+                                                            {
+                                                                route.inroutes && route.inroutes.length > 0 &&
+                                                                route.inroutes.map((inroute, index) =>
+                                                                    <Fragment key={`${inroute.name}-route-${index + 1}`}>
 
-                                            </Fragment>
-                                        )
-                                    }
+                                                                        <Route
+                                                                            path={routil.computeInPath(inroute)}
+                                                                            element={
+                                                                                <DashboardMaster
+                                                                                    component={getAppPages(`${inroute.name}`)}
+                                                                                    title={inroute.title ? inroute.title : inroute.name}
+                                                                                    back={true}
+                                                                                    sidebar={{
+                                                                                        collapsed: inroute.content.sidebar !== undefined ? inroute.content.sidebar : false
+                                                                                    }}
+                                                                                />
+                                                                            }
+                                                                        />
 
-                                </Routes>
+                                                                    </Fragment>
+                                                                )
+                                                            }
+                                                        </>
+                                                    }
 
-                            </ErrorBoundary>
+                                                </Fragment>
+                                            )
+                                        }
 
-                        </Suspense>
+                                    </Routes>
 
-                    </ResourceState>
+                                </ErrorBoundary>
+
+                            </Suspense>
+
+                        </ResourceState>
+
+                    </CoreState>
 
                 </GeniusState>
 

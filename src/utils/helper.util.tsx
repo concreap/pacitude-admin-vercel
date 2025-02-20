@@ -264,6 +264,15 @@ const random = (size: number = 6, isAlpha?: boolean) => {
 
 }
 
+const randomNum = (min: number, max: number): number => {
+
+    let result = 0;
+    result = Math.floor(Math.random() * max ) + min;
+
+    return result;
+
+}
+
 const formatDate = (date: any, type: 'basic' | 'datetime') => {
 
     let result: string = '';
@@ -761,6 +770,30 @@ const getCurrentPage = (data: IPagination) => {
 
 }
 
+const canNext = (data: IPagination): boolean => {
+
+    let result: boolean = false;
+
+    if(data.next && data.next.limit){
+        result = true;
+    }
+
+    return result;
+
+}
+
+const canPrev = (data: IPagination): boolean => {
+
+    let result: boolean = false;
+
+    if(data.prev && data.prev.limit){
+        result = true;
+    }
+
+    return result;
+
+}
+
 const getInitials = (value: string): string => {
 
     let result = '';
@@ -786,6 +819,42 @@ const getInitials = (value: string): string => {
     return result;
 
 }
+
+const splitGenTime = (value: string): { value: string, handle: string } => {
+
+    let result: { value: string, handle: string } = { value: '', handle: '' };
+
+    const split = value.split(' ');
+
+    if(split.length === 2){
+
+        result.value = split[0];
+
+        if(split[1].includes('s')){
+            result.handle = split[1].substring(0, split[1].length - 1)
+        } else {
+            result.handle = split[1];
+        }
+
+    } else if(split.length > 2 && split.length === 4) {
+
+        result.value = split[0];
+
+        if(split[1].includes('s')){
+            result.handle = split[1].substring(0, split[1].length - 1)
+        } else {
+            result.handle = split[1];
+        }
+
+    } else {
+        result.value = '1';
+        result.handle = 'minute'
+    }
+
+    return result;
+
+}
+
 
 const helper: IHelper = {
     init: init,
@@ -829,7 +898,11 @@ const helper: IHelper = {
     formatCurrency: formatCurrency,
     currentDate: currentDate,
     getCurrentPage: getCurrentPage,
-    getInitials: getInitials
+    getInitials: getInitials,
+    splitGenTime: splitGenTime,
+    randomNum: randomNum,
+    canNext: canNext,
+    canPrev: canPrev
 }
 
 export default helper;

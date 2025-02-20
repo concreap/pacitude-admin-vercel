@@ -9,35 +9,36 @@ import TableHead from "../../../../components/app/table/TableHead";
 import CellData from "../../../../components/app/table/CellData";
 import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
+import { ICollection, ICoreContext, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
 import Career from "../../../../models/Career.model";
 import Popout from "../../../../components/partials/drops/Popout";
 import UserContext from "../../../../context/user/userContext";
+import CoreContext from "../../../../context/core/coreContext";
 
 const CareersPage = ({ }) => {
 
     const LIMIT = 25;
 
     const userContext = useContext<IUserContext>(UserContext)
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
 
-    const [careers, setCareers] = useState<ICollection>(geniusContext.careers)
+    const [careers, setCareers] = useState<ICollection>(coreContext.careers)
 
     useEffect(() => {
 
         initSidebar()
         
-        if (helper.isEmpty(geniusContext.careers.data, 'array')) {
-            geniusContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
+        if (helper.isEmpty(coreContext.careers.data, 'array')) {
+            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
 
     useEffect(() => {
 
-        setCareers(geniusContext.careers)
+        setCareers(coreContext.careers)
 
-    }, [geniusContext.careers])
+    }, [coreContext.careers])
 
     const initSidebar = () => {
 
@@ -52,14 +53,14 @@ const CareersPage = ({ }) => {
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
         const { next } = careers.pagination;
-        await geniusContext.getCareers({ limit: next.limit, page: next.page, order: 'desc' })
+        await coreContext.getCareers({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
         const { prev } = careers.pagination;
-        await geniusContext.getCareers({ limit: prev.limit, page: prev.page, order: 'desc' })
+        await coreContext.getCareers({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
 

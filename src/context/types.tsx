@@ -37,3 +37,6 @@ export const SET_IS_SUPER = 'SET_IS_SUPER';
 export const SET_IS_ADMIN = 'SET_IS_ADMIN';
 export const SET_SIDEBAR = 'SET_SIDEBAR';
 export const SET_USER = 'SET_USER';
+export const SET_AIQUESTION = 'SET_AIQUESTION';
+export const SET_ITEMS = 'SET_ITEMS';
+export const SET_PERMISSIONS = 'SET_PERMISSIONS';

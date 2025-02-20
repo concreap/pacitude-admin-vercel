@@ -3,6 +3,22 @@ import { IInRoute, IRoute, IRouteItem, IRouteParam, IRoutil } from './interfaces
 
 const DASHBOARD_ROUTE = process.env.REACT_APP_DASHBOARD_ROUTE || '/dashboard';
 
+const computeAppRoute = (route: IRoute): string => {
+
+    let result: string = '';
+
+    if(route.params && route.params.length > 0){
+
+        const resolved = resolveRouteParams(route.params, 'app')
+        result = `${route.url}${resolved}`
+
+    }else {
+        result = route.url;
+    }
+
+    return result;
+}
+
 const computePath = (route: string): string => {
 
     if (route === '/dashboard') {
@@ -130,6 +146,7 @@ const inRoute = (payload: { route: string, name: string, params?: Array<IRoutePa
 }
 
 const routil: IRoutil = {
+    computeAppRoute: computeAppRoute,
     computePath: computePath,
     computeSubPath: computeSubPath,
     computeInPath: computeInPath,

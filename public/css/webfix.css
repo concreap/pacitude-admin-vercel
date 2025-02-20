@@ -417,6 +417,12 @@ a {
 .ui-flexbox.justify-center, .flex-justify-center{
     justify-content: center !important;
 }
+.ui-flexbox.wrap{
+    flex-wrap: wrap !important;
+}
+.ui-flexbox .ui-flexbox-grow{
+    flex-grow: 1 !important;
+}
 
 .ui-full-bg {
 

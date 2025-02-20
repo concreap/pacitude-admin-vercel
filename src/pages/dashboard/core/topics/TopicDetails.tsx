@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from "react"
 import { useParams } from "react-router-dom";
 import GeniusContext from "../../../../context/genius/geniusContext";
-import { IAlert, IGeniusContext, IResourceContext, IToast, IToastState, IUserContext } from "../../../../utils/interfaces.util";
+import { IAlert, ICoreContext, IGeniusContext, IResourceContext, IToast, IToastState, IUserContext } from "../../../../utils/interfaces.util";
 import helper from "../../../../utils/helper.util";
 import Topic from "../../../../models/Topic.model";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
@@ -13,6 +13,7 @@ import ResourceContext from "../../../../context/resource/resourceContext";
 import TopicForm from "./TopicForm";
 import DropDown from "../../../../components/layouts/DropDown";
 import Badge from "../../../../components/partials/badges/Badge";
+import CoreContext from "../../../../context/core/coreContext";
 
 const TopicDetailsPage = ({ }) => {
 
@@ -20,10 +21,10 @@ const TopicDetailsPage = ({ }) => {
     const { id } = useParams()
 
     const userContext = useContext<IUserContext>(UserContext)
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
     const resourceContext = useContext<IResourceContext>(ResourceContext)
 
-    const [topic, setTopic] = useState<Topic>(geniusContext.topic)
+    const [topic, setTopic] = useState<Topic>(coreContext.topic)
     const [updated, setUpdated] = useState<any>({})
     const [loading, setLoading] = useState<boolean>(false)
     const [showPanel, setShowPanel] = useState<boolean>(false)
@@ -33,13 +34,13 @@ const TopicDetailsPage = ({ }) => {
         initSidebar()
         getTopic()
 
-        geniusContext.getFields({ limit: 9999, page: 1, order: 'desc' })
+        coreContext.getFields({ limit: 9999, page: 1, order: 'desc' })
 
     }, [])
 
     useEffect(() => {
-        setTopic(geniusContext.topic)
-    }, [geniusContext.topic])
+        setTopic(coreContext.topic)
+    }, [coreContext.topic])
 
     const initSidebar = () => {
 
@@ -57,7 +58,7 @@ const TopicDetailsPage = ({ }) => {
 
     const getTopic = () => {
         if (id) {
-            geniusContext.getTopic(id);
+            coreContext.getTopic(id);
         }
     }
 
@@ -65,9 +66,9 @@ const TopicDetailsPage = ({ }) => {
 
         let result: Array<any> = [];
 
-        if (geniusContext.fields.data.length > 0) {
+        if (coreContext.fields.data.length > 0) {
 
-            result = geniusContext.fields.data.map((f) => {
+            result = coreContext.fields.data.map((f) => {
                 let c = {
                     value: f._id,
                     label: helper.capitalizeWord(f.name),
@@ -91,7 +92,7 @@ const TopicDetailsPage = ({ }) => {
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'core',
             method: 'PUT',
             path: `/topics/${topic._id}`,
             isAuth: true,
@@ -139,7 +140,7 @@ const TopicDetailsPage = ({ }) => {
         <>
 
             {
-                geniusContext.loading &&
+                coreContext.loading &&
                 <>
                     <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                         <span className="loader lg primary"></span>
@@ -147,7 +148,7 @@ const TopicDetailsPage = ({ }) => {
                 </>
             }
             {
-                !geniusContext.loading &&
+                !coreContext.loading &&
                 <>
 
                     <div className="details-header">

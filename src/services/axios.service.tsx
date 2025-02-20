@@ -75,13 +75,27 @@ class AxiosService {
 
                 if (err.response.status === 404) {
                     result.error = true;
-                    result.errors = ['could not find the requested resource'];
-                    result.message = 'Could not find the requested resource';
+
+                    if (err.response.data.errors) {
+                        result.errors = err.response.data.errors
+                    } else if (err.response.data.message) {
+                        result.message = err.response.data.message
+                    } else {
+                        result.message = 'unable to get requested resource';
+                    }
+                    
                     result.data = null;
                 } else if (err.response.status === 502) {
                     result.error = true;
-                    result.errors = ['unable to get requested resource'];
-                    result.message = 'unable to get requested resource';
+
+                    if (err.response.data.errors) {
+                        result.errors = err.response.data.errors
+                    } else if (err.response.data.message) {
+                        result.message = err.response.data.message
+                    } else {
+                        result.message = 'unable to get requested resource';
+                    }
+
                     result.data = null;
                 } else {
 

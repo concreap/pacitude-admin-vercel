@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext, Fragment } from "react"
-import { ICollection, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
+import { ICollection, ICoreContext, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
 import GeniusContext from "../../../../context/genius/geniusContext";
 import SearchInput from "../../../../components/partials/inputs/SearchInput";
 import Filter from "../../../../components/partials/drops/Filter";
@@ -13,31 +13,32 @@ import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
 import Popout from "../../../../components/partials/drops/Popout";
 import UserContext from "../../../../context/user/userContext";
+import CoreContext from "../../../../context/core/coreContext";
 
 const IndustriesPage = ({ }) => {
 
     const LIMIT = 25;
 
     const userContext = useContext<IUserContext>(UserContext)
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
 
-    const [industries, setIndustries] = useState<ICollection>(geniusContext.industries)
+    const [industries, setIndustries] = useState<ICollection>(coreContext.industries)
 
     useEffect(() => {
 
         initSidebar()
         
-        if (helper.isEmpty(geniusContext.industries.data, 'array')) {
-            geniusContext.getIndustries({ limit: LIMIT, page: 1, order: 'desc' })
+        if (helper.isEmpty(coreContext.industries.data, 'array')) {
+            coreContext.getIndustries({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
 
     useEffect(() => {
 
-        setIndustries(geniusContext.industries)
+        setIndustries(coreContext.industries)
 
-    }, [geniusContext.industries])
+    }, [coreContext.industries])
 
     const initSidebar = () => {
 
@@ -51,14 +52,14 @@ const IndustriesPage = ({ }) => {
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
         const { next } = industries.pagination;
-        await geniusContext.getIndustries({ limit: next.limit, page: next.page, order: 'desc' })
+        await coreContext.getIndustries({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
         const { prev } = industries.pagination;
-        await geniusContext.getIndustries({ limit: prev.limit, page: prev.page, order: 'desc' })
+        await coreContext.getIndustries({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
 

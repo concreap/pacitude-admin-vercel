@@ -152,6 +152,18 @@ const sidebarRoutes: Array<IRoute> = [
         inroutes: [
             {
                 route: 'core',
+                parent: 'questions',
+                name: 'question-details',
+                title: 'Question Details',
+                iconName: 'flash',
+                url: '/questions',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
                 parent: 'topics',
                 name: 'topic-details',
                 title: 'Topic Details',
@@ -160,6 +172,18 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'questions',
+                name: 'ai-questions',
+                title: 'Generate Questions',
+                iconName: 'flash',
+                url: '/ai-questions',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
                 content: { sidebar: true, backButton: true }
             }
         ]

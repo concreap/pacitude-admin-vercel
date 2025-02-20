@@ -539,6 +539,45 @@ input.error.show-focus:focus {
     width: 100%;
 }
 
+.placeholder {
+    position: relative;
+    width: 100%;
+    height: 100px;
+    background-color: #e0e4ec;
+    z-index: 2;
+    border-radius: 0;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    display: inline-block;
+}
+
+.placeholder .activity {
+    position: absolute;
+    left: -45%;
+    height: 100%;
+    width: 45%;
+
+    background-image: linear-gradient(to left, rgba(251, 251, 251, .05), rgba(251, 251, 251, .3), rgba(251, 251, 251, .6), rgba(251, 251, 251, .3), rgba(251, 251, 251, .05));
+    background-image: -moz-linear-gradient(to left, rgba(251, 251, 251, .05), rgba(251, 251, 251, .3), rgba(251, 251, 251, .6), rgba(251, 251, 251, .3), rgba(251, 251, 251, .05));
+    background-image: -webkit-linear-gradient(to left, rgba(251, 251, 251, .05), rgba(251, 251, 251, .3), rgba(251, 251, 251, .6), rgba(251, 251, 251, .3), rgba(251, 251, 251, .05));
+
+    z-index: 3;
+}
+
+.placeholder .activity.flicker {
+    animation: place-loading 1s infinite !important;
+}
+
+@keyframes place-loading {
+    0% {
+        left: -45%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
 .loader {
     display: inline-block;
     position: relative;
@@ -714,7 +753,7 @@ input.error.show-focus:focus {
 
 .filter.show-focus:focus,
 .filter.show-focus:hover {
-    border: 1px solid var(--pab-400);
+    border: 1px solid var(--pag-200);
 }
 
 .filter.error.show-focus:focus,
@@ -773,8 +812,7 @@ input.error.show-focus:focus {
 
 .filter .menu {
     min-width: 180px;
-    min-height: 150px;
-    max-height: 150px;
+    max-height: 170px;
     padding: 0.8rem 0.8rem;
     border-radius: 0.6rem;
     box-shadow: 0 10px 20px 1px rgba(0, 0, 0, 0.045);
@@ -837,7 +875,13 @@ input.error.show-focus:focus {
     transform: translateY(-40px);
 }
 
-.filter .menu::-webkit-scrollbar {
+.filter .menu .sub-filter-list {
+    max-height: 150px;
+    overflow-y: scroll;
+}
+
+.filter .menu::-webkit-scrollbar,
+.filter .menu .sub-filter-list::-webkit-scrollbar {
     display: none;
 }
 
@@ -852,7 +896,7 @@ input.error.show-focus:focus {
 .filter .menu .filter-item {
     display: flex;
     align-items: center;
-    padding: 0.1rem 0;
+    padding: 0.2rem 0;
     margin-bottom: 0.5rem;
 
     -webkit-transition: all 0.15s ease;
@@ -869,6 +913,15 @@ input.error.show-focus:focus {
 .filter .menu .filter-item:hover,
 .filter .menu .filter-item span:hover {
     color: var(--pab-600) !important;
+}
+
+.la-filter {
+    background-color: var(--pag-50);
+    border-color: transparent;
+}
+
+.la-filter.show-focus:hover {
+    border-color: var(--pag-200);
 }
 
 
@@ -984,7 +1037,7 @@ input.error.show-focus:focus {
     border-radius: 5px;
 }
 
-.badge.badge-close{
+.badge.badge-close {
     padding: 0.3rem 0.5rem;
 }
 
@@ -1024,7 +1077,7 @@ input.error.show-focus:focus {
     font-size: 10px !important;
 }
 
-.badge.badge-close.sm{
+.badge.badge-close.sm {
     padding: 0.3rem 0.6rem;
 }
 
@@ -1033,7 +1086,7 @@ input.error.show-focus:focus {
     height: 21px;
 }
 
-.badge.badge-close.rg{
+.badge.badge-close.rg {
     padding: 0.3rem 0.5rem;
 }
 
@@ -1042,7 +1095,7 @@ input.error.show-focus:focus {
     height: 25px;
 }
 
-.badge.badge-close.md{
+.badge.badge-close.md {
     padding: 0.3rem 0.7rem;
 }
 
@@ -1052,7 +1105,7 @@ input.error.show-focus:focus {
     font-size: 12px !important;
 }
 
-.badge.badge-close.lg{
+.badge.badge-close.lg {
     padding: 0.3rem 1rem;
 }
 
@@ -1338,13 +1391,13 @@ td {
 
 .panel-box .panel {
     margin-left: auto;
-    width: 440px;
+    width: 460px;
     height: 100vh;
     max-height: 100vh;
     overflow-x: hidden;
     overflow-y: scroll;
     background-color: #ffffff;
-    padding: 1rem 1.5rem;
+    padding: 1.5rem 2rem;
 
     -webkit-transition: all 0.35s ease;
     -moz-transition: all 0.35s ease;
@@ -1393,15 +1446,15 @@ td {
 /* drag zone */
 .drag-zone {
     width: 100%;
-    min-height: 154px;
+    min-height: 188px;
     padding: 0.4rem;
     position: relative;
-    
+
     background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='15' ry='15' stroke='%23C5CDD9FF' stroke-width='2' stroke-dasharray='4%2c 8' stroke-dashoffset='5' stroke-linecap='square'/%3e%3c/svg%3e");
     border-radius: 15px;
 }
 
-.drag-zone .zone{
+.drag-zone .zone {
     width: 100%;
     min-height: 154px;
     border-radius: 12px;
@@ -1410,7 +1463,8 @@ td {
     align-items: center;
     padding: 0 1.3rem;
 }
-.drag-zone .zone-file{
+
+.drag-zone .zone-file {
     width: 80px;
     height: 80px;
     border-radius: 10px;
@@ -1419,4 +1473,76 @@ td {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.gen-questions-box,
+.gen-edit-questions {
+    min-height: 575px !important;
+    max-height: 570px;
+    overflow-y: scroll;
+    padding-top: 0.5rem !important;
+}
+
+.gen-edit-questions {
+    padding-top: 1rem !important;
+}
+
+.gen-questions-box::-webkit-scrollbar,
+.gen-edit-questions::-webkit-scrollbar {
+    display: none;
+}
+
+.question {
+    width: 100%;
+    min-height: 150px;
+    box-shadow: 5px 5px 20px 1px rgba(0, 0, 0, 0.015);
+    border-radius: 10px;
+    border: 1px solid var(--pag-50);
+    padding: var(--digit-16rem);
+    margin-bottom: 1rem;
+}
+
+.question .question-body {
+    line-height: 28px;
+}
+
+.question.answers-list {
+    box-shadow: none;
+    padding: var(--digit-24rem) var(--digit-16rem);
+}
+
+.question .answers {
+    width: 100%;
+}
+
+.question .answer {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin-bottom: var(--digit-8);
+}
+
+.question.answers-list .answer{
+    margin-bottom: var(--digit-16);
+}
+
+.question .answer .alphabet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 25px;
+    min-height: 25px;
+    font-size: 14px;
+    border-radius: 100px;
+    background-color: var(--pab-50);
+    color: var(--pab-700);
+}
+
+.question .answer .content {
+    flex-grow: 1;
+}
+
+.question.generated:hover {
+    border: 1px solid var(--pab-200);
 }

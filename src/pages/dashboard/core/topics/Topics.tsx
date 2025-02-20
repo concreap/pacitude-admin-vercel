@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext, Fragment } from "react"
-import GeniusContext from "../../../../context/genius/geniusContext";
 import SearchInput from "../../../../components/partials/inputs/SearchInput";
 import Filter from "../../../../components/partials/drops/Filter";
 import Button from "../../../../components/partials/buttons/Button";
@@ -9,7 +8,7 @@ import TableHead from "../../../../components/app/table/TableHead";
 import CellData from "../../../../components/app/table/CellData";
 import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, IGeniusContext, IUserContext } from "../../../../utils/interfaces.util";
+import { ICollection, ICoreContext, IUserContext } from "../../../../utils/interfaces.util";
 import Popout from "../../../../components/partials/drops/Popout";
 import Topic from "../../../../models/Topic.model";
 import UserContext from "../../../../context/user/userContext";
@@ -17,6 +16,7 @@ import routil from "../../../../utils/routes.util";
 import { useNavigate } from "react-router-dom";
 import TopicForm from "./TopicForm";
 import { FormActionType } from "../../../../utils/types.util";
+import CoreContext from "../../../../context/core/coreContext";
 
 const TopicsPage = ({ }) => {
 
@@ -24,7 +24,7 @@ const TopicsPage = ({ }) => {
     const navigate = useNavigate()
 
     const userContext = useContext<IUserContext>(UserContext)
-    const geniusContext = useContext<IGeniusContext>(GeniusContext)
+    const coreContext = useContext<ICoreContext>(CoreContext)
     const [showPanel, setShowPanel] = useState<boolean>(false);
     const [form, setForm] = useState<{ action: FormActionType, topicId: string }>({ action: 'add-resource', topicId: '' })
 
@@ -33,8 +33,8 @@ const TopicsPage = ({ }) => {
 
         initSidebar()
 
-        if (helper.isEmpty(geniusContext.topics.data, 'array')) {
-            geniusContext.getTopics({ limit: LIMIT, page: 1, order: 'desc' })
+        if (helper.isEmpty(coreContext.topics.data, 'array')) {
+            coreContext.getTopics({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
@@ -51,15 +51,15 @@ const TopicsPage = ({ }) => {
 
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { next } = geniusContext.topics.pagination;
-        await geniusContext.getTopics({ limit: next.limit, page: next.page, order: 'desc' })
+        const { next } = coreContext.topics.pagination;
+        await coreContext.getTopics({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { prev } = geniusContext.topics.pagination;
-        await geniusContext.getTopics({ limit: prev.limit, page: prev.page, order: 'desc' })
+        const { prev } = coreContext.topics.pagination;
+        await coreContext.getTopics({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
 
@@ -152,29 +152,29 @@ const TopicsPage = ({ }) => {
                 <div className="body">
 
                     {
-                        geniusContext.topics.loading &&
+                        coreContext.topics.loading &&
                         <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                             <span className="loader lg primary"></span>
                         </EmptyState>
                     }
 
                     {
-                        !geniusContext.topics.loading &&
+                        !coreContext.topics.loading &&
                         <div className="tablebox responsive">
 
                             {
-                                geniusContext.topics.data.length === 0 &&
+                                coreContext.topics.data.length === 0 &&
                                 <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                                     <span className={`ts-icon terra-link`}>
                                         <i className='path1 fs-28'></i>
                                         <i className='path2 fs-28'></i>
                                     </span>
-                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{geniusContext.topics.message}</div>
+                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{coreContext.topics.message}</div>
                                 </EmptyState>
                             }
 
                             {
-                                geniusContext.topics.data.length > 0 &&
+                                coreContext.topics.data.length > 0 &&
                                 <table className="table" style={{ borderCollapse: 'collapse' }}>
 
                                     <TableHead
@@ -193,7 +193,7 @@ const TopicsPage = ({ }) => {
                                     <tbody>
 
                                         {
-                                            geniusContext.topics.data.map((topic: Topic, index) =>
+                                            coreContext.topics.data.map((topic: Topic, index) =>
                                                 <Fragment key={topic._id}>
                                                     <tr className="table-row">
                                                         <CellData fontSize={13} className="wp-15" render={helper.formatDate(topic.createdAt, 'basic')} />
@@ -233,7 +233,7 @@ const TopicsPage = ({ }) => {
 
                 <div className="ui-separate-small"></div>
 
-                <div className={`footer pdb2 ${geniusContext.topics.loading ? 'disabled-light' : ''}`}>
+                <div className={`footer pdb2 ${coreContext.topics.loading ? 'disabled-light' : ''}`}>
 
                     <div className="left-halve">
                         <Filter
@@ -246,7 +246,7 @@ const TopicsPage = ({ }) => {
                             onChange={(item) => { }}
                         />
                         <div className="pdl1">
-                            <span className="fs-13 pas-950">Displaying {geniusContext.topics.count} topics on page {helper.getCurrentPage(geniusContext.topics.pagination)}</span>
+                            <span className="fs-13 pas-950">Displaying {coreContext.topics.count} topics on page {helper.getCurrentPage(coreContext.topics.pagination)}</span>
                         </div>
                     </div>
 
@@ -254,7 +254,7 @@ const TopicsPage = ({ }) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${geniusContext.topics.pagination.prev && geniusContext.topics.pagination.prev.limit ? '' : 'disabled'}`}
+                            className={`${coreContext.topics.pagination.prev && coreContext.topics.pagination.prev.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiPrev(e)}
                         />
@@ -262,7 +262,7 @@ const TopicsPage = ({ }) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${geniusContext.topics.pagination.next && geniusContext.topics.pagination.next.limit ? '' : 'disabled'}`}
+                            className={`${coreContext.topics.pagination.next && coreContext.topics.pagination.next.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiNext(e)}
                         />

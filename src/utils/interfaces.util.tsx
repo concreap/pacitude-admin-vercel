@@ -1,7 +1,8 @@
-import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent } from "react";
-import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PDFAcceptType, PositionType, QueryOrderType, RouteActionType, RouteParamType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
+import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
+import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
+import Question, { IQuestionTime } from "../models/Question.model";
 
 export interface ISetCookie {
     key: string,
@@ -217,16 +218,27 @@ export interface IHelper {
     formatCurrency(currency: string): string,
     currentDate(): Date,
     getCurrentPage(data: IPagination): number;
-    getInitials(value: string): string
+    getInitials(value: string): string,
+    splitGenTime(value: string): { value: string, handle: string },
+    randomNum(min: number, max: number): number,
+    canNext(data: IPagination): boolean,
+    canPrev(data: IPagination): boolean
 
 }
 
 export interface IRoutil {
+    computeAppRoute(route: IRoute): string,
     computePath(route: string): string,
     computeSubPath(route: IRoute, subroute: IRouteItem): string,
     computeInPath(inroute: IInRoute): string,
     inRoute(payload: { route: string, name: string, params?: Array<IRouteParam> }): string,
     resolveRouteParams(params: Array<IRouteParam>, stickTo: 'app' | 'page'): string
+}
+
+export interface IQuestionUtil{
+    shortenRubric(question: Question, type: RubricType): string,
+    rubricBadge(type: RubricType): SemanticType,
+    formatTime(time: IQuestionTime): string,
 }
 
 export interface IICon {
@@ -253,7 +265,7 @@ export interface IPanelBox {
 }
 
 export interface ITextInput {
-    ref?: RefObject<HTMLInputElement>,
+    ref?: LegacyRef<HTMLInputElement>,
     type: 'text' | 'email',
     readonly?: boolean,
     name?: string,
@@ -320,7 +332,6 @@ export interface IPasswordInput {
 }
 
 export interface ISearchInput {
-    ref?: RefObject<HTMLInputElement>
     readonly?: boolean,
     name?: string,
     id?: string
@@ -332,6 +343,7 @@ export interface ISearchInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    hasResult?: boolean,
     label?: {
         title: string,
         className?: string,
@@ -340,7 +352,6 @@ export interface ISearchInput {
     },
     onSearch(e: MouseEvent<HTMLAnchorElement>): void
     onChange(e: ChangeEvent<HTMLInputElement>): void
-
 }
 
 export interface ISelectInput {
@@ -349,12 +360,13 @@ export interface ISelectInput {
     defaultValue?: string,
     size?: SizeType,
     className?: string,
-    selected?: boolean,
+    selected?: string,
     placeholder: {
         value: string,
         enable?: boolean
     },
     showFocus?: boolean,
+    readonly?: boolean,
     isError?: boolean,
     label?: {
         title: string,
@@ -646,7 +658,6 @@ export interface ILinkButton {
 }
 
 export interface IFilter {
-    ref?: RefObject<HTMLInputElement>
     readonly?: boolean,
     name?: string,
     id?: string
@@ -658,17 +669,29 @@ export interface IFilter {
     isError?: boolean,
     position?: PositionType,
     noFilter?: boolean,
+    disabled?: boolean,
     icon?: {
         type: IconFamilyType,
         name: string,
+        style?: CSSProperties
     }
     items: Array<IFilterItem>,
-    onChange(item: IFilterItem): void
+    onChange(item: ISelectedFilter): void
 }
 
 export interface IFilterItem {
     label: string,
-    value: any
+    value: any,
+    subitems?: Array<{
+        label: string,
+        value: any
+    }>
+}
+
+export interface ISelectedFilter {
+    label: string,
+    value: any,
+    item?: IFilterItem
 }
 
 export interface IPopout {
@@ -786,6 +809,27 @@ export interface IListQuery {
     mapped?: boolean,
     from?: string,
     to?: string,
+    resource?: ResourceType,
+    resourceId?: string,
+    key?: string,
+    payload?: any
+}
+
+export interface IListUI {
+    type: 'self' | 'resource',
+    resource?: ResourceType
+    resourceId?: string,
+    headers?: Array<{ label: string, style?: CSSProperties }>,
+    rows?: Array<IListUIRow>
+
+}
+
+export interface IListUIRow {
+    option: 'status' | 'data',
+    resource: ResourceType,
+    type?: StatusType,
+    data: any,
+    callback?(data: any): void
 }
 
 export interface IUserPermission {
@@ -895,9 +939,78 @@ export interface IBadge {
     onClose?(e: any): void
 }
 
+export interface IGeneratedQuestion {
+    body: string,
+    answers: Array<IGenAnswer>,
+    correct: string,
+    level: string,
+    score: string,
+    time: string
+    difficulty: string,
+    type: string
+}
+
+export interface IGenAnswer {
+    alphabet: string,
+    answer: string
+}
+
+export interface IAIQuestion {
+    code: string,
+    body: string,
+    answers: Array<IGenAnswer>,
+    correct: string,
+    levels: Array<string>,
+    score: string,
+    time: {
+        value: string,
+        handle: string,
+    },
+    difficulties: Array<string>,
+    types: Array<string>,
+    fields: Array<{ name: string, id: string }>,
+}
+
+export interface IAddQuestion {
+    body: string,
+    answers: Array<{
+        alphabet: string,
+        body: string
+    }>,
+    correct: string,
+    levels: Array<string>,
+    score: string,
+    time: {
+        value: string,
+        handle: string,
+    },
+    difficulties: Array<string>,
+    types: Array<string>,
+    fields: Array<string>,
+}
+
+export interface IPlaceholder {
+    className: string,
+    height: string,
+    bgColor: string,
+    width: string,
+    minWidth: string,
+    minHeight: string,
+    animate: boolean,
+    radius: string | number,
+    marginTop: string
+    marginBottom: string,
+    top: string
+    left: string
+    right: string
+}
 
 
 // contexts
+export interface IClearResource {
+    type: string,
+    resource: 'multiple' | 'single'
+}
 
 export interface ICollection {
     data: Array<any>,
@@ -964,6 +1077,46 @@ export interface IGeniusContext {
     getTopic(id: string): Promise<void>,
     setLoading(data: ISetLoading): Promise<void>,
     unsetLoading(data: IUnsetLoading): Promise<void>,
+}
+
+export interface ICoreContext {
+    industries: ICollection,
+    industry: Industry,
+    careers: ICollection,
+    career: Industry,
+    fields: ICollection,
+    field: Industry,
+    skills: ICollection,
+    skill: any,
+    questions: ICollection,
+    question: Question,
+    aiQuestions: Array<IAIQuestion>,
+    topics: ICollection,
+    topic: any,
+    search: ICollection,
+    items: Array<any>
+    message: string,
+    loading: boolean,
+    total: number,
+    count: number,
+    pagination: any,
+    getIndustries(data: IListQuery): Promise<void>,
+    getCareers(data: IListQuery): Promise<void>,
+    getFields(data: IListQuery): Promise<void>,
+    getSkills(data: IListQuery): Promise<void>,
+    getQuestions(data: IListQuery): Promise<void>,
+    getQuestion(id: string): Promise<void>,
+    getTopics(data: IListQuery): Promise<void>,
+    getTopic(id: string): Promise<void>,
+    setAIQuestions(data: Array<IAIQuestion>): void,
+    clearResource(data: IClearResource): void,
+    setItems(data: Array<any>): void,
+    getResourceQuestions(data: IListQuery): Promise<void>,
+    searchResource(data: IListQuery): Promise<void>,
+    filterResource(data: IListQuery): Promise<void>,
+    clearSearch(): void,
+    setLoading(data: ISetLoading): void,
+    unsetLoading(data: IUnsetLoading): void,
 }
 
 export interface IResourceContext {

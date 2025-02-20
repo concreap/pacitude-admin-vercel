@@ -7,10 +7,11 @@ const SearchInput = (props: ISearchInput) => {
 
     const {
         name, id, value, defaultValue, placeholder,
-        autoComplete, className, label, ref, readonly,
+        autoComplete, className, label, readonly,
         isError = false,
         size = 'md',
         showFocus = false,
+        hasResult = false,
         onChange, onSearch
     } = props
 
@@ -19,7 +20,11 @@ const SearchInput = (props: ISearchInput) => {
 
     useEffect(() => {
 
-    }, [])
+        if(!hasResult && inputRef.current){
+            inputRef.current.value = '';
+        }
+
+    }, [hasResult])
 
     const labelFontSize = () => {
 
@@ -45,12 +50,17 @@ const SearchInput = (props: ISearchInput) => {
     }
 
     const iconPosition = (): CSSProperties => {
+
         let result: CSSProperties = { top: '1rem', right: '1rem' }
 
         if(size === 'md'){
             result = { top: '1rem', right: '1rem' }
         }else if(size === 'sm'){
-            result = { top: '0.6rem', right: '1rem' }
+            if(hasResult){
+                result = { top: '0.68rem', right: '1rem', color: '#FF1B1B' }
+            }else {
+                result = { top: '0.65rem', right: '1rem' }
+            }
         }
 
         return result;
@@ -73,14 +83,14 @@ const SearchInput = (props: ISearchInput) => {
             {
                 label &&
                 <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
-                    <span className={`fs-${labelFontSize()} font-manrope-medium color-black`}>{label.title}</span>
-                    {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
+                    <span className={`fs-${labelFontSize()} font-golos color-black`}>{label.title}</span>
+                    {label.required ? <span className="color-red font-golos-semibold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
             }
             <div className="search-input ui-relative">
                 <Icon 
                     type="polio"
-                    name={'search'}
+                    name={ hasResult ? 'cancel' : 'search'}
                     size={iconSize()}
                     clickable={true}
                     position="absolute"
@@ -88,7 +98,7 @@ const SearchInput = (props: ISearchInput) => {
                     onClick={onSearch}
                 />
                 <input
-                    ref={ref ? ref : inputRef}
+                    ref={inputRef}
                     id={id ? id : inputId}
                     name={name ? name : ''}
                     defaultValue={defaultValue ? defaultValue : ''}

@@ -22,16 +22,16 @@ import RoundButton from "../../../../components/partials/buttons/RoundButton";
 import { FileLinks } from "../../../../utils/enums.util";
 import CoreContext from "../../../../context/core/coreContext";
 
-interface ITopicForm {
+interface IQuestionForm {
     show: boolean,
-    topicId?: string,
+    questionId?: string,
     title: string,
     type: FormActionType,
     display?: UIDisplayType
     closeForm(e: any): void
 }
 
-const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }: ITopicForm) => {
+const QuestionForm = ({ show, questionId, title, closeForm, type, display = 'table' }: IQuestionForm) => {
 
     const panelRef = useRef<any>();
     const bulkRef = useRef<any>();
@@ -58,9 +58,9 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
             panelRef.current.open(null);
 
             if (type === 'edit-resource' && display === 'table' || display === 'list') {
-                if (topicId) {
-                    getTopic(topicId)
-                }
+                // if (topicId) {
+                //     getTopic(topicId)
+                // }
             }
 
             if (type === 'add-resource') {
@@ -423,7 +423,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                                 <Tabs defaultIndex={parseInt(storage.fetch('add-topic-tab'))}>
 
                                     <TabList>
-                                        <Tab onClick={(e: any) => { configTab(e, 0); }}>Enter Details</Tab>
+                                        <Tab onClick={(e: any) => { configTab(e, 0); }}>Details</Tab>
                                         <Tab onClick={(e: any) => { configTab(e, 1); }}>Upload Bulk</Tab>
                                     </TabList>
 
@@ -431,125 +431,14 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
 
                                         <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
 
-                                        <form className="form" onSubmit={(e) => e.preventDefault()}>
-
-                                            <div className="form-field">
-                                                <div className="row">
-
-                                                    <div className={`col-6 ${coreContext.fields.loading ? 'disabled-light' : ''}`}>
-                                                        <label className={`mrgb0`}>
-                                                            <span className={`fs-13 font-manrope-medium color-black`}>Select Field</span>
-                                                            <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span>
-                                                        </label>
-                                                        <DropDown
-                                                            options={getFields}
-                                                            selected={(data: any) => {
-                                                                setTopic({ ...topic, fieldId: data.value })
-                                                            }}
-                                                            className={`font-manrope dropdown topic-field-dropdown`}
-                                                            placeholder={'Select'}
-                                                            size="sm"
-                                                            disabled={false}
-                                                            search={{
-                                                                enable: true,
-                                                                bgColor: '#fff',
-                                                                color: '#1E1335'
-                                                            }}
-                                                            menu={{
-                                                                bgColor: '#fff',
-                                                                itemColor: '#000',
-                                                                itemLabel: true,
-                                                                itemLeft: true,
-                                                                position: 'bottom',
-                                                                style: { width: '160%' }
-                                                            }}
-                                                            control={{
-                                                                image: false,
-                                                                label: true,
-                                                                left: false
-                                                            }}
-                                                            defaultValue={0}
-                                                        />
-                                                    </div>
-
-                                                    <div className="col-6">
-                                                        <TextInput
-                                                            type="email"
-                                                            showFocus={true}
-                                                            size="sm"
-                                                            autoComplete={false}
-                                                            placeholder="Ex. Sample Topic"
-                                                            isError={error === 'name' ? true : false}
-                                                            label={{
-                                                                required: true,
-                                                                fontSize: 13,
-                                                                title: "Topic name"
-                                                            }}
-                                                            onChange={(e) => setTopic({ ...topic, name: e.target.value })}
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="form-field mrgb">
-                                                <TextInput
-                                                    type="email"
-                                                    showFocus={true}
-                                                    size="sm"
-                                                    autoComplete={false}
-                                                    placeholder="Ex. Sample Label"
-                                                    isError={error === 'name' ? true : false}
-                                                    label={{
-                                                        required: false,
-                                                        fontSize: 13,
-                                                        title: "Topic label"
-                                                    }}
-                                                    onChange={(e) => setTopic({ ...topic, label: e.target.value })}
-                                                />
-                                            </div>
-
-                                            <div className="form-field mrgb1">
-                                                <TextAreaInput
-                                                    showFocus={true}
-                                                    autoComplete={false}
-                                                    placeholder="Type here"
-                                                    label={{
-                                                        required: false,
-                                                        fontSize: 13,
-                                                        title: "Topic description"
-                                                    }}
-                                                    onChange={(e) => setTopic({ ...topic, description: e.target.value })}
-                                                />
-                                            </div>
-
-                                            <div className="form-field ui-flexbox align-center mrgt1">
-
-                                                <Button
-                                                    text={'Create Topic'}
-                                                    type="primary"
-                                                    reverse="row"
-                                                    size="sm"
-                                                    loading={loading}
-                                                    disabled={false}
-                                                    fontSize={13}
-                                                    lineHeight={16}
-                                                    className="ui-ml-auto"
-                                                    icon={{ enable: false }}
-                                                    style={{ minWidth: '122px' }}
-                                                    onClick={(e) => createTopic(e)}
-
-                                                />
-
-                                            </div>
-
-                                        </form>
+                                        
 
                                     </TabPanel>
 
                                     <TabPanel tabIndex={1}>
 
                                         <div className="mrgb2 mrgt1">
-                                            <p className="pag-700 mrgb0 font-hostgro fs-14">You can add multiple Topics at once. This means adding them in bulk by uploading a CSV file using the instructions below</p>
+                                            <p className="pag-700 mrgb0 font-hostgro fs-14">You can add multiple Questions at once. This means adding them in bulk by uploading a CSV file using the instructions below</p>
                                         </div>
 
                                         <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
@@ -642,7 +531,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                                         <div className="mrgt1 ui-flexbox align-center">
 
                                             <Button
-                                                text={'Upload Topics'}
+                                                text={'Upload Questions'}
                                                 type="primary"
                                                 reverse="row"
                                                 size="sm"
@@ -653,7 +542,7 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
                                                 className="ui-ml-auto"
                                                 icon={{ enable: false }}
                                                 style={{ minWidth: '122px' }}
-                                                onClick={(e) => uploadTopics(e)}
+                                                onClick={(e) => () => {}}
 
                                             />
 
@@ -677,4 +566,4 @@ const TopicForm = ({ show, topicId, title, closeForm, type, display = 'table' }:
     )
 };
 
-export default TopicForm;
+export default QuestionForm;

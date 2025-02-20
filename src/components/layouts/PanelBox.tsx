@@ -8,7 +8,7 @@ const PanelBox = forwardRef((props: IPanelBox, ref: ForwardedRef<any>) => {
     const {
         title,
         animate = true,
-        width = 442,
+        width = 460,
         children = <></>,
         onOpen = (e: any) => {},
         onClose = (e: any) => {}
@@ -99,7 +99,8 @@ const PanelBox = forwardRef((props: IPanelBox, ref: ForwardedRef<any>) => {
                             onClick={(e) => handleClose(e)}
                         />
                     </div>
-                    <div className="ui-line bg-pag-50"></div>
+                    
+                    <div className="ui-separate-small"></div>
 
                     <div className="panel-body">
                         {children}
