@@ -183,7 +183,6 @@ const TopicsPage = ({ }) => {
                                             { label: 'Name' },
                                             { label: 'Label' },
                                             { label: 'Code' },
-                                            { label: 'Questions', className: 'ui-text-center' },
                                             { label: 'Fields', className: 'ui-text-center' },
                                             { label: 'Status' },
                                             { label: 'Action', className: 'ui-text-center' }
@@ -200,7 +199,6 @@ const TopicsPage = ({ }) => {
                                                         <CellData fontSize={13} onClick={(e) => toDetails(e, topic._id)} render={helper.capitalizeWord(topic.name)} />
                                                         <CellData fontSize={13} onClick={(e) => toDetails(e, topic._id)} render={helper.capitalizeWord(topic.label)} />
                                                         <CellData fontSize={13} onClick={(e) => toDetails(e, topic._id)} className="ui-upcase" render={topic.code} />
-                                                        <CellData fontSize={13} className="ui-upcase ui-text-center" render={topic.questions.length} />
                                                         <CellData fontSize={13} className="ui-upcase ui-text-center" render={topic.fields.length} />
                                                         <CellData fontSize={13} className="" status={{ enable: true, type: 'enabled', value: topic.isEnabled }} render={<></>} />
                                                         <CellData fontSize={13} render={

@@ -21,23 +21,29 @@ import routil from "../../../../utils/routes.util";
 import { useNavigate } from "react-router-dom";
 import qHelper from "../../../../utils/question.util";
 import QuestionList from "./QuestionList";
+import Overview from "../../../../components/app/metric/Overview";
 
 const QuestionsPage = ({ }) => {
-
-    const LIMIT = 25;
-    const navigate = useNavigate()
 
     const userContext = useContext<IUserContext>(UserContext)
     const coreContext = useContext<ICoreContext>(CoreContext)
 
-    const [showPanel, setShowPanel] = useState<boolean>(false);
-    const [form, setForm] = useState<{ action: FormActionType, questionId: string }>({ action: 'add-resource', questionId: '' })
+    const [metric, setMetric] = useState({ total: 0, disabled: 0, enabled: 0 })
 
     useEffect(() => {
 
-        initSidebar()
+        initSidebar();
+        initPage();
 
     }, [])
+
+    useEffect(() => {
+
+        if(coreContext.metrics.question && !helper.isEmpty(coreContext.metrics.question, 'object')){
+            setMetric(coreContext.metrics.question)
+        }
+
+    }, [coreContext.metrics])
 
     const initSidebar = () => {
 
@@ -48,8 +54,31 @@ const QuestionsPage = ({ }) => {
 
     }
 
+    const initPage = () => {
+        coreContext.getResourceMetrics({ metric: 'overview', type: 'default' })
+    }
+
     return (
         <>
+            <Overview 
+                title="Questions Overview"
+                loading={coreContext.metrics.loading}
+                metrics={[
+                    { 
+                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{ metric.total.toLocaleString() }</h3>, 
+                        label: { pos: 'below', text: 'Total Questions'  } 
+                    },
+                    { 
+                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{ metric.enabled.toLocaleString() }</h3>, 
+                        label: { pos: 'below', text: 'Active Questions'  } 
+                    },
+                    { 
+                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{ metric.disabled.toLocaleString() }</h3>, 
+                        label: { pos: 'below', text: 'Inactive Questions'  } 
+                    }
+                ]}
+            />
+
             <QuestionList type="self" />
         </>
     )

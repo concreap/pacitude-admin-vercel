@@ -53,7 +53,7 @@ const DropDown = ({
 
         let result: string = `${size}`
 
-        if(control && control.className){
+        if (control && control.className) {
             result = `${result} ${control.className}`;
         }
 

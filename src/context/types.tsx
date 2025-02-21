@@ -21,6 +21,7 @@ export const GET_QUESTIONS = 'GET_QUESTIONS';
 export const GET_QUESTION = 'GET_QUESTION';
 export const GET_TOPICS = 'GET_TOPICS';
 export const GET_TOPIC = 'GET_TOPIC';
+export const GET_METRICS = 'GET_METRICS';
 
 // generics
 export const SET_PAGINATION = 'SET_PAGINATION';

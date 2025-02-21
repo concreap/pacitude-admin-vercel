@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext, useRef, ChangeEvent, Fragment } from "react"
 import PanelBox from "../../../../components/layouts/PanelBox";
 import { FormActionType, UIDisplayType } from "../../../../utils/types.util";
-import { IAlert, ICoreContext, IFileUpload, IUserContext } from "../../../../utils/interfaces.util";
+import { IAlert, ICoreContext, IFileUpload, IResourceContext, IUserContext } from "../../../../utils/interfaces.util";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
 import Alert from "../../../../components/partials/alerts/Alert";
 import TextInput from "../../../../components/partials/inputs/TextInput";
@@ -22,6 +22,7 @@ import RoundButton from "../../../../components/partials/buttons/RoundButton";
 import Icon from "../../../../components/partials/icons/Icon";
 import DropDown from "../../../../components/layouts/DropDown";
 import Badge from "../../../../components/partials/badges/Badge";
+import ResourceContext from "../../../../context/resource/resourceContext";
 
 interface IFieldForm {
     show: boolean,
@@ -44,6 +45,7 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
     const LIMIT = 25
 
     const coreContext = useContext<ICoreContext>(CoreContext)
+    const resourceContext = useContext<IResourceContext>(ResourceContext)
 
     const [skills, setSkills] = useState<Array<any>>([])
     const [field, setField] = useState<IFieldData>({ name: '', label: '', career: '', skills: [], description: '', error: '' })
@@ -107,10 +109,6 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
             setAlert({ ...alert, show: true, type: 'error', message: 'Field description is required' })
             setError('description')
         }
-        else if (field.skills.length === 0) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Field skill(s) is required' })
-            setError('skills')
-        }
 
         else {
             result = true;
@@ -124,7 +122,6 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
         return result;
 
     }
-
 
     const getSkills = () => {
 
@@ -144,7 +141,6 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
 
         }
 
-
         return result;
 
     }
@@ -161,6 +157,7 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
 
             let payload: any = {};
             Object.assign(payload, field);
+            payload.skills = coreContext.items.map((x) => x.id)
 
             const response = await AxiosService.call({
                 type: 'core',
@@ -174,6 +171,7 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
 
                 setLoading(false);
                 setView(UIView.MESSAGE)
+                coreContext.setItems([])
 
             }
 
@@ -203,6 +201,7 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
 
         let payload: any = {};
         Object.assign(payload, field);
+        payload.skills = coreContext.items.map((x) => x.id)
 
         if (!helper.isEmpty(payload, 'object')) {
 
@@ -244,37 +243,39 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
 
     }
 
+    const addSkill = (data: any) => {
 
-    const addSkill = (val: any) => {
+        let currList = coreContext.items;
 
-        console.log(val)
-        
-        let currList = coreContext.skills.data;
-        
-        const exist = currList.filter((x) => x._id === val.id)
-        
-        console.log(exist)
-        
+        const exist = currList.find((x) => x.id === data.value);
+
         if (exist) {
-            return
+            resourceContext.setToast({
+                ...resourceContext.toast,
+                show: true,
+                type: 'error',
+                title: 'Skill Exist',
+                message: 'Skill already selected!'
+            })
+            setTimeout(() => {
+                resourceContext.setToast({ ...resourceContext.toast, show: false })
+            }, 2500)
         }
-        
+
         if (!exist) {
-            setSkills(prevSkills => [...prevSkills, val])
-            setField(prevFields => ({
-                ...prevFields, skills: [...prevFields.skills, val.id]
-            }))
+            currList.push({ name: data.label, id: data.value })
         }
+
+        coreContext.setItems(currList)
 
     }
 
-    const removeSkill = (val: any) => {
+    const removeSkill = (id: string) => {
 
-        let currList = field.skills;
-
-        const filteredSkills = currList.filter((x) => x !== val.id)
-
-        setField(prevSkills => ({ ...prevSkills, skills: filteredSkills }))
+        let currList = coreContext.items;
+        currList = currList.filter((x) => x.id !== id)
+        console.log(currList)
+        coreContext.setItems(currList)
 
     }
 
@@ -376,30 +377,30 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
 
                                                         <div className="form-field mrgt1">
 
-                                                            <TextInput
-                                                                type="text"
-                                                                showFocus={true}
-                                                                size="sm"
-                                                                autoComplete={false}
-                                                                placeholder="Ex. Telecommunication"
-                                                                isError={error === 'label' ? true : false}
-                                                                label={{
-                                                                    fontSize: 13,
-                                                                    title: "Display Name",
-                                                                    required: true
-                                                                }}
-                                                                onChange={(e) => setField({ ...field, label: e.target.value })}
-                                                            />
-
-                                                        </div>
-
-                                                        <div className="form-field">
-
                                                             <div className="row">
 
                                                                 <div className="col-6">
 
-                                                                    <div className="form-field mrgt1">
+                                                                    <TextInput
+                                                                        type="text"
+                                                                        showFocus={true}
+                                                                        size="sm"
+                                                                        autoComplete={false}
+                                                                        placeholder="Ex. Telecommunication"
+                                                                        isError={error === 'label' ? true : false}
+                                                                        label={{
+                                                                            fontSize: 13,
+                                                                            title: "Display Name",
+                                                                            required: true
+                                                                        }}
+                                                                        onChange={(e) => setField({ ...field, label: e.target.value })}
+                                                                    />
+
+                                                                </div>
+
+                                                                <div className="col-6">
+
+                                                                    <div className="form-field">
 
                                                                         <SelectInput
                                                                             showFocus={true}
@@ -425,13 +426,15 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
 
                                                         </div>
 
+
                                                         <div className="form-field mrgt1">
+
                                                             <h4 className="font-golos-medium fs-14 mrgb" onClick={(e) => console.log(field.skills)}>Skills</h4>
 
                                                             <DropDown
                                                                 options={getSkills}
                                                                 selected={(data: any) => {
-                                                                    addSkill({ id: data.value, name: data.label })
+                                                                    addSkill(data)
                                                                 }}
                                                                 className={`font-manrope dropdown topic-field-dropdown`}
                                                                 placeholder={'Select'}
@@ -458,10 +461,10 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
                                                                 defaultValue={0}
                                                             />
 
-                                                            <div className="col">
+                                                            <div className="mrgt">
                                                                 <div className="ui-flexbox wrap">
                                                                     {
-                                                                        skills.map((skill) =>
+                                                                        coreContext.items.map((skill) =>
                                                                             <Fragment key={skill.id}>
                                                                                 <Badge
                                                                                     type='info'
@@ -470,7 +473,7 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
                                                                                     close={true}
                                                                                     style={{ marginBottom: '0.15rem' }}
                                                                                     onClose={(e) => {
-                                                                                        removeSkill(skill)
+                                                                                        removeSkill(skill.id)
                                                                                     }}
                                                                                 />
                                                                                 <span className="pdr"></span>

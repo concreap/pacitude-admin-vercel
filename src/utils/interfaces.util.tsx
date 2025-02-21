@@ -1,5 +1,5 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
-import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
+import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 import Question, { IQuestionTime } from "../models/Question.model";
@@ -842,6 +842,17 @@ export interface IListQuery {
     payload?: any
 }
 
+export interface IMetricQuery {
+    metric: 'overview' | 'resource',
+    type: FilterType, 
+    startDate?: string, 
+    endDate?: string, 
+    resourceId?: string, 
+    levels?: Array<string>, 
+    difficulties?: Array<string>, 
+    questionTypes?: Array<string>
+}
+
 export interface IListUI {
     type: 'self' | 'resource',
     resource?: ResourceType
@@ -1039,11 +1050,32 @@ export interface IPlaceholder {
     marginBottom: string,
     top: string
     left: string
-    right: string
+    right: string,
+    flex: boolean
 }
 
+export interface IPageSearch {
+     key: string, 
+     hasResult: boolean, 
+     type: PagesearchType,
+     filters: any, 
+     resource: FilterType,
+     resourceId: string
+}
 
 // contexts
+
+export interface ICoreMetrics {
+    loading: boolean,
+    message: string,
+    search?: any,
+    question?: {
+        total: number,
+        enabled: number,
+        disabled: number
+    }
+}
+
 export interface IClearResource {
     type: string,
     resource: 'multiple' | 'single'
@@ -1131,6 +1163,7 @@ export interface ICoreContext {
     topics: ICollection,
     topic: any,
     search: ICollection,
+    metrics: ICoreMetrics,
     items: Array<any>
     message: string,
     loading: boolean,
@@ -1151,6 +1184,8 @@ export interface ICoreContext {
     clearResource(data: IClearResource): void,
     setItems(data: Array<any>): void,
     getResourceQuestions(data: IListQuery): Promise<void>,
+    getResourceMetrics(data: IMetricQuery): Promise<void>,
+    setResourceMetrics(data: ICoreMetrics): Promise<void>
     searchResource(data: IListQuery): Promise<void>,
     filterResource(data: IListQuery): Promise<void>,
     clearSearch(): void,

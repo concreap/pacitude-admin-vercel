@@ -39,6 +39,7 @@ const DashboardMaster = ({ component, back, sidebar, title }: IDashboardMaster) 
                             show={resourceContext.toast.show}
                             message={resourceContext.toast.message}
                             type={resourceContext.toast.type}
+                            title={resourceContext.toast.title}
                             position={resourceContext.toast.position}
                             close={(e) => {
                                 resourceContext.clearToast()
