@@ -30,8 +30,10 @@ const Talents = React.lazy(() => import('./pages/dashboard/users/talents/Talents
 const Businesses = React.lazy(() => import('./pages/dashboard/users/businesses/Businesses'));
 const Admins = React.lazy(() => import('./pages/dashboard/users/admins/Admins'));
 const Industries = React.lazy(() => import('./pages/dashboard/core/industries/Industries'));
+const IndustryDetails = React.lazy(() => import('./pages/dashboard/core/industries/IndustryDetails'));
 const Careers = React.lazy(() => import('./pages/dashboard/core/careers/Careers'));
 const Fields = React.lazy(() => import('./pages/dashboard/core/fields/Fields'));
+const FieldDetails = React.lazy(() => import('./pages/dashboard/core/fields/FieldDetails'));
 const Skills = React.lazy(() => import('./pages/dashboard/core/skills/Skills'));
 const Questions = React.lazy(() => import('./pages/dashboard/core/questions/Questions'));
 const AIQuestions = React.lazy(() => import('./pages/dashboard/core/questions/AIQuestions'));
@@ -89,10 +91,14 @@ const App = () => {
                 return <Admins />
             case 'industries':
                 return <Industries />
+            case 'industry-details':
+                return <IndustryDetails />
             case 'careers':
                 return <Careers />
             case 'fields':
                 return <Fields />
+            case 'field-details':
+                return <FieldDetails />
             case 'skills':
                 return <Skills />
             case 'questions':

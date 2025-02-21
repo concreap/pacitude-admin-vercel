@@ -8,6 +8,12 @@ export enum HeaderType {
 export enum CookieKeyType {
     XHIT = 'x-hit'
 }
+
+export enum UIView {
+    FORM = 'form',
+    MESSAGE = 'message'
+}
+
 export enum UserEnumType{
     SUPER = 'superadmin',
     ADMIN = 'admin',

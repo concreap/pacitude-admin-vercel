@@ -11,8 +11,10 @@ import { aiquestion, collection } from '../../_data/seed'
 import helper from '../../utils/helper.util'
 import {
     GET_CAREERS,
+    GET_FIELD,
     GET_FIELDS,
     GET_INDUSTRIES,
+    GET_INDUSTRY,
     GET_QUESTION,
     GET_QUESTIONS,
     GET_SKILLS,
@@ -174,6 +176,62 @@ const CoreState = (props: any) => {
 
     }, [setLoading, unsetLoading, logout])
 
+     /**
+     * @name getIndustry
+     */
+    const getIndustry = useCallback(async (id: string) => {
+
+        await setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'core',
+            method: 'GET',
+            isAuth: true,
+            path: `/industries/${id}`
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+                dispatch({
+                    type: GET_INDUSTRY,
+                    payload: response.data
+                })
+
+            }
+
+            await unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            await unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                loader.popNetwork();
+            } 
+            else if (response.data) {
+                console.log(`Error! Could not get industry ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
+            }
+
+        }
+
+    }, [setLoading, unsetLoading, logout])
+
+
     /**
      * @name getCareers
      */
@@ -286,6 +344,61 @@ const CoreState = (props: any) => {
                 loader.popNetwork();
             } else if (response.data) {
                 console.log(`Error! Could not get logged in user ${response.data}`)
+            }
+
+        }
+
+    }, [setLoading, unsetLoading, logout])
+
+     /**
+     * @name getField
+     */
+     const getField = useCallback(async (id: string) => {
+
+        await setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'core',
+            method: 'GET',
+            isAuth: true,
+            path: `/fields/${id}`
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+                dispatch({
+                    type: GET_FIELD,
+                    payload: response.data
+                })
+
+            }
+
+            await unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            await unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                loader.popNetwork();
+            } 
+            else if (response.data) {
+                console.log(`Error! Could not get field ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
             }
 
         }
@@ -866,9 +979,11 @@ const CoreState = (props: any) => {
         setItems: setItems,
         clearSearch: clearSearch,
         getIndustries: getIndustries,
+        getIndustry: getIndustry,
         getCareers: getCareers,
         getSkills: getSkills,
         getFields: getFields,
+        getField: getField,
         getQuestions: getQuestions,
         getQuestion: getQuestion,
         getTopics: getTopics,
@@ -901,9 +1016,11 @@ const CoreState = (props: any) => {
         setItems,
         clearSearch,
         getIndustries,
+        getIndustry,
         getCareers,
         getSkills,
         getFields,
+        getField,
         getQuestions,
         getQuestion,
         getTopics,
