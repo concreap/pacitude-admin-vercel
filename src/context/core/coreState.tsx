@@ -2,17 +2,18 @@ import { Children, useReducer, useCallback, useContext, useMemo } from 'react'
 import GeniusContext from './coreContext'
 import GeniusReducer from './coreReducer'
 import AxiosService from '../../services/axios.service'
-import { IAIQuestion, IClearResource, ICollection, IListQuery, IPagination, ISetLoading, IUnsetLoading } from '../../utils/interfaces.util'
+import { IAIQuestion, IClearResource, ICollection, ICoreMetrics, IListQuery, IMetricQuery, IPagination, ISetLoading, IUnsetLoading } from '../../utils/interfaces.util'
 import { useNavigate } from 'react-router-dom'
 import storage from '../../utils/storage.util'
 import loader from '../../utils/loader.util'
 import { LoadingType } from '../../utils/types.util'
-import { aiquestion, collection } from '../../_data/seed'
+import { aiquestion, collection, initialMetrics } from '../../_data/seed'
 import helper from '../../utils/helper.util'
 import {
     GET_CAREERS,
     GET_FIELDS,
     GET_INDUSTRIES,
+    GET_METRICS,
     GET_QUESTION,
     GET_QUESTIONS,
     GET_SKILLS,
@@ -44,6 +45,7 @@ const CoreState = (props: any) => {
         topics: collection,
         topic: {},
         items: [],
+        metrics: initialMetrics,
         search: collection,
         message: '',
         loading: false
@@ -787,6 +789,93 @@ const CoreState = (props: any) => {
     }, [setLoading, unsetLoading, logout]);
 
     /**
+     * @name getResourceMetrics
+     */
+    const getResourceMetrics = useCallback(async (data: IMetricQuery) => {
+
+        const { metric, type, difficulties, endDate, levels, questionTypes, resourceId, startDate } = data;
+
+        if (metric === 'overview') {
+
+            await setLoading({ option: 'resource', type: GET_METRICS })
+
+            const response = await AxiosService.call({
+                type: 'core',
+                method: 'POST',
+                isAuth: true,
+                path: `/metrics/overview`,
+                payload: {
+                    type: type,
+                    difficulties: difficulties,
+                    endDate: endDate,
+                    levels: levels,
+                    questionTypes: questionTypes,
+                    resourceId: resourceId,
+                    startDate: startDate
+                }
+            })
+
+            if (response.error === false) {
+
+                if (response.status === 200) {
+
+                    const result: ICoreMetrics = {
+                        question: response.data.question,
+                        loading: false,
+                        message: `successful`
+                    }
+
+                    dispatch({
+                        type: GET_METRICS,
+                        payload: result
+                    })
+
+                }
+
+            }
+
+            if (response.error === true) {
+
+                await unsetLoading({
+                    option: 'resource',
+                    type: GET_METRICS,
+                    message: response.message ? response.message : response.data
+                })
+
+                if (response.status === 401) {
+                    logout()
+                } else if (response.message && response.message === 'Error: Network Error') {
+                    loader.popNetwork();
+                } else if (response.data) {
+                    console.log(`Error! Could not get metrics ${response.data}`)
+                }
+
+            }
+
+
+        } else {
+
+            await unsetLoading({
+                option: 'resource',
+                type: GET_METRICS,
+                message: 'invalid metric type'
+            })
+        }
+
+    }, [setLoading, unsetLoading, logout]);
+
+    /**
+     * @name setResourceMetrics
+     * @param data 
+     */
+    const setResourceMetrics = (data: ICoreMetrics) => {
+        dispatch({
+            type: GET_METRICS,
+            payload: data
+        })
+    }
+
+    /**
      * @name setAIQuestions
      * @param data 
      */
@@ -856,6 +945,7 @@ const CoreState = (props: any) => {
         topics: state.topics,
         topic: state.topic,
         items: state.items,
+        metrics: state.metrics,
         search: state.search,
         message: state.message,
         loading: state.loading,
@@ -874,6 +964,8 @@ const CoreState = (props: any) => {
         getTopics: getTopics,
         getTopic: getTopic,
         getResourceQuestions: getResourceQuestions,
+        getResourceMetrics: getResourceMetrics,
+        setResourceMetrics: setResourceMetrics,
         searchResource: searchResource,
         filterResource: filterResource
     }), [
@@ -891,6 +983,7 @@ const CoreState = (props: any) => {
         state.topics,
         state.topic,
         state.items,
+        state.metrics,
         state.search,
         state.message,
         state.loading,
@@ -909,6 +1002,8 @@ const CoreState = (props: any) => {
         getTopics,
         getTopic,
         getResourceQuestions,
+        getResourceMetrics,
+        setResourceMetrics,
         searchResource,
         filterResource
     ])

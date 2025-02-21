@@ -1,5 +1,5 @@
 import sidebarRoutes from "../routes/sidebar.route"
-import { IAIQuestion, ICollection, IPagination, ISidebarAttrs, IToastState } from "../utils/interfaces.util"
+import { IAIQuestion, ICollection, ICoreMetrics, IPagination, ISidebarAttrs, IToastState } from "../utils/interfaces.util"
 
 const pagination: IPagination = {
     next: { page: 1, limit: 25 },
@@ -112,6 +112,15 @@ const allocatedTimes = [
     { name: 'Five', value: '5' }
 ]
 
+const initialMetrics: ICoreMetrics = {
+    loading: false,
+    message: '',
+    search: null,
+    question: {
+        total: 0, disabled: 0, enabled: 0
+    }
+}
+
 export {
     pagination,
     collection,
@@ -122,5 +131,6 @@ export {
     questionTypes,
     difficulties,
     timeHandles,
-    allocatedTimes
+    allocatedTimes,
+    initialMetrics
 }

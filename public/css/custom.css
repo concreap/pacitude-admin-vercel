@@ -551,6 +551,10 @@ input.error.show-focus:focus {
     display: inline-block;
 }
 
+.placeholder.flex{
+    display: flex;
+}
+
 .placeholder .activity {
     position: absolute;
     left: -45%;
@@ -1545,4 +1549,31 @@ td {
 
 .question.generated:hover {
     border: 1px solid var(--pab-200);
+}
+
+.overview {
+    width: 100%;
+    padding: var(--digit-16rem) var(--digit-24rem);
+    background-color: var(--pab-25);
+    border: 1px solid var(--pab-50);
+    border-radius: var(--digit-8);
+    margin-bottom: var(--digit-24rem);
+}
+
+.overview .metrics{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin: var(--digit-16rem) 0;
+}
+
+.overview .metrics .divider{
+    width: 1px;
+    background-color: var(--pab-200);
+    height: 40px;
+    margin: 0 var(--digit-32rem);
+}
+
+.overview .metrics .metric{
+    width: auto;
 }

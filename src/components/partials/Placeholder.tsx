@@ -5,7 +5,7 @@ const Placeholder = (props : Partial<IPlaceholder>) => {
 
     // https://jamesinkala.com/blog/make-animated-content-placeholders-with-html-and-css/
     const {
-        height, width, bgColor, animate, radius, className, 
+        height, width, bgColor, animate, radius, className, flex = false,
         minHeight, minWidth, marginTop, marginBottom, top, left, right
     } = props
     
@@ -16,12 +16,12 @@ const Placeholder = (props : Partial<IPlaceholder>) => {
     return (
         <>
 
-            <div className={`placeholder ui-relative ${className ? className : ''}`} 
+            <div className={`placeholder ui-relative ${flex ? 'flex' : ''} ${className ? className : ''}`} 
             style={{ 
                 height: height,
                 width: width,
-                minHeight: minHeight,
-                minWidth: minWidth,
+                minHeight: height ? height : minHeight,
+                minWidth: width ? width : minWidth,
                 backgroundColor: bgColor,
                 borderRadius: `${radius}`,
                 marginTop: marginTop ? marginTop : '',

@@ -9,7 +9,7 @@ import TableHead from "../../../../components/app/table/TableHead";
 import CellData from "../../../../components/app/table/CellData";
 import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, ICoreContext, IGeniusContext, IListUI, IUserContext } from "../../../../utils/interfaces.util";
+import { ICollection, ICoreContext, ICoreMetrics, IGeniusContext, IListUI, IMetricQuery, IPageSearch, IUserContext } from "../../../../utils/interfaces.util";
 import Popout from "../../../../components/partials/drops/Popout";
 import Question from "../../../../models/Question.model";
 import UserContext from "../../../../context/user/userContext";
@@ -39,31 +39,77 @@ const QuestionList = (props: IListUI) => {
 
     const [showPanel, setShowPanel] = useState<boolean>(false);
     const [form, setForm] = useState<{ action: FormActionType, questionId: string }>({ action: 'add-resource', questionId: '' })
-    const [search, setSearch] = useState({ key: '', hasResult: false, type: 'search', payload: {}, resourceId: '' })
+    const [search, setSearch] = useState<IPageSearch>({ key: '', hasResult: false, type: 'search', filters: {}, resourceId: '', resource: 'field' })
+    const [metric, setMetric] = useState<ICoreMetrics>(coreContext.metrics);
 
     useEffect(() => {
-
         initList()
-
     }, [resourceId])
 
     useEffect(() => {
-        if (coreContext.search.data.length > 0) {
-            setSearch({ ...search, key: search.key, hasResult: true, resourceId: search.resourceId, type: search.type })
-        } else {
-            setSearch({ ...search, key: search.key, hasResult: false, resourceId: '', type: 'search' })
-        }
+        configureSearch()
     }, [coreContext.search])
 
     const initList = () => {
         if (type === 'self') {
             coreContext.getQuestions({ limit: LIMIT, page: 1, order: 'desc' })
-            coreContext.getFields({ limit: 9999, page: 1, order: 'desc' })
+            coreContext.getFields({ limit: 9999, page: 1, order: 'desc' });
         }
 
         if (type === 'resource' && resource && resourceId) {
             coreContext.getResourceQuestions({ limit: LIMIT, page: 1, order: 'desc', resource, resourceId })
         }
+    }
+
+    const configureSearch = () => {
+
+        if (coreContext.search.data.length > 0) {
+            setSearch({
+                ...search,
+                key: search.key,
+                hasResult: true,
+                resourceId: search.resourceId,
+                type: search.type
+            })
+        } else {
+
+            if (!coreContext.search.loading) {
+                if (filtRef.current) {
+                    filtRef.current.clear()
+                }
+                if (fieldRef.current) {
+                    fieldRef.current.clear()
+                }
+            }
+
+            setSearch({
+                ...search,
+                key: '',
+                hasResult: false,
+                resourceId: '',
+                type: 'search',
+                resource: 'field'
+            })
+
+            coreContext.setResourceMetrics(metric)
+        }
+
+    }
+
+    const clearSearch = (e: any) => {
+
+        if(e) { e.preventDefault() }
+
+        coreContext.clearSearch();
+        setSearch({ ...search, key: '', hasResult: false, type: 'search' })
+        if (filtRef.current) {
+            filtRef.current.clear()
+        }
+        if (fieldRef.current) {
+            fieldRef.current.clear()
+        }
+
+        coreContext.setResourceMetrics(metric)
     }
 
     const toDetails = (e: any, id: string) => {
@@ -115,7 +161,7 @@ const QuestionList = (props: IListUI) => {
                     await coreContext.filterResource({
                         limit: sn.limit, page: sn.page, order: 'desc',
                         resource: 'questions',
-                        payload: search.payload
+                        payload: search.filters
                     });
                 }
 
@@ -152,7 +198,7 @@ const QuestionList = (props: IListUI) => {
                     await coreContext.filterResource({
                         limit: sp.limit, page: sp.page, order: 'desc',
                         resource: 'questions',
-                        payload: search.payload
+                        payload: search.filters
                     });
                 }
 
@@ -186,6 +232,7 @@ const QuestionList = (props: IListUI) => {
 
                 <div className="header">
                     <div className="left-halve">
+
                         <SearchInput
                             showFocus={true}
                             autoComplete={false}
@@ -196,14 +243,7 @@ const QuestionList = (props: IListUI) => {
                             onSearch={async (e) => {
 
                                 if (search.hasResult) {
-                                    coreContext.clearSearch();
-                                    setSearch({ ...search, key: '', hasResult: false, type: 'search' })
-                                    if (filtRef.current) {
-                                        filtRef.current.clear()
-                                    }
-                                    if(fieldRef.current){
-                                        fieldRef.current.clear()
-                                    }
+                                    clearSearch(e)
                                 } else {
                                     if (search.key) {
                                         await coreContext.searchResource({
@@ -216,36 +256,32 @@ const QuestionList = (props: IListUI) => {
                         />
 
                         <span className="pdl1"></span>
-                        <Filter
-                            ref={fieldRef}
-                            size="sm"
-                            position="bottom"
-                            disabled={search.hasResult}
-                            noFilter={false}
-                            placeholder="Select Field"
-                            icon={{ type: 'polio', name: 'filter-2', style: { color: '#0a6d9a' } }}
-                            items={
-                                coreContext.fields.data.map((x: Field) => {
-                                    return {
-                                        value: x._id,
-                                        label: helper.capitalize(x.name)
-                                    }
-                                })
-                            }
-                            onChange={async (data) => {
 
-                                let payload: any = { type: 'field', resourceId: data.value, resource: 'field' }
-
-                                setSearch({ ...search, type: 'filter', resourceId: data.value });
-                                await coreContext.filterResource({
-                                    resource: 'questions',
-                                    payload: payload
-                                });
-
-                            }}
-                        />
+                        <div className="wp-25">
+                            <Filter
+                                ref={fieldRef}
+                                size="sm"
+                                position="bottom"
+                                disabled={search.hasResult}
+                                noFilter={false}
+                                placeholder="Field"
+                                icon={{ type: 'polio', name: 'filter-2', style: { color: '#0a6d9a' } }}
+                                items={
+                                    coreContext.fields.data.map((x: Field) => {
+                                        return {
+                                            value: x._id,
+                                            label: helper.capitalize(x.name)
+                                        }
+                                    })
+                                }
+                                onChange={async (data) => {
+                                    setSearch({ ...search, type: 'filter', resourceId: data.value });
+                                }}
+                            />
+                        </div>
 
                         <span className="pdl1"></span>
+
                         <Filter
                             ref={filtRef}
                             size="sm"
@@ -271,7 +307,7 @@ const QuestionList = (props: IListUI) => {
                             ]}
                             onChange={async (data) => {
 
-                                let payload: any = { type: 'default', fieldId: '' }
+                                let payload: any = { type: 'default' }
 
                                 if (data.item) {
 
@@ -283,16 +319,66 @@ const QuestionList = (props: IListUI) => {
                                         payload.types = [data.value]
                                     }
 
-                                    setSearch({ ...search, type: 'filter', payload });
-                                    await coreContext.filterResource({
-                                        resource: 'questions',
-                                        payload: payload
-                                    });
+                                    setSearch({ ...search, type: 'filter', filters: payload });
+
+                                    if (!search.hasResult && !search.resourceId) {
+
+                                        await coreContext.filterResource({
+                                            resource: 'questions',
+                                            payload: payload
+                                        });
+                                    }
+
 
                                 }
 
                             }}
                         />
+
+                        {
+                            !search.hasResult && search.resourceId &&
+                            <>
+                                <span className="pdl1"></span>
+                                <Button
+                                    text="Apply"
+                                    type="ghost"
+                                    size="xsm"
+                                    loading={coreContext.search.loading}
+                                    disabled={coreContext.search.loading}
+                                    fontSize={14}
+                                    fontWeight={'regular'}
+                                    lineHeight={16}
+                                    className="export-btn"
+                                    icon={{
+                                        enable: false,
+                                    }}
+                                    onClick={async (e) => {
+
+                                        let payload: any = { resourceId: search.resourceId, resource: 'field' }
+                                        if (!helper.isEmpty(search.filters, 'object')) {
+                                            payload = { ...payload, ...search.filters, type: 'default' }
+                                        } else {
+                                            payload = { ...payload, type: 'field' }
+                                        }
+
+                                        setMetric(coreContext.metrics) // keep initial data
+
+                                        coreContext.getResourceMetrics({
+                                            metric: 'overview',
+                                            type: 'field',
+                                            resourceId: search.resourceId,
+                                        });
+
+                                        await coreContext.filterResource({
+                                            resource: 'questions',
+                                            payload: payload
+                                        });
+
+                                    }}
+                                />
+                            </>
+                        }
+
                     </div>
                     <div className="right-halve">
                         <Button
