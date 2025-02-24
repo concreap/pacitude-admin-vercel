@@ -906,7 +906,7 @@ const CoreState = (props: any) => {
      */
     const getResourceMetrics = useCallback(async (data: IMetricQuery) => {
 
-        const { metric, type, difficulties, endDate, levels, questionTypes, resourceId, startDate } = data;
+        const { metric, type, difficulties, endDate, levels, questionTypes, resource, resourceId, startDate } = data;
 
         if (metric === 'overview') {
 
@@ -923,6 +923,7 @@ const CoreState = (props: any) => {
                     endDate: endDate,
                     levels: levels,
                     questionTypes: questionTypes,
+                    resource: resource,
                     resourceId: resourceId,
                     startDate: startDate
                 }
@@ -933,6 +934,8 @@ const CoreState = (props: any) => {
                 if (response.status === 200) {
 
                     const result: ICoreMetrics = {
+                        type: type,
+                        resource: resource,
                         question: response.data.question,
                         loading: false,
                         message: `successful`

@@ -235,7 +235,7 @@ export interface IRoutil {
     resolveRouteParams(params: Array<IRouteParam>, stickTo: 'app' | 'page'): string
 }
 
-export interface IQuestionUtil{
+export interface IQuestionUtil {
     shortenRubric(question: Question, type: RubricType): string,
     rubricBadge(type: RubricType): SemanticType,
     formatTime(time: IQuestionTime): string,
@@ -844,12 +844,13 @@ export interface IListQuery {
 
 export interface IMetricQuery {
     metric: 'overview' | 'resource',
-    type: FilterType, 
-    startDate?: string, 
-    endDate?: string, 
-    resourceId?: string, 
-    levels?: Array<string>, 
-    difficulties?: Array<string>, 
+    type: FilterType,
+    startDate?: string,
+    endDate?: string,
+    resource?: FilterType,
+    resourceId?: string,
+    levels?: Array<string>,
+    difficulties?: Array<string>,
     questionTypes?: Array<string>
 }
 
@@ -1055,12 +1056,12 @@ export interface IPlaceholder {
 }
 
 export interface IPageSearch {
-     key: string, 
-     hasResult: boolean, 
-     type: PagesearchType,
-     filters: any, 
-     resource: FilterType,
-     resourceId: string
+    key: string,
+    hasResult: boolean,
+    type: PagesearchType,
+    filters: any,
+    resource: FilterType,
+    resourceId: string
 }
 
 // contexts
@@ -1068,11 +1069,17 @@ export interface IPageSearch {
 export interface ICoreMetrics {
     loading: boolean,
     message: string,
-    search?: any,
+    type: FilterType,
+    resource?: FilterType,
     question?: {
         total: number,
         enabled: number,
-        disabled: number
+        disabled: number,
+        resource: {
+            total: number,
+            enabled: number,
+            disabled: number,
+        }
     }
 }
 

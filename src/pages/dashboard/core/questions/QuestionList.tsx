@@ -40,7 +40,6 @@ const QuestionList = (props: IListUI) => {
     const [showPanel, setShowPanel] = useState<boolean>(false);
     const [form, setForm] = useState<{ action: FormActionType, questionId: string }>({ action: 'add-resource', questionId: '' })
     const [search, setSearch] = useState<IPageSearch>({ key: '', hasResult: false, type: 'search', filters: {}, resourceId: '', resource: 'field' })
-    const [metric, setMetric] = useState<ICoreMetrics>(coreContext.metrics);
 
     useEffect(() => {
         initList()
@@ -90,8 +89,6 @@ const QuestionList = (props: IListUI) => {
                 type: 'search',
                 resource: 'field'
             })
-
-            coreContext.setResourceMetrics(metric)
         }
 
     }
@@ -100,16 +97,30 @@ const QuestionList = (props: IListUI) => {
 
         if(e) { e.preventDefault() }
 
+        const qmt = coreContext.metrics.question;
+
         coreContext.clearSearch();
-        setSearch({ ...search, key: '', hasResult: false, type: 'search' })
+
+        setSearch({ ...search, key: '', hasResult: false, type: 'search' });
+
         if (filtRef.current) {
             filtRef.current.clear()
         }
+
         if (fieldRef.current) {
             fieldRef.current.clear()
         }
 
-        coreContext.setResourceMetrics(metric)
+        coreContext.setResourceMetrics({
+            ...coreContext.metrics,
+            resource: 'default',
+            question: {
+                total: qmt ? qmt.total : 0,
+                enabled: qmt ? qmt.enabled : 0,
+                disabled: qmt ? qmt.disabled : 0,
+                resource: { total: 0, disabled: 0, enabled: 0 }
+            }
+        });
     }
 
     const toDetails = (e: any, id: string) => {
@@ -355,17 +366,17 @@ const QuestionList = (props: IListUI) => {
                                     onClick={async (e) => {
 
                                         let payload: any = { resourceId: search.resourceId, resource: 'field' }
+
                                         if (!helper.isEmpty(search.filters, 'object')) {
                                             payload = { ...payload, ...search.filters, type: 'default' }
                                         } else {
                                             payload = { ...payload, type: 'field' }
                                         }
 
-                                        setMetric(coreContext.metrics) // keep initial data
-
                                         coreContext.getResourceMetrics({
                                             metric: 'overview',
-                                            type: 'field',
+                                            type: 'question',
+                                            resource: 'field',
                                             resourceId: search.resourceId,
                                         });
 
