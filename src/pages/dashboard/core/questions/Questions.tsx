@@ -39,8 +39,25 @@ const QuestionsPage = ({ }) => {
 
     useEffect(() => {
 
-        if(coreContext.metrics.question && !helper.isEmpty(coreContext.metrics.question, 'object')){
-            setMetric(coreContext.metrics.question)
+        const mt = coreContext.metrics;
+        const qmt = mt.question; 
+
+        if (qmt && mt.type === 'question' && mt.resource) {
+
+            setMetric({
+                ...metric,
+                total: qmt.resource.total || qmt.total,
+                enabled: qmt.resource.enabled || qmt.enabled,
+                disabled: qmt.resource.disabled || qmt.disabled
+            })
+
+        } else if (qmt && mt.type === 'question') {
+            setMetric({
+                ...metric,
+                total: qmt.total,
+                enabled: qmt.enabled,
+                disabled: qmt.disabled
+            })
         }
 
     }, [coreContext.metrics])
@@ -55,26 +72,26 @@ const QuestionsPage = ({ }) => {
     }
 
     const initPage = () => {
-        coreContext.getResourceMetrics({ metric: 'overview', type: 'default' })
+        coreContext.getResourceMetrics({ metric: 'overview', type: 'question' })
     }
 
     return (
         <>
-            <Overview 
+            <Overview
                 title="Questions Overview"
                 loading={coreContext.metrics.loading}
                 metrics={[
-                    { 
-                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{ metric.total.toLocaleString() }</h3>, 
-                        label: { pos: 'below', text: 'Total Questions'  } 
+                    {
+                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{metric.total.toLocaleString()}</h3>,
+                        label: { pos: 'below', text: 'Total Questions' }
                     },
-                    { 
-                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{ metric.enabled.toLocaleString() }</h3>, 
-                        label: { pos: 'below', text: 'Active Questions'  } 
+                    {
+                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{metric.enabled.toLocaleString()}</h3>,
+                        label: { pos: 'below', text: 'Active Questions' }
                     },
-                    { 
-                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{ metric.disabled.toLocaleString() }</h3>, 
-                        label: { pos: 'below', text: 'Inactive Questions'  } 
+                    {
+                        data: <h3 className="font-hostgro-bold pab-800 mrgb0">{metric.disabled.toLocaleString()}</h3>,
+                        label: { pos: 'below', text: 'Inactive Questions' }
                     }
                 ]}
             />

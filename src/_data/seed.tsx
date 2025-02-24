@@ -115,9 +115,11 @@ const allocatedTimes = [
 const initialMetrics: ICoreMetrics = {
     loading: false,
     message: '',
-    search: null,
+    type: 'default',
+    resource: 'default',
     question: {
-        total: 0, disabled: 0, enabled: 0
+        total: 0, disabled: 0, enabled: 0,
+        resource: { total: 0, disabled: 0, enabled: 0 }
     }
 }
 
