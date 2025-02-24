@@ -15,7 +15,8 @@ import {
     GET_TOPIC,
     SET_AIQUESTION,
     SET_SEARCH,
-    GET_METRICS
+    GET_METRICS,
+    SET_ITEMS
 } from "../types";
 
 const reducer = (state: any, action: any) => {
@@ -85,6 +86,11 @@ const reducer = (state: any, action: any) => {
             return {
                 ...state,
                 metrics: action.payload
+            }
+        case SET_ITEMS:
+            return {
+                ...state,
+                items: action.payload
             }
         case SET_AIQUESTION:
             return {

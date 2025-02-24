@@ -769,6 +769,33 @@ export interface IModalProps {
     closeModal(e?: any): void
 }
 
+
+export interface IMessageCompProps {
+    title: string,
+    message: string,
+    action: any,
+    status: string,
+    actionType: string,
+    buttonText: string,
+    setBg: boolean,
+    bgColor: string,
+    buttonPosition: string,
+    icon: string,
+    slim: boolean,
+    slimer: boolean,
+    className: string,
+    displayTitle: boolean,
+    displayMessage: string,
+    titleColor: string,
+    messageColor: string,
+    buttonContainerWidth: string,
+    messageWidth: string,
+    msgColor: string,
+    msgSize: string,
+    titleSize: string,
+    cardSize: string
+}
+
 export interface IForgotPasswordModal extends IModalProps {
 
 }
@@ -913,9 +940,19 @@ export interface IUnsetLoading {
     message: string
 }
 
+export interface IFileUpload {
+    raw: any,
+    base64: string,
+    parsedSize: number,
+    name: string,
+    size: number,
+    type: string,
+    dur: number
+}
+
 export interface IEmptyState {
     children: any,
-    bgColor: string,
+    bgColor?: string,
     size: SizeType,
     className?: string,
     bound?: boolean
@@ -1141,8 +1178,10 @@ export interface ICoreContext {
     count: number,
     pagination: any,
     getIndustries(data: IListQuery): Promise<void>,
+    getIndustry(id: string): Promise<void>,
     getCareers(data: IListQuery): Promise<void>,
     getFields(data: IListQuery): Promise<void>,
+    getField(id: string): Promise<void>,
     getSkills(data: IListQuery): Promise<void>,
     getQuestions(data: IListQuery): Promise<void>,
     getQuestion(id: string): Promise<void>,
