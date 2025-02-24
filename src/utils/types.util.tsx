@@ -1,6 +1,6 @@
 export type IconName = '';
 export type IconFamilyType = 'polio' | 'fa' | 'feather';
-export type SizeType = 'mini' | 'xsm' | 'sm' | 'rg' | 'default' | 'md' | 'lg' | 'xlg' | 'xxlg' | 'lgr';
+export type SizeType = 'mini' | 'msm' | 'xsm' | 'sm' | 'rg' | 'default' | 'md' | 'lg' | 'xlg' | 'xxlg' | 'lgr';
 export type SemanticType = 'info' | 'warning' | 'warning-2' | 'success' | 'error' | 'ongoing' | 'normal';
 export type ButtonType = 'primary' | 'ghost' | 'icon' | 'link'
 export type RouteParamType = 'url' | 'query' | 'path';

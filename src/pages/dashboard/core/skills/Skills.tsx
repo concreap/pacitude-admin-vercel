@@ -178,7 +178,7 @@ const SkillsPage = ({ }) => {
                                                         <CellData fontSize={13} render={helper.capitalizeWord(skill.label)} />
                                                         <CellData fontSize={13} className="ui-upcase" render={skill.code} />
                                                         <CellData fontSize={13} className="ui-upcase ui-text-center" render={skill.fields.length} />
-                                                        <CellData fontSize={13} className="ui-upcase ui-text-center" render={skill.questions.length} />
+                                                        <CellData fontSize={13} className="ui-upcase ui-text-center" render={skill?.questions?.length} />
                                                         <CellData fontSize={13} className="" status={{ enable: true, type: 'enabled', value: skill.isEnabled }} render={<></>} />
                                                         <CellData fontSize={13} render={
                                                             <div className="popout-wrapper">

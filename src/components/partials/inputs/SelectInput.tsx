@@ -35,7 +35,7 @@ const SelectInput = (props: ISelectInput) => {
 
     const computeClass = () => {
 
-        let result: string = `form-select ${isError ? 'error' : ''} form-control font-golos color-black fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-select ${isError ? 'error' : ''} form-control font-hostgro color-black fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -50,8 +50,8 @@ const SelectInput = (props: ISelectInput) => {
             {
                 label &&
                 <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
-                    <span className={`fs-${labelFontSize()} font-golos`}>{label.title}</span>
-                    {label.required ? <span className="color-red font-golos-semibold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
+                    <span className={`fs-${labelFontSize()} font-hostgro`}>{label.title}</span>
+                    {label.required ? <span className="color-red font-hostgro-semibold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
             }
             <div className={`select-input ui-relative ${readonly ? 'readonly' : ''}`}>

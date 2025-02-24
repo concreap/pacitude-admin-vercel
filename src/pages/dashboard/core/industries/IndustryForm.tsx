@@ -417,7 +417,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                                 <div className="mrgt2">
 
                                                     <div className="mrgb2">
-                                                        <h4 className="font-golos fs-14 mrgb ui-line-height-medium">You can add multiple list of facilities at once. This means adding them in bulk by uploading a CSV file using the instructions below</h4>
+                                                        <h4 className="font-hostgro fs-14 mrgb ui-line-height-medium">You can add multiple list of facilities at once. This means adding them in bulk by uploading a CSV file using the instructions below</h4>
                                                     </div>
 
                                                     <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
@@ -472,11 +472,11 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                                                             </div>
 
                                                                             <div className="zone-content pdl1 ui-line-height-mini">
-                                                                                {!file && <h4 className="font-golos-medium fs-13">No file chosen</h4>}
-                                                                                {file && <h4 className="font-golos-medium fs-14">{file.name}</h4>}
+                                                                                {!file && <h4 className="font-hostgro-medium fs-13">No file chosen</h4>}
+                                                                                {file && <h4 className="font-hostgro-medium fs-14">{file.name}</h4>}
                                                                                 <div className="ui-line-height-small">
                                                                                     <p className="lag-400 fs-13 mrgb">Select a “.csv” file to upload bulk facilities</p>
-                                                                                    <a href={'#'} target="_blank" className="font-golos-medium fs-13 mrgb0">Download a sample csv file</a>
+                                                                                    <a href={'#'} target="_blank" className="font-hostgro-medium fs-13 mrgb0">Download a sample csv file</a>
                                                                                 </div>
                                                                             </div>
 
@@ -501,8 +501,8 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                                         </div>
 
                                                         <div className="ui-text-center ui-line-height-small mrgt">
-                                                            <span className="lag-400 fs-12 font-golos-light">File size: </span>
-                                                            <span className="lag-400 fs-12 font-golos-light">{file ? file.parsedSize + 'MB' : '0MB'}</span>
+                                                            <span className="lag-400 fs-12 font-hostgro-light">File size: </span>
+                                                            <span className="lag-400 fs-12 font-hostgro-light">{file ? file.parsedSize + 'MB' : '0MB'}</span>
                                                         </div>
 
                                                     </div>
@@ -532,6 +532,28 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
                                         </Tabs>
 
+                                    </>
+                                }
+
+
+                                {
+                                    view === UIView.MESSAGE &&
+                                    <>
+                                        <MessageComp
+                                            title={'Successful!'}
+                                            displayTitle={true}
+                                            icon='shield'
+                                            message={'You have successfully added an industry on Pacitude'}
+                                            action={(e: any) => closePanel(e)}
+                                            status="success"
+                                            actionType={'action'}
+                                            buttonText={'Continue'}
+                                            setBg={true}
+                                            buttonPosition={'inside'}
+                                            slim={false}
+                                            messageWidth='10'
+                                            className="pdt3 pdb3 bg-pag-25"
+                                        />
                                     </>
                                 }
 
@@ -641,6 +663,28 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
                                         </Tabs>
 
+                                    </>
+                                }
+
+
+                                {
+                                    view === UIView.MESSAGE &&
+                                    <>
+                                        <MessageComp
+                                            title={'Successful!'}
+                                            displayTitle={true}
+                                            icon='shield'
+                                            message={'You have successfully edited an industry on Pacitude'}
+                                            action={(e: any) => closePanel(e)}
+                                            status="success"
+                                            actionType={'action'}
+                                            buttonText={'Continue'}
+                                            setBg={true}
+                                            buttonPosition={'inside'}
+                                            slim={false}
+                                            messageWidth='10'
+                                            className="pdt3 pdb3 bg-pag-25"
+                                        />
                                     </>
                                 }
 

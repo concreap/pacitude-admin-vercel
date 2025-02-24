@@ -176,6 +176,42 @@ const sidebarRoutes: Array<IRoute> = [
             },
             {
                 route: 'core',
+                parent: 'careers',
+                name: 'career-details',
+                title: 'Topic Details',
+                iconName: 'flash',
+                url: '/topics',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'industries',
+                name: 'industry-details',
+                title: 'Industry Details',
+                iconName: 'flash',
+                url: '/industries',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'fields',
+                name: 'field-details',
+                title: 'Field Details',
+                iconName: 'flash',
+                url: '/fields',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
                 parent: 'questions',
                 name: 'ai-questions',
                 title: 'Generate Questions',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, Fragment } from "react"
+import React, { useEffect, useState, useContext, Fragment, MouseEvent } from "react"
 import { ICollection, ICoreContext, IGeniusContext, IListUI, IUserContext } from "../../../../utils/interfaces.util";
 import GeniusContext from "../../../../context/genius/geniusContext";
 import SearchInput from "../../../../components/partials/inputs/SearchInput";
@@ -72,12 +72,12 @@ const IndustryList = (props: IListUI) => {
 
     }
 
-    const toDetails = (e: any, id: string) => {
+    const toDetails = (e: MouseEvent<HTMLElement>, id: string) => {
 
         e.preventDefault();
 
         const route = routil.inRoute({
-            route: 'industries',
+            route: 'core',
             name: 'industry-details',
             params: [{ type: 'url', name: 'details', value: id }]
         });
@@ -218,7 +218,7 @@ const IndustryList = (props: IListUI) => {
                                                                 <Popout
                                                                     position="left"
                                                                     items={[
-                                                                        { label: 'Edit', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => { } },
+                                                                        { label: 'Details', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => toDetails(e, industry._id) },
                                                                         { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
                                                                     ]}
                                                                 />

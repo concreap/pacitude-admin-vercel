@@ -32,6 +32,7 @@ const Admins = React.lazy(() => import('./pages/dashboard/users/admins/Admins'))
 const Industries = React.lazy(() => import('./pages/dashboard/core/industries/Industries'));
 const IndustryDetails = React.lazy(() => import('./pages/dashboard/core/industries/IndustryDetails'));
 const Careers = React.lazy(() => import('./pages/dashboard/core/careers/Careers'));
+const CareerDetails = React.lazy(() => import('./pages/dashboard/core/careers/CareerDetails'));
 const Fields = React.lazy(() => import('./pages/dashboard/core/fields/Fields'));
 const FieldDetails = React.lazy(() => import('./pages/dashboard/core/fields/FieldDetails'));
 const Skills = React.lazy(() => import('./pages/dashboard/core/skills/Skills'));
@@ -95,6 +96,8 @@ const App = () => {
                 return <IndustryDetails />
             case 'careers':
                 return <Careers />
+            case 'career-details':
+                return <CareerDetails />
             case 'fields':
                 return <Fields />
             case 'field-details':

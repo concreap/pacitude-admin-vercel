@@ -54,14 +54,14 @@ const MessageComp = ({
         <>
             <div className={`${slim ? 'pdl2 pdr2' : slimer ? 'pdl4 pdr4' : ''}`}>
                 <div
-                    className={`${className ? className : ''}`}
+                    className={`${className ? className : ''} bg-pag-25`}
                     style={{ backgroundColor: setBg ? bgColor : 'transparent', padding: setBg ? '1.5rem 1.5rem' : '', borderRadius: setBg ? '1.5rem' : '' }}>
 
                     {
                         status && status === 'success' &&
                         <>
                             <div className='ui-text-center d-flex justify-content-center'>
-                                <span className={`round-button bxxlg ${cardSize ? cardSize : 'xlg'} bg-color-success`}>
+                                <span className={`round-button bxxlg ${cardSize ? cardSize : 'xlg'} bg-color-green`}>
                                     <Icon
                                         clickable={false}
                                         type='feather'
@@ -99,12 +99,12 @@ const MessageComp = ({
                     <div className="ui-text-center mrgt mrgb">
                         {
                             (displayTitle === undefined || displayTitle === true) &&
-                            <h1 className={`${titleSize ? titleSize : 'fs-32'} font-golos-semibold mrgb0 mrgt1 pt-2 las-700`}>{title ? title : 'No Title'}</h1>
+                            <p className={`${titleSize ? titleSize : 'fs-24'} font-hostgro-semibold mrgb0 mrgt1 pt-2 las-700`}>{title ? title : 'No Title'}</p>
                         }
 
                         <div className='row mrgb2 mrgt1'>
                             <div className={`col-md-${messageWidth ? messageWidth : '7'} mx-auto`}>
-                                <p className={`${msgSize ? msgSize : 'fs-15'} font-golos  mrgb0 ui-line-height ui-text-center ${msgColor ? msgColor : 'onblack'}`}>{message ? message : 'No Message'}</p>
+                                <p className={`${msgSize ? msgSize : 'fs-16'} font-hostgro  mrgb0 ui-line-height ui-text-center ${msgColor ? msgColor : 'onblack'}`}>{message ? message : 'No Message'}</p>
                             </div>
                         </div>
 

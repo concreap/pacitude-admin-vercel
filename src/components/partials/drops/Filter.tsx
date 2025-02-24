@@ -183,7 +183,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
                 <div onClick={(e) => toggleMenu(e)} className={`selected ${size}`}>
                     <span
-                        className="font-golos fs-14 ui-relative pdr1"
+                        className="font-hostgro fs-14 ui-relative pdr1"
                         style={{ top: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
                     >
                         {selected && selected.label && <> {selected.label} </>}

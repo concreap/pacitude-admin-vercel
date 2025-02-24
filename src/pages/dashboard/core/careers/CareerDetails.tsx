@@ -11,13 +11,13 @@ import storage from '../../../../utils/storage.util'
 import helper from '../../../../utils/helper.util'
 import AxiosService from '../../../../services/axios.service'
 import { FormActionType } from '../../../../utils/types.util'
-import FieldForm from './FieldForm'
+import CareerForm from './CareerForm'
 import RoundButton from '../../../../components/partials/buttons/RoundButton'
 import Icon from '../../../../components/partials/icons/Icon'
 import Fileog from '../../../../components/partials/dialogs/Fileog'
 import CoreContext from '../../../../context/core/coreContext'
 
-const FieldDetailsPage = () => {
+const CareerDetailsPage = () => {
 
   const dpRef = useRef<any>(null)
 
@@ -36,7 +36,7 @@ const FieldDetailsPage = () => {
   })
 
   const [showPanel, setShowPanel] = useState<boolean>(false);
-  const [form, setForm] = useState<{ action: FormActionType, fieldId: string }>({ action: 'edit-resource', fieldId: '' })
+  const [form, setForm] = useState<{ action: FormActionType, careerId: string }>({ action: 'edit-resource', careerId: '' })
 
   useEffect(() => {
     initSidebar()
@@ -55,7 +55,7 @@ const FieldDetailsPage = () => {
     if (e) { e.preventDefault() }
 
     if (!showPanel && form) {
-      setForm({ action: form.action, fieldId: form.id ? form.id : '' })
+      setForm({ action: form.action, careerId: form.id ? form.id : '' })
     }
 
     setShowPanel(!showPanel)
@@ -344,11 +344,11 @@ const FieldDetailsPage = () => {
 
       </div>
 
-      <FieldForm
+      <CareerForm
         show={showPanel}
         closeForm={togglePanel}
         type={form.action}
-        fieldId={form.fieldId}
+        careerId={form.careerId}
         display="details"
         title={form.action === 'add-resource' ? 'Create Industry' : 'Edit Industry'}
 
@@ -358,4 +358,4 @@ const FieldDetailsPage = () => {
   )
 }
 
-export default FieldDetailsPage
+export default CareerDetailsPage

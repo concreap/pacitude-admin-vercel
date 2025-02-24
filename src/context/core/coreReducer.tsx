@@ -30,7 +30,7 @@ const reducer = (state: any, action: any) => {
         case GET_INDUSTRY:
             return {
                 ...state,
-                industries: action.payload
+                industry: action.payload
             }
         case GET_CAREERS:
             return {

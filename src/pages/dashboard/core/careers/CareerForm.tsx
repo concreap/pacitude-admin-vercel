@@ -24,9 +24,9 @@ import DropDown from "../../../../components/layouts/DropDown";
 import Badge from "../../../../components/partials/badges/Badge";
 import ResourceContext from "../../../../context/resource/resourceContext";
 
-interface IFieldForm {
+interface ICareerForm {
     show: boolean,
-    fieldId?: string,
+    careerId?: string,
     title: string,
     type: FormActionType,
     display?: UIDisplayType
@@ -38,7 +38,7 @@ interface IFieldData {
 
 }
 
-const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }: IFieldForm) => {
+const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' }: ICareerForm) => {
 
     const panelRef = useRef<any>();
     const bulkRef = useRef<any>();
@@ -67,8 +67,8 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
             panelRef.current.open(null);
 
             if (type === 'edit-resource' && display === 'table' || display === 'list') {
-                if (fieldId) {
-                    getField(fieldId)
+                if (careerId) {
+                    getField(careerId)
                 }
             }
 
@@ -926,4 +926,4 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
     )
 };
 
-export default FieldForm;
+export default CareerForm;
