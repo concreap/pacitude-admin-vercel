@@ -10,6 +10,7 @@ import { LoadingType } from '../../utils/types.util'
 import { aiquestion, collection, initialMetrics } from '../../_data/seed'
 import helper from '../../utils/helper.util'
 import {
+    GET_CAREER,
     GET_CAREERS,
     GET_FIELD,
     GET_FIELDS,
@@ -287,6 +288,62 @@ const CoreState = (props: any) => {
                 loader.popNetwork();
             } else if (response.data) {
                 console.log(`Error! Could not get logged in user ${response.data}`)
+            }
+
+        }
+
+    }, [setLoading, unsetLoading, logout])
+
+
+     /**
+     * @name getCareer
+     */
+     const getCareer = useCallback(async (id: string) => {
+
+        await setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'core',
+            method: 'GET',
+            isAuth: true,
+            path: `/careers/${id}`
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+                dispatch({
+                    type: GET_CAREER,
+                    payload: response.data
+                })
+
+            }
+
+            await unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            await unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                loader.popNetwork();
+            } 
+            else if (response.data) {
+                console.log(`Error! Could not get career ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
             }
 
         }
@@ -1074,6 +1131,7 @@ const CoreState = (props: any) => {
         getIndustries: getIndustries,
         getIndustry: getIndustry,
         getCareers: getCareers,
+        getCareer: getCareer,
         getSkills: getSkills,
         getFields: getFields,
         getField: getField,
@@ -1113,6 +1171,7 @@ const CoreState = (props: any) => {
         clearSearch,
         getIndustries,
         getIndustry,
+        getCareer,
         getCareers,
         getSkills,
         getFields,

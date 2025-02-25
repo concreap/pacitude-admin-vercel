@@ -288,7 +288,7 @@ const CareerList = (props: IListUI) => {
                 type={form.action}
                 careerId={form.careerId}
                 display="table"
-                title={form.action === 'add-resource' ? 'Create Field' : 'Edit Field'}
+                title={form.action === 'add-resource' ? 'Create Career' : 'Edit Career'}
             />
         </>
     )

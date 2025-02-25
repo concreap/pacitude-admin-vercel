@@ -42,13 +42,13 @@ const CareerDetailsPage = () => {
     initSidebar()
 
     if (id) {
-      getField(id)
+      getCareer(id)
     }
 
   }, [])
 
-  const getField = (id: string) => {
-    coreContext.getField(id)
+  const getCareer = (id: string) => {
+    coreContext.getCareer(id)
   }
 
   const togglePanel = (e: any, form?: { action: FormActionType, id?: string }) => {
@@ -71,14 +71,9 @@ const CareerDetailsPage = () => {
       ...resourceContext.toast,
       show: true,
       type: 'info',
-      message: `${text} copied to clipboard`
+      message: `Code ${text} copied to clipboard`
     })
 
-  }
-
-  const configTab = (e: any, val: any) => {
-    if (e) { e.preventDefault(); }
-    storage.keep('staff-details-tab', val.toString())
   }
 
   const initSidebar = () => {
@@ -87,78 +82,6 @@ const CareerDetailsPage = () => {
     if (result) {
       userContext.setSidebar(result)
     }
-
-  }
-
-  const updateAvatar = async (e: any) => {
-
-    if (e) { e.preventDefault(); }
-
-    if (!file || (file && !file.base64)) {
-      resourceContext.setToast({
-        ...resourceContext.toast,
-        show: true,
-        type: 'error',
-        message: 'Select staff avatar!'
-      });
-    } else {
-
-      setLoading(true);
-
-      const response = await AxiosService.call({
-        type: 'core',
-        method: 'PUT',
-        path: `/fields/${coreContext.field._id}`,
-        isAuth: true,
-        payload: {
-          avatar: file.base64
-        }
-      });
-
-      if (response.error === false && response.status === 200) {
-
-        setLoading(false);
-        resourceContext.setToast({
-          ...resourceContext.toast,
-          show: true,
-          message: `Field picture uploaded successfully`
-        });
-
-        setTimeout(() => {
-          setFile(null)
-          window.location.reload()
-        }, 500)
-
-      }
-
-      if (response.error === true) {
-
-        setLoading(false)
-
-        if (response.errors.length > 0) {
-          resourceContext.setToast({
-            ...resourceContext.toast,
-            show: true,
-            type: 'error',
-            message: response.errors.join(',')
-          })
-        } else {
-          resourceContext.setToast({
-            ...resourceContext.toast,
-            show: true,
-            type: 'error',
-            message: response.message
-          })
-        }
-
-      }
-
-    }
-
-    setTimeout(() => {
-      resourceContext.setToast({ ...resourceContext.toast, show: false })
-      setPasswordChange({ ...passwordChange, error: '' })
-    }, 2500)
 
   }
 
@@ -174,7 +97,7 @@ const CareerDetailsPage = () => {
 
             <div className={`avatar rg ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}>
 
-              <span className="font-hostgro-bold pab-900 fs-20 ui-upcase">{helper.getInitials(`${coreContext.field.name || '-------'}`)}</span>
+              <span className="font-hostgro-bold pab-900 fs-20 ui-upcase">{helper.getInitials(`${coreContext.career.name || '-------'}`)}</span>
 
             </div>
 
@@ -186,7 +109,7 @@ const CareerDetailsPage = () => {
               {
                 coreContext.loading ?
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
-                  : <>{`${coreContext.field.name}` || '--------'}</>
+                  : <>{`${coreContext.career.name}` || '--------'}</>
               }
             </div>
 
@@ -196,13 +119,13 @@ const CareerDetailsPage = () => {
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
                   :
                   <>
-                    <span className='fs-14 font-hostgro'>{coreContext.field.code || '--------'} </span>
+                    <span className='fs-14 font-hostgro'>{coreContext.career.code || '--------'} </span>
                     <Icon
                       type='feather'
                       name='copy'
                       clickable={true}
                       size={15}
-                      onClick={(e) => copy(e, coreContext.industry.code)}
+                      onClick={(e) => copy(e, coreContext.career.code)}
                       className='pdl pab-500'
                     />
                   </>
@@ -279,12 +202,12 @@ const CareerDetailsPage = () => {
           <div className='col-xl-4 col-lg-6 col-md-6 col-12'>
 
             <div className="mrgb1 lg-mrgb md-mrgb ">
-              <span className='fs-14 color-black-neutral pdr'>Field Name:</span>
+              <span className='fs-14 color-black-neutral pdr'>Career Name:</span>
 
               {
                 coreContext.loading ?
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
-                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.field.name || '------'} </span>
+                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.career.name || '------'} </span>
               }
 
             </div>
@@ -295,7 +218,7 @@ const CareerDetailsPage = () => {
                 coreContext.loading ?
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
                   :
-                  <span className='font-hostgro fs-14 font-hostgro fs-14 pag-500 ui-capitalize'> {coreContext.field.label || '-------'} </span>
+                  <span className='font-hostgro fs-14 font-hostgro fs-14 pag-500 ui-capitalize'> {coreContext.career.label || '-------'} </span>
               }
 
             </div>
@@ -304,12 +227,12 @@ const CareerDetailsPage = () => {
 
           <div className='col-xl-4 col-lg-6 col-md-6 col-12  mrgb0 lg-mrgb1-mid md-mrgb1'>
             <div className="mrgb1  lg-mrgb md-mrgb">
-              <span className='font-hostgro fs-14 color-black-neutral pdr'>Career:</span>
+              <span className='font-hostgro fs-14 color-black-neutral pdr'>Fields:</span>
 
               {
                 coreContext.loading ?
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
-                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.industry?.careers?.length || 0} </span>
+                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.career.fields?.length || 0} </span>
               }
 
             </div>
@@ -319,7 +242,7 @@ const CareerDetailsPage = () => {
               {
                 coreContext.loading ?
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
-                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.field.code || '-------'} </span>
+                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.career.code || '-------'} </span>
               }
 
             </div>
@@ -328,12 +251,12 @@ const CareerDetailsPage = () => {
 
           <div className='col-xl-4 col-lg-6 col-md-6 col-12  mrgb0 lg-mrgb1-mid md-mrgb1'>
             <div className="mrgb1  lg-mrgb md-mrgb">
-              <span className='font-hostgro fs-14 color-black-neutral pdr'>Skills:</span>
+              <span className='font-hostgro fs-14 color-black-neutral pdr'>Synonyms:</span>
 
               {
                 coreContext.loading ?
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
-                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.field.name} </span>
+                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.career.name} </span>
               }
 
             </div>
@@ -350,7 +273,7 @@ const CareerDetailsPage = () => {
         type={form.action}
         careerId={form.careerId}
         display="details"
-        title={form.action === 'add-resource' ? 'Create Industry' : 'Edit Industry'}
+        title={'Edit Career'}
 
       />
     </>

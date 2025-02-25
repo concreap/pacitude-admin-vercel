@@ -33,9 +33,8 @@ interface ICareerForm {
     closeForm(e: any): void
 }
 
-interface IFieldData {
-    name: string, label: string, career: string, skills: String[], description: string, error: string
-
+interface ICareerData {
+    name: string, label: string, description: string, error: string
 }
 
 const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' }: ICareerForm) => {
@@ -47,12 +46,12 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
     const coreContext = useContext<ICoreContext>(CoreContext)
     const resourceContext = useContext<IResourceContext>(ResourceContext)
 
-    const [skills, setSkills] = useState<Array<any>>([])
-    const [field, setField] = useState<IFieldData>({ name: '', label: '', career: '', skills: [], description: '', error: '' })
+    const [career, setCareer] = useState<ICareerData>({ name: '', label: '', description: '', error: '' })
     const [file, setFile] = useState<IFileUpload | null>(null)
     const [step, setStep] = useState<number>(0)
     const [view, setView] = useState<string>(UIView.FORM)
     const [loading, setLoading] = useState<boolean>(false)
+    const [careerSynonyms, setCareerSynonyms] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [alert, setAlert] = useState<IAlert>({
         type: 'success',
@@ -68,7 +67,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
             if (type === 'edit-resource' && display === 'table' || display === 'list') {
                 if (careerId) {
-                    getField(careerId)
+                    getCareer(careerId)
                 }
             }
 
@@ -79,13 +78,24 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
     }, [show])
 
+
+    const addSynonyms = (data: any) => {
+
+        let result = []
+        const splitText = data.split(',')
+        result.push(splitText)
+        return result
+        // coreContext.setItems(result)
+
+    }
+
     const configTab = (e: any, val: any) => {
         if (e) { e.preventDefault(); }
         storage.keep('field-form-tab', val.toString())
     }
 
-    const getField = (id: string) => {
-        coreContext.getField(id);
+    const getCareer = (id: string) => {
+        coreContext.getCareer(id);
     }
 
     const validateForm = (e: any): boolean => {
@@ -94,17 +104,13 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
         let result: boolean = false;
 
-        if (!field.name) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Field name is required' })
+        if (!career.name) {
+            setAlert({ ...alert, show: true, type: 'error', message: 'Career name is required' })
             setError('name')
         }
-        else if (!field.label) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Field display name is required' })
+        else if (!career.label) {
+            setAlert({ ...alert, show: true, type: 'error', message: 'Career display name is required' })
             setError('label')
-        }
-        else if (!field.career) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Field display career is required' })
-            setError('career')
         }
 
         else {
@@ -120,52 +126,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
     }
 
-    const getSkills = () => {
-
-        let result: Array<any> = [];
-
-        if (coreContext.skills.data.length > 0) {
-
-            result = coreContext.skills.data.map((f) => {
-                let c = {
-                    value: f._id,
-                    label: helper.capitalizeWord(f.name),
-                    left: '',
-                    image: ''
-                }
-                return c;
-            })
-
-        }
-
-        return result;
-
-    }
-
-
-    const getDefaultSkill = (id: string) => {
-
-        // let result: any = { value: 'abia', label: 'Abia', left: '', image: '' };
-
-        // const branches = core.sdbranches.data;
-        // const branch: Branch = branches.find((x: Branch) => x.branchID === id);
-
-        // if (branch) {
-
-        //     result = {
-        //         value: branch.branchID,
-        //         label: helper.capitalizeWord(branch.name),
-        //         left: '',
-        //         image: ''
-        //     }
-
-        // }
-
-        // return result;
-
-    }
-
-    const createField = async (e: any) => {
+    const createCareer = async (e: any) => {
 
         if (e) { e.preventDefault(); }
 
@@ -173,16 +134,18 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
         if (validated) {
 
-            setLoading(true);
+            const synonymText = addSynonyms(careerSynonyms)
 
             let payload: any = {};
-            Object.assign(payload, field);
-            payload.skills = coreContext.items.map((x) => x.id)
+            Object.assign(payload, career);
+            payload.synonyms = synonymText
+
+            setLoading(true);
 
             const response = await AxiosService.call({
                 type: 'core',
                 method: 'POST',
-                path: `/fields`,
+                path: `/careers`,
                 isAuth: true,
                 payload: payload
             });
@@ -220,7 +183,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
         if (e) { e.preventDefault(); }
 
         let payload: any = {};
-        Object.assign(payload, field);
+        Object.assign(payload, career);
         payload.skills = coreContext.items.map((x) => x.id)
 
         if (!helper.isEmpty(payload, 'object')) {
@@ -230,7 +193,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
             const response = await AxiosService.call({
                 type: 'core',
                 method: 'PUT',
-                path: `/fields/${coreContext.field._id}`,
+                path: `/careers/${coreContext.career._id}`,
                 isAuth: true,
                 payload: payload
             });
@@ -263,42 +226,6 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
     }
 
-    const addSkill = (data: any) => {
-
-        let currList = coreContext.items;
-
-        const exist = currList.find((x) => x.id === data.value);
-
-        if (exist) {
-            resourceContext.setToast({
-                ...resourceContext.toast,
-                show: true,
-                type: 'error',
-                title: 'Skill Exist',
-                message: 'Skill already selected!'
-            })
-            setTimeout(() => {
-                resourceContext.setToast({ ...resourceContext.toast, show: false })
-            }, 2500)
-        }
-
-        if (!exist) {
-            currList.push({ name: data.label, id: data.value })
-        }
-
-        coreContext.setItems(currList)
-
-    }
-
-    const removeSkill = (id: string) => {
-
-        let currList = coreContext.items;
-        currList = currList.filter((x) => x.id !== id)
-        console.log(currList)
-        coreContext.setItems(currList)
-
-    }
-
     const closePanel = (e: any) => {
 
         if (e) { e.preventDefault(); }
@@ -308,20 +235,18 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
         }
 
         if (display === 'table' || display === 'list') {
-            coreContext.getIndustries({ limit: LIMIT, page: 1, order: 'desc' })
+            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
         } else if (display === 'single' || display === 'details') {
-            coreContext.getField(coreContext.industry._id);
+            coreContext.getCareer(coreContext.career._id);
             // userContext.getPermissions({ limit: 9999, page: 1, order: 'desc' })
         }
 
         setTimeout(() => {
             setView(UIView.FORM)
-            setField({
-                ...field,
+            setCareer({
+                ...career,
                 name: '',
                 label: '',
-                career: '',
-                skills: [],
                 description: '',
                 error: ''
             })
@@ -383,143 +308,52 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                                 showFocus={true}
                                                                 size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Ex. Telecommunication"
+                                                                placeholder="Ex. Doctor"
                                                                 isError={error === 'name' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
-                                                                    title: "Field Name",
+                                                                    title: "Career Name",
                                                                     required: true
                                                                 }}
-                                                                onChange={(e) => setField({ ...field, name: e.target.value })}
+                                                                onChange={(e) => setCareer({ ...career, name: e.target.value })}
                                                             />
 
                                                         </div>
 
                                                         <div className="form-field mrgt1">
 
-                                                            <div className="row">
-
-                                                                <div className="col-6">
-
-                                                                    <TextInput
-                                                                        type="text"
-                                                                        showFocus={true}
-                                                                        size="sm"
-                                                                        autoComplete={false}
-                                                                        placeholder="Ex. Telecommunication"
-                                                                        isError={error === 'label' ? true : false}
-                                                                        label={{
-                                                                            fontSize: 13,
-                                                                            title: "Display Name",
-                                                                            required: true
-                                                                        }}
-                                                                        onChange={(e) => setField({ ...field, label: e.target.value })}
-                                                                    />
-
-                                                                </div>
-
-                                                                <div className="col-6">
-
-                                                                    <div className="form-field">
-
-                                                                        <SelectInput
-                                                                            showFocus={true}
-                                                                            placeholder={{
-                                                                                value: 'Choose',
-                                                                                enable: true
-                                                                            }}
-                                                                            label={{
-                                                                                fontSize: 13,
-                                                                                title: "career"
-                                                                            }}
-                                                                            size="sm"
-                                                                            isError={error === 'career' ? true : false}
-                                                                            options={coreContext.careers.data}
-                                                                            onSelect={(e) => { setField({ ...field, career: e.target.value }) }}
-                                                                        />
-
-                                                                    </div>
-
-                                                                </div>
-
-                                                            </div>
-
-                                                        </div>
-
-
-                                                        <div className="form-field mrgt1">
-
-                                                            <h4 className="font-hostgro-medium fs-14 mrgb" onClick={(e) => console.log(field.skills)}>Skills</h4>
-
-                                                            <DropDown
-                                                                options={getSkills}
-                                                                selected={(data: any) => {
-                                                                    addSkill(data)
-                                                                }}
-                                                                className={`font-manrope dropdown topic-field-dropdown`}
-                                                                placeholder={'Select'}
-                                                                size="sm"
-                                                                disabled={false}
-                                                                search={{
-                                                                    enable: true,
-                                                                    bgColor: '#fff',
-                                                                    color: '#1E1335'
-                                                                }}
-                                                                menu={{
-                                                                    bgColor: '#fff',
-                                                                    itemColor: '#000',
-                                                                    itemLabel: true,
-                                                                    itemLeft: true,
-                                                                    position: 'bottom',
-                                                                    style: { width: '160%' }
-                                                                }}
-                                                                control={{
-                                                                    image: false,
-                                                                    label: true,
-                                                                    left: false
-                                                                }}
-                                                                defaultValue={0}
-                                                            />
-
-                                                            <div className="mrgt">
-                                                                <div className="ui-flexbox wrap">
-                                                                    {
-                                                                        coreContext.items.map((skill) =>
-                                                                            <Fragment key={skill.id}>
-                                                                                <Badge
-                                                                                    type='info'
-                                                                                    size="md"
-                                                                                    label={helper.capitalize(skill.name)}
-                                                                                    close={true}
-                                                                                    style={{ marginBottom: '0.15rem' }}
-                                                                                    onClose={(e) => {
-                                                                                        removeSkill(skill.id)
-                                                                                    }}
-                                                                                />
-                                                                                <span className="pdr"></span>
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-
-                                                        <div className="form-field mrgt1 mrgb1">
-
-                                                            <TextAreaInput
+                                                            <TextInput
+                                                                type="text"
                                                                 showFocus={true}
-                                                                size="md"
+                                                                size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Type here"
-                                                                isError={error === 'description' ? true : false}
+                                                                placeholder="Ex. Doctor"
+                                                                isError={error === 'label' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
-                                                                    title: "Description",
+                                                                    title: "Display Name",
                                                                     required: true
                                                                 }}
-                                                                rows={2}
-                                                                onChange={(e) => setField({ ...field, description: e.target.value })}
+                                                                onChange={(e) => setCareer({ ...career, label: e.target.value })}
+                                                            />
+
+                                                        </div>
+
+                                                        <div className="form-field mrgt1">
+
+                                                            <TextInput
+                                                                type="text"
+                                                                showFocus={true}
+                                                                size="sm"
+                                                                autoComplete={false}
+                                                                placeholder="Ex. Product management, Financial analyst"
+                                                                isError={error === 'synonyms' ? true : false}
+                                                                label={{
+                                                                    fontSize: 13,
+                                                                    title: "Synonymns",
+                                                                    required: true
+                                                                }}
+                                                                onChange={(e) => setCareerSynonyms(e.target.value)}
                                                             />
 
                                                         </div>
@@ -528,7 +362,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
                                                     <div className="form-field d-flex mrgt2">
                                                         <Button
-                                                            text="Add New Industry"
+                                                            text="Add New Career"
                                                             type="primary"
                                                             size="rg"
                                                             loading={loading}
@@ -541,7 +375,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                             icon={{
                                                                 enable: false
                                                             }}
-                                                            onClick={(e) => createField(e)}
+                                                            onClick={(e) => createCareer(e)}
                                                         />
 
                                                     </div>
@@ -648,7 +482,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                     <div className="mrgt1 ui-flexbox align-center">
 
                                                         <Button
-                                                            text={'Upload Bulk Menu'}
+                                                            text={'Upload Careers'}
                                                             type="primary"
                                                             reverse="row"
                                                             size="rg"
@@ -699,223 +533,6 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                             </>
                         }
 
-                        {
-                            type === 'edit-resource' &&
-                            <>
-
-                                {
-                                    view === UIView.FORM &&
-                                    <>
-
-                                        <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
-
-                                        <form className="form mrgt2" onSubmit={(e) => e.preventDefault()}>
-
-                                            <div className="industry-details">
-
-                                                <div className="form-field mrgt1">
-
-                                                    <TextInput
-                                                        type="text"
-                                                        showFocus={true}
-                                                        size="sm"
-                                                        autoComplete={false}
-                                                        placeholder="Ex. Telecommunication"
-                                                        isError={error === 'name' ? true : false}
-                                                        label={{
-                                                            fontSize: 13,
-                                                            title: "Field Name",
-                                                            required: true
-                                                        }}
-                                                        defaultValue={coreContext.field.name}
-                                                        onChange={(e) => setField({ ...field, name: e.target.value })}
-                                                    />
-
-                                                </div>
-
-                                                <div className="form-field mrgt1">
-
-                                                    <div className="row">
-
-                                                        <div className="col-6">
-
-                                                            <TextInput
-                                                                type="text"
-                                                                showFocus={true}
-                                                                size="sm"
-                                                                autoComplete={false}
-                                                                placeholder="Ex. Telecommunication"
-                                                                isError={error === 'label' ? true : false}
-                                                                label={{
-                                                                    fontSize: 13,
-                                                                    title: "Display Name",
-                                                                    required: true
-                                                                }}
-                                                                defaultValue={coreContext.field.label}
-                                                                onChange={(e) => setField({ ...field, label: e.target.value })}
-                                                            />
-
-                                                        </div>
-
-                                                        <div className="col-6">
-
-                                                            <div className="form-field">
-
-                                                                <SelectInput
-                                                                    showFocus={true}
-                                                                    placeholder={{
-                                                                        value: 'Choose',
-                                                                        enable: true
-                                                                    }}
-                                                                    label={{
-                                                                        fontSize: 13,
-                                                                        title: "career"
-                                                                    }}
-                                                                    size="sm"
-                                                                    isError={error === 'career' ? true : false}
-                                                                    options={coreContext.careers.data}
-                                                                    selected={coreContext.field.name}
-                                                                    onSelect={(e) => { setField({ ...field, career: e.target.value }) }}
-                                                                />
-
-                                                            </div>
-
-                                                        </div>
-
-                                                    </div>
-
-                                                </div>
-
-
-                                                <div className="form-field mrgt1">
-
-                                                    <h4 className="font-hostgro-medium fs-14 mrgb" onClick={(e) => console.log(field.skills)}>Skills</h4>
-
-                                                    <DropDown
-                                                        options={getSkills}
-                                                        selected={(data: any) => {
-                                                            addSkill(data)
-                                                        }}
-                                                        className={`font-manrope dropdown topic-field-dropdown`}
-                                                        placeholder={'Select'}
-                                                        size="sm"
-                                                        disabled={false}
-                                                        search={{
-                                                            enable: true,
-                                                            bgColor: '#fff',
-                                                            color: '#1E1335'
-                                                        }}
-                                                        menu={{
-                                                            bgColor: '#fff',
-                                                            itemColor: '#000',
-                                                            itemLabel: true,
-                                                            itemLeft: true,
-                                                            position: 'bottom',
-                                                            style: { width: '160%' }
-                                                        }}
-                                                        control={{
-                                                            image: false,
-                                                            label: true,
-                                                            left: false
-                                                        }}
-                                                        defaultValue={getDefaultSkill(coreContext.field.code)}
-                                                    />
-
-                                                    <div className="mrgt">
-                                                        <div className="ui-flexbox wrap">
-                                                            {
-                                                                coreContext.items.map((skill) =>
-                                                                    <Fragment key={skill.id}>
-                                                                        <Badge
-                                                                            type='info'
-                                                                            size="md"
-                                                                            label={helper.capitalize(skill.name)}
-                                                                            close={true}
-                                                                            style={{ marginBottom: '0.15rem' }}
-                                                                            onClose={(e) => {
-                                                                                removeSkill(skill.id)
-                                                                            }}
-                                                                        />
-                                                                        <span className="pdr"></span>
-                                                                    </Fragment>
-                                                                )
-                                                            }
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-
-                                                <div className="form-field mrgt1 mrgb1">
-
-                                                    <TextAreaInput
-                                                        showFocus={true}
-                                                        size="md"
-                                                        autoComplete={false}
-                                                        placeholder="Type here"
-                                                        isError={error === 'description' ? true : false}
-                                                        label={{
-                                                            fontSize: 13,
-                                                            title: "Description",
-                                                            required: true
-                                                        }}
-                                                        rows={2}
-                                                        defaultValue={coreContext.field.description}
-                                                        onChange={(e) => setField({ ...field, description: e.target.value })}
-                                                    />
-
-                                                </div>
-
-                                            </div>
-
-                                            <div className="form-field d-flex mrgt2">
-                                                <Button
-                                                    text="Add New Field"
-                                                    type="primary"
-                                                    size="rg"
-                                                    loading={loading}
-                                                    disabled={false}
-                                                    block={false}
-                                                    fontSize={14}
-                                                    fontWeight={'medium'}
-                                                    lineHeight={16}
-                                                    className="form-button ui-ml-auto"
-                                                    icon={{
-                                                        enable: false
-                                                    }}
-                                                    onClick={(e) => createField(e)}
-                                                />
-
-                                            </div>
-
-                                        </form>
-
-                                    </>
-                                }
-
-
-                                {
-                                    view === UIView.MESSAGE &&
-                                    <>
-                                        <MessageComp
-                                            title={'Successful!'}
-                                            displayTitle={true}
-                                            icon='shield'
-                                            message={'You have successfully edited a field on Pacitude'}
-                                            action={(e: any) => closePanel(e)}
-                                            status="success"
-                                            actionType={'action'}
-                                            buttonText={'Continue'}
-                                            setBg={true}
-                                            buttonPosition={'inside'}
-                                            slim={false}
-                                            messageWidth='10'
-                                            className="pdt3 pdb3"
-                                        />
-                                    </>
-                                }
-
-                            </>
-                        }
 
 
                     </>

@@ -71,7 +71,7 @@ const FieldDetailsPage = () => {
       ...resourceContext.toast,
       show: true,
       type: 'info',
-      message: `${text} copied to clipboard`
+      message: `Code ${text} copied to clipboard`
     })
 
   }
