@@ -428,6 +428,11 @@ input.error.show-focus:focus {
     padding: 10px 12px;
 }
 
+.button.msm {
+    min-height: 34px;
+    height: 34px;
+}
+
 .button.xsm {
     min-height: 38px;
     height: 38px;
@@ -551,7 +556,7 @@ input.error.show-focus:focus {
     display: inline-block;
 }
 
-.placeholder.flex{
+.placeholder.flex {
     display: flex;
 }
 
@@ -1352,21 +1357,33 @@ td {
     padding: 1rem 0;
 }
 
-.details-header .avatar {
+.details-header .halve .avatar {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--pab-100);
+    background-color: var(--pab-200);
     width: 60px;
     height: 60px;
     border-radius: var(--digit-6);
+    position: relative;
 }
 
-.details-header .avatar.round {
+.details-header .halve .avatar.md {
+    width: 120px;
+    height: 60px;
+}
+
+.details-header .halve .avatar.round {
     border-radius: var(--digit-100);
 }
 
-.details-header .actions {
+.details-header .halve {
+    display: flex;
+    align-items: center;
+    width: 50%;
+}
+
+.details-header .halve .actions {
     display: flex;
     align-items: center;
     column-gap: 0.6rem;
@@ -1375,6 +1392,20 @@ td {
 
 .details-block {
     padding: 1rem 0;
+}
+
+.details-header .halve .avatar .fileog-btn {
+    -webkit-transition: all 0.25s ease-out;
+    -moz-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+}
+
+.details-header .halve .avatar .fileog-btn.fade {
+    opacity: 0;
+}
+
+.details-header .halve .avatar:hover .fileog-btn.fade {
+    opacity: 1;
 }
 
 
@@ -1527,7 +1558,7 @@ td {
     margin-bottom: var(--digit-8);
 }
 
-.question.answers-list .answer{
+.question.answers-list .answer {
     margin-bottom: var(--digit-16);
 }
 
@@ -1560,20 +1591,20 @@ td {
     margin-bottom: var(--digit-24rem);
 }
 
-.overview .metrics{
+.overview .metrics {
     width: 100%;
     display: flex;
     align-items: center;
     margin: var(--digit-16rem) 0;
 }
 
-.overview .metrics .divider{
+.overview .metrics .divider {
     width: 1px;
     background-color: var(--pab-200);
     height: 40px;
     margin: 0 var(--digit-32rem);
 }
 
-.overview .metrics .metric{
+.overview .metrics .metric {
     width: auto;
 }

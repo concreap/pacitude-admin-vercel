@@ -3,6 +3,7 @@ import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FilterType,
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 import Question, { IQuestionTime } from "../models/Question.model";
+import Career from "../models/Career.model";
 
 export interface ISetCookie {
     key: string,
@@ -1170,7 +1171,7 @@ export interface ICoreContext {
     industries: ICollection,
     industry: Industry,
     careers: ICollection,
-    career: Industry,
+    career: Career,
     fields: ICollection,
     field: Industry,
     skills: ICollection,
@@ -1191,6 +1192,7 @@ export interface ICoreContext {
     getIndustries(data: IListQuery): Promise<void>,
     getIndustry(id: string): Promise<void>,
     getCareers(data: IListQuery): Promise<void>,
+    getCareer(id: string): Promise<void>,
     getFields(data: IListQuery): Promise<void>,
     getField(id: string): Promise<void>,
     getSkills(data: IListQuery): Promise<void>,

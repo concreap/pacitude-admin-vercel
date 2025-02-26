@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, Fragment } from "react"
+import React, { useEffect, useState, useContext, Fragment, MouseEvent } from "react"
 import GeniusContext from "../../../../context/genius/geniusContext";
 import SearchInput from "../../../../components/partials/inputs/SearchInput";
 import Filter from "../../../../components/partials/drops/Filter";
@@ -10,46 +10,45 @@ import CellData from "../../../../components/app/table/CellData";
 import Icon from "../../../../components/partials/icons/Icon";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
 import { ICollection, ICoreContext, IGeniusContext, IListUI, IUserContext } from "../../../../utils/interfaces.util";
+import Career from "../../../../models/Career.model";
 import Popout from "../../../../components/partials/drops/Popout";
-import Field from "../../../../models/Field.model";
 import UserContext from "../../../../context/user/userContext";
 import CoreContext from "../../../../context/core/coreContext";
-import FieldForm from "./FieldForm";
 import { FormActionType } from "../../../../utils/types.util";
-import routil from "../../../../utils/routes.util";
 import useGoTo from "../../../../hooks/useGoTo";
+import routil from "../../../../utils/routes.util";
+import CareerForm from "./CareerForm";
 
-const FieldList = (props: IListUI) => {
+const CareerList = (props: IListUI) => {
 
     const { type, resource, resourceId } = props;
 
-    const { goTo } = useGoTo();
-
-
     const LIMIT = 25;
+
+    const { goTo } = useGoTo();
 
     const userContext = useContext<IUserContext>(UserContext)
     const coreContext = useContext<ICoreContext>(CoreContext)
-    const [showPanel, setShowPanel] = useState<boolean>(false);
-    const [form, setForm] = useState<{ action: FormActionType, fieldId: string }>({ action: 'add-resource', fieldId: '' });
 
-    const [fields, setFields] = useState<ICollection>(coreContext.fields)
+    const [careers, setCareers] = useState<ICollection>(coreContext.careers)
+    const [showPanel, setShowPanel] = useState<boolean>(false);
+    const [form, setForm] = useState<{ action: FormActionType, careerId: string }>({ action: 'add-resource', careerId: '' });
 
     useEffect(() => {
 
         initSidebar()
 
-        if (helper.isEmpty(coreContext.fields.data, 'array')) {
-            coreContext.getFields({ limit: LIMIT, page: 1, order: 'desc' })
+        if (helper.isEmpty(coreContext.careers.data, 'array')) {
+            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
         }
 
     }, [])
 
     useEffect(() => {
 
-        setFields(coreContext.fields)
+        setCareers(coreContext.careers)
 
-    }, [coreContext.fields])
+    }, [coreContext.careers])
 
     const initSidebar = () => {
 
@@ -65,20 +64,20 @@ const FieldList = (props: IListUI) => {
         if (e) { e.preventDefault() }
 
         if (!showPanel && form) {
-            setForm({ action: form.action, fieldId: form.id ? form.id : '' })
+            setForm({ action: form.action, careerId: form.id ? form.id : '' })
         }
 
         setShowPanel(!showPanel)
 
     }
 
-    const toDetails = (e: any, id: string) => {
+    const toDetails = (e: MouseEvent<HTMLElement>, id: string) => {
 
         e.preventDefault();
 
         const route = routil.inRoute({
             route: 'core',
-            name: 'field-details',
+            name: 'career-details',
             params: [{ type: 'url', name: 'details', value: id }]
         });
 
@@ -86,18 +85,17 @@ const FieldList = (props: IListUI) => {
 
     }
 
-
     const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { next } = fields.pagination;
-        await coreContext.getFields({ limit: next.limit, page: next.page, order: 'desc' })
+        const { next } = careers.pagination;
+        await coreContext.getCareers({ limit: next.limit, page: next.page, order: 'desc' })
         helper.scrollToTop()
     }
 
     const pagiPrev = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { prev } = fields.pagination;
-        await coreContext.getFields({ limit: prev.limit, page: prev.page, order: 'desc' })
+        const { prev } = careers.pagination;
+        await coreContext.getCareers({ limit: prev.limit, page: prev.page, order: 'desc' })
         helper.scrollToTop()
     }
 
@@ -165,29 +163,29 @@ const FieldList = (props: IListUI) => {
                 <div className="body">
 
                     {
-                        fields.loading &&
+                        careers.loading &&
                         <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                             <span className="loader lg primary"></span>
                         </EmptyState>
                     }
 
                     {
-                        !fields.loading &&
+                        !careers.loading &&
                         <div className="tablebox responsive">
 
                             {
-                                fields.data.length === 0 &&
+                                careers.data.length === 0 &&
                                 <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
                                     <span className={`ts-icon terra-link`}>
                                         <i className='path1 fs-28'></i>
                                         <i className='path2 fs-28'></i>
                                     </span>
-                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{fields.message}</div>
+                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{careers.message}</div>
                                 </EmptyState>
                             }
 
                             {
-                                fields.data.length > 0 &&
+                                careers.data.length > 0 &&
                                 <table className="table" style={{ borderCollapse: 'collapse' }}>
 
                                     <TableHead
@@ -196,6 +194,7 @@ const FieldList = (props: IListUI) => {
                                             { label: 'Name' },
                                             { label: 'Label' },
                                             { label: 'Code' },
+                                            { label: 'Fields', className: 'ui-text-center' },
                                             { label: 'Skills', className: 'ui-text-center' },
                                             { label: 'Status' },
                                             { label: 'Action', className: 'ui-text-center' }
@@ -205,21 +204,22 @@ const FieldList = (props: IListUI) => {
                                     <tbody>
 
                                         {
-                                            fields.data.map((field: Field, index) =>
-                                                <Fragment key={field._id}>
+                                            careers.data.map((career: Career, index) =>
+                                                <Fragment key={career._id}>
                                                     <tr className="table-row">
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, field._id)} className="wp-15" render={helper.formatDate(field.createdAt, 'basic')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, field._id)} render={helper.capitalizeWord(field.name)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, field._id)} render={helper.capitalizeWord(field.label)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, field._id)} className="ui-upcase" render={field.code} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, field._id)} className="ui-upcase wp-15 ui-text-center" render={field.skills.length} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, field._id)} className="" status={{ enable: true, type: 'enabled', value: field.isEnabled }} render={<></>} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, field._id)} render={
+                                                        <CellData fontSize={13} className="wp-15" onClick={(e) => toDetails(e, career._id)} render={helper.formatDate(career.createdAt, 'basic')} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} render={helper.capitalizeWord(career.name)} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} render={helper.capitalizeWord(career.label)} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="ui-upcase" render={career.code} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="ui-upcase ui-text-center" render={career.fields.length} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="ui-upcase ui-text-center" render={career.skills.length} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="" status={{ enable: true, type: 'enabled', value: career.isEnabled }} render={<></>} />
+                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} render={
                                                             <div className="popout-wrapper">
                                                                 <Popout
                                                                     position="left"
                                                                     items={[
-                                                                        { label: 'Details', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => toDetails(e, field._id) },
+                                                                        { label: 'Edit', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => toDetails(e, career._id) },
                                                                         { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
                                                                     ]}
                                                                 />
@@ -243,7 +243,7 @@ const FieldList = (props: IListUI) => {
 
                 <div className="ui-separate-small"></div>
 
-                <div className={`footer pdb2 ${fields.loading ? 'disabled-light' : ''}`}>
+                <div className={`footer pdb2 ${careers.loading ? 'disabled-light' : ''}`}>
 
                     <div className="left-halve">
                         <Filter
@@ -256,7 +256,7 @@ const FieldList = (props: IListUI) => {
                             onChange={(item) => { }}
                         />
                         <div className="pdl1">
-                            <span className="fs-13 pas-950">Displaying {fields.count} fields on page {helper.getCurrentPage(fields.pagination)}</span>
+                            <span className="fs-13 pas-950">Displaying {careers.count} careers on page {helper.getCurrentPage(careers.pagination)}</span>
                         </div>
                     </div>
 
@@ -264,7 +264,7 @@ const FieldList = (props: IListUI) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${fields.pagination.prev && fields.pagination.prev.limit ? '' : 'disabled'}`}
+                            className={`${careers.pagination.prev && careers.pagination.prev.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiPrev(e)}
                         />
@@ -272,7 +272,7 @@ const FieldList = (props: IListUI) => {
                         <RoundButton
                             size="rg"
                             icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${fields.pagination.next && fields.pagination.next.limit ? '' : 'disabled'}`}
+                            className={`${careers.pagination.next && careers.pagination.next.limit ? '' : 'disabled'}`}
                             clickable={true}
                             onClick={(e) => pagiNext(e)}
                         />
@@ -282,17 +282,17 @@ const FieldList = (props: IListUI) => {
 
             </div>
 
-            <FieldForm
+            <CareerForm
                 show={showPanel}
                 closeForm={togglePanel}
                 type={form.action}
-                fieldId={form.fieldId}
+                careerId={form.careerId}
                 display="table"
-                title={form.action === 'add-resource' ? 'Create Field' : 'Edit Field'}
+                title={form.action === 'add-resource' ? 'Create Career' : 'Edit Career'}
             />
         </>
     )
 
 };
 
-export default FieldList;
+export default CareerList;

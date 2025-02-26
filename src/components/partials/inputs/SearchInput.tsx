@@ -83,8 +83,8 @@ const SearchInput = (props: ISearchInput) => {
             {
                 label &&
                 <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
-                    <span className={`fs-${labelFontSize()} font-golos color-black`}>{label.title}</span>
-                    {label.required ? <span className="color-red font-golos-semibold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
+                    <span className={`fs-${labelFontSize()} font-hostgro color-black`}>{label.title}</span>
+                    {label.required ? <span className="color-red font-hostgro-semibold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
                 </label>
             }
             <div className="search-input ui-relative">

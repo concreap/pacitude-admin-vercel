@@ -1,7 +1,7 @@
-import { useEffect, useState, useContext, useRef, ChangeEvent } from "react"
+import { useEffect, useState, useContext, useRef, ChangeEvent, Fragment } from "react"
 import PanelBox from "../../../../components/layouts/PanelBox";
 import { FormActionType, UIDisplayType } from "../../../../utils/types.util";
-import { IAlert, ICoreContext, IFileUpload, IUserContext } from "../../../../utils/interfaces.util";
+import { IAlert, ICoreContext, IFileUpload, IResourceContext, IUserContext } from "../../../../utils/interfaces.util";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
 import Alert from "../../../../components/partials/alerts/Alert";
 import TextInput from "../../../../components/partials/inputs/TextInput";
@@ -20,29 +20,38 @@ import TextAreaInput from "../../../../components/partials/inputs/TextAreaInput"
 import Fileog from "../../../../components/partials/dialogs/Fileog";
 import RoundButton from "../../../../components/partials/buttons/RoundButton";
 import Icon from "../../../../components/partials/icons/Icon";
+import DropDown from "../../../../components/layouts/DropDown";
+import Badge from "../../../../components/partials/badges/Badge";
+import ResourceContext from "../../../../context/resource/resourceContext";
 
-interface IIndustryForm {
+interface ICareerForm {
     show: boolean,
-    industryId?: string,
+    careerId?: string,
     title: string,
     type: FormActionType,
     display?: UIDisplayType
     closeForm(e: any): void
 }
 
-const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'table' }: IIndustryForm) => {
+interface ICareerData {
+    name: string, label: string, description: string, error: string
+}
+
+const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' }: ICareerForm) => {
 
     const panelRef = useRef<any>();
     const bulkRef = useRef<any>();
     const LIMIT = 25
 
     const coreContext = useContext<ICoreContext>(CoreContext)
+    const resourceContext = useContext<IResourceContext>(ResourceContext)
 
-    const [industry, setIndustry] = useState({ name: '', label: '', description: '', error: '' })
+    const [career, setCareer] = useState<ICareerData>({ name: '', label: '', description: '', error: '' })
     const [file, setFile] = useState<IFileUpload | null>(null)
     const [step, setStep] = useState<number>(0)
     const [view, setView] = useState<string>(UIView.FORM)
     const [loading, setLoading] = useState<boolean>(false)
+    const [careerSynonyms, setCareerSynonyms] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [alert, setAlert] = useState<IAlert>({
         type: 'success',
@@ -57,74 +66,36 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
             panelRef.current.open(null);
 
             if (type === 'edit-resource' && display === 'table' || display === 'list') {
-                if (industryId) {
-                    getIndustry(industryId)
+                if (careerId) {
+                    getCareer(careerId)
                 }
             }
+
+            coreContext.getSkills({ limit: LIMIT, page: 1, order: 'desc' })
+            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
 
         }
 
     }, [show])
 
+
+    const addSynonyms = (data: any) => {
+
+        let result = []
+        const splitText = data.split(',')
+        result.push(splitText)
+        return result
+        // coreContext.setItems(result)
+
+    }
+
     const configTab = (e: any, val: any) => {
         if (e) { e.preventDefault(); }
-        storage.keep('room-form-tab', val.toString())
+        storage.keep('field-form-tab', val.toString())
     }
 
-    const getIndustry = (id: string) => {
-        coreContext.getIndustry(id);
-    }
-
-
-    const getStates = () => {
-
-        let result: Array<any> = [];
-
-        const countries = helper.readCountries();
-        const nigeria = countries.find((x) => x.phoneCode === '+234');
-
-        if (nigeria && nigeria.states && nigeria.states.length > 0) {
-
-            result = nigeria.states.map((f: any) => {
-                let c = {
-                    value: f.name.toLowerCase(),
-                    label: helper.capitalizeWord(f.name),
-                    left: '',
-                    image: ''
-                }
-                return c;
-            })
-
-        }
-
-        return result;
-
-    }
-
-    const getDefaultState = (val: string) => {
-
-        let result: any = { value: 'abia', label: 'Abia', left: '', image: '' };
-
-        const countries = helper.readCountries();
-        const nigeria = countries.find((x) => x.phoneCode === '+234');
-
-        if (nigeria && nigeria.states && nigeria.states.length > 0) {
-
-            const state = nigeria.states.find((m: any) => m.name.toLowerCase() === val.toLowerCase());
-
-            if (state) {
-                result = {
-                    value: state.name.toLowerCase(),
-                    label: helper.capitalizeWord(state.name),
-                    left: '',
-                    image: ''
-                }
-            }
-
-        }
-
-        return result;
-
+    const getCareer = (id: string) => {
+        coreContext.getCareer(id);
     }
 
     const validateForm = (e: any): boolean => {
@@ -133,17 +104,13 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
         let result: boolean = false;
 
-        if (!industry.name) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Industry name is required' })
+        if (!career.name) {
+            setAlert({ ...alert, show: true, type: 'error', message: 'Career name is required' })
             setError('name')
         }
-        else if (!industry.label) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Industry display name is required' })
+        else if (!career.label) {
+            setAlert({ ...alert, show: true, type: 'error', message: 'Career display name is required' })
             setError('label')
-        }
-        else if (!industry.description) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Industry description is required' })
-            setError('description')
         }
 
         else {
@@ -159,7 +126,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
     }
 
-    const createIndustry = async (e: any) => {
+    const createCareer = async (e: any) => {
 
         if (e) { e.preventDefault(); }
 
@@ -167,15 +134,18 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
         if (validated) {
 
-            setLoading(true);
+            const synonymText = addSynonyms(careerSynonyms)
 
             let payload: any = {};
-            Object.assign(payload, industry);
+            Object.assign(payload, career);
+            payload.synonyms = synonymText
+
+            setLoading(true);
 
             const response = await AxiosService.call({
                 type: 'core',
                 method: 'POST',
-                path: `/industries`,
+                path: `/careers`,
                 isAuth: true,
                 payload: payload
             });
@@ -184,6 +154,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
                 setLoading(false);
                 setView(UIView.MESSAGE)
+                coreContext.setItems([])
 
             }
 
@@ -207,12 +178,13 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
     }
 
-    const updateIndustry = async (e: any) => {
+    const updateField = async (e: any) => {
 
         if (e) { e.preventDefault(); }
 
         let payload: any = {};
-        Object.assign(payload, industry);
+        Object.assign(payload, career);
+        payload.skills = coreContext.items.map((x) => x.id)
 
         if (!helper.isEmpty(payload, 'object')) {
 
@@ -221,7 +193,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
             const response = await AxiosService.call({
                 type: 'core',
                 method: 'PUT',
-                path: `/industries/${coreContext.industry._id}`,
+                path: `/careers/${coreContext.career._id}`,
                 isAuth: true,
                 payload: payload
             });
@@ -263,16 +235,16 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
         }
 
         if (display === 'table' || display === 'list') {
-            coreContext.getIndustries({ limit: LIMIT, page: 1, order: 'desc' })
+            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
         } else if (display === 'single' || display === 'details') {
-            coreContext.getIndustry(coreContext.industry._id);
+            coreContext.getCareer(coreContext.career._id);
             // userContext.getPermissions({ limit: 9999, page: 1, order: 'desc' })
         }
 
         setTimeout(() => {
             setView(UIView.FORM)
-            setIndustry({
-                ...industry,
+            setCareer({
+                ...career,
                 name: '',
                 label: '',
                 description: '',
@@ -336,14 +308,14 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                                                 showFocus={true}
                                                                 size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Ex. Telecommunication"
+                                                                placeholder="Ex. Doctor"
                                                                 isError={error === 'name' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
-                                                                    title: "Industry Name",
+                                                                    title: "Career Name",
                                                                     required: true
                                                                 }}
-                                                                onChange={(e) => setIndustry({ ...industry, name: e.target.value })}
+                                                                onChange={(e) => setCareer({ ...career, name: e.target.value })}
                                                             />
 
                                                         </div>
@@ -355,33 +327,33 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                                                 showFocus={true}
                                                                 size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Ex. Telecommunication"
+                                                                placeholder="Ex. Doctor"
                                                                 isError={error === 'label' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
                                                                     title: "Display Name",
                                                                     required: true
                                                                 }}
-                                                                onChange={(e) => setIndustry({ ...industry, label: e.target.value })}
+                                                                onChange={(e) => setCareer({ ...career, label: e.target.value })}
                                                             />
 
                                                         </div>
 
-                                                        <div className="form-field mrgt1 mrgb1">
+                                                        <div className="form-field mrgt1">
 
-                                                            <TextAreaInput
+                                                            <TextInput
+                                                                type="text"
                                                                 showFocus={true}
-                                                                size="md"
+                                                                size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Type here"
-                                                                isError={error === 'description' ? true : false}
+                                                                placeholder="Ex. Product management, Financial analyst"
+                                                                isError={error === 'synonyms' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
-                                                                    title: "Description",
+                                                                    title: "Synonymns",
                                                                     required: true
                                                                 }}
-                                                                rows={2}
-                                                                onChange={(e) => setIndustry({ ...industry, description: e.target.value })}
+                                                                onChange={(e) => setCareerSynonyms(e.target.value)}
                                                             />
 
                                                         </div>
@@ -390,7 +362,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
 
                                                     <div className="form-field d-flex mrgt2">
                                                         <Button
-                                                            text="Add New Industry"
+                                                            text="Add New Career"
                                                             type="primary"
                                                             size="rg"
                                                             loading={loading}
@@ -403,7 +375,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                                             icon={{
                                                                 enable: false
                                                             }}
-                                                            onClick={(e) => createIndustry(e)}
+                                                            onClick={(e) => createCareer(e)}
                                                         />
 
                                                     </div>
@@ -510,7 +482,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                                     <div className="mrgt1 ui-flexbox align-center">
 
                                                         <Button
-                                                            text={'Upload Bulk Menu'}
+                                                            text={'Upload Careers'}
                                                             type="primary"
                                                             reverse="row"
                                                             size="rg"
@@ -543,16 +515,17 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                                             title={'Successful!'}
                                             displayTitle={true}
                                             icon='shield'
-                                            message={'You have successfully added an industry on Pacitude'}
+                                            message={'You have successfully added a field on Pacitude'}
                                             action={(e: any) => closePanel(e)}
                                             status="success"
                                             actionType={'action'}
                                             buttonText={'Continue'}
                                             setBg={true}
+                                            bgColor={'#F6EEEA'}
                                             buttonPosition={'inside'}
                                             slim={false}
                                             messageWidth='10'
-                                            className="pdt3 pdb3 bg-pag-25"
+                                            className="pdt3 pdb3"
                                         />
                                     </>
                                 }
@@ -560,136 +533,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
                             </>
                         }
 
-                        {
-                            type === 'edit-resource' &&
-                            <>
 
-                                {
-                                    view === UIView.FORM &&
-                                    <>
-
-                                        <Tabs defaultIndex={parseInt(storage.fetch('industry-form-tab'))}>
-
-                                            <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
-
-                                            <form className="form mrgt2" onSubmit={(e) => e.preventDefault()}>
-
-                                                <div className="industry-details">
-
-                                                    <div className="form-field mrgt1">
-
-                                                        <TextInput
-                                                            type="text"
-                                                            showFocus={true}
-                                                            size="sm"
-                                                            autoComplete={false}
-                                                            placeholder="Ex. Telecommunication"
-                                                            isError={error === 'name' ? true : false}
-                                                            label={{
-                                                                fontSize: 13,
-                                                                title: "Industry Name",
-                                                                required: true
-                                                            }}
-                                                            defaultValue={coreContext.industry.name}
-                                                            onChange={(e) => setIndustry({ ...industry, name: e.target.value })}
-                                                        />
-
-                                                    </div>
-
-                                                    <div className="form-field mrgt1">
-
-                                                        <TextInput
-                                                            type="text"
-                                                            showFocus={true}
-                                                            size="sm"
-                                                            autoComplete={false}
-                                                            placeholder="Ex. Telecommunication"
-                                                            isError={error === 'label' ? true : false}
-                                                            label={{
-                                                                fontSize: 13,
-                                                                title: "Display Name",
-                                                                required: true
-                                                            }}
-                                                            defaultValue={coreContext.industry.label}
-                                                            onChange={(e) => setIndustry({ ...industry, label: e.target.value })}
-                                                        />
-
-                                                    </div>
-
-                                                    <div className="form-field mrgt1 mrgb1">
-
-                                                        <TextAreaInput
-                                                            showFocus={true}
-                                                            size="md"
-                                                            autoComplete={false}
-                                                            placeholder="Type here"
-                                                            isError={error === 'description' ? true : false}
-                                                            label={{
-                                                                fontSize: 13,
-                                                                title: "Description",
-                                                                required: true
-                                                            }}
-                                                            rows={2}
-                                                            defaultValue={coreContext.industry.description}
-                                                            onChange={(e) => setIndustry({ ...industry, description: e.target.value })}
-                                                        />
-
-                                                    </div>
-
-                                                </div>
-
-                                                <div className="form-field d-flex mrgt3">
-                                                    <Button
-                                                        text="Update Industry"
-                                                        type="primary"
-                                                        size="rg"
-                                                        loading={loading}
-                                                        disabled={false}
-                                                        block={false}
-                                                        fontSize={14}
-                                                        fontWeight={'medium'}
-                                                        lineHeight={16}
-                                                        className="form-button ui-ml-auto"
-                                                        style={{ width: '190px' }}
-                                                        icon={{
-                                                            enable: false
-                                                        }}
-                                                        onClick={(e) => updateIndustry(e)}
-                                                    />
-
-                                                </div>
-
-                                            </form>
-
-                                        </Tabs>
-
-                                    </>
-                                }
-
-
-                                {
-                                    view === UIView.MESSAGE &&
-                                    <>
-                                        <MessageComp
-                                            title={'Successful!'}
-                                            displayTitle={true}
-                                            icon='shield'
-                                            message={'You have successfully edited an industry on Pacitude'}
-                                            action={(e: any) => closePanel(e)}
-                                            status="success"
-                                            actionType={'action'}
-                                            buttonText={'Continue'}
-                                            setBg={true}
-                                            buttonPosition={'inside'}
-                                            slim={false}
-                                            messageWidth='10'
-                                            className="pdt3 pdb3 bg-pag-25"
-                                        />
-                                    </>
-                                }
-
-                            </>
-                        }
 
                     </>
                 }
@@ -699,4 +543,4 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
     )
 };
 
-export default IndustryForm;
+export default CareerForm;
