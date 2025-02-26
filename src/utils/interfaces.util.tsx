@@ -596,6 +596,10 @@ export interface IDateInput {
     selected?: boolean,
     position?: 'top' | 'bottom',
     isError?: boolean,
+    time?: {
+        enable: boolean,
+        default?: Date
+    }
     placeholder: {
         value: string,
         enable?: boolean
@@ -607,7 +611,14 @@ export interface IDateInput {
         required?: boolean,
         fontSize?: number
     },
-    onChange(date: Date): void
+    onChange(date: Date, time?: ITimeProps): void
+}
+
+export interface ITimeProps {
+    hour: string,
+    min: string,
+    sec: string,
+    ampm: string
 }
 
 export interface IButton {

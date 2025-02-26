@@ -12,6 +12,7 @@ const DateInput = (props: IDateInput) => {
         size = 'md',
         showFocus = false,
         position = 'bottom',
+        time = { enable: true },
         placeholder = { value: 'Choose', enable: true },
         onChange
     } = props
@@ -59,6 +60,7 @@ const DateInput = (props: IDateInput) => {
                 <WebfixCalendar
                     date={defaultValue}
                     position={position}
+                    time={time}
                     placeholder={ placeholder.enable ? placeholder.value : undefined }
                     display={{
                         name: name,

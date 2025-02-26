@@ -1,12 +1,20 @@
 import React, { useEffect, useState, useRef, Fragment, MouseEvent, CSSProperties } from "react"
+import moment from 'moment'
 
 enum CalBodyView {
     WEEK_DAYS = 'week-days',
-    MONTH_YEAR = 'month-year'
+    MONTH_YEAR = 'month-year',
+    TIME_SLOT = 'time-slot'
 }
 enum NavActionType {
     MONTH = 'nav-month',
     YEAR = 'nav-year'
+}
+interface ITimeProps {
+    hour: string,
+    min: string,
+    sec: string,
+    ampm: string
 }
 interface IWebfixCalendar {
     id?: string,
@@ -17,6 +25,10 @@ interface IWebfixCalendar {
     format?: string,
     future?: boolean,
     position?: 'default' | 'top' | 'left' | 'right' | 'bottom',
+    time?: {
+        enable: boolean,
+        default?: Date
+    },
     display?: {
         className?: string,
         style?: CSSProperties,
@@ -27,7 +39,7 @@ interface IWebfixCalendar {
         className?: string,
         style?: CSSProperties,
     }
-    onChange(date: Date): void
+    onChange(date: Date, time?: ITimeProps ): void
 }
 
 const random = (size: number = 6, isAlpha?: boolean) => {
@@ -44,13 +56,13 @@ const random = (size: number = 6, isAlpha?: boolean) => {
 const days = () => {
 
     return [
-        { id: 0, name: 'sunday', label: 'sun' },
-        { id: 1, name: 'monday', label: 'mon' },
-        { id: 2, name: 'tuesday', label: 'tue' },
-        { id: 3, name: 'wednesday', label: 'wed' },
-        { id: 4, name: 'thursday', label: 'thur' },
-        { id: 5, name: 'friday', label: 'fri' },
-        { id: 6, name: 'saturday', label: 'sat' }
+        { id: 0, name: 'sunday', label: 'su' },
+        { id: 1, name: 'monday', label: 'mo' },
+        { id: 2, name: 'tuesday', label: 'tu' },
+        { id: 3, name: 'wednesday', label: 'we' },
+        { id: 4, name: 'thursday', label: 'th' },
+        { id: 5, name: 'friday', label: 'fr' },
+        { id: 6, name: 'saturday', label: 'sa' }
     ]
 
 }
@@ -86,6 +98,10 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
         format = 'date',
         position = 'default',
         future = false,
+        time = {
+            enable: false,
+            default: ''
+        },
         display = { editable: true },
         calendar = {},
         onChange
@@ -95,13 +111,18 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
     const monthsOfYear = months()
     const currentDate = date ? new Date(date) : new Date();
     const calRef = useRef<any>(null)
+    const hourRef = useRef<any>(null)
+    const minRef = useRef<any>(null)
+    const secRef = useRef<any>(null)
 
     const [calBodyView, setCalBodyView] = useState<string>(CalBodyView.WEEK_DAYS)
+    const [navFrom, setNavFrom] = useState<string>(CalBodyView.WEEK_DAYS)
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(date ? new Date(date) : null)
     const [currentMonth, setCurrentMonth] = useState<any>(currentDate.getMonth())
     const [currentYear, setCurrentYear] = useState<any>(currentDate.getFullYear())
     const [currentDay, setCurrentDay] = useState<any>(currentDate.getDate())
+    const [currenTime, setCurrentTime] = useState({ hour: '', min: '', sec: '', ampm: 'AM' })
 
     const daysInMonth = new Date(currentYear, (currentMonth + 1), 0).getDate()
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay()
@@ -110,19 +131,71 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
     const [calPosition, setCalPosition] = useState({ top: '', left: '', right: '', bottom: '' })
 
     useEffect(() => {
-        setPosition()
-    }, [])
+
+        setPosition();
+        setCurrentTime({
+            ...currenTime,
+            hour: formatTime(currentDate).hour,
+            min: formatTime(currentDate).min,
+            sec: formatTime(currentDate).sec,
+            ampm: formatTime(currentDate).ampm
+        })
+
+        if(time.enable === false){
+            setCalBodyView(CalBodyView.WEEK_DAYS)
+        }
+
+    }, [time])
+
+    // control the time handles to scroll into view
+    useEffect(() => {
+
+        if (calBodyView === CalBodyView.TIME_SLOT) {
+
+            if (hourRef.current) {
+
+                hourRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'nearest'
+                })
+            }
+
+            if (minRef.current) {
+
+                minRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'nearest'
+                })
+            }
+
+            if (secRef.current) {
+
+                secRef.current.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center',
+                    inline: 'nearest'
+                })
+            }
+
+        }
+
+    }, [calBodyView])
 
     // control returned date based on changes
     useEffect(() => {
 
-        const _nd = new Date(currentYear, currentMonth, currentDay)
+        const _nd = new Date(currentYear, currentMonth, currentDay);
 
         if (onetap === true) {
-            onChange(_nd);
+
+            const tm = time.enable ? { ...currenTime } : undefined
+            onChange(_nd, tm);
         }
 
-    }, [selectedDate, currentYear, currentMonth, currentDay])
+
+    }, [selectedDate, currentYear, currentMonth, currentDay, currenTime])
 
     // control click outside
     useEffect(() => {
@@ -151,7 +224,7 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
     const leadingZero = (val: number): string => {
         let result: string = '';
 
-        if (val < 10 && val > 0) {
+        if (val >= 0 && val < 10) {
             result = `0${val}`
         } else {
             result = val.toString()
@@ -238,6 +311,10 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
 
     }
 
+    const range = (start: number, end: number) => {
+        return Array.from({ length: end }, (_, index) => start + index)
+    }
+
     const prev = (e: MouseEvent<HTMLSpanElement>, type: string) => {
 
         e.preventDefault()
@@ -280,17 +357,26 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
 
     }
 
-    const changeBodyView = (e: MouseEvent<HTMLSpanElement>) => {
+    const changeBodyView = (e: MouseEvent<HTMLSpanElement>, v?: string) => {
 
         e.preventDefault();
 
-        if (calBodyView === CalBodyView.WEEK_DAYS) {
-            setCalBodyView(CalBodyView.MONTH_YEAR)
+        if (time.enable && v) {
+            setNavFrom(calBodyView);
+            setCalBodyView(v)
+
+        } else {
+
+            if (calBodyView === CalBodyView.WEEK_DAYS) {
+                setCalBodyView(CalBodyView.MONTH_YEAR)
+            }
+
+            if (calBodyView === CalBodyView.MONTH_YEAR) {
+                setCalBodyView(CalBodyView.WEEK_DAYS)
+            }
+
         }
 
-        if (calBodyView === CalBodyView.MONTH_YEAR) {
-            setCalBodyView(CalBodyView.WEEK_DAYS)
-        }
 
     }
 
@@ -327,6 +413,25 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
         setCalBodyView(CalBodyView.WEEK_DAYS);
     }
 
+    const handleSelectTime = (e: MouseEvent<HTMLDivElement>, type: string, val: number) => {
+
+        e.preventDefault()
+
+        if (type === 'hour') {
+            const ampm = val >= 12 ? 'PM' : 'AM';
+            setCurrentTime({ ...currenTime, hour: leadingZero(val), ampm })
+        }
+
+        if (type === 'min') {
+            setCurrentTime({ ...currenTime, min: leadingZero(val) })
+        }
+
+        if (type === 'sec') {
+            setCurrentTime({ ...currenTime, sec: leadingZero(val) })
+        }
+
+    }
+
     const formatDate = (date: Date) => {
 
         let result = date.toLocaleDateString();
@@ -341,6 +446,18 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
 
         return result;
 
+    }
+
+    const formatTime = (date: Date) => {
+
+        const hr = date.getHours();
+        const hour = leadingZero((hr % 12 || 12));
+        const min = leadingZero(date.getMinutes());
+        const sec = leadingZero(date.getSeconds());
+        const ampm = hr >= 12 ? 'PM' : 'AM';
+
+
+        return { hour, min, sec, ampm }
     }
 
     const displayDate = () => {
@@ -420,7 +537,7 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
                                 calBodyView === CalBodyView.WEEK_DAYS &&
                                 <Fragment>
                                     <span onClick={(e) => prev(e, NavActionType.MONTH)} className="cal-btn-prev">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="11" viewBox="0 0 8 14" fill="none">
                                             <path d="M0.499997 7.80005L6.2 13.4C6.6 13.8 7.2 13.8 7.6 13.4C8 13 8 12.4 7.6 12L2.7 7.00005L7.6 2.00005C8 1.60005 8 1.00005 7.6 0.600049C7.4 0.400049 7.2 0.300049 6.9 0.300049C6.6 0.300049 6.4 0.400049 6.2 0.600049L0.499997 6.20005C0.099997 6.70005 0.099997 7.30005 0.499997 7.80005C0.499997 7.70005 0.499997 7.70005 0.499997 7.80005Z" fill="#797B86" />
                                         </svg>
                                     </span>
@@ -435,7 +552,7 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
                                     </div>
 
                                     <span onClick={(e) => next(e, NavActionType.MONTH)} className="cal-btn-next">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="11" viewBox="0 0 8 14" fill="none">
                                             <path d="M7.54 6.28998L1.88 0.639976C1.78703 0.546247 1.67643 0.471853 1.55457 0.421084C1.43271 0.370316 1.30201 0.344177 1.17 0.344177C1.03799 0.344177 0.90728 0.370316 0.78542 0.421084C0.663561 0.471853 0.55296 0.546247 0.459997 0.639976C0.273746 0.827338 0.169205 1.08079 0.169205 1.34498C0.169205 1.60916 0.273746 1.86261 0.459997 2.04998L5.41 7.04998L0.459997 12C0.273746 12.1873 0.169205 12.4408 0.169205 12.705C0.169205 12.9692 0.273746 13.2226 0.459997 13.41C0.552612 13.5045 0.663057 13.5796 0.784932 13.6311C0.906807 13.6826 1.03769 13.7094 1.17 13.71C1.3023 13.7094 1.43319 13.6826 1.55506 13.6311C1.67694 13.5796 1.78738 13.5045 1.88 13.41L7.54 7.75998C7.6415 7.66633 7.72251 7.55268 7.77792 7.42618C7.83333 7.29968 7.86193 7.16308 7.86193 7.02498C7.86193 6.88687 7.83333 6.75027 7.77792 6.62377C7.72251 6.49727 7.6415 6.38362 7.54 6.28998Z" fill="#797B86" />
                                         </svg>
                                     </span>
@@ -447,7 +564,7 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
                                 <Fragment>
 
                                     <span onClick={(e) => prev(e, NavActionType.YEAR)} className="cal-btn-prev">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="11" viewBox="0 0 8 14" fill="none">
                                             <path d="M0.499997 7.80005L6.2 13.4C6.6 13.8 7.2 13.8 7.6 13.4C8 13 8 12.4 7.6 12L2.7 7.00005L7.6 2.00005C8 1.60005 8 1.00005 7.6 0.600049C7.4 0.400049 7.2 0.300049 6.9 0.300049C6.6 0.300049 6.4 0.400049 6.2 0.600049L0.499997 6.20005C0.099997 6.70005 0.099997 7.30005 0.499997 7.80005C0.499997 7.70005 0.499997 7.70005 0.499997 7.80005Z" fill="#797B86" />
                                         </svg>
                                     </span>
@@ -462,10 +579,35 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
                                     </div>
 
                                     <span onClick={(e) => next(e, NavActionType.YEAR)} className="cal-btn-next">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="14" viewBox="0 0 8 14" fill="none">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="11" viewBox="0 0 8 14" fill="none">
                                             <path d="M7.54 6.28998L1.88 0.639976C1.78703 0.546247 1.67643 0.471853 1.55457 0.421084C1.43271 0.370316 1.30201 0.344177 1.17 0.344177C1.03799 0.344177 0.90728 0.370316 0.78542 0.421084C0.663561 0.471853 0.55296 0.546247 0.459997 0.639976C0.273746 0.827338 0.169205 1.08079 0.169205 1.34498C0.169205 1.60916 0.273746 1.86261 0.459997 2.04998L5.41 7.04998L0.459997 12C0.273746 12.1873 0.169205 12.4408 0.169205 12.705C0.169205 12.9692 0.273746 13.2226 0.459997 13.41C0.552612 13.5045 0.663057 13.5796 0.784932 13.6311C0.906807 13.6826 1.03769 13.7094 1.17 13.71C1.3023 13.7094 1.43319 13.6826 1.55506 13.6311C1.67694 13.5796 1.78738 13.5045 1.88 13.41L7.54 7.75998C7.6415 7.66633 7.72251 7.55268 7.77792 7.42618C7.83333 7.29968 7.86193 7.16308 7.86193 7.02498C7.86193 6.88687 7.83333 6.75027 7.77792 6.62377C7.72251 6.49727 7.6415 6.38362 7.54 6.28998Z" fill="#797B86" />
                                         </svg>
                                     </span>
+
+                                </Fragment>
+                            }
+
+                            {
+                                calBodyView === CalBodyView.TIME_SLOT &&
+                                <Fragment>
+
+                                    <span onClick={(e) => setCalBodyView(navFrom)} className="cal-btn-prev">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="8" height="11" viewBox="0 0 8 14" fill="none">
+                                            <path d="M0.499997 7.80005L6.2 13.4C6.6 13.8 7.2 13.8 7.6 13.4C8 13 8 12.4 7.6 12L2.7 7.00005L7.6 2.00005C8 1.60005 8 1.00005 7.6 0.600049C7.4 0.400049 7.2 0.300049 6.9 0.300049C6.6 0.300049 6.4 0.400049 6.2 0.600049L0.499997 6.20005C0.099997 6.70005 0.099997 7.30005 0.499997 7.80005C0.499997 7.70005 0.499997 7.70005 0.499997 7.80005Z" fill="#797B86" />
+                                        </svg>
+                                    </span>
+
+                                    <div className="cal-time-display">
+                                        <span className="hour">{currenTime.hour}</span>
+                                        <span className="time-col">:</span>
+                                        <span className="min">{currenTime.min}</span>
+                                        <span className="time-col">:</span>
+                                        <span className="sec">{currenTime.sec}</span>
+                                        <span className="time-col">&nbsp;</span>
+                                        <span className="sec">{currenTime.ampm}</span>
+                                    </div>
+
+                                    <span className="cal-btn-next"></span>
 
                                 </Fragment>
                             }
@@ -544,13 +686,79 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
                             </div>
                         }
 
+                        {
+                            calBodyView === CalBodyView.TIME_SLOT &&
+                            <div className="cal-time">
+
+                                <div className="time-wrapper">
+
+                                    <div className="time-handle handle-hour">
+                                        {
+                                            range(0, 24).map((item, index) =>
+                                                <Fragment key={item + index + 1}>
+                                                    <div
+                                                        onClick={(e) => handleSelectTime(e, 'hour', item)}
+                                                        ref={currenTime.hour === leadingZero(item) ? hourRef : null}
+                                                        className={`reading ${currenTime.hour === leadingZero(item) ? 'selected' : ''}`}>{leadingZero(item)}</div>
+                                                </Fragment>
+                                            )
+                                        }
+                                    </div>
+
+                                    <div className="time-handle handle-min">
+                                        {
+                                            range(0, 60).map((item, index) =>
+                                                <Fragment key={item + index + 1}>
+                                                    <div
+                                                        onClick={(e) => handleSelectTime(e, 'min', item)}
+                                                        ref={currenTime.min === leadingZero(item) ? minRef : null}
+                                                        className={`reading ${currenTime.min === leadingZero(item) ? 'selected' : ''}`}>{leadingZero(item)}</div>
+                                                </Fragment>
+                                            )
+                                        }
+                                    </div>
+
+                                    <div className="time-handle handle-sec">
+                                        {
+                                            range(0, 60).map((item, index) =>
+                                                <Fragment key={item + index + 1}>
+                                                    <div
+                                                        onClick={(e) => handleSelectTime(e, 'sec', item)}
+                                                        ref={currenTime.sec === leadingZero(item) ? secRef : null}
+                                                        className={`reading ${currenTime.sec === leadingZero(item) ? 'selected' : ''}`}>{leadingZero(item)}</div>
+                                                </Fragment>
+                                            )
+                                        }
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        }
+
                     </div>
 
-                    <div className="cal-footer">
-                        <div className="cal-divider"></div>
-                        <div className="cal-footer-display">
-                            <h4 className="year">Year - {currentYear}</h4>
-                        </div>
+                    <div className="cal-divider"></div>
+
+                    <div className={`cal-footer ${time.enable ? '' : 'year'}`}>
+
+                        <h4 className="year">Year - {currentYear}</h4>
+
+                        {
+                            time.enable &&
+                            <>
+                                <div onClick={(e) => changeBodyView(e, CalBodyView.TIME_SLOT)} className="cal-time-display">
+                                    <span className="hour">{currenTime.hour}</span>
+                                    <span className="time-col">:</span>
+                                    <span className="min">{currenTime.min}</span>
+                                    <span className="time-col">:</span>
+                                    <span className="sec">{currenTime.sec}</span>
+                                    <span className="time-col">&nbsp;</span>
+                                    <span className="sec">{currenTime.ampm}</span>
+                                </div>
+                            </>
+                        }
+
                     </div>
 
                 </div>

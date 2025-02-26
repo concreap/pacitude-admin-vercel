@@ -48,7 +48,7 @@
 }
 
 .webfix-calendar .cal-wrapper{
-    width: 342px;
+    width: 290px;
     padding: 16px;
     border-radius: 16px;
     box-shadow: 0 10px 20px 1px rgba(0,0,0,0.055);
@@ -123,6 +123,7 @@
 .webfix-calendar .cal-nav .cal-year-name{
     color: #0E0E0F;
     font-weight: 900;
+    font-size: 14px;
     letter-spacing: .05rem;
 }
 
@@ -159,13 +160,15 @@
 
 .webfix-calendar .cal-day-names .day{
     width: 13%;
-    font-size: 0.85rem;
+    font-size: 0.7rem;
     font-weight: bold;
     letter-spacing: .05rem;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #797B86;
+    /* background-color: #dcdeea; */
+    text-transform: uppercase;
 }
 
 .webfix-calendar .cal-days{
@@ -178,11 +181,11 @@
 
 .webfix-calendar .cal-days .date{
     font-size: 0.85rem;
-    width: 13%;
+    width: 13.15%;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 40px;
+    height: 34px;
     color: #45454A;
     border-radius: 6px;
     cursor: pointer;
@@ -245,6 +248,9 @@
 
 .webfix-calendar .cal-footer{
     width: 100%;
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
 }
 
 .webfix-calendar .cal-divider{
@@ -254,16 +260,80 @@
     margin: 0.65rem 0;
 }
 
-.webfix-calendar .cal-footer-display{
+.webfix-calendar .cal-footer.year{
+    justify-content: center;
+}
+
+.webfix-calendar .cal-footer .year{
+    font-size: 14px;
+    color: #a8a8b3;
+    margin: 0 !important;
+}
+
+.webfix-calendar .cal-footer .cal-time-display{
+    margin-left: auto;
+    cursor: pointer;
+}
+
+.webfix-calendar .cal-time-display span{
+    font-size: 14px;
+    margin: 0 !important;
+}
+
+.webfix-calendar .cal-header .cal-time-display span{
+    color: #181818;
+}
+
+.webfix-calendar .cal-footer .cal-time-display span{
+    color: #252fe7;
+}
+
+.webfix-calendar .time-wrapper{
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    column-gap: 1rem;
+    flex-direction: row;
+    column-gap: 0.35rem;
 }
 
-.webfix-calendar .cal-footer-display .year{
+.webfix-calendar .time-handle{
+    width: 26%;
+    min-height: 195px;
+    max-height: 195px;
+    margin-bottom: 5px;
+    background-color: #f9faff;
+    border: 1px solid #f5f7ff;
+    border-radius: 4px;
+    align-items: flex-start;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.webfix-calendar .time-handle::-webkit-scrollbar{
+    display: none;
+    width: 4px;
+}
+
+.webfix-calendar .time-handle .reading{
     font-size: 14px;
-    color: #a8a8b3;
-    margin: 0 !important;
+    width: 61%;
+    margin: 0 auto;
+    padding: 1px 0;
+    margin: 3px auto;
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: 3px;
+}
+
+.webfix-calendar .time-handle .reading:hover{
+    background-color: #e0e4f4;
+}
+
+.webfix-calendar .time-handle .reading.selected{
+    background-color: #0E0E0F !important;
+    color: #fff;
+    font-weight: 800;
 }

@@ -213,22 +213,26 @@ const ComponentRender = ({ }) => {
                     />
                 </div> */}
 
-                {/* <div style={{ width: '25%' }}>
+                <div style={{ width: '25%' }}>
                     <DateInput
                         showFocus={true}
                         placeholder={{
                             value: 'Select Date',
                             enable: true
                         }}
+                        time={{ enable: true }}
                         position="top"
                         label={{
                             required: true,
                             fontSize: 14,
                             title: "Start date"
                         }}
-                        onChange={(date) => { }}
+                        onChange={(date, time) => {
+                            console.log(date)
+                            console.log(time)
+                        }}
                     />
-                </div> */}
+                </div>
 
                 {/* <div style={{ width: '25%' }}>
 
