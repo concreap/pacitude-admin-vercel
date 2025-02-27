@@ -227,9 +227,8 @@ const ComponentRender = ({ }) => {
                             fontSize: 14,
                             title: "Start date"
                         }}
-                        onChange={(date, time) => {
-                            console.log(date)
-                            console.log(time)
+                        onChange={(calendar) => {
+                            
                         }}
                     />
                 </div>

@@ -16,6 +16,18 @@ interface ITimeProps {
     sec: string,
     ampm: string
 }
+
+type PositionType = 'default' | 'top' | 'top-left' | 'top-right' | 'bottom' | 'bottom-left' | 'bottom-right' | 'left' | 'right'
+
+export interface ICalendar {
+    date: string,
+    time: string,
+    data: {
+        date: Date,
+        time: ITimeProps
+    },
+}
+
 interface IWebfixCalendar {
     id?: string,
     date?: Date | string,
@@ -24,7 +36,7 @@ interface IWebfixCalendar {
     placeholder?: string,
     format?: string,
     future?: boolean,
-    position?: 'default' | 'top' | 'left' | 'right' | 'bottom',
+    position?: PositionType,
     time?: {
         enable: boolean,
         default?: Date
@@ -33,13 +45,14 @@ interface IWebfixCalendar {
         className?: string,
         style?: CSSProperties,
         editable?: boolean,
+        reveal?: boolean,
         name?: string,
     }
     calendar?: {
         className?: string,
         style?: CSSProperties,
     }
-    onChange(date: Date, time?: ITimeProps ): void
+    onChange(calendar: ICalendar): void
 }
 
 const random = (size: number = 6, isAlpha?: boolean) => {
@@ -102,7 +115,7 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
             enable: false,
             default: ''
         },
-        display = { editable: true },
+        display = { editable: true, reveal: true },
         calendar = {},
         onChange
     } = props;
@@ -116,7 +129,8 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
     const secRef = useRef<any>(null)
 
     const [calBodyView, setCalBodyView] = useState<string>(CalBodyView.WEEK_DAYS)
-    const [navFrom, setNavFrom] = useState<string>(CalBodyView.WEEK_DAYS)
+    const [navFrom, setNavFrom] = useState<string>(CalBodyView.WEEK_DAYS);
+    const [reveal, setReveal] = useState<boolean>(false);
 
     const [selectedDate, setSelectedDate] = useState<Date | null>(date ? new Date(date) : null)
     const [currentMonth, setCurrentMonth] = useState<any>(currentDate.getMonth())
@@ -141,11 +155,17 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
             ampm: formatTime(currentDate).ampm
         })
 
-        if(time.enable === false){
+        if (time.enable === false) {
             setCalBodyView(CalBodyView.WEEK_DAYS)
         }
 
-    }, [time])
+    }, [])
+
+    useEffect(() => {
+        if (display.reveal !== undefined && display.reveal == true) {
+            setReveal(true)
+        }
+    }, [display])
 
     // control the time handles to scroll into view
     useEffect(() => {
@@ -183,20 +203,6 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
 
     }, [calBodyView])
 
-    // control returned date based on changes
-    useEffect(() => {
-
-        const _nd = new Date(currentYear, currentMonth, currentDay);
-
-        if (onetap === true) {
-
-            const tm = time.enable ? { ...currenTime } : undefined
-            onChange(_nd, tm);
-        }
-
-
-    }, [selectedDate, currentYear, currentMonth, currentDay, currenTime])
-
     // control click outside
     useEffect(() => {
 
@@ -219,6 +225,35 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
         }
 
     }, [])
+
+    // reset params once calendar is opened
+    useEffect(() => {
+
+        if (isOpen) {
+            setCalBodyView(CalBodyView.WEEK_DAYS)
+        }
+
+    }, [isOpen])
+
+    // control returned date based on changes
+    useEffect(() => {
+
+        const _nd = new Date(convertDateTime());
+
+        if (onetap === true) {
+            onChange({ 
+                date: convertDate(), 
+                time: convertTime(),
+                data: {
+                    date: _nd,
+                    time: getCurrentTime()
+                }
+            });
+        }
+
+
+    }, [selectedDate, currentYear, currentMonth, currentDay, currenTime])
+
 
     // generic functions
     const leadingZero = (val: number): string => {
@@ -260,6 +295,20 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
             setCalPosition({
                 ...calPosition,
                 top: '-300%', right: '-91%', left: '', bottom: ''
+            })
+        }
+
+        if (position === 'bottom-right') {
+            setCalPosition({
+                ...calPosition,
+                top: '98%', right: '0', left: '', bottom: ''
+            })
+        }
+
+        if (position === 'bottom-left') {
+            setCalPosition({
+                ...calPosition,
+                top: '98%', right: '', left: '0', bottom: ''
             })
         }
 
@@ -387,6 +436,8 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
         const clicked = new Date(currentYear, currentMonth, day + 1);
         const today = new Date();
 
+        setReveal(true); // allow display to be revealed
+
         if (future === true) {
 
             if (clicked >= today || isSameDay(clicked, today)) {
@@ -399,6 +450,8 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
             setCurrentDay(clicked.getDate())
         }
 
+        displayDateTime() // trigger input display
+
     }
 
     const handleSelectMonth = (e: MouseEvent<HTMLSpanElement>, month: number) => {
@@ -407,15 +460,21 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
 
         const clicked = new Date(currentYear, month, currentDay);
 
+        setReveal(true); // allow display to be revealed
+
         setCurrentMonth(clicked.getMonth());
         setSelectedDate(clicked);
 
         setCalBodyView(CalBodyView.WEEK_DAYS);
+
+        displayDateTime() // trigger input display
     }
 
     const handleSelectTime = (e: MouseEvent<HTMLDivElement>, type: string, val: number) => {
 
-        e.preventDefault()
+        e.preventDefault();
+
+        setReveal(true); // allow display to be revealed
 
         if (type === 'hour') {
             const ampm = val >= 12 ? 'PM' : 'AM';
@@ -429,6 +488,8 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
         if (type === 'sec') {
             setCurrentTime({ ...currenTime, sec: leadingZero(val) })
         }
+
+        displayDateTime() // trigger input display
 
     }
 
@@ -460,21 +521,105 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
         return { hour, min, sec, ampm }
     }
 
+    const convertDateTime = () => {
+
+        let result: string = '';
+        const td = `${currenTime.hour}:${currenTime.min}:${currenTime.sec} ${currenTime.ampm}`
+
+        if (date && selectedDate) {
+            result = `${formatDate(selectedDate)} ${td}`;
+        } else {
+
+            if (selectedDate) {
+                result = `${formatDate(selectedDate)} ${td}`;
+            } else {
+                result = `${formatDate(currentDate)} ${td}`;
+            }
+
+        }
+
+        return result;
+
+    }
+
+    const convertDate = () => {
+
+        let result: string = '';
+
+        if (date && selectedDate) {
+            result = `${formatDate(selectedDate)}`;
+        } else {
+
+            if (selectedDate) {
+                result = `${formatDate(selectedDate)}`;
+            } else {
+                result = `${formatDate(currentDate)}`;
+            }
+
+        }
+
+        return result;
+
+    }
+
+    const displayDateTime = () => {
+
+        let result: string = '';
+        const td = `${currenTime.hour}:${currenTime.min}:${currenTime.sec} ${currenTime.ampm}`
+
+        if (date && selectedDate) {
+            result = `${formatDate(selectedDate)} → ${td}`;
+        } else {
+
+            if (selectedDate) {
+                result = `${formatDate(selectedDate)} → ${td}`;
+            } else {
+                result = `${formatDate(currentDate)} → ${td}`;
+            }
+
+        }
+
+        return result;
+
+    }
+
     const displayDate = () => {
 
         let result: string = '';
 
         if (date && selectedDate) {
-            result = formatDate(selectedDate);
+            result = `${formatDate(selectedDate)}`;
         } else {
 
             if (selectedDate) {
-                result = formatDate(selectedDate);
+                result = `${formatDate(selectedDate)}`;
             } else {
-                result = formatDate(currentDate);
+                result = `${formatDate(currentDate)}`;
             }
 
         }
+
+        return result;
+
+    }
+
+    const getCurrentTime = () => {
+        const tm: ITimeProps = time.enable ?
+            { ...currenTime } :
+            {
+                hour: formatTime(currentDate).hour,
+                min: formatTime(currentDate).min,
+                sec: formatTime(currentDate).sec,
+                ampm: formatTime(currentDate).ampm
+            }
+        return tm
+    }
+
+    const convertTime = (a: boolean = false) => {
+
+        const time = getCurrentTime()
+        const ampm = a ? ` ${time.ampm}`: '';
+        let result: string = `${time.hour}:${time.min}:${time.sec}${ampm}`;
 
         return result;
 
@@ -504,7 +649,7 @@ const WebfixCalendar = (props: IWebfixCalendar) => {
                         placeholder={placeholder}
                         name={display.name ? display.name : `cal-control-${random(6, true)}`}
                         style={display.style ? display.style : {}}
-                        value={displayDate()}
+                        value={reveal ? displayDateTime() : placeholder}
                         readOnly={display.editable ? false : true}
                         onFocus={(e) => toggleIsOpen(e)}
                         onChange={(e) => { }}

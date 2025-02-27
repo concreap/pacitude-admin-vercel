@@ -3,6 +3,7 @@ import moment from 'moment'
 import { IDateToday, IHelper, IPagination, IRoundButton, IRoute, IRouteParam, ISidebarAttrs } from './interfaces.util';
 import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
+import { FormatDateType } from './types.util';
 
 const init = (type: string) => {
 
@@ -273,7 +274,7 @@ const randomNum = (min: number, max: number): number => {
 
 }
 
-const formatDate = (date: any, type: 'basic' | 'datetime') => {
+const formatDate = (date: any, type: FormatDateType) => {
 
     let result: string = '';
 
@@ -283,6 +284,26 @@ const formatDate = (date: any, type: 'basic' | 'datetime') => {
 
     if (type === 'datetime') {
         result = moment(date).format('Do MMM, YYYY HH:mm:ss A')
+    }
+
+    if (type === 'datetime-slash') {
+        result = moment(date).format('YYYY/MM/DD HH:mm:ss')
+    }
+
+    if (type === 'datetime-separated') {
+        result = moment(date).format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (type === 'localtime') {
+        result = moment(date).format('h:mm A')
+    }
+
+    if (type === 'separated') {
+        result = moment(date).format('YYYY-MM-DD')
+    }
+
+    if (type === 'slashed') {
+        result = moment(date).format('YYYY/MM/DD')
     }
 
     return result;

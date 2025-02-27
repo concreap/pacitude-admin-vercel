@@ -1,5 +1,5 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
-import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
+import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 import Question, { IQuestionTime } from "../models/Question.model";
@@ -192,7 +192,7 @@ export interface IHelper {
     days(): Array<{ id: number, name: string, label: string }>
     months(): Array<{ id: number, name: string, label: string }>,
     random(size: number, isAlpha?: boolean): string,
-    formatDate(date: any, type: 'basic' | 'datetime'): string,
+    formatDate(date: any, type: FormatDateType): string,
     equalLength(id: string, childId: string, len?: number): void,
     setWidth(id: string, val: number): void,
     setHeight(id: string, val: number): void,
@@ -595,7 +595,7 @@ export interface IDateInput {
     size?: SizeType,
     className?: string,
     selected?: boolean,
-    position?: 'top' | 'bottom',
+    position?: PositionType,
     isError?: boolean,
     time?: {
         enable: boolean,
@@ -612,7 +612,16 @@ export interface IDateInput {
         required?: boolean,
         fontSize?: number
     },
-    onChange(date: Date, time?: ITimeProps): void
+    onChange(calendar: ICalendar): void
+}
+
+export interface ICalendar{
+    date: string, 
+    time: string,
+    data: { 
+        date: Date, 
+        time: ITimeProps 
+    },
 }
 
 export interface ITimeProps {
