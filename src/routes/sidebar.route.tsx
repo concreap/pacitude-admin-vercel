@@ -188,6 +188,18 @@ const sidebarRoutes: Array<IRoute> = [
             },
             {
                 route: 'core',
+                parent: 'skills',
+                name: 'skill-details',
+                title: 'Skill Details',
+                iconName: 'flash',
+                url: '/skills',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { sidebar: true, backButton: true }
+            },
+            {
+                route: 'core',
                 parent: 'industries',
                 name: 'industry-details',
                 title: 'Industry Details',

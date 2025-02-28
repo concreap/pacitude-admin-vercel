@@ -19,6 +19,7 @@ import {
     GET_METRICS,
     GET_QUESTION,
     GET_QUESTIONS,
+    GET_SKILL,
     GET_SKILLS,
     GET_TOPIC,
     GET_TOPICS,
@@ -523,6 +524,61 @@ const CoreState = (props: any) => {
 
     }, [setLoading, unsetLoading, logout])
 
+     /**
+     * @name getField
+     */
+     const getSkill = useCallback(async (id: string) => {
+
+        await setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'core',
+            method: 'GET',
+            isAuth: true,
+            path: `/skills/${id}`
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+                dispatch({
+                    type: GET_SKILL,
+                    payload: response.data
+                })
+
+            }
+
+            await unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            await unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                loader.popNetwork();
+            } 
+            else if (response.data) {
+                console.log(`Error! Could not get skill ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
+            }
+
+        }
+
+    }, [setLoading, unsetLoading, logout])
+
     /**
      * @name getQuestions
      */
@@ -804,6 +860,78 @@ const CoreState = (props: any) => {
             await unsetLoading({
                 option: 'resource',
                 type: GET_QUESTIONS,
+                message: 'invalid resource / resourceId'
+            })
+
+        }
+
+
+    }, [setLoading, unsetLoading, logout]);
+
+    /**
+     * @name getResourceFields
+     */
+    const getResourceFields = useCallback(async (data: IListQuery) => {
+
+        const { limit, page, select, order, resource, resourceId } = data;
+        const q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
+
+        if (resource && resourceId) {
+
+            await setLoading({ option: 'resource', type: GET_FIELDS })
+
+            const response = await AxiosService.call({
+                type: 'core',
+                method: 'GET',
+                isAuth: true,
+                path: `/${resource}/fields/${resourceId}?${q}`
+            })
+
+            if (response.error === false) {
+
+                if (response.status === 200) {
+
+                    const result: ICollection = {
+                        data: response.data,
+                        count: response.count!,
+                        total: response.total!,
+                        pagination: response.pagination!,
+                        loading: false,
+                        message: response.data.length > 0 ? `displaying ${response.count!} fields` : 'There are no fields currently'
+                    }
+
+                    dispatch({
+                        type: GET_FIELDS,
+                        payload: result
+                    })
+
+                }
+
+            }
+
+            if (response.error === true) {
+
+                await unsetLoading({
+                    option: 'resource',
+                    type: GET_FIELDS,
+                    message: response.message ? response.message : response.data
+                })
+
+                if (response.status === 401) {
+                    logout()
+                } else if (response.message && response.message === 'Error: Network Error') {
+                    loader.popNetwork();
+                } else if (response.data) {
+                    console.log(`Error! Could not get fields ${response.data}`)
+                }
+
+            }
+
+        } else {
+
+            await unsetLoading({
+                option: 'resource',
+                type: GET_FIELDS,
                 message: 'invalid resource / resourceId'
             })
 
@@ -1133,6 +1261,7 @@ const CoreState = (props: any) => {
         getCareers: getCareers,
         getCareer: getCareer,
         getSkills: getSkills,
+        getSkill: getSkill,
         getFields: getFields,
         getField: getField,
         getQuestions: getQuestions,
@@ -1140,6 +1269,7 @@ const CoreState = (props: any) => {
         getTopics: getTopics,
         getTopic: getTopic,
         getResourceQuestions: getResourceQuestions,
+        getResourceFields: getResourceFields,
         getResourceMetrics: getResourceMetrics,
         setResourceMetrics: setResourceMetrics,
         searchResource: searchResource,
@@ -1174,6 +1304,7 @@ const CoreState = (props: any) => {
         getCareer,
         getCareers,
         getSkills,
+        getSkill,
         getFields,
         getField,
         getQuestions,
@@ -1181,6 +1312,7 @@ const CoreState = (props: any) => {
         getTopics,
         getTopic,
         getResourceQuestions,
+        getResourceFields,
         getResourceMetrics,
         setResourceMetrics,
         searchResource,

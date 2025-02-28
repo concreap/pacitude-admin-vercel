@@ -14,11 +14,14 @@ import TopicForm from "./TopicForm";
 import DropDown from "../../../../components/layouts/DropDown";
 import Badge from "../../../../components/partials/badges/Badge";
 import CoreContext from "../../../../context/core/coreContext";
+import useCopyText from "../../../../hooks/useCopyText";
 
 const TopicDetailsPage = ({ }) => {
 
     const panelRef = useRef<any>();
     const { id } = useParams()
+
+    const { copyText } = useCopyText()
 
     const userContext = useContext<IUserContext>(UserContext)
     const coreContext = useContext<ICoreContext>(CoreContext)
@@ -153,86 +156,99 @@ const TopicDetailsPage = ({ }) => {
 
                     <div className="details-header">
 
-                        <div className="avatar">
-                            <span className="font-hostgro-bold pab-900 fs-18 ui-upcase">{helper.getInitials(topic.name || 'NA')}</span>
+                        <div className="halve left-halve">
+
+                            <div>
+
+                                <div className="avatar">
+                                    <span className="font-hostgro-bold pab-900 fs-18 ui-upcase">{helper.getInitials(topic.name || 'NA')}</span>
+                                </div>
+
+                            </div>
+
+                            <div className="pdl1 uiline-height-medium">
+                                <h3 className="font-hostgro-bold fs-20 mrgb0">{topic.name || '--'}</h3>
+                                <span className="font-hostgro fs-14 pag-500 ui-upcase pdr">{topic.code || '--'}</span>
+                                <Icon
+                                    type="feather"
+                                    name={'copy'}
+                                    size={14}
+                                    clickable={true}
+                                    position="relative"
+                                    className="copy-icon pab-500"
+                                    style={{ top: '1px' }}
+                                    onClick={(e) => copyText(e, topic.code)}
+                                    />
+                            </div>
+
                         </div>
 
-                        <div className="pdl mrgl1">
-                            <h3 className="font-hostgro-bold fs-20 mrgb0">{topic.name || '--'}</h3>
-                            <span className="font-hostgro fs-14 pag-500 ui-upcase pdr">{topic.code || '--'}</span>
-                            <Icon
-                                type="feather"
-                                name={'copy'}
-                                size={14}
-                                clickable={true}
-                                position="relative"
-                                className="copy-icon pab-500"
-                                style={{ top: '1px' }}
-                            />
-                        </div>
+                        <div className="halve right-halve">
 
-                        <div className={`actions ${loading ? 'disabled-light' : ''}`}>
+                            <div className={`actions ${loading ? 'disabled-light' : ''}`}>
 
-                            <Button
-                                text="Edit"
-                                type="ghost"
-                                semantic="ongoing"
-                                reverse="row"
-                                size="mini"
-                                loading={false}
-                                disabled={false}
-                                fontSize={13}
-                                fontWeight={'medium'}
-                                lineHeight={16}
-                                className="export-btn"
-                                icon={{
-                                    enable: true,
-                                    type: 'polio',
-                                    name: 'edit',
-                                    size: 13
-                                }}
-                                onClick={(e) => togglePanel(e)}
-                            />
-                            <Button
-                                text={topic.isEnabled ? 'Disable' : 'Enable'}
-                                type="ghost"
-                                semantic={topic.isEnabled ? 'info' : 'success'}
-                                reverse="row"
-                                size="mini"
-                                loading={false}
-                                disabled={false}
-                                fontSize={13}
-                                fontWeight={'medium'}
-                                lineHeight={16}
-                                className="export-btn"
-                                icon={{
-                                    enable: true,
-                                    type: 'feather',
-                                    name: topic.isEnabled ? 'x' : 'check',
-                                    size: 13
-                                }}
-                                onClick={(e) => toggleTopicState(e)}
-                            />
-                            <Button
-                                text="Delete"
-                                type="ghost"
-                                semantic="error"
-                                reverse="row"
-                                size="mini"
-                                loading={false}
-                                disabled={false}
-                                fontSize={13}
-                                fontWeight={'medium'}
-                                lineHeight={16}
-                                className="export-btn blind"
-                                icon={{
-                                    enable: true,
-                                    type: 'feather',
-                                    name: 'trash',
-                                    size: 12
-                                }}
-                                onClick={(e) => { }}
-                            />
+                                <Button
+                                    text="Edit"
+                                    type="ghost"
+                                    semantic="ongoing"
+                                    reverse="row"
+                                    size="mini"
+                                    loading={false}
+                                    disabled={false}
+                                    fontSize={13}
+                                    fontWeight={'medium'}
+                                    lineHeight={16}
+                                    className="export-btn"
+                                    icon={{
+                                        enable: true,
+                                        type: 'polio',
+                                        name: 'edit',
+                                        size: 13
+                                    }}
+                                    onClick={(e) => togglePanel(e)}
+                                />
+                                <Button
+                                    text={topic.isEnabled ? 'Disable' : 'Enable'}
+                                    type="ghost"
+                                    semantic={topic.isEnabled ? 'info' : 'success'}
+                                    reverse="row"
+                                    size="mini"
+                                    loading={false}
+                                    disabled={false}
+                                    fontSize={13}
+                                    fontWeight={'medium'}
+                                    lineHeight={16}
+                                    className="export-btn"
+                                    icon={{
+                                        enable: true,
+                                        type: 'feather',
+                                        name: topic.isEnabled ? 'x' : 'check',
+                                        size: 13
+                                    }}
+                                    onClick={(e) => toggleTopicState(e)}
+                                />
+                                <Button
+                                    text="Delete"
+                                    type="ghost"
+                                    semantic="error"
+                                    reverse="row"
+                                    size="mini"
+                                    loading={false}
+                                    disabled={false}
+                                    fontSize={13}
+                                    fontWeight={'medium'}
+                                    lineHeight={16}
+                                    className="export-btn blind"
+                                    icon={{
+                                        enable: true,
+                                        type: 'feather',
+                                        name: 'trash',
+                                        size: 12
+                                    }}
+                                    onClick={(e) => { }}
+                                />
+                            </div>
+
                         </div>
 
                     </div>
@@ -321,7 +337,7 @@ const TopicDetailsPage = ({ }) => {
                                     <DropDown
                                         options={getFields}
                                         selected={(data: any) => {
-                                            
+
                                         }}
                                         className={`font-manrope dropdown`}
                                         placeholder={'Select'}
@@ -353,7 +369,7 @@ const TopicDetailsPage = ({ }) => {
 
                             <div className="col pdl1" style={{ borderLeft: '1px solid #e9ebf0' }}>
 
-                                <Badge 
+                                <Badge
                                     type="info"
                                     size="md"
                                     label="Dubar"
