@@ -106,7 +106,7 @@ const IndustryDetailsPage = () => {
       setLoading(true);
 
       const response = await AxiosService.call({
-        type: 'core',
+        type: 'default',
         method: 'PUT',
         path: `/industries/${coreContext.industry._id}`,
         isAuth: true,

@@ -390,7 +390,7 @@ const AIQuestionsPage = ({ }) => {
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 path: `/questions/generate`,
                 isAuth: true,
@@ -476,7 +476,7 @@ const AIQuestionsPage = ({ }) => {
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 path: `/questions/add-generated`,
                 isAuth: true,

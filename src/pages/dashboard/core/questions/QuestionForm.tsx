@@ -127,7 +127,7 @@ const QuestionForm = ({ show, questionId, title, closeForm, type, display = 'tab
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'PUT',
             path: `/topics/${coreContext.topic._id}`,
             isAuth: true,
@@ -195,7 +195,7 @@ const QuestionForm = ({ show, questionId, title, closeForm, type, display = 'tab
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'POST',
             path: `/topics`,
             isAuth: true,
@@ -266,7 +266,7 @@ const QuestionForm = ({ show, questionId, title, closeForm, type, display = 'tab
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'POST',
             path: `/topics/bulk`,
             isAuth: true,

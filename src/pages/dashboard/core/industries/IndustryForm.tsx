@@ -173,7 +173,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
             Object.assign(payload, industry);
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 path: `/industries`,
                 isAuth: true,
@@ -219,7 +219,7 @@ const IndustryForm = ({ show, industryId, title, closeForm, type, display = 'tab
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'PUT',
                 path: `/industries/${coreContext.industry._id}`,
                 isAuth: true,

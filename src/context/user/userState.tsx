@@ -130,7 +130,7 @@ const UserState = (props: any) => {
         setLoading();
 
         const response = await AxiosService.call({
-            type: 'identity',
+            type: 'default',
             method: 'GET',
             path: `/auth/user/${userId}`,
             isAuth: true

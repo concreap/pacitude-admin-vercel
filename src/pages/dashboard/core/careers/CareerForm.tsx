@@ -143,7 +143,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 path: `/careers`,
                 isAuth: true,
@@ -191,7 +191,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'PUT',
                 path: `/careers/${coreContext.career._id}`,
                 isAuth: true,

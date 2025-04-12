@@ -92,7 +92,7 @@ const TopicDetailsPage = ({ }) => {
         setLoading(true);
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'PUT',
             path: `/topics/${topic._id}`,
             isAuth: true,

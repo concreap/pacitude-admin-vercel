@@ -7,12 +7,12 @@ const computeAppRoute = (route: IRoute): string => {
 
     let result: string = '';
 
-    if(route.params && route.params.length > 0){
+    if (route.params && route.params.length > 0) {
 
         const resolved = resolveRouteParams(route.params, 'app')
         result = `${route.url}${resolved}`
 
-    }else {
+    } else {
         result = route.url;
     }
 
@@ -36,7 +36,11 @@ const computeSubPath = (route: IRoute, subroute: IRouteItem): string => {
     let result = DASHBOARD_ROUTE;
     const resolved = resolveRouteParams(subroute.params ? subroute.params : [], 'app');
 
-    result = result + route.url + subroute.url + resolved;
+    if(result === route.url){
+        result = result + subroute.url + resolved;
+    } else {
+        result = result + route.url + subroute.url + resolved;
+    }
 
     return result;
 
@@ -49,18 +53,18 @@ const computeInPath = (inroute: IInRoute): string => {
     const resolved = resolveRouteParams(inroute.params ? inroute.params : [], 'app');
     const route = routes.find((x) => x.name === inroute.route);
 
-    if(route && route.subroutes && route.subroutes.length > 0){
+    if (route && route.subroutes && route.subroutes.length > 0) {
 
         // PRODUCE => '/dashboard/{route}/{subroute}/${inroute}/path/:url?query=value'
 
         const subroute = route.subroutes.find((m) => m.name === inroute.parent);
 
-        if(subroute){
+        if (subroute) {
             const merged = subroute.url === inroute.url ? subroute.url : subroute.url + inroute.url;
             result = result + route.url + merged + resolved;
         }
 
-    }else if(route && (!route.subroutes || route.subroutes.length === 0) && route.inroutes && route.inroutes.length > 0){
+    } else if (route && (!route.subroutes || route.subroutes.length === 0) && route.inroutes && route.inroutes.length > 0) {
 
         // PRODUCE => '/dashboard/{route}/${inroute}/path/:url?query=value'
 
@@ -78,31 +82,31 @@ const resolveRouteParams = (params: Array<IRouteParam>, stickTo: 'app' | 'page')
     let path: string = '', urlParam: string = '', queryParam: string = '?';
     let result: string = '';
 
-    for(let i = 0; i < params.length; i++){
+    for (let i = 0; i < params.length; i++) {
 
         let param = params[i];
 
-        if(param.type === 'path'){
+        if (param.type === 'path') {
             path = path + `/${param.value ? param.value : param.name}`;
         }
 
-        if(param.type === 'url' && stickTo === 'app'){
+        if (param.type === 'url' && stickTo === 'app') {
             urlParam = urlParam + `/:${param.name}`;
-        } 
+        }
 
-        if(param.type === 'url' && stickTo === 'page'){
+        if (param.type === 'url' && stickTo === 'page') {
             urlParam = urlParam + `/${param.value}`;
         }
 
-        if(param.type === 'query' && param.value && stickTo === 'page'){
+        if (param.type === 'query' && param.value && stickTo === 'page') {
             queryParam = queryParam + `${param.name}=${param.value}`;
         }
 
     }
 
-    if(queryParam === '?'){
+    if (queryParam === '?') {
         result = path + urlParam;
-    }else {
+    } else {
         result = path + urlParam + queryParam;
     }
 
@@ -118,15 +122,15 @@ const inRoute = (payload: { route: string, name: string, params?: Array<IRoutePa
     const resolved = resolveRouteParams(params ? params : [], 'page');
     const _route = routes.find((x) => x.name === route);
 
-    if(_route && _route.inroutes && _route.inroutes.length > 0){
+    if (_route && _route.inroutes && _route.inroutes.length > 0) {
 
         const inroute = _route.inroutes.find((m) => m.name === name);
 
-        if(inroute && _route.subroutes && _route.subroutes.length > 0){
-            
+        if (inroute && _route.subroutes && _route.subroutes.length > 0) {
+
             const subroute = _route.subroutes.find((z) => z.name === inroute.parent);
 
-            if(subroute){
+            if (subroute) {
 
                 const merged = subroute.url === inroute.url ? subroute.url : subroute.url + inroute.url;
                 result = result + _route.url + merged + resolved;
@@ -135,8 +139,17 @@ const inRoute = (payload: { route: string, name: string, params?: Array<IRoutePa
 
         }
 
-        if(inroute && (!_route.subroutes || _route.subroutes.length === 0)){
+        if (inroute && (!_route.subroutes || _route.subroutes.length === 0)) {
             result = result + _route.url + inroute.url + resolved;
+        }
+
+    } else if (_route && _route.subroutes && _route.subroutes.length > 0) {
+
+        const subroute = _route.subroutes.find((z) => z.name === name);
+
+        if (subroute) {
+            const merged = subroute.url
+            result = result + merged + resolved;
         }
 
     }
@@ -146,10 +159,10 @@ const inRoute = (payload: { route: string, name: string, params?: Array<IRoutePa
 }
 
 const routil: IRoutil = {
-    computeAppRoute: computeAppRoute,
     computePath: computePath,
     computeSubPath: computeSubPath,
     computeInPath: computeInPath,
+    computeAppRoute: computeAppRoute,
     inRoute: inRoute,
     resolveRouteParams: resolveRouteParams
 }

@@ -131,7 +131,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_INDUSTRIES })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/industries?${q}`
@@ -187,7 +187,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'default' })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/industries/${id}`
@@ -246,7 +246,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_CAREERS })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/careers?${q}`
@@ -303,7 +303,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'default' })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/careers/${id}`
@@ -361,7 +361,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_FIELDS })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/fields?${q}`
@@ -417,7 +417,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'default' })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/fields/${id}`
@@ -475,7 +475,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_SKILLS })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/skills?${q}`
@@ -534,7 +534,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_QUESTIONS })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/questions?${q}`
@@ -587,7 +587,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'default' })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/questions/${id}`
@@ -641,7 +641,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_TOPICS })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/topics?${q}`
@@ -697,7 +697,7 @@ const CoreState = (props: any) => {
         await setLoading({ option: 'default' })
 
         const response = await AxiosService.call({
-            type: 'core',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/topics/${id}`
@@ -753,7 +753,7 @@ const CoreState = (props: any) => {
             await setLoading({ option: 'resource', type: GET_QUESTIONS })
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'GET',
                 isAuth: true,
                 path: `/${resource}/questions/${resourceId}?${q}`
@@ -825,7 +825,7 @@ const CoreState = (props: any) => {
             await setLoading({ option: 'resource', type: SET_SEARCH })
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 isAuth: true,
                 path: `/${resource}/search?${q}`,
@@ -898,7 +898,7 @@ const CoreState = (props: any) => {
             await setLoading({ option: 'resource', type: SET_SEARCH })
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 isAuth: true,
                 path: `/${resource}/filter?${q}`,
@@ -970,7 +970,7 @@ const CoreState = (props: any) => {
             await setLoading({ option: 'resource', type: GET_METRICS })
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 isAuth: true,
                 path: `/metrics/overview`,

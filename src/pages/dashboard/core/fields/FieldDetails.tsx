@@ -106,7 +106,7 @@ const FieldDetailsPage = () => {
       setLoading(true);
 
       const response = await AxiosService.call({
-        type: 'core',
+        type: 'default',
         method: 'PUT',
         path: `/fields/${coreContext.field._id}`,
         isAuth: true,

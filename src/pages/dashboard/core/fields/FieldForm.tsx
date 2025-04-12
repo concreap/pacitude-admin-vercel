@@ -180,7 +180,7 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
             payload.skills = coreContext.items.map((x) => x.id)
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'POST',
                 path: `/fields`,
                 isAuth: true,
@@ -228,7 +228,7 @@ const FieldForm = ({ show, fieldId, title, closeForm, type, display = 'table' }:
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'core',
+                type: 'default',
                 method: 'PUT',
                 path: `/fields/${coreContext.field._id}`,
                 isAuth: true,

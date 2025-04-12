@@ -36,7 +36,9 @@ class AxiosService {
 
         let result: string = '';
 
-        if (type === 'identity') {
+        if (type === 'default') {
+            result = `${this.baseUrl}/v1${path}`
+        } else if (type === 'identity') {
             result = `${this.identityUrl}${path}`
         } else if (type === 'core') {
             result = `${this.coreUrl}${path}`
@@ -83,7 +85,7 @@ class AxiosService {
                     } else {
                         result.message = 'unable to get requested resource';
                     }
-                    
+
                     result.data = null;
                 } else if (err.response.status === 502) {
                     result.error = true;
@@ -136,7 +138,7 @@ class AxiosService {
         storage.clearAuth()
         await this.call({
             method: 'POST',
-            type: 'identity',
+            type: 'default',
             path: '/auth/logout',
             isAuth: false,
             payload: {}

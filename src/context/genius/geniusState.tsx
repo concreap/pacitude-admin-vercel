@@ -48,7 +48,7 @@ const GeniusState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_INDUSTRIES })
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/industries?${q}`
@@ -104,7 +104,7 @@ const GeniusState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_CAREERS })
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/careers?${q}`
@@ -160,7 +160,7 @@ const GeniusState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_FIELDS })
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/fields?${q}`
@@ -216,7 +216,7 @@ const GeniusState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_SKILLS })
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/skills?${q}`
@@ -272,7 +272,7 @@ const GeniusState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_QUESTIONS })
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/questions?${q}`
@@ -328,7 +328,7 @@ const GeniusState = (props: any) => {
         await setLoading({ option: 'resource', type: GET_TOPICS })
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/topics?${q}`
@@ -381,7 +381,7 @@ const GeniusState = (props: any) => {
         await setLoading({ option: 'default' })
 
         const response = await AxiosService.call({
-            type: 'genius',
+            type: 'default',
             method: 'GET',
             isAuth: true,
             path: `/topics/${id}`

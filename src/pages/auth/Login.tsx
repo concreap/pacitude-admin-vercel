@@ -47,7 +47,7 @@ const Login = ({ }) => {
 
             setLoading(true)
             const response = await AxiosService.call({
-                type: 'identity',
+                type: 'default',
                 method: 'POST',
                 path: '/auth/login',
                 payload: { email: login.email, password: login.password, method: login.method }
