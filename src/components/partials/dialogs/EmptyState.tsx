@@ -1,37 +1,33 @@
-import React, { useEffect, useState, useContext } from "react"
-import { IEmptyState } from "../../../utils/interfaces.util";
+import React, { useEffect, useState, useContext, CSSProperties } from "react"
+
+interface IEmptyState {
+    children: any,
+    bgColor?: string,
+    className?: string,
+    style?: CSSProperties,
+    noBound?: boolean
+}
 
 const EmptyState = (props: IEmptyState) => {
 
     const {
-        children, bgColor, size, className, bound = false
+        children,
+        bgColor = 'bg-pag-25',
+        className = 'min-h-[200px]',
+        style = {},
+        noBound = false
     } = props;
 
     useEffect(() => {
 
     }, [])
+
     return (
         <>
-
-            <div className={`empty-state ${className ? className : ''} ${size ? size : 'rg'}`} style={{ backgroundColor: `${bgColor ? bgColor : ''}` }}>
-
-                <div className="ui-text-center">
-                    {
-                        bound &&
-                        <div className="wp-100 ui-text-center">
-                            {children}
-                        </div>
-                    }
-                    {
-                        !bound &&
-                        <div className="row">
-                            <div className="col-md-10 mx-auto ui-text-center">
-                                {children}
-                            </div>
-                        </div>
-                    }
+            <div className={`${noBound ? '' : 'px-4 py-4'}`}>
+                <div style={style} className={`w-full rounded-[10px] flex flex-col justify-center items-center ${className} ${bgColor.includes('bg') ? bgColor : ''}`}>
+                    {children}
                 </div>
-
             </div>
 
         </>

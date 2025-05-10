@@ -1,17 +1,24 @@
 import React, { useEffect, MouseEvent } from "react"
 import { IICon } from "../../../utils/interfaces.util";
 import { Link } from "react-router-dom";
+import useGoTo from "../../../hooks/useGoTo";
 
 const Icon = (props: IICon) => {
 
     const {
-        clickable, name, type,
-        className, onClick, url, style,
+        name,
+        type,
         position = 'relative',
-        isActive = false,
-        size = 16,
-        height = 20
+        clickable = false,
+        className = '',
+        url = '',
+        style = {},
+        size = 14,
+        height = 20,
+        onClick
     } = props;
+
+    const { goTo } = useGoTo()
 
     useEffect(() => {
 
@@ -23,41 +30,35 @@ const Icon = (props: IICon) => {
 
         if (onClick) {
             onClick(e)
+        } else if (url) {
+            goTo(url)
         }
 
     }
 
-    const computeClass = (): string => {
+    const cc = (): string => {
 
         let cl = type === 'feather' ? 'fe' : type === 'polio' ? 'po' : '';
 
-        let result: string = `icon ${cl} ${cl}-${name} ui-${position} fs-${size}`;
+        let result: string = `icon transition-all duration-250 ${cl} ${cl}-${name} ${position}`;
 
         if (!clickable) {
             result = result + ` ${className ? className : ''}`
-        }
-
-        if (isActive) {
-            result = `${result} active`
         }
 
         return result;
 
     }
 
-    const computeIconClass = () => {
+    const cic = () => {
 
         let cl = type === 'feather' ? 'fe' : type === 'polio' ? 'po' : '';
 
-        let icon: string = `icon ${cl} ${cl}-${name} fs-${size}`;
-        let link: string = `link-icon ui-${position}`;
+        let icon: string = `icon transition-all duration-250 ${cl} ${cl}-${name}`;
+        let link: string = `icon-link transition-all duration-250 inline-flex items-center ${position}`;
 
         if (clickable) {
             link = link + ` ${className ? className : ''}`
-        }
-
-        if (isActive) {
-            icon = `${icon} active`
         }
 
         return { icon, link };
@@ -71,17 +72,12 @@ const Icon = (props: IICon) => {
                 clickable &&
                 <>
                     <Link
-                        to={url ? url : ''}
-                        className={computeIconClass().link}
-                        style={{
-                            ...style,
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            height: height
-                        }}
-                        onClick={(e) => onClick ? fireOnClick(e) : {}}
+                        to={''}
+                        className={cic().link}
+                        style={style}
+                        onClick={(e) => fireOnClick(e)}
                     >
-                        <span className={computeIconClass().icon} />
+                        <span style={{ fontSize: `${size}px` }} className={cic().icon} />
                     </Link>
                 </>
             }
@@ -90,8 +86,11 @@ const Icon = (props: IICon) => {
                 !clickable &&
                 <>
                     <span
-                        className={computeClass()}
-                        style={style} />
+                        className={cc()}
+                        style={{
+                            ...style,
+                            fontSize: `${size}px`
+                        }} />
                 </>
             }
 

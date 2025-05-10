@@ -1,18 +1,29 @@
 import React, { useEffect } from 'react'
 import pop from '../utils/loader.util'
 
-const useNetwork = () => {
+const useNetwork = (trigger: boolean = true) => {
 
-    const toggleNetwork = (e: any) => {
-        pop.popNetwork()
-    }
+
 
     useEffect(() => {
 
-        window.addEventListener(`offline`, toggleNetwork, false);
-        window.addEventListener(`online`, () => { }, false);
+        if (trigger) {
+            window.addEventListener(`offline`, toggleNetwork, false);
+            window.addEventListener(`online`, () => { }, false);
+        }
 
-    }, [])
+    }, [trigger])
+
+    const toggleNetwork = (e: any) => {
+        popNetwork()
+    }
+
+    const popNetwork = () => {
+        // redirect
+        window.location.href = '/no-network'
+    }
+
+    return { popNetwork }
 
 }
 

@@ -99,6 +99,13 @@ class CookieService {
 
     }
 
+    public getToken(): string | null {
+
+        let result: string = this.getData({ key: 'token', parse: false });
+        return result;
+
+    }
+
 }
 
 export default new CookieService()

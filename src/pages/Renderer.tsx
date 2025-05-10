@@ -1,336 +1,334 @@
 import React, { useEffect, useState, useContext } from "react"
-import PasswordInput from "../components/partials/inputs/PasswordInput";
-import TextInput from "../components/partials/inputs/TextInput";
-import SelectInput from "../components/partials/inputs/SelectInput";
-import TextAreaInput from "../components/partials/inputs/TextAreaInput";
-import PhoneInput from "../components/partials/inputs/PhoneInput";
-import NumberInput from "../components/partials/inputs/NumberInput";
-import CountryInput from "../components/partials/inputs/CountryInput";
-import SearchInput from "../components/partials/inputs/SearchInput";
-import FileInput from "../components/partials/inputs/FileInput";
-import PinInput from "../components/partials/inputs/PinInput";
-import DateInput from "../components/partials/inputs/DateInput";
-import CustomModal from "../components/layouts/CustomModal";
-import ForgotPasswordModal from "../components/partials/dialogs/ForgotPasswordModal";
-import RoundButton from "../components/partials/buttons/RoundButton";
+import '../index.css'
+import Placeholder from "../components/partials/Placeholder";
+import Divider from "../components/partials/Divider";
 import Icon from "../components/partials/icons/Icon";
+import TextInput from "../components/partials/inputs/TextInput";
+import TextAreaInput from "../components/partials/inputs/TextAreaInput";
+import SelectInput from "../components/partials/inputs/SelectInput";
+import SearchInput from "../components/partials/inputs/SearchInput";
+import PasswordInput from "../components/partials/inputs/PasswordInput";
+import NumberInput from "../components/partials/inputs/NumberInput";
+import FileInput from "../components/partials/inputs/FileInput";
+import Checkbox from "../components/partials/inputs/Checkbox";
+import helper from "../utils/helper.util";
+import { IFilterItem } from "../utils/interfaces.util";
+import Filter from "../components/partials/drops/Filter";
+import SearchFilter from "../components/partials/drops/SearchFilter";
+import { talents } from "../_data/seed";
 import Button from "../components/partials/buttons/Button";
+import IconButton from "../components/partials/buttons/IconButton";
 import LinkButton from "../components/partials/buttons/LinkButton";
+import Badge from "../components/partials/badges/Badge";
 
-const ComponentRender = ({ }) => {
-
-    const [show, setShow] = useState<boolean>(true)
+const RendererPage = ({ }) => {
 
     useEffect(() => {
 
     }, [])
 
-    const toggleShow = (e: any) => {
-        if (e) { e.preventDefault() }
-
-        setShow(!show)
-    }
-
     return (
         <>
+            <section className="section w-full h-[100vh] flex items-center justify-center">
 
-            <section className="section comp">
+                {/* <div className="w-[25%]">
+                    <Placeholder width="w-[160px]"/>
+                </div> */}
 
-                {/* <div style={{ width: '25%' }}>
-                    <LinkButton 
-                        text="Get Started"
-                        disabled={false}
-                        size="rg"
-                        lineHeight={16}
-                        loading={false}
-                        url=""
-                        onClick={(e) => {}}
+                {/* <div className="w-[25%]">
+                    <Divider bg="bg-pag-200" />
+                </div> */}
+
+                {/* <div className="w-[25%]">
+                    <Icon type="polio" name="search" size={16} clickable={false} />
+                </div> */}
+
+                {/* <div className="w-[25%]">
+                    <TextInput
+                        type="email"
+                        size="sm"
+                        showFocus={true}
+                        autoComplete={false}
+                        placeholder="Ex. you@example.com"
+                        isError={false}
+                        label={{
+                            className: '',
+                            fontSize: 13,
+                            title: "Email Address"
+                        }}
                         icon={{
                             enable: true,
-                            name: 'nav-arrow-right',
-                            size: 16,
-                            style: {}
+                            position: 'left',
+                            child: <Icon name="search" className="pacb-800" type="polio" size={16} />
                         }}
+                        className=""
+                        onChange={(e) => { }}
                     />
                 </div> */}
 
-                {/* <div style={{ width: '25%' }}>
-                    <TextInput
+                {/* <div className="w-[25%]">
+                    <TextAreaInput
                         type="email"
                         showFocus={true}
                         autoComplete={false}
-                        isError={false}
                         placeholder="Ex. you@example.com"
+                        isError={false}
+                        rows={10}
                         label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Email address"
+                            className: '',
+                            fontSize: 13,
+                            title: "Email Address"
                         }}
+                        className=""
                         onChange={(e) => { }}
                     />
                 </div> */}
 
-                {/* <div style={{ width: '25%' }}>
-                    <PasswordInput
-                        showFocus={true}
-                        autoComplete={false}
-                        placeholder="Type Here"
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Password"
-                        }}
-                        onChange={(e) => { }}
-                    />
-                </div> */}
-
-                {/* <div style={{ width: '25%' }}>
+                {/* <div className="w-[25%]">
                     <SelectInput
+                        size="sm"
                         showFocus={true}
                         placeholder={{
-                            value: 'Choose',
-                            enable: true
+                            enable: true,
+                            value: 'Select'
                         }}
+                        isError={false}
                         label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Password"
+                            className: '',
+                            fontSize: 13,
+                            title: "Email Address"
                         }}
-                        options={[{ name: 'Male', value: 'male' }]}
+                        className=""
+                        options={[
+                            { name: 'Name', value: 'name' },
+                            { name: 'Age', value: 'age' }
+                        ]}
                         onSelect={(e) => { }}
                     />
                 </div> */}
 
-                {/* <div style={{ width: '25%' }}>
-                    <TextAreaInput
-                        showFocus={true}
-                        autoComplete={false}
-                        placeholder="Type here"
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Write your bio"
-                        }}
-                        onChange={(e) => { }}
-                    />
-                </div> */}
-
-                {/* <div style={{ width: '25%' }}>
-                    <PhoneInput
-                        showFocus={true}
-                        autoComplete={false}
-                        placeholder="Ex. 08137031202"
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Phone number"
-                        }}
-                        dropdown={{
-
-                        }}
-                        onSelect={(data) => { }}
-                        onChange={(e) => { }}
-                    />
-                </div> */}
-
-                {/* <div style={{ width: '25%' }}>
-                    <NumberInput
-                        showFocus={true}
-                        autoComplete={false}
-                        step={'0.1'}
-                        placeholder="Ex. 0.00"
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Enter amount"
-                        }}
-                        onChange={(e) => { }}
-                    />
-                </div> */}
-
-                {/* <div style={{ width: '25%' }}>
-                    <CountryInput
-                        showFocus={true}
-                        autoComplete={false}
-                        placeholder="Ex. 08137031202"
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Select counrty"
-                        }}
-                        dropdown={{
-                            contryName: true,
-                            countryCode: true
-                        }}
-                        onSelect={(data) => { }}
-                    />
-                </div> */}
-
-                {/* <div style={{ width: '25%' }}>
+                {/* <div className="w-[25%]">
                     <SearchInput
+                        size="sm"
                         showFocus={true}
-                        autoComplete={false}
-                        placeholder="Type Here"
+                        placeholder="Search"
+                        isError={false}
+                        hasResult={false}
                         label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Search by name"
+                            className: '',
+                            fontSize: 13,
+                            title: "Search Transactions"
                         }}
+                        className=""
                         onChange={(e) => { }}
                         onSearch={(e) => { }}
                     />
                 </div> */}
 
-                {/* <div style={{ width: '25%' }}>
-                    <FileInput
+                {/* <div className="w-[25%]">
+                    <PasswordInput
+                        size="sm"
+                        showFocus={true}
+                        placeholder="Type here"
+                        isError={false}
+                        label={{
+                            className: '',
+                            fontSize: 13,
+                            title: "Enter Password"
+                        }}
+                        className=""
+                        onChange={(e) => { }}
+                    />
+                </div> */}
+
+                {/* <div className="w-[25%]">
+                    <NumberInput
+                        size="sm"
                         showFocus={true}
                         autoComplete={false}
-                        placeholder="No file chosen"
-                        file={{
-                            name: '',
-                            type: ''
-                        }}
+                        placeholder="Ex. 1000"
+                        isError={false}
                         label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Browse file"
+                            className: '',
+                            fontSize: 13,
+                            title: "Email Address"
+                        }}
+                        icon={{
+                            enable: true,
+                            position: 'left',
+                            child: <Icon name="dollar-sign" className="pacb-800" type="feather" size={16} />
+                        }}
+                        className=""
+                        onChange={(e) => { }}
+                    />
+                </div> */}
+
+                {/* <div className="w-[25%]">
+                    <FileInput
+                        size="sm"
+                        showFocus={true}
+                        placeholder="Type here"
+                        isError={false}
+                        label={{
+                            className: '',
+                            fontSize: 13,
+                            title: "Enter Password"
+                        }}
+                        className=""
+                        onChange={(e) => { }}
+                    />
+                </div> */}
+
+                {/* <div className="w-[25%]">
+                    <Checkbox
+                        id={'2347890987'}
+                        size="sm"
+                        checked={false}
+                        label={{
+                            title: helper.capitalize('Remember Me'),
+                            className: '',
+                            fontSize: '[13px]'
                         }}
                         onChange={(e) => { }}
                     />
                 </div> */}
 
-                {/* <div style={{ width: '25%' }}>
-                    <PinInput
-                        type="password"
-                        showFocus={true}
-                        length={4}
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Enter your PIN"
+                {/* <div className="w-[25%]">
+                    <Filter
+                        ref={null}
+                        size='sm'
+                        className='la-filter'
+                        placeholder="Code"
+                        position="bottom"
+                        menu={{
+                            style: {},
+                            search: true,
+                            fullWidth: true,
+                            limitHeight: 'lh-sm'
                         }}
-                        onChange={(pin) => { console.log(pin) }}
+                        items={
+                            helper.listCountries().map((x) => {
+                                return {
+                                    label: x.phone,
+                                    value: x.phone,
+                                    image: `../../../images/flags/${x.code.toLowerCase()}.svg`
+                                }
+                            })
+                        }
+                        noFilter={false}
+                        onChange={(data) => {
+
+                        }}
                     />
                 </div> */}
 
-                <div style={{ width: '25%' }}>
-                    <DateInput
-                        showFocus={true}
-                        placeholder={{
-                            value: 'Select Date',
-                            enable: true
-                        }}
-                        time={{ enable: true }}
-                        position="top"
-                        label={{
-                            required: true,
-                            fontSize: 14,
-                            title: "Start date"
-                        }}
-                        onChange={(calendar) => {
+                <div className="w-[25%]">
+                    <SearchFilter
+                        ref={null}
+                        size='sm'
+                        className='la-filter'
+                        placeholder="Search"
+                        defaultValue={''}
+                        noFilter={false}
+                        items={
+                            talents.map((x) => {
+                                return {
+                                    label: x.name,
+                                    value: x.firstName.toLowerCase(),
+                                    image: x.avatar
+                                }
+                            })
+                        }
+                        onChange={async (data) => {
                             
                         }}
                     />
                 </div>
 
-                {/* <div style={{ width: '25%' }}>
-
-                    <RoundButton
-                        size="lg"
-                        icon={<Icon type="polio" name="cancel" clickable={false} size={25} />}
-                        className=""
-                        clickable={true}
-                        onClick={(e) => { }}
-                    />
-
-                </div> */}
-
-                {/* <div style={{ width: '25%' }}>
-
-                    <Button 
-                        text="Get Started"
+                {/* <div className="w-[25%]">
+                    <Button
                         type="primary"
-                        size="rg"
-                        loading={false}
-                        disabled={false}
-                        fontSize={14}
-                        lineHeight={16}
-                        className="form-button"
+                        size="sm"
+                        semantic="normal"
+                        text={{
+                            label: "New Application"
+                        }}
+                        className=""
                         icon={{
                             enable: true,
-                            name: 'check',
-                            size: 20,
-                            loaderColor: ''
+                            child: <Icon type="polio" name="plus" className="top-[0.01rem]" size={16} />
                         }}
-                        onClick={(e) => {}}
+                        onClick={(e) => { }}
                     />
-
                 </div> */}
 
-                {/* <form className="form" onSubmit={(e) => e.preventDefault()}>
+                {/* <div className="w-[25%]">
+                    <IconButton
+                        className="bg-goe-100"
+                        size="min-w-[2.2rem] min-h-[2.2rem]"
+                        active={true}
+                        icon={{
+                            name: 'eye',
+                            type: 'feather',
+                            size: 16
+                        }}
+                        onClick={(e) => { }}
+                    />
+                </div> */}
 
-                    <div className="form-field">
-                        <div className="row">
-                            <div className="col-6">
-                                <TextInput
-                                    type="email"
-                                    showFocus={true}
-                                    size="sm"
-                                    autoComplete={false}
-                                    placeholder="Ex. Sample Topic"
-                                    isError={error === 'name' ? true : false}
-                                    label={{
-                                        required: true,
-                                        fontSize: 13,
-                                        title: "Topic name"
-                                    }}
-                                    onChange={(e) => { }}
-                                />
-                            </div>
-                            <div className="col-6">
-                                <TextInput
-                                    type="email"
-                                    showFocus={true}
-                                    size="sm"
-                                    autoComplete={false}
-                                    placeholder="Ex. Sample Topic"
-                                    isError={error === 'name' ? true : false}
-                                    label={{
-                                        required: true,
-                                        fontSize: 13,
-                                        title: "Topic name"
-                                    }}
-                                    onChange={(e) => { }}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                {/* <div className="w-[25%]">
+                    <LinkButton
+                        className="ml-auto"
+                        text={{
+                            label: "Click Link",
+                            className: 'text-[14px]',
+                            weight: 'medium'
+                        }}
+                        icon={{
+                            enable: true,
+                            child: <Icon type="feather" name="chevron-right" size={15} className="pacb-900 top-[1px]" />
+                        }}
+                        onClick={(e) => { }}
+                    />
+                </div> */}
 
-                </form> */}
+                {/* <div className="w-[25%] text-center space-x-[1.5rem]">
+                    <Badge 
+                        type="normal"
+                        size="rg"
+                        display="badge"
+                        label="Badge"
+                        upper={true}
+                        close={false}
+                    />
+                    <Badge 
+                        type="normal"
+                        size="rg"
+                        display="status"
+                        label="Badge"
+                        upper={true}
+                        close={false}
+                    />
+                </div> */}
+
+                {/* <div className="w-[65%] text-center flex items-center gap-[0.5rem]">
+                    <div className="w-[80px] h-[80px] bg-pag-25 flex items-center justify-center">25</div>
+                    <div className="w-[80px] h-[80px] bg-pag-50 flex items-center justify-center">50</div>
+                    <div className="w-[80px] h-[80px] bg-pag-100 flex items-center justify-center">100</div>
+                    <div className="w-[80px] h-[80px] bg-pag-200 flex items-center justify-center">200</div>
+                    <div className="w-[80px] h-[80px] bg-pag-300 flex items-center justify-center">300</div>
+                    <div className="w-[80px] h-[80px] bg-pag-400 flex items-center justify-center">400</div>
+                    <div className="w-[80px] h-[80px] bg-pag-500 flex items-center justify-center color-white">500</div>
+                    <div className="w-[80px] h-[80px] bg-pag-600 flex items-center justify-center color-white">600</div>
+                    <div className="w-[80px] h-[80px] bg-pag-700 flex items-center justify-center color-white">700</div>
+                    <div className="w-[80px] h-[80px] bg-pag-800 flex items-center justify-center color-white">800</div>
+                    <div className="w-[80px] h-[80px] bg-pag-900 flex items-center justify-center color-white">900</div>
+                    <div className="w-[80px] h-[80px] bg-pag-950 flex items-center justify-center color-white">950</div>
+                </div> */}
 
             </section>
-
-            <ForgotPasswordModal
-                show={false}
-                flattened={true}
-                title="Forgot Password"
-                closeModal={toggleShow}
-                slim="lg"
-            />
-
-            <CustomModal
-                show={false}
-                flattened={true}
-                title="Modal Title"
-                closeModal={() => { }}
-                slim="lg"
-                children={{
-                    main: <>Help</>
-                }}
-            />
-
         </>
     )
 };
 
-export default ComponentRender;
+export default RendererPage;

@@ -1,0 +1,130 @@
+@font-face {
+    font-family: 'Rethink-ExtraBoldItalic';
+    src: url('RethinkSans-ExtraBoldItalic.woff2') format('woff2'),
+        url('RethinkSans-ExtraBoldItalic.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-Bold';
+    src: url('RethinkSans-Bold.woff2') format('woff2'),
+        url('RethinkSans-Bold.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-BoldItalic';
+    src: url('RethinkSans-BoldItalic.woff2') format('woff2'),
+        url('RethinkSans-BoldItalic.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-ExtraBold';
+    src: url('RethinkSans-ExtraBold.woff2') format('woff2'),
+        url('RethinkSans-ExtraBold.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-Regular';
+    src: url('RethinkSans-Regular.woff2') format('woff2'),
+        url('RethinkSans-Regular.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-SemiBold';
+    src: url('RethinkSans-SemiBold.woff2') format('woff2'),
+        url('RethinkSans-SemiBold.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-SemiBoldItalic';
+    src: url('RethinkSans-SemiBoldItalic.woff2') format('woff2'),
+        url('RethinkSans-SemiBoldItalic.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-Medium';
+    src: url('RethinkSans-Medium.woff2') format('woff2'),
+        url('RethinkSans-Medium.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-MediumItalic';
+    src: url('RethinkSans-MediumItalic.woff2') format('woff2'),
+        url('RethinkSans-MediumItalic.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Rethink-Italic';
+    src: url('RethinkSans-Italic.woff2') format('woff2'),
+        url('RethinkSans-Italic.woff') format('woff');
+    font-weight: 100;
+    font-style: italic;
+    font-display: swap;
+}
+
+.font-rethink-xbold, .font-rethink-xbold a, .font-rethink-xbold span{
+    font-family: 'Rethink-ExtraBold';
+}
+
+.font-rethink-ixbold, .font-rethink-ixbold a, .font-rethink-ixbold span{
+    font-family: 'Rethink-ExtraBoldItalic';
+}
+
+.font-rethink-bold, .font-rethink-bold a, .font-rethink-bold span{
+    font-family: 'Rethink-Bold';
+}
+
+.font-rethink-ibold, .font-rethink-ibold a, .font-rethink-ibold span{
+    font-family: 'Rethink-BoldItalic';
+}
+
+.font-rethink, .font-rethink a, .font-rethink span{
+    font-family: 'Rethink-Regular';
+}
+.font-irethink, .font-irethink a, .font-irethink span{
+    font-family: 'Rethink-Italic';
+}
+
+.font-rethink-semibold, .font-rethink-semibold a, .font-rethink-semibold span{
+    font-family: 'Rethink-SemiBold';
+}
+
+.font-rethink-isemibold, .font-rethink-isemibold a, .font-rethink-isemibold span{
+    font-family: 'Rethink-SemiBoldItalic';
+}
+
+.font-rethink-medium, .font-rethink-medium a, .font-rethink-medium span{
+    font-family: 'Rethink-Medium';
+}
+
+.font-rethink-imedium, .font-rethink-imedium a, .font-rethink-imedium span{
+    font-family: 'Rethink-MediumItalic';
+}
+
+

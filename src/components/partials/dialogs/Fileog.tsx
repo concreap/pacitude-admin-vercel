@@ -1,6 +1,7 @@
 import React, { useEffect, useImperativeHandle, forwardRef, useRef, useState, useContext } from "react"
-import { IFileog, IFileUpload, IResourceContext } from "../../../utils/interfaces.util";
-import ResourceContext from "../../../context/resource/resourceContext";
+import { IFileog, IFileUpload,  } from "../../../utils/interfaces.util";
+import useSidebar from "../../../hooks/useSidebar";
+import useToast from "../../../hooks/useToast";
 
 const Fileog = forwardRef((props: IFileog, ref) => {
 
@@ -14,7 +15,7 @@ const Fileog = forwardRef((props: IFileog, ref) => {
     const KILOBYTE = 1024;
     const fileLink = useRef<any>(null);
 
-    const resourceContext = useContext<IResourceContext>(ResourceContext)
+    const { toast, setToast } = useToast()
 
     const [file, setFile] = useState<IFileUpload | null>(null);
 
@@ -38,15 +39,14 @@ const Fileog = forwardRef((props: IFileog, ref) => {
 
     const browseFile = (e: any) => {
 
-
         if (e.target.files && e.target.files[0]) {
 
             const fileSize = getSize(e.target.files[0].size);
 
             if (fileSize.MB > sizeLimit) {
 
-                resourceContext.setToast({
-                    ...resourceContext.toast,
+                setToast({
+                    ...toast,
                     show: true,
                     type: 'error',
                     message: `file cannot be more than ${sizeLimit}MB in size`
@@ -61,7 +61,7 @@ const Fileog = forwardRef((props: IFileog, ref) => {
         }
 
         setTimeout(() => {
-            resourceContext.setToast({ ...resourceContext.toast, show: false })
+            setToast({ ...toast, show: false })
         }, 3500)
     }
 
@@ -69,13 +69,17 @@ const Fileog = forwardRef((props: IFileog, ref) => {
 
         if (type !== 'image') {
 
+            const fileSize = getSize(data.size);
+            const ext = fileSize.MB > 0 ? 'MB' : fileSize.KB > 0 ? 'KB' : 'NA';
+
             setFile({
                 raw: data,
                 name: data.name,
                 size: data.size,
                 type: data.type,
                 base64: '',
-                parsedSize: getSize(data.size).MB,
+                parsedSize: fileSize.MB > 0 ? fileSize.MB : fileSize.KB,
+                sizeExt: ext,
                 dur: 0
             });
 
@@ -85,13 +89,16 @@ const Fileog = forwardRef((props: IFileog, ref) => {
                 size: data.size,
                 type: data.type,
                 base64: '',
-                parsedSize: getSize(data.size).MB,
+                parsedSize: fileSize.MB > 0 ? fileSize.MB : fileSize.KB,
+                sizeExt: ext,
                 dur: 0
             })
 
         } else {
 
             let reader = new FileReader();
+            const fileSize = getSize(data.size);
+            const ext = fileSize.MB > 0 ? 'MB' : fileSize.KB > 0 ? 'KB' : 'NA';
 
             // as base64
             reader.onloadend = (e: any) => {
@@ -102,17 +109,19 @@ const Fileog = forwardRef((props: IFileog, ref) => {
                     size: data.size,
                     type: data.type,
                     base64: e.target.result,
-                    parsedSize: getSize(data.size).MB,
+                    parsedSize: fileSize.MB > 0 ? fileSize.MB : fileSize.KB,
+                    sizeExt: ext,
                     dur: 0
                 });
-                
+
                 onSelect({
                     raw: data,
                     name: data.name,
                     size: data.size,
                     type: data.type,
                     base64: e.target.result,
-                    parsedSize: getSize(data.size).MB,
+                    parsedSize: fileSize.MB > 0 ? fileSize.MB : fileSize.KB,
+                    sizeExt: ext,
                     dur: 0
                 })
 
@@ -131,7 +140,7 @@ const Fileog = forwardRef((props: IFileog, ref) => {
 
     return (
         <>
-            <input onChange={(e) => browseFile(e)} ref={fileLink} type="file" accept={accept.join(',')} className="ui-hide" />
+            <input onChange={(e) => browseFile(e)} ref={fileLink} type="file" accept={accept.join(',')} className="hidden" />
         </>
     )
 })

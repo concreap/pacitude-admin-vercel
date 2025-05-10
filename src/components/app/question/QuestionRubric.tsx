@@ -1,83 +1,73 @@
-import React, { useEffect, useState, useContext, Fragment } from "react"
-import { IAIQuestion } from "../../../utils/interfaces.util";
-import Badge from "../../partials/badges/Badge";
+import React, { Fragment, useEffect, useState } from "react"
+import useRandom from "../../../hooks/useRandom";
 import helper from "../../../utils/helper.util";
-import { RubricType, SemanticType } from "../../../utils/types.util";
-import Button from "../../partials/buttons/Button";
-import Question from "../../../models/Question.model";
-import qHelper from "../../../utils/question.util";
+import Badge from "../../partials/badges/Badge";
 
-interface IProps {
-    question: Question,
-    type: RubricType,
-    flex?: boolean,
-    close?: boolean
+
+interface IQuestionRubric {
+    type: 'level' | 'difficulty' | 'type' | 'time' | 'score',
+    limit?: number,
+    className?: string,
+    items: Array<string>
 }
 
-const QuestionRubric = (props: IProps) => {
+const QuestionRubric = ({ type, items, limit = 3, className = '' }: IQuestionRubric) => {
 
-    const {
-        question,
-        type,
-        flex = false,
-        close = false,
-    } = props;
+    const { semantics, randomizeIndexes } = useRandom()
 
-    const [resources, setResources] = useState<Array<any>>([])
+    const [badges, setBadges] = useState<Array<string>>([])
+    const [remBadges, setRemBadges] = useState<Array<string>>([])
+    const [indexes, setIndexes] = useState<Array<number>>([])
+    
 
     useEffect(() => {
 
-        if (type === 'level' && question.levels) {
-            setResources(question.levels)
-        } else if (type === 'difficulty' && question.difficulties) {
-            setResources(question.difficulties)
-        } else if (type === 'question-type' && question.types) {
-            setResources(question.types)
-        } else if (type === 'score') {
-            const score = question.score && question.score.default > 0 ? question.score.default : 1;
-            setResources([score.toString()])
-        } else if (type === 'time') {
-            let time = qHelper.formatTime(question.time)
-            setResources([time])
+        sliceItems()
+        setIndexes(randomizeIndexes(semantics, limit))
+
+    }, [])
+
+    const sliceItems = () => {
+
+        if (limit > items.length) {
+            setBadges([...items])
+            setRemBadges([])
+        } else {
+            setBadges(items.slice(0, limit))
+            setRemBadges(items.slice(limit))
         }
 
-    }, [type])
-
-    const handleSelect = (e: any) => {
-        if (e) { e.preventDefault() }
     }
 
+    const getType = (index: number) => {
+        return semantics[indexes[index]]
+    }
 
     return (
         <>
-            <div className={`question-rubric mrgb1 ${flex ? 'ui-flexbox align-center' : ''}`}>
-
-                <h3 className={`font-hostgro fs-14 ${flex ? 'mrgb0' : 'mrgb'}`}>{helper.capitalize(type)}:</h3>
+            <div className={`flex items-center ml-auto gap-x-[0.3rem] ${className}`}>
 
                 {
-                    flex && <span className="pdr"></span>
+                    badges.map((bd, index) =>
+                        <Fragment key={bd + index}>
+                            <Badge
+                                type={getType(index)}
+                                size="xsm"
+                                display="badge"
+                                label={helper.capitalize(bd)}
+                                padding={{ y: 1, x: 12 }}
+                                font={{
+                                    weight: 'regular',
+                                    size: 12
+                                }}
+                                upper={false}
+                                close={false}
+                            />
+                        </Fragment>
+                    )
                 }
 
-                {
-                    resources.length > 0 &&
-                    <div className="ui-flexbox align-center">
-                        {
-                            resources.map((rubric: string) =>
-                                <Fragment key={rubric + helper.random(2, true)}>
-                                    <Badge
-                                        type={qHelper.rubricBadge(type)}
-                                        size={close ? 'md' : 'mini'}
-                                        label={helper.capitalize(rubric)}
-                                        close={close}
-                                    />
-                                    <span className="pdr"></span>
-                                </Fragment>
-                            )
-                        }
-
-                    </div>
-
-                }
+                { remBadges.length > 0 && <span className="text-[13px] color-black font-rethink">+{ remBadges.length }</span> }
 
             </div>
         </>

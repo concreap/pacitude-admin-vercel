@@ -1,55 +1,33 @@
-import React, { Fragment, Suspense } from 'react';
+import React, { Fragment, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import routes from './routes/routes'
-import DashboardMaster from './components/layouts/DashboardMaster'
+import DashboardLayout from './components/layout/DashboardLayout'
 
-// Context:States
+// Functionalities && Context States
 import UserState from './context/user/userState'
-import GeniusState from './context/genius/geniusState'
-import CoreState from './context/core/coreState'
-import ResourceState from './context/resource/resourceState'
-import { IInRoute, IRoute, IRouteItem } from './utils/interfaces.util';
-import helper from './utils/helper.util';
+import AppState from './context/app/appState'
 import routil from './utils/routes.util';
 
-// Pages | Routes
-const Home = React.lazy(() => import('./pages/Home'));
-const Components = React.lazy(() => import('./pages/Renderer'))
-const Login = React.lazy(() => import('./pages/auth/Login'))
-const ResetPassword = React.lazy(() => import('./pages/auth/ResetPassword'))
-const About: any = React.lazy(() => import('./pages/About'))
-const Contact: any = React.lazy(() => import('./pages/Contact'))
-const NotFoundPage = React.lazy(() => import('./pages/404'));
-const Dashboard = React.lazy(() => import('./pages/dashboard/Dashboard'));
-const AccountProfile = React.lazy(() => import('./pages/dashboard/account/Profile'));
-const AccountBilling = React.lazy(() => import('./pages/dashboard/account/Billing'));
-const AccountPreferences = React.lazy(() => import('./pages/dashboard/account/Preferences'));
-const Users = React.lazy(() => import('./pages/dashboard/users/Users'));
-const Talents = React.lazy(() => import('./pages/dashboard/users/talents/Talents'));
-const Businesses = React.lazy(() => import('./pages/dashboard/users/businesses/Businesses'));
-const Admins = React.lazy(() => import('./pages/dashboard/users/admins/Admins'));
-const Industries = React.lazy(() => import('./pages/dashboard/core/industries/Industries'));
-const IndustryDetails = React.lazy(() => import('./pages/dashboard/core/industries/IndustryDetails'));
-const Careers = React.lazy(() => import('./pages/dashboard/core/careers/Careers'));
-const CareerDetails = React.lazy(() => import('./pages/dashboard/core/careers/CareerDetails'));
-const Fields = React.lazy(() => import('./pages/dashboard/core/fields/Fields'));
-const FieldDetails = React.lazy(() => import('./pages/dashboard/core/fields/FieldDetails'));
-const Skills = React.lazy(() => import('./pages/dashboard/core/skills/Skills'));
-const SkillDetails = React.lazy(() => import('./pages/dashboard/core/skills/SkillDetails'));
-const Questions = React.lazy(() => import('./pages/dashboard/core/questions/Questions'));
-const AIQuestions = React.lazy(() => import('./pages/dashboard/core/questions/AIQuestions'));
-const QuestionDetails = React.lazy(() => import('./pages/dashboard/core/questions/QuestionDetails'));
-const Topics = React.lazy(() => import('./pages/dashboard/core/topics/Topics'));
-const TopicDetails = React.lazy(() => import('./pages/dashboard/core/topics/TopicDetails'));
-const Subscriptions = React.lazy(() => import('./pages/dashboard/payments/subscriptions/Subscriptions'));
-const Transactions = React.lazy(() => import('./pages/dashboard/payments/transactions/Transactions'));
-const Settings = React.lazy(() => import('./pages/dashboard/settings/Settings'));
-const Feedbacks = React.lazy(() => import('./pages/dashboard/feedbacks/Feedbacks'));
-const Referrals = React.lazy(() => import('./pages/dashboard/referrals/Referrals'));
+// Pages
+import MainLoader from './pages/MainLoader'
+import Renderer from './pages/Renderer'
+import Login from './pages/auth/Login'
+import ErrorPage from './pages/ErrorPage'
+import NotFound from './pages/NotFound'
 
+const Home = lazy(() => import('./pages/Home'))
+const Dashboard = lazy(() => import('./pages/dashboard/Dashboard'))
+const Industries = lazy(() => import('./pages/dashboard/core/industries/Industries'))
+const Careers = lazy(() => import('./pages/dashboard/core/careers/Careers'))
+const Fields = lazy(() => import('./pages/dashboard/core/fields/Fields'))
+const Skills = lazy(() => import('./pages/dashboard/core/skills/Skills'))
+const Topics = lazy(() => import('./pages/dashboard/core/topics/Topics'))
+const Questions = lazy(() => import('./pages/dashboard/core/questions/Questions'))
+const CreateQuestion = lazy(() => import('./pages/dashboard/core/questions/CreateQuestion'))
+const QuestionDetails = lazy(() => import('./pages/dashboard/core/questions/QuestionDetails'))
 
-const App = () => {
+function App() {
 
     const errorHandler = (err: any, info: any) => {
         console.log(err, 'logged error');
@@ -59,197 +37,144 @@ const App = () => {
     const getAppPages = (name: string) => {
 
         switch (name) {
-            case 'components':
-                return <Components />
+            case 'render':
+                return <Renderer />
             case '/':
                 return <Login />
             case 'login':
                 return <Login />
-            case 'reset-password':
-                return <ResetPassword />
-            case 'home':
-                return <Login />
-            case 'not-found':
-                return <NotFoundPage />
-            case 'about':
-                return <About />
-            case 'contact':
-                return <Contact />
             case 'dashboard':
                 return <Dashboard />
-            case 'account-profile':
-                return <AccountProfile />
-            case 'account-billing':
-                return <AccountBilling />
-            case 'account-preferences':
-                return <AccountPreferences />
-            case 'all-users':
-                return <Users />
-            case 'talents':
-                return <Talents />
-            case 'businesses':
-                return <Businesses />
-            case 'admins':
-                return <Admins />
             case 'industries':
                 return <Industries />
-            case 'industry-details':
-                return <IndustryDetails />
             case 'careers':
                 return <Careers />
-            case 'career-details':
-                return <CareerDetails />
             case 'fields':
                 return <Fields />
-            case 'field-details':
-                return <FieldDetails />
             case 'skills':
                 return <Skills />
-            case 'skill-details':
-                return <SkillDetails />
-            case 'questions':
-                return <Questions />
-            case 'ai-questions':
-                return <AIQuestions />
-            case 'question-details':
-                return <QuestionDetails />
             case 'topics':
                 return <Topics />
-            case 'topic-details':
-                return <TopicDetails />
-            case 'subscriptions':
-                return <Subscriptions />
-            case 'transactions':
-                return <Transactions />
-            case 'settings':
-                return <Settings />
-            case 'feedbacks':
-                return <Feedbacks />
-            case 'referrals':
-                return <Referrals />
+            case 'questions':
+                return <Questions />
+            case 'create-question':
+                return <CreateQuestion />
+            case 'question-details':
+                return <QuestionDetails />
             default:
-                return <NotFoundPage />
+                return <NotFound />
         }
 
     }
 
     return (
+        <>
+            <Router>
 
-        <Router>
+                <UserState>
 
-            <UserState>
+                    <AppState>
 
-                <GeniusState>
+                        <ErrorBoundary FallbackComponent={() => (<ErrorPage />)} onReset={() => { window.location.reload() }} onError={errorHandler}>
 
-                    <CoreState>
+                            <Suspense fallback={<MainLoader />}>
 
-                        <ResourceState>
+                                <Routes>
 
-                            <Suspense fallback={(<></>)}>
+                                    {
+                                        routes.map((route, index) =>
+                                            <Fragment key={`route-${index + 1}`}>
 
-                                <ErrorBoundary FallbackComponent={() => (<></>)} onReset={() => { window.location.reload() }} onError={errorHandler}>
+                                                {
+                                                    !route.isAuth &&
+                                                    <Route
+                                                        path={routil.computeAppRoute(route)}
+                                                        element={getAppPages(route.name)}
+                                                    />
+                                                }
 
-                                    <Routes>
-
-                                        {
-                                            routes.map((route, index) =>
-                                                <Fragment key={`route-${index + 1}`}>
-
-                                                    {
-                                                        !route.isAuth &&
+                                                {
+                                                    route.isAuth && route.name !== 'divider' &&
+                                                    <>
                                                         <Route
-                                                            path={route.url}
-                                                            element={getAppPages(route.name)}
+                                                            path={routil.computePath(route.url)}
+                                                            element={
+                                                                <DashboardLayout
+                                                                    component={getAppPages(route.name)}
+                                                                    title={route.title ? route.title : route.name}
+                                                                    back={route.content.backButton ? route.content.backButton : false}
+                                                                    sidebar={{
+                                                                        collapsed: route.content.sidebar ? route.content.sidebar : false
+                                                                    }}
+                                                                />
+                                                            }
                                                         />
-                                                    }
 
-                                                    {
-                                                        route.isAuth && route.name !== 'divider' &&
-                                                        <>
-                                                            <Route
-                                                                path={routil.computePath(route.url)}
-                                                                element={
-                                                                    <DashboardMaster
-                                                                        component={getAppPages(route.name)}
-                                                                        title={route.title ? route.title : route.name}
-                                                                        back={route.content.backButton ? route.content.backButton : false}
-                                                                        sidebar={{
-                                                                            collapsed: route.content.sidebar !== undefined ? route.content.sidebar : false
-                                                                        }}
+                                                        {
+                                                            route.subroutes && route.subroutes.length > 0 &&
+                                                            route.subroutes.map((subroute, index) =>
+                                                                <Fragment key={`${subroute.name}-route-${index + 1}`}>
+
+                                                                    <Route
+                                                                        path={routil.computeSubPath(route, subroute)}
+                                                                        element={
+                                                                            <DashboardLayout
+                                                                                component={getAppPages(`${subroute.name}`)}
+                                                                                title={subroute.title ? subroute.title : subroute.name}
+                                                                                back={true}
+                                                                                sidebar={{
+                                                                                    collapsed: subroute.content.sidebar ? subroute.content.sidebar : false
+                                                                                }}
+                                                                            />
+                                                                        }
                                                                     />
-                                                                }
-                                                            />
 
-                                                            {
-                                                                route.subroutes && route.subroutes.length > 0 &&
-                                                                route.subroutes.map((subroute, index) =>
-                                                                    <Fragment key={`${subroute.name}-route-${index + 1}`}>
+                                                                </Fragment>
+                                                            )
+                                                        }
 
-                                                                        <Route
-                                                                            path={routil.computeSubPath(route, subroute)}
-                                                                            element={
-                                                                                <DashboardMaster
-                                                                                    component={getAppPages(`${subroute.name}`)}
-                                                                                    title={subroute.title ? subroute.title : subroute.name}
-                                                                                    back={true}
-                                                                                    sidebar={{
-                                                                                        collapsed: subroute.content.sidebar !== undefined ? subroute.content.sidebar : false
-                                                                                    }}
-                                                                                />
-                                                                            }
-                                                                        />
+                                                        {
+                                                            route.inroutes && route.inroutes.length > 0 &&
+                                                            route.inroutes.map((inroute, index) =>
+                                                                <Fragment key={`${inroute.name}-route-${index + 1}`}>
 
-                                                                    </Fragment>
-                                                                )
-                                                            }
+                                                                    <Route
+                                                                        path={routil.computeInPath(inroute)}
+                                                                        element={
+                                                                            <DashboardLayout
+                                                                                component={getAppPages(`${inroute.name}`)}
+                                                                                title={inroute.title ? inroute.title : inroute.name}
+                                                                                back={true}
+                                                                                sidebar={{
+                                                                                    collapsed: inroute.content.sidebar ? inroute.content.sidebar : false
+                                                                                }}
+                                                                            />
+                                                                        }
+                                                                    />
 
-                                                            {
-                                                                route.inroutes && route.inroutes.length > 0 &&
-                                                                route.inroutes.map((inroute, index) =>
-                                                                    <Fragment key={`${inroute.name}-route-${index + 1}`}>
+                                                                </Fragment>
+                                                            )
+                                                        }
+                                                    </>
+                                                }
 
-                                                                        <Route
-                                                                            path={routil.computeInPath(inroute)}
-                                                                            element={
-                                                                                <DashboardMaster
-                                                                                    component={getAppPages(`${inroute.name}`)}
-                                                                                    title={inroute.title ? inroute.title : inroute.name}
-                                                                                    back={true}
-                                                                                    sidebar={{
-                                                                                        collapsed: inroute.content.sidebar !== undefined ? inroute.content.sidebar : false
-                                                                                    }}
-                                                                                />
-                                                                            }
-                                                                        />
+                                            </Fragment>
+                                        )
+                                    }
 
-                                                                    </Fragment>
-                                                                )
-                                                            }
-                                                        </>
-                                                    }
-
-                                                </Fragment>
-                                            )
-                                        }
-
-                                    </Routes>
-
-                                </ErrorBoundary>
+                                </Routes>
 
                             </Suspense>
 
-                        </ResourceState>
+                        </ErrorBoundary>
 
-                    </CoreState>
+                    </AppState>
 
-                </GeniusState>
+                </UserState>
 
-            </UserState>
-
-        </Router>
-
+            </Router>
+        </>
     )
-
 }
 
-export default App;
+export default App

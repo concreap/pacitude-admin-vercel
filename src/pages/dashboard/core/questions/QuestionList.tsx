@@ -1,597 +1,594 @@
-import React, { useEffect, useState, useContext, Fragment, useRef } from "react"
-import GeniusContext from "../../../../context/genius/geniusContext";
-import SearchInput from "../../../../components/partials/inputs/SearchInput";
-import Filter from "../../../../components/partials/drops/Filter";
-import Button from "../../../../components/partials/buttons/Button";
-import EmptyState from "../../../../components/partials/dialogs/EmptyState";
-import helper from "../../../../utils/helper.util";
-import TableHead from "../../../../components/app/table/TableHead";
-import CellData from "../../../../components/app/table/CellData";
-import Icon from "../../../../components/partials/icons/Icon";
-import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, ICoreContext, ICoreMetrics, IGeniusContext, IListUI, IMetricQuery, IPageSearch, IUserContext } from "../../../../utils/interfaces.util";
-import Popout from "../../../../components/partials/drops/Popout";
-import Question from "../../../../models/Question.model";
-import UserContext from "../../../../context/user/userContext";
-import CoreContext from "../../../../context/core/coreContext";
-import { FormActionType } from "../../../../utils/types.util";
-import TopicForm from "../topics/TopicForm";
-import QuestionForm from "./QuestionForm";
-import routil from "../../../../utils/routes.util";
-import { useNavigate } from "react-router-dom";
-import qHelper from "../../../../utils/question.util";
+import React, { useEffect, useState, useContext, useRef, Fragment } from "react"
+import { IListUI } from "../../../../utils/interfaces.util";
 import useGoTo from "../../../../hooks/useGoTo";
-import { difficulties, questionTypes, skillLevels } from "../../../../_data/seed";
+import useIndustry from "../../../../hooks/app/useIndustry";
+import useReport from "../../../../hooks/useReport";
+import useSearch from "../../../../hooks/app/useSearch";
+import ListBox from "../../../../components/partials/ui/ListBox";
+import Filter from "../../../../components/partials/drops/Filter";
+import helper from "../../../../utils/helper.util";
+import SearchInput from "../../../../components/partials/inputs/SearchInput";
+import Button from "../../../../components/partials/buttons/Button";
+import Table from "../../../../components/partials/table/Table";
+import EmptyState from "../../../../components/partials/dialogs/EmptyState";
+import Divider from "../../../../components/partials/Divider";
+import TableBox from "../../../../components/partials/table/TableBox";
+import TableHeader from "../../../../components/partials/table/Tableheader";
+import TableBody from "../../../../components/partials/table/TableBody";
+import Industry from "../../../../models/Industry.model";
+import TableRow from "../../../../components/partials/table/TableRow";
+import CellData from "../../../../components/partials/table/CellData";
+import Popout from "../../../../components/partials/drops/Popout";
+import TableFooter from "../../../../components/partials/table/TableFooter";
+import useCareer from "../../../../hooks/app/useCareer";
+import Career from "../../../../models/Career.model";
+import useField from "../../../../hooks/app/useField";
 import Field from "../../../../models/Field.model";
+import useSkill from "../../../../hooks/app/useSkill";
+import Skill from "../../../../models/Skill.model";
+import useTopic from "../../../../hooks/app/useTopic";
+import Topic from "../../../../models/Topic.model";
+import useQuestion from "../../../../hooks/app/useQuestion";
+import Question from "../../../../models/Question.model";
+import QHelper from "../../../../utils/question.util";
+import Badge from "../../../../components/partials/badges/Badge";
 
 const QuestionList = (props: IListUI) => {
 
+    // props
     const { type, resource, resourceId } = props;
 
-    const filtRef = useRef<any>(null)
-    const fieldRef = useRef<any>(null)
-    const { goTo } = useGoTo()
+    // refs
+    const statRef = useRef<any>(null)
+    const fieRef = useRef<any>(null)
+    const skiRef = useRef<any>(null)
+    const topRef = useRef<any>(null)
+    const carRef = useRef<any>(null)
+    const srhRef = useRef<any>(null)
 
-    const LIMIT = 25;
-
-    const userContext = useContext<IUserContext>(UserContext)
-    const coreContext = useContext<ICoreContext>(CoreContext)
-
-    const [showPanel, setShowPanel] = useState<boolean>(false);
-    const [form, setForm] = useState<{ action: FormActionType, questionId: string }>({ action: 'add-resource', questionId: '' })
-    const [search, setSearch] = useState<IPageSearch>({ key: '', hasResult: false, type: 'search', filters: {}, resourceId: '', resource: 'field' })
+    const { goTo, toDetailRoute } = useGoTo()
+    const { careers, getCareers } = useCareer()
+    const { fields, getFields } = useField()
+    const { skills, getSkills } = useSkill()
+    const { topics, getTopics } = useTopic()
+    const { questions, getQuestions, getResourceQuestions } = useQuestion()
+    const { exportToCSV } = useReport()
+    const {
+        search,
+        pageSearch,
+        filters,
+        setPageSearch,
+        setFilters,
+        clearSearch,
+        searchResource,
+        filterResource
+    } = useSearch({})
 
     useEffect(() => {
-        initList()
-    }, [resourceId])
+        initList(25)
+    }, [])
 
-    useEffect(() => {
-        configureSearch()
-    }, [coreContext.search])
-
-    const initList = () => {
+    const initList = (limit: number) => {
         if (type === 'self') {
-            coreContext.getQuestions({ limit: LIMIT, page: 1, order: 'desc' })
-            coreContext.getFields({ limit: 9999, page: 1, order: 'desc' });
+            getQuestions({ limit: limit, page: 1, order: 'desc' })
+        }
+        if ((type === 'resource' || type === 'details') && resource && resourceId) {
+            getResourceQuestions({ limit: limit, page: 1, order: 'desc', resource, resourceId })
         }
 
-        if (type === 'resource' && resource && resourceId) {
-            coreContext.getResourceQuestions({ limit: LIMIT, page: 1, order: 'desc', resource, resourceId })
+        if (helper.isEmpty(careers.data, 'array')) {
+            getCareers({ limit: 9999, page: 1, order: 'desc' })
+        }
+
+        if (helper.isEmpty(fields.data, 'array')) {
+            getFields({ limit: 9999, page: 1, order: 'desc' })
+        }
+
+        if (helper.isEmpty(skills.data, 'array')) {
+            getSkills({ limit: 9999, page: 1, order: 'desc' })
+        }
+
+        if (helper.isEmpty(topics.data, 'array')) {
+            getTopics({ limit: 9999, page: 1, order: 'desc' })
         }
     }
 
-    const configureSearch = () => {
+    const handleReport = (e: any) => {
 
-        if (coreContext.search.data.length > 0) {
-            setSearch({
-                ...search,
-                key: search.key,
-                hasResult: true,
-                resourceId: search.resourceId,
-                type: search.type
-            })
+        if (e) { e.preventDefault() }
+
+        if (pageSearch.hasResult) {
+            exportToCSV({ title: 'rooms', report: search.report })
         } else {
-
-            if (!coreContext.search.loading) {
-                if (filtRef.current) {
-                    filtRef.current.clear()
-                }
-                if (fieldRef.current) {
-                    fieldRef.current.clear()
-                }
-            }
-
-            setSearch({
-                ...search,
-                key: '',
-                hasResult: false,
-                resourceId: '',
-                type: 'search',
-                resource: 'field'
-            })
+            // open/navigate to form
         }
-
     }
 
-    const clearSearch = (e: any) => {
-
-        if(e) { e.preventDefault() }
-
-        const qmt = coreContext.metrics.question;
-
-        coreContext.clearSearch();
-
-        setSearch({ ...search, key: '', hasResult: false, type: 'search' });
-
-        if (filtRef.current) {
-            filtRef.current.clear()
+    const clearFilters = () => {
+        clearSearch();
+        if (statRef.current) {
+            statRef.current.clear()
         }
-
-        if (fieldRef.current) {
-            fieldRef.current.clear()
+        if (srhRef.current) {
+            srhRef.current.clear()
         }
-
-        coreContext.setResourceMetrics({
-            ...coreContext.metrics,
-            resource: 'default',
-            question: {
-                total: qmt ? qmt.total : 0,
-                enabled: qmt ? qmt.enabled : 0,
-                disabled: qmt ? qmt.disabled : 0,
-                resource: { total: 0, disabled: 0, enabled: 0 }
-            }
-        });
+        if (fieRef.current) {
+            fieRef.current.clear()
+        }
+        if (skiRef.current) {
+            skiRef.current.clear()
+        }
+        if (topRef.current) {
+            topRef.current.clear()
+        }
+        if (carRef.current) {
+            carRef.current.clear()
+        }
     }
 
     const toDetails = (e: any, id: string) => {
 
         if (e) { e.preventDefault(); }
 
-        const route = routil.inRoute({
-            route: 'core',
-            name: 'question-details',
-            params: [{ type: 'url', name: 'details', value: id }]
-        });
-
-        goTo(route);
-
-    }
-
-    const toAIDetails = (e: any) => {
-
-        e.preventDefault();
-
-        const route = routil.inRoute({
-            route: 'core',
-            name: 'ai-questions',
-            params: []
-        });
-
-        goTo(route);
-
-    }
-
-    const pagiNext = async (e: any) => {
-        if (e) { e.preventDefault() }
-        const { next } = coreContext.questions.pagination;
-
-
-        if (type === 'self') {
-
-            if (search.hasResult) {
-
-                const { next: sn } = coreContext.search.pagination;
-
-                if (search.type === 'search') {
-                    await coreContext.searchResource({
-                        limit: sn.limit, page: sn.page, order: 'desc',
-                        resource: 'questions',
-                        payload: search.key
-                    })
-                } else if (search.type === 'filter') {
-                    await coreContext.filterResource({
-                        limit: sn.limit, page: sn.page, order: 'desc',
-                        resource: 'questions',
-                        payload: search.filters
-                    });
-                }
-
-            } else {
-                await coreContext.getQuestions({ limit: next.limit, page: next.page, order: 'desc' })
-            }
-        }
-
-        if (type === 'resource') {
-            await coreContext.getResourceQuestions({ limit: next.limit, page: next.page, order: 'desc', resource, resourceId })
-        }
-
-        helper.scrollToTop()
-    }
-
-    const pagiPrev = async (e: any) => {
-        if (e) { e.preventDefault() }
-
-        const { prev } = coreContext.questions.pagination;
-
-        if (type === 'self') {
-
-            if (search.hasResult) {
-
-                const { prev: sp } = coreContext.search.pagination;
-
-                if (search.type === 'search') {
-                    await coreContext.searchResource({
-                        limit: sp.limit, page: sp.page, order: 'desc',
-                        resource: 'questions',
-                        payload: search.key
-                    })
-                } else if (search.type === 'filter') {
-                    await coreContext.filterResource({
-                        limit: sp.limit, page: sp.page, order: 'desc',
-                        resource: 'questions',
-                        payload: search.filters
-                    });
-                }
-
-            } else {
-                await coreContext.getQuestions({ limit: prev.limit, page: prev.page, order: 'desc' })
-            }
-
-        }
-
-        if (type === 'resource') {
-            await coreContext.getResourceQuestions({ limit: prev.limit, page: prev.page, order: 'desc', resource, resourceId })
-        }
-
-        helper.scrollToTop()
-    }
-
-    const togglePanel = (e: any, form?: { action: FormActionType, id?: string }) => {
-        if (e) { e.preventDefault() }
-
-        if (!showPanel && form) {
-            setForm({ action: form.action, questionId: form.id ? form.id : '' })
-        }
-
-        setShowPanel(!showPanel)
+        toDetailRoute(e, { id: id, route: 'core', name: 'question-details' })
 
     }
 
     return (
         <>
-            <div id="listbox" className="listbox">
 
-                <div className="header">
-                    <div className="left-halve">
+            <ListBox>
 
-                        <SearchInput
-                            showFocus={true}
-                            autoComplete={false}
-                            size="sm"
-                            placeholder="Search Here"
-                            hasResult={search.hasResult}
-                            onChange={(e) => { setSearch({ ...search, key: e.target.value }) }}
-                            onSearch={async (e) => {
+                <div className="w-full flex items-center">
 
-                                if (search.hasResult) {
-                                    clearSearch(e)
-                                } else {
-                                    if (search.key) {
-                                        await coreContext.searchResource({
-                                            resource: 'questions',
-                                            key: search.key
-                                        });
-                                    }
-                                }
-                            }}
-                        />
-
-                        <span className="pdl1"></span>
-
-                        <div className="wp-25">
+                    <div className={`grow flex items-center gap-x-[0.5rem] ${search.refineType === 'search' && pageSearch.hasResult ? 'disabled-light' : ''}`}>
+                        {/* <div className="min-w-[12%]">
                             <Filter
-                                ref={fieldRef}
-                                size="sm"
+                                ref={statRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Status"
                                 position="bottom"
-                                disabled={search.hasResult}
+                                menu={{
+                                    style: {},
+                                    search: false,
+                                    fullWidth: true,
+                                    limitHeight: 'sm'
+                                }}
+                                items={[
+                                    { label: 'Enabled', value: 'enabled' },
+                                    { label: 'Disabled', value: 'disabled' }
+                                ]}
                                 noFilter={false}
-                                placeholder="Field"
-                                icon={{ type: 'polio', name: 'filter-2', style: { color: '#0a6d9a' } }}
-                                items={
-                                    coreContext.fields.data.map((x: Field) => {
-                                        return {
-                                            value: x._id,
-                                            label: helper.capitalize(x.name)
+                                onChange={async (data) => {
+                                    const { isEnabled, ...rest } = filters;
+                                    await filterResource({
+                                        resource: 'questions',
+                                        paginate: 'relative',
+                                        payload: {
+                                            isEnabled: data.value === 'enabled' ? true : false,
+                                            ...rest
                                         }
                                     })
+
+                                    setFilters({ ...filters, isEnabled: data.value === 'enabled' ? true : false })
+                                }}
+                            />
+                        </div> */}
+                        <div className={`min-w-[14%] ${careers.loading ? 'disabled-light' : ''}`}>
+
+                            <Filter
+                                ref={carRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Career"
+                                position="bottom"
+                                menu={{
+                                    style: {},
+                                    search: true,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    careers.count > 0 ?
+                                        careers.data.map((x: Career) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        }) : []
                                 }
+                                noFilter={false}
                                 onChange={async (data) => {
-                                    setSearch({ ...search, type: 'filter', resourceId: data.value });
+
+                                    const { careerId, ...rest } = filters;
+                                    await filterResource({
+                                        resource: 'questions',
+                                        paginate: 'relative',
+                                        payload: {
+                                            careerId: data.value,
+                                            ...rest
+                                        }
+                                    })
+
+                                    setFilters({ ...filters, careerId: data.value })
+                                }}
+                            />
+                            
+                        </div>
+                        <div className={`min-w-[14%] ${fields.loading ? 'disabled-light' : ''}`}>
+
+                            <Filter
+                                ref={fieRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Field"
+                                position="bottom"
+                                menu={{
+                                    style: {},
+                                    search: true,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    fields.count > 0 ?
+                                        fields.data.map((x: Career) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        }) : []
+                                }
+                                noFilter={false}
+                                onChange={async (data) => {
+
+                                    const { fields, ...rest } = filters;
+                                    await filterResource({
+                                        resource: 'questions',
+                                        paginate: 'relative',
+                                        payload: {
+                                            fields: [data.value],
+                                            ...rest
+                                        }
+                                    })
+
+                                    setFilters(prev => ({
+                                        ...filters,
+                                        fields: [data.value]
+                                    }))
                                 }}
                             />
                         </div>
+                        <div className={`min-w-[14%] ${skills.loading ? 'disabled-light' : ''}`}>
 
-                        <span className="pdl1"></span>
+                            <Filter
+                                ref={skiRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Skill"
+                                position="bottom"
+                                menu={{
+                                    style: {},
+                                    search: true,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    skills.count > 0 ?
+                                        skills.data.map((x: Career) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        }) : []
+                                }
+                                noFilter={false}
+                                onChange={async (data) => {
 
-                        <Filter
-                            ref={filtRef}
-                            size="sm"
-                            position="bottom"
-                            disabled={search.hasResult}
-                            icon={{ type: 'polio', name: 'filter-2', style: { color: '#0a6d9a' } }}
-                            items={[
+                                    const { skills, ...rest } = filters;
+                                    await filterResource({
+                                        resource: 'questions',
+                                        paginate: 'relative',
+                                        payload: {
+                                            skills: [data.value],
+                                            ...rest
+                                        }
+                                    })
+
+                                    setFilters(prev => ({
+                                        ...filters,
+                                        skills: [data.value]
+                                    }))
+                                }}
+                            />
+                        </div>
+                        <div className={`min-w-[14%] ${topics.loading ? 'disabled-light' : ''}`}>
+
+                            <Filter
+                                ref={topRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Topic"
+                                position="bottom"
+                                menu={{
+                                    style: {},
+                                    search: true,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    topics.count > 0 ?
+                                        topics.data.map((x: Career) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        }) : []
+                                }
+                                noFilter={false}
+                                onChange={async (data) => {
+
+                                    const { topics, ...rest } = filters;
+                                    await filterResource({
+                                        resource: 'questions',
+                                        paginate: 'relative',
+                                        payload: {
+                                            topics: [data.value],
+                                            ...rest
+                                        }
+                                    })
+
+                                    setFilters(prev => ({
+                                        ...filters,
+                                        topics: [data.value]
+                                    }))
+                                }}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="ml-auto min-w-[25%] flex items-center gap-x-[0.6rem]">
+                        <SearchInput
+                            ref={srhRef}
+                            size="xsm"
+                            showFocus={true}
+                            placeholder="Search"
+                            isError={false}
+                            hasResult={pageSearch.hasResult}
+                            readonly={pageSearch.hasResult}
+                            className=""
+                            onChange={(e) => setPageSearch({ ...pageSearch, key: e.target.value.trim() })}
+                            onSearch={async (e) => {
+                                if (pageSearch.hasResult) {
+                                    clearFilters()
+                                } else {
+                                    await searchResource({
+                                        resource: 'questions',
+                                        key: pageSearch.key,
+                                        paginate: 'relative'
+                                    });
+                                }
+                            }}
+                        />
+                        {
+                            pageSearch.hasResult &&
+                            <Button
+                                type="ghost"
+                                semantic="error"
+                                size="xsm"
+                                className="form-button"
+                                text={{
+                                    label: "Clear",
+                                    size: 13,
+                                    weight: 'regular'
+                                }}
+                                reverse="row"
+                                onClick={(e) => {
+                                    clearFilters()
+                                }}
+                            />
+                        }
+                        <Button
+                            type="ghost"
+                            semantic="normal"
+                            size="xsm"
+                            className="form-button"
+                            text={{
+                                label: "Export",
+                                size: 13,
+                                weight: 'regular'
+                            }}
+                            reverse="row"
+                            onClick={(e) => { }}
+                        />
+                    </div>
+
+                </div>
+
+                <Divider show={false} />
+
+                <div className="w-full">
+
+                    {
+                        (questions.loading || search.loading) &&
+                        <>
+                            <EmptyState className="min-h-[50vh]" noBound={true}>
+                                <span className="loader lg primary"></span>
+                            </EmptyState>
+                        </>
+                    }
+
+                    {
+                        !questions.loading && !search.loading &&
+                        <>
+                            <TableBox>
+
                                 {
-                                    value: 'level',
-                                    label: 'By Level',
-                                    subitems: skillLevels.map((x) => { return { label: x.name, value: x.value } })
-                                },
-                                {
-                                    value: 'difficulty',
-                                    label: 'By Difficulty',
-                                    subitems: difficulties.map((x) => { return { label: x.name, value: x.value } })
-                                },
-                                {
-                                    value: 'type',
-                                    label: 'By Type',
-                                    subitems: questionTypes.map((x) => { return { label: x.name, value: x.value } })
-                                },
-                            ]}
-                            onChange={async (data) => {
-
-                                let payload: any = { type: 'default' }
-
-                                if (data.item) {
-
-                                    if (data.item.value === 'level') {
-                                        payload.levels = [data.value]
-                                    } else if (data.item.value === 'difficulty') {
-                                        payload.difficulties = [data.value]
-                                    } else if (data.item.value === 'type') {
-                                        payload.types = [data.value]
-                                    }
-
-                                    setSearch({ ...search, type: 'filter', filters: payload });
-
-                                    if (!search.hasResult && !search.resourceId) {
-
-                                        await coreContext.filterResource({
-                                            resource: 'questions',
-                                            payload: payload
-                                        });
-                                    }
-
-
+                                    questions.data.length === 0 &&
+                                    <EmptyState className="min-h-[50vh]" noBound={true}>
+                                        <span className="font-rethink pag-600 text-[13px]">Questions will appear here</span>
+                                    </EmptyState>
                                 }
 
-                            }}
-                        />
-
-                        {
-                            !search.hasResult && search.resourceId &&
-                            <>
-                                <span className="pdl1"></span>
-                                <Button
-                                    text="Apply"
-                                    type="ghost"
-                                    size="xsm"
-                                    loading={coreContext.search.loading}
-                                    disabled={coreContext.search.loading}
-                                    fontSize={14}
-                                    fontWeight={'regular'}
-                                    lineHeight={16}
-                                    className="export-btn"
-                                    icon={{
-                                        enable: false,
-                                    }}
-                                    onClick={async (e) => {
-
-                                        let payload: any = { resourceId: search.resourceId, resource: 'field' }
-
-                                        if (!helper.isEmpty(search.filters, 'object')) {
-                                            payload = { ...payload, ...search.filters, type: 'default' }
-                                        } else {
-                                            payload = { ...payload, type: 'field' }
-                                        }
-
-                                        coreContext.getResourceMetrics({
-                                            metric: 'overview',
-                                            type: 'question',
-                                            resource: 'field',
-                                            resourceId: search.resourceId,
-                                        });
-
-                                        await coreContext.filterResource({
-                                            resource: 'questions',
-                                            payload: payload
-                                        });
-
-                                    }}
-                                />
-                            </>
-                        }
-
-                    </div>
-                    <div className="right-halve">
-                        <Button
-                            text="Add Question"
-                            type="primary"
-                            size="xsm"
-                            loading={false}
-                            disabled={false}
-                            fontSize={14}
-                            lineHeight={16}
-                            className="add-new-btn"
-                            icon={{
-                                enable: true,
-                                name: 'plus',
-                                size: 20,
-                                loaderColor: ''
-                            }}
-                            onClick={(e) => togglePanel(e, { action: 'add-resource' })}
-                        />
-                        <span className="pdl"></span>
-                        <Button
-                            text="AI Tool"
-                            type="ghost"
-                            size="xsm"
-                            loading={false}
-                            disabled={false}
-                            fontSize={14}
-                            lineHeight={16}
-                            className="export-btn"
-                            icon={{
-                                enable: false,
-                            }}
-                            onClick={(e) => toAIDetails(e)}
-                        />
-                    </div>
-                </div>
-
-                <div className="ui-separate-small"></div>
-
-                <div className="body">
-
-                    {
-                        (coreContext.questions.loading || coreContext.search.loading) &&
-                        <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
-                            <span className="loader lg primary"></span>
-                        </EmptyState>
-                    }
-
-                    {
-                        (!coreContext.questions.loading && !coreContext.search.loading) &&
-                        <div className="tablebox responsive">
-
-                            {
-                                coreContext.questions.data.length === 0 &&
-                                <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
-                                    <span className={`ts-icon terra-link`}>
-                                        <i className='path1 fs-28'></i>
-                                        <i className='path2 fs-28'></i>
-                                    </span>
-                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{coreContext.questions.message}</div>
-                                </EmptyState>
-                            }
-
-                            {
-                                coreContext.questions.data.length > 0 &&
-                                <table className="table" style={{ borderCollapse: 'collapse' }}>
-
-                                    <TableHead
-                                        items={[
-                                            { label: 'Date Created' },
-                                            { label: 'Title' },
-                                            { label: 'Level' },
-                                            { label: 'Difficulty' },
-                                            { label: 'Type' },
-                                            { label: 'Answers', className: 'ui-text-center' },
-                                            { label: 'Status' },
-                                            { label: 'Action', className: 'ui-text-center' }
-                                        ]}
-                                    />
-
-                                    <tbody>
-
+                                {
+                                    questions.data.length > 0 &&
+                                    <>
                                         {
-                                            coreContext.search.data.length > 0 &&
-                                            coreContext.search.data.map((question: Question, index) =>
-                                                <Fragment key={question._id}>
-                                                    <tr className="table-row">
-                                                        <CellData fontSize={13} className="wp-15" render={helper.formatDate(question.createdAt, 'basic')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} className="wp-25" render={helper.addElipsis(question.body, 38)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'level')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'difficulty')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'question-type')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} className="ui-upcase ui-text-center" render={question.answers.length} />
-                                                        <CellData fontSize={13} className="" status={{ enable: true, type: 'enabled', value: question.isEnabled }} render={<></>} />
-                                                        <CellData fontSize={13} render={
-                                                            <div className="popout-wrapper">
-                                                                <Popout
-                                                                    position="left"
-                                                                    items={[
-                                                                        { label: 'Details', value: 'details', icon: { name: 'menu', size: 16, type: 'polio' }, onClick: (e) => { } },
-                                                                        { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
-                                                                    ]}
-                                                                />
-                                                            </div>
-                                                        } />
-                                                    </tr>
-                                                </Fragment>
-                                            )
+                                            search.count < 0 &&
+                                            <>
+                                                <EmptyState className="min-h-[30vh]" noBound={true} style={{ backgroundColor: '#fffafa' }}>
+                                                    <div className="font-rethink par-700 text-[14px] mb-[0.35rem]">No results found for {pageSearch.key}</div>
+                                                    <Button
+                                                        type="ghost"
+                                                        semantic="error"
+                                                        size="xxsm"
+                                                        className="form-button"
+                                                        text={{
+                                                            label: "Clear",
+                                                            size: 13,
+                                                            weight: 'regular'
+                                                        }}
+                                                        reverse="row"
+                                                        onClick={(e) => {
+                                                            clearFilters()
+                                                        }}
+                                                    />
+                                                </EmptyState>
+                                            </>
                                         }
 
-                                        {
-                                            coreContext.search.data.length === 0 &&
-                                            coreContext.questions.data.map((question: Question, index) =>
-                                                <Fragment key={question._id}>
-                                                    <tr className="table-row">
-                                                        <CellData fontSize={13} className="wp-15" render={helper.formatDate(question.createdAt, 'basic')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} className="wp-25" render={helper.addElipsis(question.body, 38)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'level')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'difficulty')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} render={qHelper.shortenRubric(question, 'question-type')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, question._id)} className="ui-upcase ui-text-center" render={question.answers.length} />
-                                                        <CellData fontSize={13} className="" status={{ enable: true, type: 'enabled', value: question.isEnabled }} render={<></>} />
-                                                        <CellData fontSize={13} render={
-                                                            <div className="popout-wrapper">
-                                                                <Popout
-                                                                    position="left"
-                                                                    items={[
-                                                                        { label: 'Details', value: 'details', icon: { name: 'menu', size: 16, type: 'polio' }, onClick: (e) => { } },
-                                                                        { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
-                                                                    ]}
-                                                                />
-                                                            </div>
-                                                        } />
-                                                    </tr>
-                                                </Fragment>
-                                            )
-                                        }
+                                        <Table className={`${search.count < 0 ? 'disabled' : ''}`}>
 
-                                    </tbody>
+                                            <TableHeader
+                                                items={[
+                                                    { label: '#' },
+                                                    { label: 'Question', className: 'w-[45%]' },
+                                                    { label: 'Level', className: 'w-[12%]' },
+                                                    { label: 'Difficulty', className: 'w-[10%]' },
+                                                    { label: 'Date Created', className: 'w-[13%]' },
+                                                    { label: 'Status', className: 'w-[6%]' },
+                                                    { label: 'Action', className: 'text-center w-[8%]' }
+                                                ]}
+                                            />
 
-                                </table>
-                            }
+                                            <TableBody>
 
-                        </div>
+                                                {
+                                                    pageSearch.hasResult &&
+                                                    search.data.map((question: Question, index) =>
+                                                        <Fragment key={question._id}>
+                                                            <TableRow>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)} className="pr-[1rem]">{helper.addElipsis(question.body, 70)}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{QHelper.shortenRubric(question, 'level')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{QHelper.shortenRubric(question, 'difficulty')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{helper.formatDate(question.createdAt, 'basic')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>
+                                                                    <Badge
+                                                                        type={question.isEnabled ? 'green' : 'orange'}
+                                                                        size="xsm"
+                                                                        label={question.isEnabled ? 'Enabled' : 'Disabled'}
+                                                                        upper={true}
+                                                                    />
+                                                                </CellData>
+                                                                <CellData className="text-center">
+                                                                    <Popout
+                                                                        ref={null}
+                                                                        className='la-filter'
+                                                                        position={index + 1 === topics.data.length ? "top-right" : "bottom-right"}
+                                                                        menu={{
+                                                                            style: {},
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                    />
+                                                                </CellData>
+                                                            </TableRow>
+                                                        </Fragment>
+                                                    )
+                                                }
+
+                                                {
+                                                    !pageSearch.hasResult &&
+                                                    questions.data.map((question: Question, index) =>
+                                                        <Fragment key={question._id}>
+                                                            <TableRow>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)} className="pr-[1rem]">{helper.addElipsis(question.body, 70)}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{QHelper.shortenRubric(question, 'level')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{QHelper.shortenRubric(question, 'difficulty')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>{helper.formatDate(question.createdAt, 'basic')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, question._id)}>
+                                                                    <Badge
+                                                                        type={question.isEnabled ? 'green' : 'orange'}
+                                                                        size="xsm"
+                                                                        label={question.isEnabled ? 'Enabled' : 'Disabled'}
+                                                                        upper={true}
+                                                                    />
+                                                                </CellData>
+                                                                <CellData className="text-center">
+                                                                    <Popout
+                                                                        ref={null}
+                                                                        className='la-filter'
+                                                                        position={index + 1 === topics.data.length ? "top-right" : "bottom-right"}
+                                                                        menu={{
+                                                                            style: {},
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                    />
+                                                                </CellData>
+                                                            </TableRow>
+                                                        </Fragment>
+                                                    )
+                                                }
+
+                                            </TableBody>
+
+                                        </Table>
+                                    </>
+                                }
+
+
+                            </TableBox>
+                        </>
                     }
 
 
-                </div>
-
-                <div className="ui-separate-small"></div>
-
-                <div className={`footer pdb2 ${coreContext.questions.loading ? 'disabled-light' : ''}`}>
-
-                    <div className="left-halve">
-                        <Filter
-                            size="xsm"
-                            position="top"
-                            noFilter={false}
-                            placeholder={LIMIT.toString()}
-                            icon={{ type: 'feather', name: 'chevron-down' }}
-                            items={[{ label: '10', value: 10 }, { label: '15', value: 15 }, { label: '25', value: 25 }, { label: '45', value: 45 }, { label: '50', value: 50 }]}
-                            onChange={(item) => { }}
-                        />
-                        <div className="pdl1">
-                            <span className="fs-13 pas-950">Displaying {coreContext.questions.count} questions on page {helper.getCurrentPage(coreContext.questions.pagination)}</span>
-                        </div>
-                    </div>
-
-                    <div className="right-halve ui-text-right">
-                        <RoundButton
-                            size="rg"
-                            icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${helper.canPrev(search.hasResult ? coreContext.search.pagination : coreContext.questions.pagination) ? '' : 'disabled'}`}
-                            clickable={true}
-                            onClick={(e) => pagiPrev(e)}
-                        />
-                        <span className="pdl"></span>
-                        <RoundButton
-                            size="rg"
-                            icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${helper.canNext(search.hasResult ? coreContext.search.pagination : coreContext.questions.pagination) ? '' : 'disabled'}`}
-                            clickable={true}
-                            onClick={(e) => pagiNext(e)}
-                        />
-                    </div>
 
                 </div>
 
-            </div>
+                <Divider show={false} />
 
-            <QuestionForm
-                show={showPanel}
-                closeForm={togglePanel}
-                type={form.action}
-                questionId={form.questionId}
-                display="table"
-                title={form.action === 'add-resource' ? 'Add Questions' : 'Edit Question'}
-            />
+                <TableFooter
+                    title="Questions"
+                    type={type}
+                    resource={resource || 'questions'}
+                    resourceId={resourceId}
+                    source={questions}
+                    limit={25}
+                    onChange={
+                        type === 'self' ? getQuestions : getResourceQuestions
+                    }
+                />
+
+
+            </ListBox>
 
         </>
     )
-
 };
 
 export default QuestionList;

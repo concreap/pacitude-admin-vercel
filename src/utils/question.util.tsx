@@ -1,6 +1,6 @@
 import Question, { IQuestionTime } from "../models/Question.model";
 import helper from "./helper.util";
-import { IQuestionUtil } from "./interfaces.util";
+import { IQuestionHelper } from "./interfaces.util";
 import { RubricType, SemanticType } from "./types.util";
 
 const shortenRubric = (question: Question, type: RubricType): string => {
@@ -66,10 +66,46 @@ const formatTime = (time: IQuestionTime) => {
 
 }
 
-const questionHelper: IQuestionUtil = {
-    shortenRubric: shortenRubric,
-    rubricBadge: rubricBadge,
-    formatTime: formatTime
+const splitGenTime = (value: string): { value: string, handle: string } => {
+
+    let result: { value: string, handle: string } = { value: '', handle: '' };
+
+    const split = value.split(' ');
+
+    if(split.length === 2){
+
+        result.value = split[0];
+
+        if(split[1].includes('s')){
+            result.handle = split[1].substring(0, split[1].length - 1)
+        } else {
+            result.handle = split[1];
+        }
+
+    } else if(split.length > 2 && split.length === 4) {
+
+        result.value = split[0];
+
+        if(split[1].includes('s')){
+            result.handle = split[1].substring(0, split[1].length - 1)
+        } else {
+            result.handle = split[1];
+        }
+
+    } else {
+        result.value = '1';
+        result.handle = 'minute'
+    }
+
+    return result;
+
 }
 
-export default questionHelper;
+const QHelper: IQuestionHelper = {
+    shortenRubric: shortenRubric,
+    rubricBadge: rubricBadge,
+    formatTime: formatTime,
+    splitGenTime: splitGenTime,
+}
+
+export default QHelper;

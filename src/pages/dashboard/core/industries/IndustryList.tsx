@@ -1,294 +1,358 @@
-import React, { useEffect, useState, useContext, Fragment, MouseEvent } from "react"
-import { ICollection, ICoreContext, IGeniusContext, IListUI, IUserContext } from "../../../../utils/interfaces.util";
-import GeniusContext from "../../../../context/genius/geniusContext";
-import SearchInput from "../../../../components/partials/inputs/SearchInput";
-import Filter from "../../../../components/partials/drops/Filter";
-import Button from "../../../../components/partials/buttons/Button";
-import EmptyState from "../../../../components/partials/dialogs/EmptyState";
-import helper from "../../../../utils/helper.util";
-import TableHead from "../../../../components/app/table/TableHead";
-import Industry from "../../../../models/Industry.model";
-import CellData from "../../../../components/app/table/CellData";
-import Icon from "../../../../components/partials/icons/Icon";
-import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import Popout from "../../../../components/partials/drops/Popout";
-import UserContext from "../../../../context/user/userContext";
-import CoreContext from "../../../../context/core/coreContext";
-import IndustryForm from "./IndustryForm";
-import { FormActionType } from "../../../../utils/types.util";
-import routil from "../../../../utils/routes.util";
+import React, { useEffect, useState, useContext, useRef, Fragment } from "react"
+import { IListUI } from "../../../../utils/interfaces.util";
 import useGoTo from "../../../../hooks/useGoTo";
+import useIndustry from "../../../../hooks/app/useIndustry";
+import useReport from "../../../../hooks/useReport";
+import useSearch from "../../../../hooks/app/useSearch";
+import ListBox from "../../../../components/partials/ui/ListBox";
+import Filter from "../../../../components/partials/drops/Filter";
+import helper from "../../../../utils/helper.util";
+import SearchInput from "../../../../components/partials/inputs/SearchInput";
+import Button from "../../../../components/partials/buttons/Button";
+import Table from "../../../../components/partials/table/Table";
+import EmptyState from "../../../../components/partials/dialogs/EmptyState";
+import Divider from "../../../../components/partials/Divider";
+import TableBox from "../../../../components/partials/table/TableBox";
+import TableHeader from "../../../../components/partials/table/Tableheader";
+import TableBody from "../../../../components/partials/table/TableBody";
+import Industry from "../../../../models/Industry.model";
+import TableRow from "../../../../components/partials/table/TableRow";
+import CellData from "../../../../components/partials/table/CellData";
+import Popout from "../../../../components/partials/drops/Popout";
+import TableFooter from "../../../../components/partials/table/TableFooter";
+import Badge from "../../../../components/partials/badges/Badge";
 
 const IndustryList = (props: IListUI) => {
 
+    // props
     const { type, resource, resourceId } = props;
 
-    const { goTo } = useGoTo();
+    // refs
+    const statRef = useRef<any>(null)
+    const srhRef = useRef<any>(null)
 
-    const LIMIT = 25;
-
-    const userContext = useContext<IUserContext>(UserContext)
-    const coreContext = useContext<ICoreContext>(CoreContext)
-
-    const [showPanel, setShowPanel] = useState<boolean>(false);
-    const [form, setForm] = useState<{ action: FormActionType, industryId: string }>({ action: 'add-resource', industryId: '' });
-
-    const [industries, setIndustries] = useState<ICollection>(coreContext.industries)
+    const { goTo, toDetailRoute } = useGoTo()
+    const { industries, getIndustries, getResourceIndustries } = useIndustry()
+    const { exportToCSV } = useReport()
+    const { search, pageSearch, setPageSearch, clearSearch, searchResource, filterResource } = useSearch({})
 
     useEffect(() => {
-
-        initSidebar()
-
-        if (helper.isEmpty(coreContext.industries.data, 'array')) {
-            coreContext.getIndustries({ limit: LIMIT, page: 1, order: 'desc' })
-        }
-
+        initList(25)
     }, [])
 
-    useEffect(() => {
-
-        setIndustries(coreContext.industries)
-
-    }, [coreContext.industries])
-
-    const initSidebar = () => {
-
-        const result = userContext.currentSidebar(userContext.sidebar.collapsed);
-        if (result) {
-            userContext.setSidebar(result)
+    const initList = (limit: number) => {
+        if (type === 'self') {
+            getIndustries({ limit: limit, page: 1, order: 'desc' })
         }
-
-    }
-
-
-    const togglePanel = (e: any, form?: { action: FormActionType, id?: string }) => {
-        if (e) { e.preventDefault() }
-
-        if (!showPanel && form) {
-            setForm({ action: form.action, industryId: form.id ? form.id : '' })
+        if ((type === 'resource' || type === 'details') && resource && resourceId) {
+            getResourceIndustries({ limit: limit, page: 1, order: 'desc', resource, resourceId })
         }
-
-        setShowPanel(!showPanel)
-
     }
 
-    const toDetails = (e: MouseEvent<HTMLElement>, id: string) => {
+    const handleReport = (e: any) => {
 
-        e.preventDefault();
-
-        const route = routil.inRoute({
-            route: 'core',
-            name: 'industry-details',
-            params: [{ type: 'url', name: 'details', value: id }]
-        });
-
-        goTo(route);
-
-    }
-
-    const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { next } = industries.pagination;
-        await coreContext.getIndustries({ limit: next.limit, page: next.page, order: 'desc' })
-        helper.scrollToTop()
+
+        if (pageSearch.hasResult) {
+            exportToCSV({ title: 'rooms', report: search.report })
+        } else {
+            // open/navigate to form
+        }
     }
 
-    const pagiPrev = async (e: any) => {
-        if (e) { e.preventDefault() }
-        const { prev } = industries.pagination;
-        await coreContext.getIndustries({ limit: prev.limit, page: prev.page, order: 'desc' })
-        helper.scrollToTop()
+    const toDetails = (e: any, id: string) => {
+
+        if (e) { e.preventDefault(); }
+
+        toDetailRoute(e, { id: id, route: 'core', name: 'industry-details' })
+
     }
 
     return (
         <>
-            <div id="listbox" className="listbox">
 
-                <div className="header">
-                    <div className="left-halve">
-                        <SearchInput
-                            showFocus={true}
-                            autoComplete={false}
-                            size="sm"
-                            placeholder="Search Here"
-                            onChange={(e) => { }}
-                            onSearch={(e) => { }}
-                        />
-                        <span className="pdl1"></span>
-                        <Filter
-                            size="sm"
-                            position="bottom"
-                            icon={{ type: 'feather', name: 'calendar' }}
-                            items={[{ label: 'Today', value: 'today' }, { label: 'Last 7 days', value: 7 }]}
-                            onChange={(item) => { }}
-                        />
+            <ListBox>
+
+                <div className="w-full flex items-center">
+
+                    <div className="grow flex items-center gap-x-[0.5rem]">
+                        <div className="min-w-[12%]">
+                            <Filter
+                                ref={statRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Status"
+                                position="bottom"
+                                menu={{
+                                    style: {},
+                                    search: false,
+                                    fullWidth: true,
+                                    limitHeight: 'sm'
+                                }}
+                                items={[
+                                    { label: 'Enabled', value: 'enabled' },
+                                    { label: 'Disabled', value: 'disabled' }
+                                ]}
+                                noFilter={false}
+                                onChange={async (data) => {
+                                    await filterResource({
+                                        resource: 'industries',
+                                        paginate: 'relative',
+                                        payload: {
+                                            isEnabled: data.value === 'enabled' ? true : false
+                                        }
+                                    })
+                                    statRef?.current?.clear()
+                                }}
+                            />
+                        </div>
                     </div>
-                    <div className="right-halve">
-                        <Button
-                            text="Add New"
-                            type="primary"
+
+                    <div className="ml-auto min-w-[25%] flex items-center gap-x-[0.6rem]">
+                        <SearchInput
+                            ref={srhRef}
                             size="xsm"
-                            loading={false}
-                            disabled={false}
-                            fontSize={14}
-                            lineHeight={16}
-                            className="add-new-btn"
-                            icon={{
-                                enable: true,
-                                name: 'plus',
-                                size: 20,
-                                loaderColor: ''
+                            showFocus={true}
+                            placeholder="Search"
+                            isError={false}
+                            hasResult={pageSearch.hasResult}
+                            className=""
+                            onChange={(e) => setPageSearch({ ...pageSearch, key: e.target.value.trim() })}
+                            onSearch={async (e) => {
+                                if (pageSearch.hasResult) {
+                                    clearSearch();
+                                    statRef?.current?.clear()
+                                } else {
+                                    await searchResource({
+                                        resource: 'industries',
+                                        key: pageSearch.key,
+                                        paginate: 'relative'
+                                    });
+                                    statRef?.current?.clear()
+                                }
                             }}
-                            onClick={(e) => togglePanel(e, { action: 'add-resource' })}
                         />
-                        <span className="pdl"></span>
+                        {
+                            pageSearch.hasResult &&
+                            <Button
+                                type="ghost"
+                                semantic="error"
+                                size="xsm"
+                                className="form-button"
+                                text={{
+                                    label: "Clear",
+                                    size: 13,
+                                    weight: 'regular'
+                                }}
+                                reverse="row"
+                                onClick={(e) => {
+                                    clearSearch();
+                                    statRef?.current?.clear()
+                                }}
+                            />
+                        }
                         <Button
-                            text="Export"
                             type="ghost"
+                            semantic="normal"
                             size="xsm"
-                            loading={false}
-                            disabled={false}
-                            fontSize={14}
-                            lineHeight={16}
-                            className="export-btn"
-                            icon={{
-                                enable: false,
+                            className="form-button"
+                            text={{
+                                label: "Export",
+                                size: 13,
+                                weight: 'regular'
                             }}
+                            reverse="row"
                             onClick={(e) => { }}
                         />
                     </div>
+
                 </div>
 
-                <div className="ui-separate-small"></div>
+                <Divider show={false} />
 
-                <div className="body">
+                <div className="w-full">
 
                     {
-                        industries.loading &&
-                        <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
-                            <span className="loader lg primary"></span>
-                        </EmptyState>
+                        (industries.loading || search.loading) &&
+                        <>
+
+                            <EmptyState className="min-h-[50vh]" noBound={true}>
+                                <span className="loader lg primary"></span>
+                            </EmptyState>
+                        </>
                     }
 
                     {
-                        !industries.loading &&
-                        <div className="tablebox responsive">
+                        !industries.loading && !search.loading &&
+                        <>
+                            <TableBox>
 
-                            {
-                                industries.data.length === 0 &&
-                                <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
-                                    <span className={`ts-icon terra-link`}>
-                                        <i className='path1 fs-28'></i>
-                                        <i className='path2 fs-28'></i>
-                                    </span>
-                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{industries.message}</div>
-                                </EmptyState>
-                            }
+                                {
+                                    industries.data.length === 0 &&
+                                    <EmptyState className="min-h-[50vh]" noBound={true}>
+                                        <span className="font-rethink pag-600 text-[13px]">Industries will appear here</span>
+                                    </EmptyState>
+                                }
 
-                            {
-                                industries.data.length > 0 &&
-                                <table className="table" style={{ borderCollapse: 'collapse' }}>
-
-                                    <TableHead
-                                        items={[
-                                            { label: 'Date Created' },
-                                            { label: 'Name' },
-                                            { label: 'Label' },
-                                            { label: 'Code' },
-                                            { label: 'Careers', className: 'ui-text-center' },
-                                            { label: 'Status' },
-                                            { label: 'Action', className: 'ui-text-center' }
-                                        ]}
-                                    />
-
-                                    <tbody>
-
+                                {
+                                    industries.data.length > 0 &&
+                                    <>
                                         {
-                                            industries.data.map((industry: Industry, index) =>
-                                                <Fragment key={industry._id}>
-                                                    <tr className="table-row">
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, industry._id)} className="wp-15" render={helper.formatDate(industry.createdAt, 'basic')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, industry._id)} render={helper.capitalizeWord(industry.name)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, industry._id)} render={helper.capitalize(industry.label)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, industry._id)} className="ui-upcase wp-10" render={industry.code} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, industry._id)} className="ui-upcase wp-10 ui-text-center" render={industry.careers.length} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, industry._id)} className="wp-10" status={{ enable: true, type: 'enabled', value: industry.isEnabled }} render={<></>} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, industry._id)} render={
-                                                            <div className="popout-wrapper">
-                                                                <Popout
-                                                                    position="left"
-                                                                    items={[
-                                                                        { label: 'Details', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => toDetails(e, industry._id) },
-                                                                        { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
-                                                                    ]}
-                                                                />
-                                                            </div>
-                                                        } />
-                                                    </tr>
-                                                </Fragment>
-                                            )
+                                            search.count < 0 &&
+                                            <>
+                                                <EmptyState className="min-h-[30vh]" noBound={true} style={{ backgroundColor: '#fffafa' }}>
+                                                    <div className="font-rethink par-700 text-[14px] mb-[0.35rem]">No results found for {pageSearch.key}</div>
+                                                    <Button
+                                                        type="ghost"
+                                                        semantic="error"
+                                                        size="xxsm"
+                                                        className="form-button"
+                                                        text={{
+                                                            label: "Clear",
+                                                            size: 13,
+                                                            weight: 'regular'
+                                                        }}
+                                                        reverse="row"
+                                                        onClick={(e) => {
+                                                            clearSearch();
+                                                            statRef?.current?.clear()
+                                                            srhRef?.current?.clear()
+                                                        }}
+                                                    />
+                                                </EmptyState>
+                                            </>
                                         }
 
-                                    </tbody>
+                                        <Table className={`${search.count < 0 ? 'disabled' : ''}`}>
 
-                                </table>
-                            }
+                                            <TableHeader
+                                                items={[
+                                                    { label: '#' },
+                                                    { label: 'Date Created', className: 'w-[18%]' },
+                                                    { label: 'Name' },
+                                                    { label: 'Code', className: 'w-[15%]' },
+                                                    { label: 'Careers', className: 'w-[14%]' },
+                                                    { label: 'Status', className: 'w-[12%]' },
+                                                    { label: 'Action', className: 'text-center w-[8%]' }
+                                                ]}
+                                            />
 
-                        </div>
+                                            <TableBody>
+
+                                                {
+                                                    pageSearch.hasResult &&
+                                                    search.data.map((industry: Industry, index) =>
+                                                        <Fragment key={industry._id}>
+                                                            <TableRow>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{helper.formatDate(industry.createdAt, 'basic')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{helper.capitalizeWord(industry.name)}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{industry.code}</CellData>
+                                                                <CellData className="">{industry.careers.length} Careers</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>
+                                                                    <Badge
+                                                                        type={industry.isEnabled ? 'green' : 'orange'}
+                                                                        size="xsm"
+                                                                        label={industry.isEnabled ? 'Enabled' : 'Disabled'}
+                                                                        upper={true}
+                                                                    />
+                                                                </CellData>
+                                                                <CellData className="text-center">
+                                                                    <Popout
+                                                                        ref={null}
+                                                                        className='la-filter'
+                                                                        position="bottom-right"
+                                                                        menu={{
+                                                                            style: {},
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                    />
+                                                                </CellData>
+                                                            </TableRow>
+                                                        </Fragment>
+                                                    )
+                                                }
+
+                                                {
+                                                    !pageSearch.hasResult &&
+                                                    industries.data.map((industry: Industry, index) =>
+                                                        <Fragment key={industry._id}>
+                                                            <TableRow>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{helper.formatDate(industry.createdAt, 'basic')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{helper.capitalizeWord(industry.name)}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>{industry.code}</CellData>
+                                                                <CellData className="">{industry.careers.length} Careers</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, industry._id)}>
+                                                                    <Badge
+                                                                        type={industry.isEnabled ? 'green' : 'orange'}
+                                                                        size="xsm"
+                                                                        label={industry.isEnabled ? 'Enabled' : 'Disabled'}
+                                                                        upper={true}
+                                                                    />
+                                                                </CellData>
+                                                                <CellData className="text-center">
+                                                                    <Popout
+                                                                        ref={null}
+                                                                        className='la-filter'
+                                                                        position={index + 1 === industries.data.length ? "top-right" : "bottom-right"}
+                                                                        menu={{
+                                                                            style: {},
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                    />
+                                                                </CellData>
+                                                            </TableRow>
+                                                        </Fragment>
+                                                    )
+                                                }
+
+                                            </TableBody>
+
+                                        </Table>
+                                    </>
+                                }
+
+
+                            </TableBox>
+                        </>
                     }
 
 
-                </div>
-
-                <div className="ui-separate-small"></div>
-
-                <div className={`footer pdb2 ${industries.loading ? 'disabled-light' : ''}`}>
-
-                    <div className="left-halve">
-                        <Filter
-                            size="xsm"
-                            position="top"
-                            noFilter={false}
-                            placeholder={LIMIT.toString()}
-                            icon={{ type: 'feather', name: 'chevron-down' }}
-                            items={[{ label: '10', value: 10 }, { label: '15', value: 15 }, { label: '25', value: 25 }, { label: '45', value: 45 }, { label: '50', value: 50 }]}
-                            onChange={(item) => { }}
-                        />
-                        <div className="pdl1">
-                            <span className="fs-13 pas-950">Displaying {industries.count} industries on page {helper.getCurrentPage(industries.pagination)}</span>
-                        </div>
-                    </div>
-
-                    <div className="right-halve ui-text-right">
-                        <RoundButton
-                            size="rg"
-                            icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${industries.pagination.prev && industries.pagination.prev.limit ? '' : 'disabled'}`}
-                            clickable={true}
-                            onClick={(e) => pagiPrev(e)}
-                        />
-                        <span className="pdl"></span>
-                        <RoundButton
-                            size="rg"
-                            icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${industries.pagination.next && industries.pagination.next.limit ? '' : 'disabled'}`}
-                            clickable={true}
-                            onClick={(e) => pagiNext(e)}
-                        />
-                    </div>
 
                 </div>
 
-            </div>
+                <Divider show={false} />
 
-            <IndustryForm
-                show={showPanel}
-                closeForm={togglePanel}
-                type={form.action}
-                industryId={form.industryId}
-                display="table"
-                title={form.action === 'add-resource' ? 'Create Industry' : 'Edit Industry'}
-            />
+                <TableFooter
+                    title="Industries"
+                    type={type}
+                    resource={resource || 'industries'}
+                    resourceId={resourceId}
+                    source={industries}
+                    limit={25}
+                    onChange={
+                        type === 'self' ? getIndustries : getResourceIndustries
+                    }
+                />
+
+
+            </ListBox>
+
         </>
     )
 };

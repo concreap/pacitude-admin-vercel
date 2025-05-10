@@ -1,7 +1,7 @@
 import routes from '../routes/routes';
 import { IInRoute, IRoute, IRouteItem, IRouteParam, IRoutil } from './interfaces.util';
 
-const DASHBOARD_ROUTE = process.env.REACT_APP_DASHBOARD_ROUTE || '/dashboard';
+const DASHBOARD_ROUTE = import.meta.env.VITE_DASHBOARD_ROUTE || '/dashboard';
 
 const computeAppRoute = (route: IRoute): string => {
 

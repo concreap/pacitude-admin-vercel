@@ -1,242 +1,179 @@
-import React, { useEffect, useState, useContext } from "react"
-import { useParams } from "react-router-dom";
-import UserContext from "../../../../context/user/userContext";
-import CoreContext from "../../../../context/core/coreContext";
-import { ICoreContext, IUserContext } from "../../../../utils/interfaces.util";
-import helper from "../../../../utils/helper.util";
-import EmptyState from "../../../../components/partials/dialogs/EmptyState";
+import React, { useEffect, useState, useContext, useRef } from "react"
+import PageHeader from "../../../../components/partials/ui/PageHeader";
 import Button from "../../../../components/partials/buttons/Button";
 import Icon from "../../../../components/partials/icons/Icon";
-import qHelper from "../../../../utils/question.util";
-import { IQuestionAnswer } from "../../../../models/Question.model";
-import AnswersList from "../../../../components/app/question/AnswersList";
+import Divider from "../../../../components/partials/Divider";
+import useSidebar from "../../../../hooks/useSidebar";
+import TopicList from "../topics/TopicList";
+import QuestionList from "./QuestionList";
+import useGoTo from "../../../../hooks/useGoTo";
+import CardUI from "../../../../components/partials/ui/CardUI";
+import useMetrics from "../../../../hooks/app/useMetrics";
+import MetricItem from "../../../../components/app/MetricItem";
+import Badge from "../../../../components/partials/badges/Badge";
 import QuestionRubric from "../../../../components/app/question/QuestionRubric";
+import QuestionOption from "../../../../components/app/question/QuestionOption";
+import QuestionAnswer from "../../../../components/app/question/QuestionAnswer";
+import useQuestion from "../../../../hooks/app/useQuestion";
+import { useParams } from "react-router-dom";
+import QuestionBox from "../../../../components/app/question/QuestionBox";
+import QuestionEdit from "../../../../components/app/question/QuestionEdit";
+import helper from "../../../../utils/helper.util";
+import EmptyState from "../../../../components/partials/dialogs/EmptyState";
+import useApp from "../../../../hooks/app/useApp";
 
 const QuestionDetailsPage = ({ }) => {
 
-    const { id } = useParams();
+    const { id } = useParams()
+    const editRef = useRef<any>(null)
 
-    const userContext = useContext<IUserContext>(UserContext)
-    const coreContext = useContext<ICoreContext>(CoreContext)
+    useSidebar(true)
+    const { question, getQuestion, loading } = useQuestion();
+    const { getCoreResources } = useApp()
 
-    const [loading, setLoading] = useState<boolean>(false)
-    const [showPanel, setShowPanel] = useState<boolean>(false)
+    const [isEditing, setIsEditing] = useState<boolean>(false)
 
     useEffect(() => {
 
-        initSidebar();
-        getQuestion()
-
-        coreContext.getFields({ limit: 9999, page: 1, order: 'desc' })
+        if (id) {
+            getQuestion(id);
+            getCoreResources({ limit: 9999, page: 1, order: 'desc' });
+        }
 
     }, [])
 
-    const initSidebar = () => {
-
-        const result = userContext.currentSidebar(userContext.sidebar.collapsed);
-        if (result) {
-            userContext.setSidebar(result)
-        }
-
-    }
-
-    const getQuestion = () => {
-        if (id) {
-            coreContext.getQuestion(id);
-        }
-    }
-
-    const togglePanel = (e: any) => {
-        if (e) { e.preventDefault() }
-        setShowPanel(!showPanel)
-    }
-
-    const getFields = () => {
-
-        let result: Array<any> = [];
-
-        if (coreContext.fields.data.length > 0) {
-
-            result = coreContext.fields.data.map((f) => {
-                let c = {
-                    value: f._id,
-                    label: helper.capitalizeWord(f.name),
-                    left: '',
-                    image: ''
-                }
-                return c;
-            })
-
-        }
-
-
-        return result;
-
-    }
-
     return (
         <>
+            <PageHeader
+                title={`Question ${question && question.code ? '#' + question.code : ''}`}
+                description="View and update question details"
+            >
+                <div className="flex items-center gap-x-[0.65rem]">
+                    <Button
+                        type="ghost"
+                        semantic={isEditing ? 'error' : 'default'}
+                        size="sm"
+                        className="form-button"
+                        text={{
+                            label: isEditing ? "Close" : "Edit Question",
+                            size: 13,
+                        }}
+                        icon={{
+                            enable: true,
+                            child: isEditing ? <Icon name="x" type="feather" size={16} className="par-600" /> : <Icon name="edit" type="polio" size={16} className="pag-900" />
+                        }}
+                        reverse="row"
+                        onClick={(e) => setIsEditing(!isEditing)}
+                    />
+                    {
+                        isEditing &&
+                        <Button
+                            type="primary"
+                            semantic="normal"
+                            size="sm"
+                            className="form-button"
+                            text={{
+                                label: "Save Changes",
+                                size: 13,
+                            }}
+                            onClick={(e) => editRef.current.save(e)}
+                        />
+                    }
+                </div>
+
+            </PageHeader>
+
+            <Divider show={false} />
 
             {
-                coreContext.loading &&
-                <>
-                    <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
-                        <span className="loader lg primary"></span>
-                    </EmptyState>
-                </>
+                loading &&
+                <EmptyState className="min-h-[50vh]" noBound={true}>
+                    <span className="loader lg primary"></span>
+                </EmptyState>
             }
 
             {
-                !coreContext.loading &&
+                !loading &&
                 <>
 
-                    <div className="details-header">
+                    {
+                        helper.isEmpty(question, 'object') &&
+                        <EmptyState bgColor='bg-pag-25' className="min-h-[50vh]" noBound={true} >
+                            <span className="font-rethink text-[14px] pas-950">Question not found!</span>
+                        </EmptyState>
+                    }
 
-                        <div className="avatar">
-                            <span className="font-hostgro-bold pab-900 fs-18 ui-upcase">NA</span>
-                        </div>
+                    {
+                        !helper.isEmpty(question, 'object') &&
+                        <>
+                            {
+                                !isEditing &&
+                                <QuestionBox question={question} />
+                            }
 
-                        <div className="pdl mrgl1">
-                            <h3 className="font-hostgro-bold fs-16 mrgb0">{coreContext.question.code || '--'}</h3>
-                            <span className="font-hostgro fs-13 pag-500">{qHelper.shortenRubric(coreContext.question, 'level')}</span>
-                            <span className="font-hostgro fs-14 pag-500 pdr pdl">|</span>
-                            <span className="font-hostgro fs-13 pag-500">{qHelper.shortenRubric(coreContext.question, 'difficulty')}</span>
-                        </div>
+                            {
+                                isEditing &&
+                                <QuestionEdit ref={editRef} />
+                            }
+                        </>
+                    }
 
-                        <div className={`actions ${loading ? 'disabled-light' : ''}`}>
+                    {
+                        isEditing &&
+                        <div className="w-[65%] mx-auto my-0">
 
+                            <Divider show={false} />
 
-                            <Button
-                                text={coreContext.question.isEnabled ? 'Disable' : 'Enable'}
-                                type="ghost"
-                                semantic={coreContext.question.isEnabled ? 'info' : 'success'}
-                                reverse="row"
-                                size="mini"
-                                loading={false}
-                                disabled={false}
-                                fontSize={13}
-                                fontWeight={'medium'}
-                                lineHeight={16}
-                                className="export-btn"
-                                icon={{
-                                    enable: true,
-                                    type: 'feather',
-                                    name: coreContext.question.isEnabled ? 'x' : 'check',
-                                    size: 13
-                                }}
-                                onClick={(e) => { }}
-                            />
-                            <Button
-                                text="Delete"
-                                type="ghost"
-                                semantic="error"
-                                reverse="row"
-                                size="mini"
-                                loading={false}
-                                disabled={false}
-                                fontSize={13}
-                                fontWeight={'medium'}
-                                lineHeight={16}
-                                className="delete-btn blind"
-                                icon={{
-                                    enable: true,
-                                    type: 'feather',
-                                    name: 'trash',
-                                    size: 12
-                                }}
-                                onClick={(e) => { }}
-                            />
-                        </div>
-
-                    </div>
-
-                    <div className="ui-separate-mini">
-                        <div className="ui-line bg-pag-50"></div>
-                    </div>
-
-
-
-                    <div className="row no-gutters mrgt1">
-
-                        <div className="col-md-7">
-
-                            <div className="ui-dashboard-card">
-
-                                <div className="ui-flexbox align-center">
-                                    <h3 className="font-hostgro-medium fs-14 pag-950 mrgb1">Question:</h3>
-                                    <div className={`ui-ml-auto ${loading ? 'disabled-light' : ''}`}>
+                            <PageHeader
+                                title=""
+                                description=""
+                            >
+                                <div className="flex items-center gap-x-[0.65rem]">
+                                    <Button
+                                        type="ghost"
+                                        semantic={isEditing ? 'error' : 'default'}
+                                        size="sm"
+                                        className="form-button"
+                                        text={{
+                                            label: isEditing ? "Close" : "Edit Question",
+                                            size: 13,
+                                        }}
+                                        icon={{
+                                            enable: true,
+                                            child: isEditing ? <Icon name="x" type="feather" size={16} className="par-600" /> : <Icon name="edit" type="polio" size={16} className="pag-900" />
+                                        }}
+                                        reverse="row"
+                                        onClick={(e) => setIsEditing(!isEditing)}
+                                    />
+                                    {
+                                        isEditing &&
                                         <Button
-                                            text="Edit"
-                                            type="ghost"
-                                            semantic="ongoing"
-                                            reverse="row"
-                                            size="mini"
-                                            loading={false}
-                                            disabled={false}
-                                            fontSize={13}
-                                            fontWeight={'medium'}
-                                            lineHeight={16}
-                                            className="export-btn"
-                                            icon={{
-                                                enable: true,
-                                                type: 'polio',
-                                                name: 'edit',
-                                                size: 13
+                                            type="primary"
+                                            semantic="normal"
+                                            size="sm"
+                                            className="form-button"
+                                            text={{
+                                                label: "Save Changes",
+                                                size: 13,
                                             }}
-                                            onClick={(e) => togglePanel(e)}
+                                            onClick={(e) => editRef.current.save(e)}
                                         />
-                                    </div>
+                                    }
                                 </div>
 
-                                {
-                                    coreContext.question.body &&
-                                    <div className="font-hostgro fs-16 pab-900 mrgb1">{coreContext.question.body}</div>
-                                }
-
-                                {
-                                    coreContext.question.answers &&
-                                    coreContext.question.answers.length > 0 &&
-                                    <AnswersList answers={coreContext.question.answers} />
-                                }
-
-                            </div>
+                            </PageHeader>
 
 
                         </div>
-
-                        <div className="col-md-5">
-
-                            <div className="ui-dashboard-card">
-
-                                <h3 className="font-hostgro-medium fs-14 pag-950 mrgb1-mid">Question Rubrics:</h3>
-
-                                <div>
-                                    <QuestionRubric question={coreContext.question} type="level" close={true} />
-                                    <div className="ui-line bg-pag-50"></div>
-                                    <QuestionRubric question={coreContext.question} type="difficulty" close={true} />
-                                    <div className="ui-line bg-pag-50"></div>
-                                    <QuestionRubric question={coreContext.question} type="question-type" close={true} />
-                                    <div className="ui-line bg-pag-50"></div>
-                                    <div className="ui-flexbox align-center">
-                                        <QuestionRubric question={coreContext.question} type="time" flex={true} />
-                                        <span className="pdl2"></span>
-                                        <QuestionRubric question={coreContext.question} type="score" flex={true} />
-                                    </div>
-                                </div>
-
-
-                            </div>
-
-                        </div>
-
-                    </div>
+                    }
 
                 </>
             }
+
+
 
         </>
     )
-
 };
 
 export default QuestionDetailsPage;

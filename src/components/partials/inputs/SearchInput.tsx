@@ -1,45 +1,68 @@
-import React, { useEffect, useState, useRef, CSSProperties } from "react"
-import { ISearchInput } from "../../../utils/interfaces.util";
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, ForwardedRef } from "react"
+import { ISearchInput, ITextInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
 import Icon from "../icons/Icon";
+import useSize from "../../../hooks/useSize";
 
-const SearchInput = (props: ISearchInput) => {
+const SearchInput = forwardRef((props: ISearchInput, ref: ForwardedRef<any>) => {
 
     const {
-        name, id, value, defaultValue, placeholder,
-        autoComplete, className, label, readonly,
+        id,
+        name,
+        defaultValue,
+        placeholder,
+        autoComplete,
+        className,
+        label,
+        readonly,
         isError = false,
-        size = 'md',
-        showFocus = false,
+        size = 'rg',
+        showFocus = true,
         hasResult = false,
-        onChange, onSearch
+        onChange,
+        onFocus,
+        onSearch
     } = props
+
+    const ch = useSize({ size })
+    const { pos } = useSize({ size, type: 'input-icon' })
 
     const [inputId, setInputId] = useState<string>(helper.random(8, true))
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
 
-        if(!hasResult && inputRef.current){
+    }, [])
+
+    useEffect(() => {
+
+        if(inputRef.current && inputRef.current.value){
             inputRef.current.value = '';
         }
 
     }, [hasResult])
 
-    const labelFontSize = () => {
+    const lfs = () => {
 
-        let result: string = '12';
+        let result: string = 'text-[12px]';
 
         if (label && label.fontSize) {
-            result = label.fontSize.toString()
+            result = `text-[${label.fontSize.toString()}px]`
         }
 
         return result;
     }
 
-    const computeClass = () => {
+    const cc = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} color-black fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control transition-all duration-250 w-full py-[0.5rem] px-[1rem] font-rethink text-[13px] border ${ch.h}`;
+
+        // colors, borders and focus
+        if (isError) {
+            result = result + ` par-700 bdr-par-700`
+        } else {
+            result = result + ` color-black bdr-pag-200 ${showFocus ? 'bdrf-pacb-400 bdrh-pacb-200' : ''}`
+        }
 
         if (className) {
             result = result + ` ${className}`
@@ -49,70 +72,75 @@ const SearchInput = (props: ISearchInput) => {
 
     }
 
-    const iconPosition = (): CSSProperties => {
+    const cic = () => {
 
-        let result: CSSProperties = { top: '1rem', right: '1rem' }
-
-        if(size === 'md'){
-            result = { top: '1rem', right: '1rem' }
-        }else if(size === 'sm'){
-            if(hasResult){
-                result = { top: '0.68rem', right: '1rem', color: '#FF1B1B' }
-            }else {
-                result = { top: '0.65rem', right: '1rem' }
-            }
-        }
+        let result: string = `absolute right-[0.7rem] ${pos}`;
 
         return result;
     }
 
-    const iconSize = (): number => {
-        let result: number = 20;
-
-        if(size === 'md'){
-            result = 20;
-        }else if(size === 'sm') {
-            result = 16
+    const handleClear = () => {
+        if (inputRef.current) {
+            inputRef.current.value = ''
         }
-
-        return result;
     }
+
+    const handleFocus = () => {
+        if (inputRef.current) {
+            inputRef.current.focus()
+        }
+    }
+
+    // expose child component functions to parent component
+    useImperativeHandle(ref, () => ({
+        clear: handleClear,
+        focus: handleFocus
+    }))
 
     return (
         <>
+
             {
                 label &&
                 <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
-                    <span className={`fs-${labelFontSize()} font-hostgro color-black`}>{label.title}</span>
-                    {label.required ? <span className="color-red font-hostgro-semibold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
+                    <span className={`font-rethink pag-900`} style={{ fontSize: `${label.fontSize}px` }}>{label.title}</span>
+                    {label.required ? <span className="color-red font-rethink-medium relative text-[16px] top-[5px] left-[3px]">*</span> : ''}
                 </label>
             }
-            <div className="search-input ui-relative">
-                <Icon 
-                    type="polio"
-                    name={ hasResult ? 'cancel' : 'search'}
-                    size={iconSize()}
-                    clickable={true}
-                    position="absolute"
-                    style={iconPosition()}
-                    onClick={onSearch}
-                />
+
+            <div className="w-full relative">
+
+                <span className={`${cic()}`}>
+                    <Icon
+                        name={hasResult ? 'x' : 'search'}
+                        type="feather"
+                        className={`${hasResult ? 'par-600' : 'pacb-800'}`}
+                        size={16}
+                        clickable={true}
+                        onClick={(e) => {
+                            onSearch(e)
+                        }}
+                    />
+                </span>
+
                 <input
                     ref={inputRef}
                     id={id ? id : inputId}
                     name={name ? name : ''}
                     defaultValue={defaultValue ? defaultValue : ''}
                     type={'text'}
-                    className={computeClass()}
+                    className={cc()}
                     placeholder={placeholder ? placeholder : 'Type here'}
                     autoComplete={autoComplete ? 'on' : 'off'}
                     readOnly={readonly ? readonly : false}
-                    onChange={(e) => { onChange(e) }}
+                    onChange={(e) => onChange(e)}
+                    onFocus={(e) => onFocus ? onFocus(e) : {}}
                 />
             </div>
+
         </>
     )
 
-};
+})
 
 export default SearchInput;

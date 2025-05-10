@@ -1,33 +1,24 @@
-import React, { useEffect, MouseEvent } from "react"
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react"
 import Icon from "../icons/Icon";
 import { ILinkButton } from "../../../utils/interfaces.util";
-import helper from "../../../utils/helper.util";
-import { SizeType } from "../../../utils/types.util";
+import { Link } from "react-router-dom";
 
 const LinkButton = (props: ILinkButton) => {
 
-    const navigate = useNavigate()
-
     const {
-        id = helper.random(6, true),
-        text,
-        className,
-        disabled = false,
-        lineHeight = 16,
-        loading = false,
-        weight = 'bold',
-        size = 'rg',
-        color = 'pab-600',
-        newtab = false,
-        icon = {
-            enable: true,
-            name: 'check',
-            size: 16,
-            loaderColor: 'white',
-            style: { position: 'relative' }
+        text = {
+            label: 'Click Link',
+            className: 'text-[13px]',
+            weight: 'semibold'
         },
         url = '',
+        className = '',
+        disabled = false,
+        loading = false,
+        icon = {
+            enable: true,
+            child: <Icon type="feather" name="chevron-right" size={15} className="pacb-900" />
+        },
         onClick
     } = props;
 
@@ -35,95 +26,31 @@ const LinkButton = (props: ILinkButton) => {
 
     }, [])
 
-    const getSize = (size: SizeType) => {
+    const handleClick = (e: any) => {
 
-        let result: number = 14;
+        if (e) { e.preventDefault() }
 
-        switch (size) {
-            case 'sm':
-                result = 12;
-                break;
-            case 'rg':
-                result = 13;
-                break;
-            case 'md':
-                result = 16;
-                break;
-            case 'lg':
-                result = 20;
-                break;
-            case 'xlg':
-                result = 24;
-                break;
-            default:
-                result = 13
-                break;
-        }
+        if (url) {
+            onClick(e);
+            window.open(url, '_blank');
 
-        return result;
-
-    }
-
-    const computeClass = () => {
-
-        let result: string = `link-button font-hostgro-${weight} ${color} ${disabled ? 'disabled' : loading ? 'disabled loading' : ''}`
-        let text: string = `fs-${getSize(size)} lh-${lineHeight}`
-
-        if (className) {
-            result = result + ` ${className}`
-        }
-
-        return { button: result, text }
-
-    }
-
-    const handleClick = (e: MouseEvent<HTMLAnchorElement>) => {
-        e.preventDefault();
-
-        if (onClick) {
+        } else {
             onClick(e)
-        } else if (url) {
-            navigate(url)
         }
-    }
-
-    const linkContent = () => {
-
-        return <>
-            <span className={computeClass().text}>{text}</span>
-            {
-                icon.enable &&
-                <Icon
-                    type="polio"
-                    name={icon.name!}
-                    clickable={false}
-                    size={icon.size!}
-                    style={icon.style ? icon.style : { position: 'relative' }}
-                />
-
-            }
-        </>
 
     }
 
     return (
         <>
-            {
-                newtab && url &&
-                <a id={id} href={url} target="_blank" className={computeClass().button}>
-                    {linkContent()}
-                </a>
-            }
-
-            {
-                !newtab &&
-                <>
-                    <Link id={id} to="" onClick={(e) => handleClick(e)} className={computeClass().button}>
-                        {linkContent()}
-                    </Link>
-                </>
-            }
-
+            <Link onClick={(e) => handleClick(e)} to={''} className={`inline-flex transition-all duration-[0.25s] items-center ${className}`}>
+                <span className={`font-hostgro-${text.weight} pacb-900 pr-[0.5rem] ${text.className}`}>{text.label}</span>
+                {
+                    icon.enable &&
+                    <span className="ml-auto">
+                        {icon.child}
+                    </span>
+                }
+            </Link>
         </>
     )
 };

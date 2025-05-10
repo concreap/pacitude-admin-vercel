@@ -1,20 +1,34 @@
-import React, { useEffect, useState, useRef } from "react"
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, ForwardedRef } from "react"
 import { ITextAreaInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
+import useSize from "../../../hooks/useSize";
 
-const TextAreaInput = (props: ITextAreaInput) => {
+const TextAreaInput = forwardRef((props: ITextAreaInput, ref: ForwardedRef<any>) => {
 
     const {
-        name, id, value, defaultValue, placeholder,
-        autoComplete, className, label, ref, readonly,
-        isError = false,
-        size = 'xxlg',
+        id,
+        name,
+        defaultValue,
+        placeholder,
+        autoComplete,
+        className,
+        label,
         rows = 4,
         cols = 4,
-        showFocus = false,
-        onChange
+        readonly,
+        icon = {
+            enable: false,
+            position: 'right',
+            child: <></>
+        },
+        isError = false,
+        showFocus = true,
+        onChange,
+        onKeyUp,
+        onFocus
     } = props
 
+    const { pos } = useSize({ size: 'mini', type: 'input-icon' })
     const [inputId, setInputId] = useState<string>(helper.random(8, true))
     const inputRef = useRef<HTMLTextAreaElement>(null)
 
@@ -22,20 +36,27 @@ const TextAreaInput = (props: ITextAreaInput) => {
 
     }, [])
 
-    const labelFontSize = () => {
+    const lfs = () => {
 
-        let result: string = '12';
+        let result: string = 'text-[12px]';
 
         if (label && label.fontSize) {
-            result = label.fontSize.toString()
+            result = `text-[${label.fontSize.toString()}px]`
         }
 
         return result;
     }
 
-    const computeClass = () => {
+    const cc = () => {
 
-        let result: string = `form-control ${isError ? 'error' : ''} font-manrope color-black fs-14 sz-${size} ${showFocus ? 'show-focus' : ''}`;
+        let result: string = `form-control transition-all duration-250 w-full py-[0.5rem] px-[1rem] font-rethink text-[13px] border`;
+
+        // colors, borders and focus
+        if (isError) {
+            result = result + ` par-700 bdr-par-700`
+        } else {
+            result = result + ` color-black bdr-pag-200 ${showFocus ? 'bdrf-pacb-400 bdrh-pacb-200' : ''}`
+        }
 
         if (className) {
             result = result + ` ${className}`
@@ -45,31 +66,82 @@ const TextAreaInput = (props: ITextAreaInput) => {
 
     }
 
+    const cic = () => {
+
+        let result: string = `absolute ${pos}`;
+
+        if (icon && icon.enable) {
+
+            if (icon.position === 'right') {
+                result = result + ' right-[0.7rem]'
+            }
+
+            if (icon.position === 'left') {
+                result = result + ' left-[0.7rem]'
+            }
+
+        }
+
+        return result;
+    }
+
+    const handleClear = () => {
+        if(inputRef.current){
+            inputRef.current.value = ''
+        }
+    }
+
+    const handleFocus = () => {
+        if(inputRef.current){
+            inputRef.current.focus()
+        }
+    }
+
+    // expose child component functions to parent component
+    useImperativeHandle(ref, () => ({
+        clear: handleClear,
+        focus: handleFocus
+    }))
+
     return (
         <>
+
             {
                 label &&
-                <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
-                    <span className={`fs-${labelFontSize()} font-manrope-medium color-black`}>{label.title}</span>
-                    {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
+                <label htmlFor={id ? id : inputId} className={`${label.className ? label.className : ''}`}>
+                    <span className={`font-rethink pag-900`} style={{ fontSize: `${label.fontSize}px` }}>{label.title}</span>
+                    {label.required ? <span className="color-red font-rethink-medium relative text-[16px] top-[5px] left-[3px]">*</span> : ''}
                 </label>
             }
-            <textarea
-                ref={ref ? ref : inputRef}
-                rows={rows}
-                cols={cols}
-                id={id ? id : inputId}
-                name={name ? name : ''}
-                defaultValue={defaultValue ? defaultValue : ''}
-                className={computeClass()}
-                placeholder={placeholder ? placeholder : 'Type here'}
-                autoComplete={autoComplete ? 'on' : 'off'}
-                readOnly={readonly ? readonly : false}
-                onChange={(e) => onChange(e)}
-            />
+
+            <div className="w-full relative">
+
+
+                {
+                    icon && icon.enable &&
+                    <span className={cic()}>{icon.child}</span>
+                }
+
+                <textarea
+                    ref={inputRef}
+                    id={id ? id : inputId}
+                    name={name ? name : ''}
+                    defaultValue={defaultValue ? defaultValue : ''}
+                    rows={rows}
+                    cols={cols}
+                    className={cc()}
+                    placeholder={placeholder ? placeholder : 'Type here'}
+                    autoComplete={autoComplete ? 'on' : 'off'}
+                    readOnly={readonly ? readonly : false}
+                    onChange={(e) => onChange(e)}
+                    onKeyUp={(e) => onKeyUp ? onKeyUp(e) : {}}
+                    onFocus={(e) => onFocus ? onFocus(e) : {}}
+                ></textarea>
+            </div>
+
         </>
     )
 
-};
+})
 
 export default TextAreaInput;

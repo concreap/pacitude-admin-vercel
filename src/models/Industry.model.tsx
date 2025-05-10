@@ -1,3 +1,4 @@
+import Career from "./Career.model";
 
 interface Industry {
 
@@ -11,7 +12,7 @@ interface Industry {
     slug: string,
 
     // relationships
-    careers: Array<any>,
+    careers: Array<Career | any>,
 
     // timestamps
     createdAt: string,

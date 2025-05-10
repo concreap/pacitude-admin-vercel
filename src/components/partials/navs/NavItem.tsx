@@ -22,22 +22,35 @@ const NavItem = (props: INavItem) => {
 
     }, [])
 
+    const nc = (z?: { la: boolean }) => {
 
+        let ni = `nav-item block w-[100%] p-0 my-[0.5rem] mx-0`
+        let nl = `nav-link transition-all duration-[0.25s] flex items-center gap-x-[1rem] w-[100%] py-[0.5rem] px-[0.75rem] rounded-[5px] pag-950`
+
+        if(z && z.la){
+            nl = nl + ` pab-900 bg-pab-100 bgh-pab-100`
+        } else {
+            nl = nl + ` pabh-900`
+        }
+
+        return { ni, nl }
+
+    }
 
     return (
         <>
             {
                 type === 'sidebar' &&
                 <>
-                    <li className="nav-item">
-                        <Link onClick={(e) => onClick(e)} to="" className={`nav-link ${active ? 'active' : ''}`}>
+                    <li className={`nav-item ${nc().ni}`}>
+                        <Link onClick={(e) => onClick(e)} to="" className={`nav-link ${nc({ la: active }).nl}`}>
                             {
                                 icon.enable &&
                                 <Icon
                                     type="polio"
                                     clickable={false}
                                     name={icon.name}
-                                    size={18}
+                                    size={16}
                                     className={`nav-icon ui-relative ${icon.className ? icon.className : ''}`}
                                     style={{
                                         top: '0px'
@@ -45,7 +58,7 @@ const NavItem = (props: INavItem) => {
                                 />
 
                             }
-                            <span className="nav-text font-hostgro fs-14">{label}</span>
+                            <span className={`nav-text ${active ? 'pab-900' : 'pag-900 pabh-900'} font-rethink text-[14px]`}>{label}</span>
                         </Link>
                     </li>
                 </>
@@ -54,14 +67,14 @@ const NavItem = (props: INavItem) => {
             {
                 type === 'topbar' &&
                 <>
-                    <Link  to={path} className={`nav-item`}>
+                    <Link to={path} className={`nav-item flex items-center gap-x-[1rem] py-[0.25rem] ${nc().ni}`}>
                         {
                             icon.enable &&
                             <Icon
                                 type="polio"
                                 clickable={false}
                                 name={icon.name}
-                                size={18}
+                                size={16}
                                 className={`nav-icon ui-relative ${icon.className ? icon.className : ''}`}
                                 style={{
                                     top: '0px'
@@ -69,7 +82,7 @@ const NavItem = (props: INavItem) => {
                             />
 
                         }
-                        <span className="nav-text font-hostgro fs-14">{label}</span>
+                        <span className={`nav-text ${active ? 'pab-900' : 'pag-900 pabh-900'} font-rethink text-[14px]`}>{label}</span>
                     </Link>
                 </>
             }

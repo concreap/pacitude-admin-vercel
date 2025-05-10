@@ -1,37 +1,49 @@
 import React, { useEffect, useState } from 'react'
 import { IPlaceholder } from '../../utils/interfaces.util'
 
-const Placeholder = (props : Partial<IPlaceholder>) => {
+const Placeholder = (props: Partial<IPlaceholder>) => {
 
     // https://jamesinkala.com/blog/make-animated-content-placeholders-with-html-and-css/
     const {
-        height, width, bgColor, animate, radius, className, flex = false,
-        minHeight, minWidth, marginTop, marginBottom, top, left, right
+        height = "10px",
+        width = 160,
+        bgColor = 'bg-pag-100', 
+        animate = true,
+        className,
+        radius = 'rounded-full'
     } = props
-    
+
     useEffect(() => {
 
     }, [])
 
+    const cc = () => {
+
+        let result = `placeholder inline-block relative ${radius} overflow-x-hidden overflow-y-hidden ${bgColor}`
+
+        if (height) {
+            result = result + ` h-[${height}] min-h-[${height}]`
+        }
+
+        if (width) {
+            result = result + ` ${width}`
+        } else {
+            result = result + ` w-[100%] min-w-[100%]`
+        }
+
+        if (className) {
+            result = result + ` ${className}`
+        }
+
+        return result;
+
+    }
+
     return (
         <>
 
-            <div className={`placeholder ui-relative ${flex ? 'flex' : ''} ${className ? className : ''}`} 
-            style={{ 
-                height: height,
-                width: width,
-                minHeight: height ? height : minHeight,
-                minWidth: width ? width : minWidth,
-                backgroundColor: bgColor,
-                borderRadius: `${radius}`,
-                marginTop: marginTop ? marginTop : '',
-                marginBottom: marginBottom ? marginBottom : '',
-                top: top ? top : '',
-                left: left ? left : '',
-                right: right ? right : ''
-            }}
-            >
-                <div className={`activity ${animate ? 'flicker': ''}`}></div>
+            <div className={cc()}>
+                <div className={`activity ${animate ? 'flicker' : ''}`}></div>
             </div>
 
         </>

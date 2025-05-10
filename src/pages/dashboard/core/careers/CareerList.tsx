@@ -1,298 +1,432 @@
-import React, { useEffect, useState, useContext, Fragment, MouseEvent } from "react"
-import GeniusContext from "../../../../context/genius/geniusContext";
-import SearchInput from "../../../../components/partials/inputs/SearchInput";
-import Filter from "../../../../components/partials/drops/Filter";
-import Button from "../../../../components/partials/buttons/Button";
-import EmptyState from "../../../../components/partials/dialogs/EmptyState";
-import helper from "../../../../utils/helper.util";
-import TableHead from "../../../../components/app/table/TableHead";
-import CellData from "../../../../components/app/table/CellData";
-import Icon from "../../../../components/partials/icons/Icon";
-import RoundButton from "../../../../components/partials/buttons/RoundButton";
-import { ICollection, ICoreContext, IGeniusContext, IListUI, IUserContext } from "../../../../utils/interfaces.util";
-import Career from "../../../../models/Career.model";
-import Popout from "../../../../components/partials/drops/Popout";
-import UserContext from "../../../../context/user/userContext";
-import CoreContext from "../../../../context/core/coreContext";
-import { FormActionType } from "../../../../utils/types.util";
+import React, { useEffect, useState, useContext, useRef, Fragment } from "react"
+import { IListUI } from "../../../../utils/interfaces.util";
 import useGoTo from "../../../../hooks/useGoTo";
-import routil from "../../../../utils/routes.util";
-import CareerForm from "./CareerForm";
+import useIndustry from "../../../../hooks/app/useIndustry";
+import useReport from "../../../../hooks/useReport";
+import useSearch from "../../../../hooks/app/useSearch";
+import ListBox from "../../../../components/partials/ui/ListBox";
+import Filter from "../../../../components/partials/drops/Filter";
+import helper from "../../../../utils/helper.util";
+import SearchInput from "../../../../components/partials/inputs/SearchInput";
+import Button from "../../../../components/partials/buttons/Button";
+import Table from "../../../../components/partials/table/Table";
+import EmptyState from "../../../../components/partials/dialogs/EmptyState";
+import Divider from "../../../../components/partials/Divider";
+import TableBox from "../../../../components/partials/table/TableBox";
+import TableHeader from "../../../../components/partials/table/Tableheader";
+import TableBody from "../../../../components/partials/table/TableBody";
+import Industry from "../../../../models/Industry.model";
+import TableRow from "../../../../components/partials/table/TableRow";
+import CellData from "../../../../components/partials/table/CellData";
+import Popout from "../../../../components/partials/drops/Popout";
+import TableFooter from "../../../../components/partials/table/TableFooter";
+import useCareer from "../../../../hooks/app/useCareer";
+import Career from "../../../../models/Career.model";
+import Badge from "../../../../components/partials/badges/Badge";
 
 const CareerList = (props: IListUI) => {
 
+    // props
     const { type, resource, resourceId } = props;
 
-    const LIMIT = 25;
+    // refs
+    const statRef = useRef<any>(null)
+    const indRef = useRef<any>(null)
+    const srhRef = useRef<any>(null)
 
-    const { goTo } = useGoTo();
-
-    const userContext = useContext<IUserContext>(UserContext)
-    const coreContext = useContext<ICoreContext>(CoreContext)
-
-    const [careers, setCareers] = useState<ICollection>(coreContext.careers)
-    const [showPanel, setShowPanel] = useState<boolean>(false);
-    const [form, setForm] = useState<{ action: FormActionType, careerId: string }>({ action: 'add-resource', careerId: '' });
+    const { goTo, toDetailRoute } = useGoTo()
+    const { careers, getCareers, getResourceCareers } = useCareer()
+    const { industries, getIndustries } = useIndustry()
+    const { exportToCSV } = useReport()
+    const { 
+        search, 
+        pageSearch,
+        filters,
+        setPageSearch,
+        setFilters, 
+        clearSearch, 
+        searchResource, 
+        filterResource 
+    } = useSearch({})
 
     useEffect(() => {
-
-        initSidebar()
-
-        if (helper.isEmpty(coreContext.careers.data, 'array')) {
-            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
-        }
-
+        initList(25)
     }, [])
 
-    useEffect(() => {
-
-        setCareers(coreContext.careers)
-
-    }, [coreContext.careers])
-
-    const initSidebar = () => {
-
-        const result = userContext.currentSidebar(userContext.sidebar.collapsed);
-        if (result) {
-            userContext.setSidebar(result)
+    const initList = (limit: number) => {
+        if (type === 'self') {
+            getCareers({ limit: limit, page: 1, order: 'desc' })
+        }
+        if ((type === 'resource' || type === 'details') && resource && resourceId) {
+            getResourceCareers({ limit: limit, page: 1, order: 'desc', resource, resourceId })
         }
 
-    }
-
-
-    const togglePanel = (e: any, form?: { action: FormActionType, id?: string }) => {
-        if (e) { e.preventDefault() }
-
-        if (!showPanel && form) {
-            setForm({ action: form.action, careerId: form.id ? form.id : '' })
+        if(helper.isEmpty(industries.data, 'array')){
+            getIndustries({ limit: 9999, page: 1, order: 'desc' })
         }
-
-        setShowPanel(!showPanel)
-
     }
 
-    const toDetails = (e: MouseEvent<HTMLElement>, id: string) => {
+    const handleReport = (e: any) => {
 
-        e.preventDefault();
-
-        const route = routil.inRoute({
-            route: 'core',
-            name: 'career-details',
-            params: [{ type: 'url', name: 'details', value: id }]
-        });
-
-        goTo(route);
-
-    }
-
-    const pagiNext = async (e: any) => {
         if (e) { e.preventDefault() }
-        const { next } = careers.pagination;
-        await coreContext.getCareers({ limit: next.limit, page: next.page, order: 'desc' })
-        helper.scrollToTop()
+
+        if (pageSearch.hasResult) {
+            exportToCSV({ title: 'rooms', report: search.report })
+        } else {
+            // open/navigate to form
+        }
     }
 
-    const pagiPrev = async (e: any) => {
-        if (e) { e.preventDefault() }
-        const { prev } = careers.pagination;
-        await coreContext.getCareers({ limit: prev.limit, page: prev.page, order: 'desc' })
-        helper.scrollToTop()
+    const clearFilters = () => {
+        clearSearch();
+        if(statRef.current){
+            statRef.current.clear()
+        }
+        if(srhRef.current){
+            srhRef.current.clear()
+        }
+        if(indRef.current){
+            indRef.current.clear()
+        }
+    }
+
+    const toDetails = (e: any, id: string) => {
+
+        if (e) { e.preventDefault(); }
+
+        toDetailRoute(e, { id: id, route: 'core', name: 'career-details' })
+
     }
 
     return (
         <>
-            <div id="listbox" className="listbox">
 
-                <div className="header">
-                    <div className="left-halve">
-                        <SearchInput
-                            showFocus={true}
-                            autoComplete={false}
-                            size="sm"
-                            placeholder="Search Here"
-                            onChange={(e) => { }}
-                            onSearch={(e) => { }}
-                        />
-                        <span className="pdl1"></span>
-                        <Filter
-                            size="sm"
-                            position="bottom"
-                            icon={{ type: 'feather', name: 'calendar' }}
-                            items={[{ label: 'Today', value: 'today' }, { label: 'Last 7 days', value: 7 }]}
-                            onChange={(item) => { }}
-                        />
+            <ListBox>
+
+                <div className="w-full flex items-center">
+
+                    <div className={`grow flex items-center gap-x-[0.5rem] ${ search.refineType === 'search' && pageSearch.hasResult ? 'disabled-light' : '' }`}>
+                        <div className="min-w-[12%]">
+                            <Filter
+                                ref={statRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Status"
+                                position="bottom"
+                                menu={{
+                                    style: {},
+                                    search: false,
+                                    fullWidth: true,
+                                    limitHeight: 'sm'
+                                }}
+                                items={[
+                                    { label: 'Enabled', value: 'enabled' },
+                                    { label: 'Disabled', value: 'disabled' }
+                                ]}
+                                noFilter={false}
+                                onChange={async (data) => {
+                                    const { isEnabled, ...rest } = filters;
+                                    await filterResource({
+                                        resource: 'careers',
+                                        paginate: 'relative',
+                                        payload: {
+                                            isEnabled: data.value === 'enabled' ? true : false,
+                                            ...rest
+                                        }
+                                    })
+
+                                    setFilters({ ...filters, isEnabled: data.value === 'enabled' ? true : false })
+                                }}
+                            />
+                        </div>
+                        <div className={`min-w-[14%] ${industries.loading ? 'disabled-light' : ''}`}>
+                            
+                            <Filter
+                                ref={indRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Industry"
+                                position="bottom"
+                                menu={{
+                                    style: {},
+                                    search: true,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    industries.count > 0 ?
+                                    industries.data.map((x: Industry) => {
+                                        return {
+                                            label: helper.capitalizeWord(x.name),
+                                            value: x._id
+                                        }
+                                    }):[]
+                                }
+                                noFilter={false}
+                                onChange={async (data) => {
+
+                                    const { industryId, ...rest } = filters;
+                                    await filterResource({
+                                        resource: 'careers',
+                                        paginate: 'relative',
+                                        payload: {
+                                            industryId: data.value,
+                                            ...rest
+                                        }
+                                    })
+
+                                    setFilters({ ...filters, industryId: data.value })
+                                }}
+                            />
+                        </div>
                     </div>
-                    <div className="right-halve">
-                        <Button
-                            text="Add New"
-                            type="primary"
+
+                    <div className="ml-auto min-w-[25%] flex items-center gap-x-[0.6rem]">
+                        <SearchInput
+                            ref={srhRef}
                             size="xsm"
-                            loading={false}
-                            disabled={false}
-                            fontSize={14}
-                            lineHeight={16}
-                            className="add-new-btn"
-                            icon={{
-                                enable: true,
-                                name: 'plus',
-                                size: 20,
-                                loaderColor: ''
+                            showFocus={true}
+                            placeholder="Search"
+                            isError={false}
+                            hasResult={pageSearch.hasResult}
+                            readonly={pageSearch.hasResult}
+                            className=""
+                            onChange={(e) => setPageSearch({ ...pageSearch, key: e.target.value.trim() })}
+                            onSearch={async (e) => {
+                                if (pageSearch.hasResult) {
+                                    clearFilters()
+                                } else {
+                                    await searchResource({
+                                        resource: 'careers',
+                                        key: pageSearch.key,
+                                        paginate: 'relative'
+                                    });
+                                }
                             }}
-                            onClick={(e) => togglePanel(e, { action: 'add-resource' })}
                         />
-                        <span className="pdl"></span>
+                        {
+                            pageSearch.hasResult &&
+                            <Button
+                                type="ghost"
+                                semantic="error"
+                                size="xsm"
+                                className="form-button"
+                                text={{
+                                    label: "Clear",
+                                    size: 13,
+                                    weight: 'regular'
+                                }}
+                                reverse="row"
+                                onClick={(e) => {
+                                    clearFilters()
+                                }}
+                            />
+                        }
                         <Button
-                            text="Export"
                             type="ghost"
+                            semantic="normal"
                             size="xsm"
-                            loading={false}
-                            disabled={false}
-                            fontSize={14}
-                            lineHeight={16}
-                            className="export-btn"
-                            icon={{
-                                enable: false,
+                            className="form-button"
+                            text={{
+                                label: "Export",
+                                size: 13,
+                                weight: 'regular'
                             }}
+                            reverse="row"
                             onClick={(e) => { }}
                         />
                     </div>
+
                 </div>
 
-                <div className="ui-separate-small"></div>
+                <Divider show={false} />
 
-                <div className="body">
+                <div className="w-full">
 
                     {
-                        careers.loading &&
-                        <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
-                            <span className="loader lg primary"></span>
-                        </EmptyState>
+                        (careers.loading || search.loading) &&
+                        <>
+
+                            <EmptyState className="min-h-[50vh]" noBound={true}>
+                                <span className="loader lg primary"></span>
+                            </EmptyState>
+                        </>
                     }
 
                     {
-                        !careers.loading &&
-                        <div className="tablebox responsive">
+                        !careers.loading && !search.loading &&
+                        <>
+                            <TableBox>
 
-                            {
-                                careers.data.length === 0 &&
-                                <EmptyState bgColor='#f7f9ff' size='md' bound={true} >
-                                    <span className={`ts-icon terra-link`}>
-                                        <i className='path1 fs-28'></i>
-                                        <i className='path2 fs-28'></i>
-                                    </span>
-                                    <div className='font-hostgro mrgb1 fs-14 ui-line-height mx-auto pas-950'>{careers.message}</div>
-                                </EmptyState>
-                            }
+                                {
+                                    careers.data.length === 0 &&
+                                    <EmptyState className="min-h-[50vh]" noBound={true}>
+                                        <span className="font-rethink pag-600 text-[13px]">Careers will appear here</span>
+                                    </EmptyState>
+                                }
 
-                            {
-                                careers.data.length > 0 &&
-                                <table className="table" style={{ borderCollapse: 'collapse' }}>
-
-                                    <TableHead
-                                        items={[
-                                            { label: 'Date Created' },
-                                            { label: 'Name' },
-                                            { label: 'Label' },
-                                            { label: 'Code' },
-                                            { label: 'Fields', className: 'ui-text-center' },
-                                            { label: 'Skills', className: 'ui-text-center' },
-                                            { label: 'Status' },
-                                            { label: 'Action', className: 'ui-text-center' }
-                                        ]}
-                                    />
-
-                                    <tbody>
-
+                                {
+                                    careers.data.length > 0 &&
+                                    <>
                                         {
-                                            careers.data.map((career: Career, index) =>
-                                                <Fragment key={career._id}>
-                                                    <tr className="table-row">
-                                                        <CellData fontSize={13} className="wp-15" onClick={(e) => toDetails(e, career._id)} render={helper.formatDate(career.createdAt, 'basic')} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} render={helper.capitalizeWord(career.name)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} render={helper.capitalizeWord(career.label)} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="ui-upcase" render={career.code} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="ui-upcase ui-text-center" render={career.fields.length} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="ui-upcase ui-text-center" render={career.skills.length} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} className="" status={{ enable: true, type: 'enabled', value: career.isEnabled }} render={<></>} />
-                                                        <CellData fontSize={13} onClick={(e) => toDetails(e, career._id)} render={
-                                                            <div className="popout-wrapper">
-                                                                <Popout
-                                                                    position="left"
-                                                                    items={[
-                                                                        { label: 'Edit', value: 'edit', icon: { name: 'edit', size: 16, type: 'polio' }, onClick: (e) => toDetails(e, career._id) },
-                                                                        { label: 'Delete', value: 'delete', icon: { name: 'trash', type: 'feather' }, onClick: (e) => { } }
-                                                                    ]}
-                                                                />
-                                                            </div>
-                                                        } />
-                                                    </tr>
-                                                </Fragment>
-                                            )
+                                            search.count < 0 &&
+                                            <>
+                                                <EmptyState className="min-h-[30vh]" noBound={true} style={{ backgroundColor: '#fffafa' }}>
+                                                    <div className="font-rethink par-700 text-[14px] mb-[0.35rem]">No results found for {pageSearch.key}</div>
+                                                    <Button
+                                                        type="ghost"
+                                                        semantic="error"
+                                                        size="xxsm"
+                                                        className="form-button"
+                                                        text={{
+                                                            label: "Clear",
+                                                            size: 13,
+                                                            weight: 'regular'
+                                                        }}
+                                                        reverse="row"
+                                                        onClick={(e) => {
+                                                            clearFilters()
+                                                        }}
+                                                    />
+                                                </EmptyState>
+                                            </>
                                         }
 
-                                    </tbody>
+                                        <Table className={`${search.count < 0 ? 'disabled' : ''}`}>
 
-                                </table>
-                            }
+                                            <TableHeader
+                                                items={[
+                                                    { label: '#' },
+                                                    { label: 'Date Created', className: 'w-[18%]' },
+                                                    { label: 'Name' },
+                                                    { label: 'Code' },
+                                                    { label: 'Fields' },
+                                                    { label: 'Skills' },
+                                                    { label: 'Status', className: 'w-[12%]' },
+                                                    { label: 'Action', className: 'text-center w-[8%]' }
+                                                ]}
+                                            />
 
-                        </div>
+                                            <TableBody>
+
+                                                {
+                                                    pageSearch.hasResult &&
+                                                    search.data.map((career: Career, index) =>
+                                                        <Fragment key={career._id}>
+                                                            <TableRow>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{helper.formatDate(career.createdAt, 'basic')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{helper.capitalizeWord(career.name)}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{career.code}</CellData>
+                                                                <CellData className="">{career.fields.length} Fields</CellData>
+                                                                <CellData className="">{career.skills.length} Skills</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>
+                                                                    <Badge
+                                                                        type={career.isEnabled ? 'green' : 'orange'}
+                                                                        size="xsm"
+                                                                        label={career.isEnabled ? 'Enabled' : 'Disabled'}
+                                                                        upper={true}
+                                                                    />
+                                                                </CellData>
+                                                                <CellData className="text-center">
+                                                                    <Popout
+                                                                        ref={null}
+                                                                        className='la-filter'
+                                                                        position={index + 1 === careers.data.length ? "top-right" : "bottom-right"}
+                                                                        menu={{
+                                                                            style: {},
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                    />
+                                                                </CellData>
+                                                            </TableRow>
+                                                        </Fragment>
+                                                    )
+                                                }
+
+                                                {
+                                                    !pageSearch.hasResult &&
+                                                    careers.data.map((career: Career, index) =>
+                                                        <Fragment key={career._id}>
+                                                            <TableRow>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{helper.formatDate(career.createdAt, 'basic')}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{helper.capitalizeWord(career.name)}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>{career.code}</CellData>
+                                                                <CellData className="">{career.fields.length} Fields</CellData>
+                                                                <CellData className="">{career.skills.length} Skills</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, career._id)}>
+                                                                    <Badge
+                                                                        type={career.isEnabled ? 'green' : 'orange'}
+                                                                        size="xsm"
+                                                                        label={career.isEnabled ? 'Enabled' : 'Disabled'}
+                                                                        upper={true}
+                                                                    />
+                                                                </CellData>
+                                                                <CellData className="text-center">
+                                                                    <Popout
+                                                                        ref={null}
+                                                                        className='la-filter'
+                                                                        position={index + 1 === careers.data.length ? "top-right" : "bottom-right"}
+                                                                        menu={{
+                                                                            style: {},
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                    />
+                                                                </CellData>
+                                                            </TableRow>
+                                                        </Fragment>
+                                                    )
+                                                }
+
+                                            </TableBody>
+
+                                        </Table>
+                                    </>
+                                }
+
+
+                            </TableBox>
+                        </>
                     }
 
 
-                </div>
-
-                <div className="ui-separate-small"></div>
-
-                <div className={`footer pdb2 ${careers.loading ? 'disabled-light' : ''}`}>
-
-                    <div className="left-halve">
-                        <Filter
-                            size="xsm"
-                            position="top"
-                            noFilter={false}
-                            placeholder={LIMIT.toString()}
-                            icon={{ type: 'feather', name: 'chevron-down' }}
-                            items={[{ label: '10', value: 10 }, { label: '15', value: 15 }, { label: '25', value: 25 }, { label: '45', value: 45 }, { label: '50', value: 50 }]}
-                            onChange={(item) => { }}
-                        />
-                        <div className="pdl1">
-                            <span className="fs-13 pas-950">Displaying {careers.count} careers on page {helper.getCurrentPage(careers.pagination)}</span>
-                        </div>
-                    </div>
-
-                    <div className="right-halve ui-text-right">
-                        <RoundButton
-                            size="rg"
-                            icon={<Icon type="feather" name="chevron-left" clickable={false} size={16} />}
-                            className={`${careers.pagination.prev && careers.pagination.prev.limit ? '' : 'disabled'}`}
-                            clickable={true}
-                            onClick={(e) => pagiPrev(e)}
-                        />
-                        <span className="pdl"></span>
-                        <RoundButton
-                            size="rg"
-                            icon={<Icon type="feather" name="chevron-right" clickable={false} size={16} />}
-                            className={`${careers.pagination.next && careers.pagination.next.limit ? '' : 'disabled'}`}
-                            clickable={true}
-                            onClick={(e) => pagiNext(e)}
-                        />
-                    </div>
 
                 </div>
 
-            </div>
+                <Divider show={false} />
 
-            <CareerForm
-                show={showPanel}
-                closeForm={togglePanel}
-                type={form.action}
-                careerId={form.careerId}
-                display="table"
-                title={form.action === 'add-resource' ? 'Create Career' : 'Edit Career'}
-            />
+                <TableFooter
+                    title="Careers"
+                    type={type}
+                    resource={resource || 'careers'}
+                    resourceId={resourceId}
+                    source={careers}
+                    limit={25}
+                    onChange={
+                        type === 'self' ? getCareers : getResourceCareers
+                    }
+                />
+
+
+            </ListBox>
+
         </>
     )
-
 };
 
 export default CareerList;

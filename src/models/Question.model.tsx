@@ -41,7 +41,7 @@ interface Question {
 
     // relationships
     createdBy: User | any,
-    topic: Topic | any,
+    topics: Array<Topic | any>,
     career: Career | any,
     fields: Array<Field | any>,
     skills: Array<Skill | any>

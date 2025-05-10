@@ -1,29 +1,28 @@
-import React, { useEffect, useState, MouseEvent } from "react"
+import React, { useEffect, useState, useContext } from "react"
+import Divider from "../../components/partials/Divider";
+import Alert from "../../components/partials/ui/AlertError";
+import { IAlert } from "../../utils/interfaces.util";
+import useGoTo from "../../hooks/useGoTo";
+import FormField from "../../components/partials/inputs/FormField";
 import TextInput from "../../components/partials/inputs/TextInput";
 import PasswordInput from "../../components/partials/inputs/PasswordInput";
 import Button from "../../components/partials/buttons/Button";
 import LinkButton from "../../components/partials/buttons/LinkButton";
-import helper from "../../utils/helper.util";
-import { IAlert } from "../../utils/interfaces.util";
-import AxiosService from "../../services/axios.service";
-import { PasswordType, UserEnumType } from "../../utils/enums.util";
-import storage from "../../utils/storage.util";
-import CookieService from "../../services/cookie.service";
-import { useNavigate } from 'react-router-dom'
-import Alert from "../../components/partials/alerts/Alert";
+import useAuth from "../../hooks/app/useAuth";
 
-const Login = ({ }) => {
+const LoginPage = ({ }) => {
 
-    const navigate = useNavigate()
+    const { goTo } = useGoTo()
+    const { login } = useAuth()
 
-    const [login, setLogin] = useState({
+    const [loginData, setLoginData] = useState({
         email: '',
         password: '',
         method: 'email',
-        error: ''
     })
     const [loading, setLoading] = useState<boolean>(false);
     const [alert, setAlert] = useState<IAlert>({
+        name: '',
         type: 'success',
         show: false,
         message: ''
@@ -33,70 +32,26 @@ const Login = ({ }) => {
 
     }, [])
 
-    const handleLogin = async (e: MouseEvent<HTMLAnchorElement>) => {
+    const handleLogin = async (e: any) => {
 
-        e.preventDefault();
+        if (e) { e.preventDefault(); }
 
-        if (!login.email) {
-            setAlert({ ...alert, type: 'error', show: true, message: 'email is required' });
-            setLogin({ ...login, error: 'email' })
-        } else if (!login.password) {
-            setAlert({ ...alert, type: 'error', show: true, message: 'password is required' });
-            setLogin({ ...login, error: 'password' })
+        if (!loginData.email) {
+            setAlert({ ...alert, type: 'error', show: true, name: 'email', message: 'email is required' });
+        } else if (!loginData.password) {
+            setAlert({ ...alert, type: 'error', show: true, name: 'password', message: 'password is required' });
         } else {
 
-            setLoading(true)
-            const response = await AxiosService.call({
-                type: 'default',
-                method: 'POST',
-                path: '/auth/login',
-                payload: { email: login.email, password: login.password, method: login.method }
-            });
+            setLoading(true);
+
+            const response = await login({
+                email: loginData.email,
+                password: loginData.password,
+                method: loginData.method as any
+            })
 
             if (!response.error) {
-
-                if (response.status === 200) {
-
-                    if (response.data.isUser && response.data.isActive) {
-
-                        if (response.data.userType === UserEnumType.SUPER || response.data.userType === UserEnumType.ADMIN) {
-
-                            // store auth credentials
-                            storage.storeAuth(response.token!, response.data._id);
-
-                            if (response.data.passwordType === PasswordType.SELF || response.data.passwordType === PasswordType.SELF_CHANGED) {
-
-                                CookieService.setData({
-                                    key: 'userType',
-                                    payload: response.data.userType,
-                                    expireAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
-                                    path: '/'
-                                })
-
-                                navigate('/dashboard')
-
-                            }
-
-                            if (response.data.passwordType === PasswordType.GENERATED) {
-
-                            }
-
-                        } else {
-                            setAlert({ ...alert, type: 'error', show: true, message: 'incorrect login details' });
-                            AxiosService.logout() // logout
-                        }
-
-                    } else {
-                        setAlert({ ...alert, type: 'error', show: true, message: 'account currently inactive.' });
-                        AxiosService.logout() // logout
-                    }
-
-                }
-
-                if (response.status === 206) {
-
-                }
-
+                goTo('/dashboard')
             }
 
             if (response.error) {
@@ -104,9 +59,9 @@ const Login = ({ }) => {
                 setLoading(false)
 
                 if (response.errors.length > 0) {
-                    setAlert({ ...alert, type: 'error', show: true, message: response.errors.join(',') });
+                    setAlert({ ...alert, type: 'error', show: true, name: '', message: response.errors.join(',') });
                 } else {
-                    setAlert({ ...alert, type: 'error', show: true, message: response.message });
+                    setAlert({ ...alert, type: 'error', show: true, name: '', message: response.message });
                 }
 
             }
@@ -114,95 +69,97 @@ const Login = ({ }) => {
         }
 
         setTimeout(() => {
-            setAlert({ ...alert, show: false });
-            setLogin({ ...login, error: '' })
+            setAlert({ ...alert, show: false, name: '' });
         }, 2000)
 
     }
 
     return (
         <>
-            <section className="auth-page auth-login">
+            <section className="auth-page w-full h-[100vh] flex gap-x-0">
 
-                <div className="halve left-halve ui-relative">
+                <div className="left-halve w-[45%] px-[1.5rem] py-[1.5rem] h-full flex items-center flex-col pt-[5rem]">
 
-                    <div className="logo-box">
-                        <img src="../../../images/assets/logo.svg" className="logo" alt="logo.svg" />
+                    <div className="w-full flex items-center justify-center min-h-[100px]">
+                        <img src="../../../images/assets/logo.svg" className="w-[160px]" alt="logo.svg" />
                     </div>
 
-                    <div className="auth-caption ui-text-center">
-                        <h3 className="font-hostgro-medium fs-20 color-black mrgb0">Welcome back!</h3>
-                        <div className="mrgb"></div>
-                        <p className="mrgb0 fs-14 pag-700">Login to your admin account</p>
-                    </div>
+                    <div className="w-[100%]">
 
-                    <div className="ui-separate small"></div>
+                        <div className="text-center">
+                            <h3 className="font-rethink-medium text-[20px] pas-950">Welcome back!</h3>
+                            <p className="mb-0 font-rethink text-[16px] pag-800">Login to your admin account</p>
+                        </div>
 
-                    <form className="form" onSubmit={(e) => e.preventDefault()}>
+                        <Divider show={false} />
 
-                        <div className="auth-form">
+                        <div className="w-[55%] mx-auto my-0">
 
-                            <Alert className="mrgb1" type={alert.type} show={alert.show} message={alert.message} />
+                            <Alert className="" type={alert.type} show={alert.show} message={alert.message} />
 
-                            <div className="form-field">
+                            <FormField className="mb-[0.5rem]">
                                 <TextInput
                                     type="email"
+                                    size="rg"
                                     showFocus={true}
                                     autoComplete={false}
                                     placeholder="Ex. you@example.com"
-                                    isError={login.error === 'email' ? true : false}
+                                    isError={alert.name === 'email' ? true : false}
                                     label={{
                                         required: true,
                                         fontSize: 14,
                                         title: "Email address"
                                     }}
-                                    onChange={(e) => { setLogin({ ...login, email: e.target.value }) }}
+                                    onChange={(e) => { setLoginData({ ...loginData, email: e.target.value }) }}
                                 />
-                            </div>
+                            </FormField>
 
-                            <div className="form-field">
+                            <FormField className="mb-[1rem]">
                                 <PasswordInput
                                     showFocus={true}
                                     autoComplete={false}
-                                    placeholder="Type Here"
-                                    isError={login.error === 'password' ? true : false}
+                                    placeholder="••••••••"
+                                    isError={alert.name === 'password' ? true : false}
                                     label={{
                                         required: true,
                                         fontSize: 14,
                                         title: "Password"
                                     }}
-                                    onChange={(e) => { setLogin({ ...login, password: e.target.value }) }}
+                                    onChange={(e) => { setLoginData({ ...loginData, password: e.target.value }) }}
                                 />
-                            </div>
+                            </FormField>
 
-                            <div className="ui-separate-mini mrgb"></div>
+                            <Divider show={false} padding={{ top: 'pt-[0.6rem]', bottom: 'pb-[0.6rem]' }} />
 
-                            <div className="form-field">
+                            <FormField className="mb-[1rem]">
                                 <Button
-                                    text="Login"
                                     type="primary"
                                     size="md"
                                     loading={loading}
                                     disabled={false}
                                     block={true}
-                                    fontSize={15}
-                                    lineHeight={16}
                                     className="form-button"
+                                    text={{
+                                        label: "Login",
+                                        size: 15,
+                                        weight: 'semibold'
+                                    }}
                                     icon={{
                                         enable: true,
-                                        name: 'nav-arrow-right',
-                                        size: 18,
-                                        loaderColor: ''
+                                        child: <></>
                                     }}
                                     onClick={(e) => handleLogin(e)}
                                 />
-                            </div>
+                            </FormField>
 
-                            <div className="form-field ui-text-center mrgt1 pdt pdb">
+                            <FormField className="mb-[1rem] text-center pt-[1rem] pb-[1rem]">
                                 <LinkButton
-                                    text="Forgot Password?"
+                                    text={{
+                                        label: 'Forgot Password?',
+                                        className: 'text-[14px]',
+                                        weight: 'medium'
+                                    }}
                                     disabled={false}
-                                    lineHeight={16}
                                     loading={false}
                                     icon={{
                                         enable: false
@@ -210,47 +167,22 @@ const Login = ({ }) => {
                                     url=""
                                     onClick={(e) => { }}
                                 />
-                            </div>
+                            </FormField>
 
                         </div>
 
-
-                    </form>
-
-                    <div className="ui-text-center ui-absolute auth-footer" style={{ bottom: '1.5rem' }}>
-                        <div className="font-hostgro copyright">
-                            <span className="pag-400 fs-13 pdr">
-                                Copyright&copy;{helper.currentDate().getFullYear()},
-                            </span>
-                            <LinkButton
-                                text="Concreap Technologies"
-                                disabled={false}
-                                lineHeight={16}
-                                loading={false}
-                                color="pag-400"
-                                icon={{
-                                    enable: false
-                                }}
-                                newtab={true}
-                                url="https://concreap.com"
-                            />
-                        </div>
                     </div>
 
                 </div>
-
-                <div className="halve right-halve">
-
-                    <div className="auth-board">
+                <div className="right-halve w-[55%] pr-[1.5rem] py-[1.5rem] pl-0 h-full">
+                    <div className="w-[100%] h-[100%] rounded-[20px]" style={{ backgroundColor: '#edf0f9' }}>
 
                     </div>
-
                 </div>
 
             </section>
         </>
     )
-
 };
 
-export default Login;
+export default LoginPage;

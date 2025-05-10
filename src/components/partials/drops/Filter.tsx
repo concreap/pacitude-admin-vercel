@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useRef, CSSProperties, MouseEvent, Fragment, useImperativeHandle, ForwardedRef, forwardRef } from "react"
+import React, { useEffect, useState, forwardRef, useImperativeHandle, ForwardedRef, useRef, MouseEvent, Fragment } from "react"
 import { IFilter, IFilterItem } from "../../../utils/interfaces.util";
-import helper from "../../../utils/helper.util";
 import Icon from "../icons/Icon";
+import AvatarUI from "../ui/AvatarUI";
+import TextInput from "../inputs/TextInput";
 import { Link } from "react-router-dom";
-import LinkButton from "../buttons/LinkButton";
+import useSize from "../../../hooks/useSize";
 
 const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
     const {
-        id = helper.random(6, true),
+        id = '',
         readonly = false,
         disabled = false,
-        noFilter = false,
+        noFilter = true,
         name = 'filter-box',
         defaultValue = '',
         size = 'md',
@@ -20,26 +21,37 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
         showFocus = true,
         isError = false,
         position = 'bottom',
+        menu = {
+            style: {},
+            search: true,
+            className: 'min-w-[13rem] max-w-[16rem]',
+            fullWidth: false,
+            limitHeight: 'sm'
+        },
         icon = {
             name: 'calendar',
             type: 'feather',
-            style: {}
+            style: {},
+            child: <Icon type="feather" name="chevron-down" size={16} className="ml-auto w-[16px] h-[16px] pag-600 relative top-[0px]" />
         },
         items,
         onChange
     } = props;
 
-    const menuRef = useRef<any>(null)
+    const menuRef = useRef<any>(null);
+    const searchRef = useRef<any>(null);
+
+    const ch = useSize({ size })
 
     const [isOpen, setIsOpen] = useState<boolean>(false)
     const [selected, setSelected] = useState<IFilterItem>()
     const [item, setItem] = useState<IFilterItem>()
     const [step, setStep] = useState<number>(0);
-    const [subitems, setSubItems] = useState<Array<{ label: string, value: string }>>([])
-
-    useEffect(() => {
-
-    }, [])
+    const [search, setSearch] = useState<Array<IFilterItem>>([]);
+    const [selectedDate, setSelectedDate] = useState({
+        start: '',
+        end: ''
+    })
 
     useEffect(() => {
 
@@ -62,19 +74,16 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
     }, [])
 
     useEffect(() => {
+        handleAutoSelect()
+    }, [])
 
-        if (defaultValue) {
-            const item = items.find((x) => x.value === defaultValue);
-            if (item) {
-                setSelected(item)
-            }
+    const cc = () => {
+
+        let result: string = `filter border bdr-pag-200 min-w-[60px] ${isError ? 'bdr-par-600 color-red' : ''} text-[13px] ${showFocus ? 'bdrf-pacb-400 bdrh-pacb-600' : ''} ${disabled ? 'disabled-light' : ''}`;
+
+        if (menu.fullWidth) {
+            result = result + ` full-width`
         }
-
-    }, [defaultValue])
-
-    const computeClass = () => {
-
-        let result: string = `filter ${isError ? 'error' : ''} fs-14 ${showFocus ? 'show-focus' : ''} ${disabled ? 'disabled-light' : ''}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -84,16 +93,38 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
     }
 
-    const iconSize = (): number => {
-        let result: number = 20;
+    const cmh = () => {
+        let result = 'max-h-[170px] overflow-y-scroll scrollbar-hide';
 
-        if (size === 'md') {
-            result = 20;
-        } else if (size === 'sm') {
-            result = 16
+        if (menu.limitHeight) {
+
+            switch (menu.limitHeight) {
+                case 'sm':
+                    result = 'max-h-[130px] overflow-y-scroll scrollbar-hide'
+                    break;
+                case 'rg':
+                case 'md':
+                    result = 'max-h-[220px] overflow-y-scroll scrollbar-hide'
+                    break;
+                default:
+                    result = 'max-h-[170px] overflow-y-scroll scrollbar-hide'
+                    break;
+            }
+
         }
 
         return result;
+    }
+
+    const handleAutoSelect = () => {
+
+        if (defaultValue) {
+            const item = items.find((x) => x.value === defaultValue);
+            if (item) {
+                setSelected(item)
+            }
+        }
+
     }
 
     const selectItem = (e: MouseEvent<HTMLAnchorElement>, value: any, subvalue?: string) => {
@@ -101,52 +132,21 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
         const item = items.find((x) => x.value === value);
 
-        if (item && step === 0 && item.subitems && item.subitems.length > 0) {
+        if (item) {
 
-            setSubItems(item.subitems!);
-            setItem(item);
-            setStep(1);
-
-        } else if (item && item.subitems && step === 1 && subvalue) {
-
-            const subitem = item.subitems.find((x) => x.value === subvalue);
-
-            if (subitem) {
-                setSelected(subitem)
-                onChange({ ...subitem, item: item });
-            } else {
-                setSelected(undefined)
-            }
-
+            setSelected(item)
+            onChange(item);
             setIsOpen(false)
-
-        } else {
-
-            if (item) {
-                setSelected(item)
-                onChange(item);
-            } else {
-                setSelected(undefined)
+            setSearch([])
+            if (searchRef.current) {
+                searchRef.current.clear()
             }
-
-            setIsOpen(false)
-
-        }
-
-
-
-    }
-
-    const toggleStep = (e: any) => {
-        if (e) { e.preventDefault() }
-
-        if (step === 0) {
-            setStep(1)
         } else {
-            setStep(0);
-            setItem(undefined);
             setSelected(undefined)
+            setIsOpen(false)
+            setSearch([])
         }
+
     }
 
     const toggleMenu = (e: any) => {
@@ -161,6 +161,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
         setItem(undefined)
         setSelected(undefined)
         setStep(0)
+        setSearch([])
     }
 
     const handleReset = (e: any) => {
@@ -168,6 +169,31 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
         setItem(undefined)
         setSelected(undefined)
         setStep(0)
+    }
+
+    const handleSearch = (value: string) => {
+
+        let currentList = items;
+        let newList = [];
+
+
+        if (value !== '') {
+            
+            newList = currentList.filter((item: IFilterItem) => {
+                const n = item.label.toLowerCase();
+                const v = value.toLowerCase();
+                return n.includes(v)
+
+            });
+
+        } else {
+            newList = currentList;
+        }
+
+        // console.log(newList)
+
+        setSearch(newList)
+
     }
 
     // expose child component functions to parent component
@@ -179,84 +205,107 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
     return (
         <>
-            <div className={computeClass()}>
+            <div className={cc()}>
 
-                <div onClick={(e) => toggleMenu(e)} className={`selected ${size}`}>
-                    <span
-                        className="font-hostgro fs-14 ui-relative pdr1"
-                        style={{ top: '1px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
-                    >
-                        {selected && selected.label && <> {selected.label} </>}
-                        {!selected && <> {placeholder} </>}
-                    </span>
-                    <Icon
-                        type={icon.type}
-                        name={icon.name}
-                        size={iconSize()}
-                        clickable={false}
-                        position="relative"
-                        className="icon"
-                        style={icon.style}
-                    />
+                <div onClick={(e) => toggleMenu(e)} className={`selected ${ch.h}`}>
+                    {!selected && <span className="text-[13px] font-rethink pag-600 relative pr-[0.5rem] truncate top-[0px]">{placeholder}</span>}
+                    {
+                        selected &&
+                        <>
+                            <div className="flex items-center w-[95%]">
+                                {selected.image && <> <AvatarUI url={selected.image} /> <span className="pl-[0.5rem]"></span> </>}
+                                <span className="text-[13px] font-rethink pag-600 relative pr-[0.5rem] truncate top-[0px]">{selected.label}</span>
+                            </div>
+                        </>
+                    }
+                    
+                    {icon.child}
                 </div>
 
-                <div ref={menuRef} className={`menu ${isOpen ? 'open' : 'close'} ${position}`}>
+                <div ref={menuRef} className={`menu menu-list ${isOpen ? 'open' : 'close'} ${position}`} style={menu.style}>
+
                     {
                         items.length === 0 &&
                         <div className="empty">
-                            <span className="fs-15 lag-500">No Items</span>
+                            <span className="text-[14px] font-rethink pag-600">No Items</span>
                         </div>
                     }
                     {
                         items.length > 0 &&
                         <>
-                            {
-                                noFilter &&
-                                <Link onClick={(e) => selectItem(e, 'no-filter')} to="" className="filter-item">
-                                    <span className="fs-14 lag-800">No Filter</span>
-                                </Link>
-                            }
 
                             {
-                                step === 0 &&
-                                items.map((item, index) =>
-                                    <Fragment key={`${item.value}-${index + 1}`}>
-                                        <Link onClick={(e) => selectItem(e, item.value)} to="" className="filter-item">
-                                            <span className="fs-14 lag-800">{item.label}</span>
-                                        </Link>
-                                    </Fragment>
-                                )
+                                menu.search &&
+                                <div className="pb-[1rem]">
+                                    <TextInput
+                                        ref={searchRef}
+                                        type="text"
+                                        size="xsm"
+                                        icon={{
+                                            enable: true,
+                                            position: 'right',
+                                            child: <Icon name="search" className="pag-600 top-[2px]" type="feather" size={16} />
+                                        }}
+                                        onChange={(e) => handleSearch(e.target.value)}
+                                    />
+                                </div>
                             }
 
-                            {
-                                step === 1 && item &&
-                                subitems.length > 0 &&
-                                <>
-                                    <div className="mrgb">
-                                        <Icon
-                                            type="polio"
-                                            name={'arrow-left'}
-                                            size={18}
-                                            clickable={true}
-                                            position="relative"
-                                            style={{ top: '1px' }}
-                                            className="ui-ml-auto"
-                                            onClick={(e) => toggleStep(e)}
-                                        />
-                                    </div>
-                                    <div className="sub-filter-list">
-                                        {
-                                            subitems.map((subitem, index) =>
-                                                <Fragment key={`${subitem.value}-${index + 1}`}>
-                                                    <Link onClick={(e) => selectItem(e, item.value, subitem.value)} to="" className="filter-item">
-                                                        <span className="fs-14 lag-800">{subitem.label}</span>
-                                                    </Link>
-                                                </Fragment>
-                                            )
-                                        }
-                                    </div>
-                                </>
-                            }
+                            <div className={`inner ${cmh()}`}>
+
+                                {
+                                    noFilter &&
+                                    <Link onClick={(e) => selectItem(e, 'no-filter')} to="" className="filter-item">
+                                        <span className="text-[13px] font-rethink pag-600">No Filter</span>
+                                    </Link>
+                                }
+
+                                {
+                                    search.length > 0 &&
+                                    search.map((item, index) =>
+                                        <Fragment key={`${item.value}-${index + 1}`}>
+                                            <Link onClick={(e) => selectItem(e, item.value)} to="" className={`filter-item ${menu.fullWidth ? '' : menu.className}`}>
+                                                {
+                                                    item.image &&
+                                                    <>
+                                                        <AvatarUI url={item.image} />
+                                                        <span className="pl-[0.5rem]"></span>
+                                                    </>
+                                                }
+                                                <span className="text-[13px] font-rethink pag-600">{item.label}</span>
+
+                                                {
+                                                    selected && selected.value === item.value &&
+                                                    <Icon name="check" className="pacb-800 ml-auto" type="feather" size={16} />
+                                                }
+                                            </Link>
+                                        </Fragment>
+                                    )
+                                }
+
+                                {
+                                    search.length === 0 &&
+                                    items.map((item, index) =>
+                                        <Fragment key={`${item.value}-${index + 1}`}>
+                                            <Link onClick={(e) => selectItem(e, item.value)} to="" className={`filter-item ${menu.fullWidth ? '' : menu.className}`}>
+                                                {
+                                                    item.image &&
+                                                    <>
+                                                        <AvatarUI url={item.image} />
+                                                        <span className="pl-[0.5rem]"></span>
+                                                    </>
+                                                }
+                                                <span className="text-[13px] font-rethink pag-600">{item.label}</span>
+                                                {
+                                                    selected && selected.value === item.value &&
+                                                    <Icon name="check" className="pacb-800 ml-auto" type="feather" size={16} />
+                                                }
+                                            </Link>
+                                        </Fragment>
+                                    )
+                                }
+
+                            </div>
 
                         </>
 

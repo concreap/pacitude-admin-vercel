@@ -12,8 +12,8 @@ const appRoutes: Array<IRoute> = [
     },
 
     {
-        name: 'components',
-        url: '/components',
+        name: 'render',
+        url: '/render',
         isAuth: false,
         params: [],
         content: {}

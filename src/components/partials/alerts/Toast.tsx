@@ -17,7 +17,21 @@ const Toast = (props: IToast) => {
 
     }, [])
 
-    const computeColors = (type: any) => {
+    const cc = () => {
+        let result = `fixed z-[5000] w-[300px] min-h-[68px] py-[0.55rem] px-[0.95rem] rounded-[8px] shadow-toast top-0 mr-[2rem] ml-[2rem] leading-[20px]`
+
+        result = result + ` ${cp()}`
+
+        if (show) {
+            result = result
+        } else {
+            result = result + ` hidden`
+        }
+
+        return result;
+    }
+
+    const ccl = (type: any) => {
 
         let result = {
             bg: 'bg-color-black',
@@ -56,6 +70,37 @@ const Toast = (props: IToast) => {
 
     }
 
+    const cp = () => {
+
+        let result = `top-0 mt-[3rem] right-0`
+
+        switch (position) {
+            case 'top-left':
+                result = `top-0 mt-[3rem] left-0`
+                break;
+            case 'top-right':
+                result = `top-0 mt-[3rem] right-0`
+                break;
+            case 'top-center':
+                result = `top-0 mt-[3rem] ml-[28%]`
+                break;
+            case 'bottom-left':
+                result = `bottom-0 mt-[-3rem] left-0`
+                break;
+            case 'bottom-right':
+                result = `bottom-0 mt-[-3rem] right-0`
+                break;
+            case 'bottom-center':
+                result = `bottom-0 mt-[-3rem] ml-[28%]`
+                break;
+            default:
+                result = `top-0 mt-[3rem] right-0`
+                break;
+        }
+
+        return result
+    }
+
     const handleClose = (e: any) => {
         if (e) { e.preventDefault() };
         close(e);
@@ -65,14 +110,14 @@ const Toast = (props: IToast) => {
 
     return (
         <>
-            <div className={`toast ${computeColors(type).bg} ${show && show === true ? '' : 'ui-hide'} ${position ? position : 'top-right'}`}>
+            <div className={`toast ${cc()} ${ccl(type).bg}`}>
 
-                <div className="ui-flexbox align-center">
-                    <h3 className="font-hostgro-medium fs-14 onwhite">{ title ? title : 'Notification' }</h3>
-                    <Link to="" className="ui-ml-auto" onClick={(e) => handleClose(e)}><span className="fe fe-x fs-15 onwhite"></span></Link>
+                <div className="flex items-center">
+                    <h3 className="font-rethink-medium text-[14px] color-white">{title ? title : 'Notification'}</h3>
+                    <Link to="" className="ml-auto" onClick={(e) => handleClose(e)}><span className="fe fe-x text-[15px] color-white"></span></Link>
                 </div>
 
-                <span className={`font-aeonik-medium fs-13 ${computeColors(type).color} mrgb0`}>
+                <span className={`font-rethink text-[13px] ${ccl(type).color} mb-0`}>
                     {message ? message : 'No message'}
                 </span>
 

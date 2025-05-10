@@ -1,0 +1,130 @@
+@font-face {
+    font-family: 'Uncut-Bold';
+    src: url('UncutSans-Bd.woff2') format('woff2'),
+        url('UncutSans-Bd.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Bold-Italic';
+    src: url('UncutSans-BdIt.woff2') format('woff2'),
+        url('UncutSans-BdIt.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Light';
+    src: url('UncutSans-Lt.woff2') format('woff2'),
+        url('UncutSans-Lt.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Light-Italic';
+    src: url('UncutSans-LtIt.woff2') format('woff2'),
+        url('UncutSans-LtIt.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Medium';
+    src: url('UncutSans-Md.woff2') format('woff2'),
+        url('UncutSans-Md.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Medium-Italic';
+    src: url('UncutSans-MdIt.woff2') format('woff2'),
+        url('UncutSans-MdIt.woff') format('woff');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut';
+    src: url('UncutSans-Rg.woff2') format('woff2'),
+        url('UncutSans-Rg.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Italic';
+    src: url('UncutSans-RgIt.woff2') format('woff2'),
+        url('UncutSans-RgIt.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Semibold';
+    src: url('UncutSans-SmBd.woff2') format('woff2'),
+        url('UncutSans-SmBd.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Uncut-Semibold-Italic';
+    src: url('UncutSans-SmBdIt.woff2') format('woff2'),
+        url('UncutSans-SmBdIt.woff') format('woff');
+    font-weight: 600;
+    font-style: italic;
+    font-display: swap;
+}
+
+.font-uncut-bold, .font-uncut-bold a, .font-uncut-bold span{
+    font-family: 'Uncut-Bold';
+}
+
+.font-uncut-ibold, .font-uncut-ibold a, .font-uncut-ibold span{
+    font-family: 'Uncut-Bold-Italic';
+}
+
+.font-uncut-light, .font-uncut-light a, .font-uncut-light span{
+    font-family: 'Uncut-Light';
+}
+
+.font-uncut-ilight, .font-uncut-ilight a, .font-uncut-ilight span{
+    font-family: 'Uncut-Light-Italic';
+}
+
+.font-uncut-medium, .font-uncut-medium a, .font-uncut-medium span{
+    font-family: 'Uncut-Medium';
+}
+
+.font-uncut-imedium, .font-uncut-imedium a, .font-uncut-imedium span{
+    font-family: 'Uncut-Medium-Italic';
+}
+
+.font-uncut, .font-uncut a, .font-uncut span{
+    font-family: 'Uncut';
+}
+
+.font-iuncut, .font-iuncut a, .font-iuncut span{
+    font-family: 'Uncut-Italic';
+}
+
+.font-uncut-semibold, .font-uncut-semibold a, .font-uncut-semibold span{
+    font-family: 'Uncut-Semibold';
+}
+
+.font-uncut-isemibold, .font-uncut-isemibold a, .font-uncut-isemibold span{
+    font-family: 'Uncut-Semibold-Italic';
+}
+

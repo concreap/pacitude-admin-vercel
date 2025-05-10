@@ -1,5 +1,62 @@
-import sidebarRoutes from "../routes/sidebar.route"
-import { IAIQuestion, ICollection, ICoreMetrics, IPagination, ISidebarAttrs, IToastState } from "../utils/interfaces.util"
+import sidebarRoutes from "../routes/sidebar.route";
+import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast } from "../utils/interfaces.util";
+
+const avatars = [
+    { name: 'sandra', avatar: 'https://storage.googleapis.com/pacitude-buckets/sandra.png' },
+    { name: 'femi', avatar: 'https://storage.googleapis.com/pacitude-buckets/femi.png' },
+    { name: 'vivek', avatar: 'https://storage.googleapis.com/pacitude-buckets/vivek.png' },
+    { name: 'zuri', avatar: 'https://storage.googleapis.com/pacitude-buckets/zuri.png' },
+    { name: 'minho', avatar: 'https://storage.googleapis.com/pacitude-buckets/Minho.png' },
+    { name: 'sophie', avatar: 'https://storage.googleapis.com/pacitude-buckets/sophie.png' },
+    { name: 'trab', avatar: 'https://storage.googleapis.com/pacitude-buckets/trab.png' },
+]
+
+const levels = [
+    { name: 'Novice', value: 'novice' },
+    { name: 'Beginner', value: 'beginner' },
+    { name: 'Intermediate', value: 'intermediate' },
+    { name: 'Advanced', value: 'advanced' },
+    { name: 'Professional', value: 'professional' },
+    { name: 'Expert', value: 'expert' }
+]
+
+const talents = [
+    {
+        id: '34567890',
+        avatar: 'JD',
+        firstName: 'John',
+        lastName: 'Doe',
+        name: 'John Doe'
+    },
+    {
+        id: '876544567',
+        avatar: avatars[3].avatar,
+        firstName: 'Elizabeth',
+        lastName: 'Awelayo',
+        name: 'Elizabeth Awelayo'
+    },
+    {
+        id: '54567890',
+        avatar: avatars[2].avatar,
+        firstName: 'Benjamin',
+        lastName: 'Reyes',
+        name: 'Benjamin Reyes'
+    },
+    {
+        id: '8765456789',
+        avatar: avatars[5].avatar,
+        firstName: 'Sophie',
+        lastName: 'Brent',
+        name: 'Sophie Brent'
+    },
+    {
+        id: '745678978',
+        avatar: avatars[4].avatar,
+        firstName: 'Minho',
+        lastName: 'Kwon',
+        name: 'Minho Kwon'
+    }
+]
 
 const pagination: IPagination = {
     next: { page: 1, limit: 25 },
@@ -15,73 +72,44 @@ const collection: ICollection = {
     message: 'There are no data currently'
 }
 
-const aiquestion: Array<IAIQuestion> = []
-
-// const aiquestion: Array<IAIQuestion> = [
-//     {
-//         code: '1',
-//         body: 'In the context of leadership, what distinguishes transformational leadership from transactional leadership?',
-//         answers: [
-//             { alphabet: 'a', answer: 'Transformational leaders focus solely on rewards' },
-//             { alphabet: 'b', answer: 'Transactional leaders are more inspirational' },
-//             { alphabet: 'c', answer: 'Transformational leaders inspire and motivate beyond structured tasks and any other thing assigned' },
-//             { alphabet: 'd', answer: 'Transactional leaders completely ignore team dynamics' }
-//         ],
-//         correct: 'b',
-//         difficulties: ['normal'],
-//         levels: ['beginner'],
-//         score: '2',
-//         time: {
-//             value: '1',
-//             handle: 'minute'
-//         },
-//         types: ['trivial'],
-//         fields: [],
-//     },
-//     {
-//         code: '2',
-//         body: 'How many moons are there on earth?',
-//         answers: [
-//             { alphabet: 'a', answer: '2' },
-//             { alphabet: 'b', answer: '1' },
-//             { alphabet: 'c', answer: '5' },
-//             { alphabet: 'd', answer: '6' }
-//         ],
-//         correct: 'b',
-//         difficulties: ['normal'],
-//         levels: ['beginner'],
-//         score: '2',
-//         time: {
-//             value: '1',
-//             handle: 'minute'
-//         },
-//         types: ['trivial'],
-//         fields: [],
-//     }
-// ]
-
-const sidebar: ISidebarAttrs = {
-    collapsed: true,
+const sidebar: ISidebarProps = {
+    collapsed: false,
     route: sidebarRoutes[0],
     isOpen: false,
-    subroutes: []
+    subroutes: [],
+    inroutes: []
 }
 
-const toast: IToastState = {
+const toast: IToast = {
     type: 'success',
     show: false,
     message: '',
     title: 'Feedback',
     position: 'top-right',
+    close: () => {}
 }
 
-const skillLevels = [
-    { name: 'Novice', value: 'novice' },
-    { name: 'Beginner', value: 'beginner' },
-    { name: 'Intermediate', value: 'intermediate' },
-    { name: 'Advanced', value: 'advanced' },
-    { name: 'Professional', value: 'professional' },
-    { name: 'Expert', value: 'expert' }
+// special to project
+const aiquestion: Array<IAIQuestion> = [];
+
+const metrics: IAppMetrics = {
+    loading: false,
+    message: '',
+    type: 'default',
+    resource: 'default',
+    question: {
+        total: 0, disabled: 0, enabled: 0,
+        resource: { total: 0, disabled: 0, enabled: 0 }
+    }
+}
+
+const limits: Array<{ label: string, value: number }> = [
+    { label: '5', value: 5 },
+    { label: '10', value: 10 },
+    { label: '25', value: 25 },
+    { label: '50', value: 50 },
+    { label: '100', value: 100 },
+    { label: '200', value: 200 }
 ]
 
 const difficulties = [
@@ -112,27 +140,21 @@ const allocatedTimes = [
     { name: 'Five', value: '5' }
 ]
 
-const initialMetrics: ICoreMetrics = {
-    loading: false,
-    message: '',
-    type: 'default',
-    resource: 'default',
-    question: {
-        total: 0, disabled: 0, enabled: 0,
-        resource: { total: 0, disabled: 0, enabled: 0 }
-    }
-}
-
 export {
-    pagination,
-    collection,
     sidebar,
+    avatars,
     toast,
-    aiquestion,
-    skillLevels,
-    questionTypes,
+    collection,
+    pagination,
+    talents,
+    limits,
+    levels,
     difficulties,
+    questionTypes,
     timeHandles,
     allocatedTimes,
-    initialMetrics
-}
+
+    // special to project
+    aiquestion,
+    metrics
+};

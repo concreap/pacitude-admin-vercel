@@ -1,5 +1,5 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
-import { AudioAcceptType, ButtonType, CSVAcceptType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
+import { AudioAcceptType, ButtonType, CSVAcceptType, DisabledType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, ListUIType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, RefineType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 import Question, { IQuestionTime } from "../models/Question.model";
@@ -28,7 +28,6 @@ export interface IRouteParam {
     name: string,
     value?: string
 }
-
 
 export interface IRouteItem {
     name: string,
@@ -177,6 +176,42 @@ export interface IAudioControls {
     expandView(e: any): void
 }
 
+export interface IState {
+    code: string,
+    name: string,
+    subdivision: string
+}
+
+export interface ITimezone {
+    name: string,
+    label: string,
+    displayName: string,
+    countries: Array<string>,
+    utcOffset: string,
+    utcOffsetStr: string,
+    dstOffset: string,
+    dstOffsetStr: string,
+    aliasOf: string
+}
+
+export interface ICountry {
+    name: string
+    code2: string,
+    code3: string,
+    capital: string,
+    region: string,
+    subregion: string,
+    states: Array<IState>,
+    slug: string,
+    timezones: Array<ITimezone>
+    flag: string,
+    base64: string,
+    currencyCode: string,
+    currencyImage: string,
+    phoneCode: string
+
+}
+
 export interface IHelper {
     init(type: string): void,
     scrollTo(id: string): void,
@@ -207,12 +242,12 @@ export interface IHelper {
     encodeCardNumber(num: string): string,
     monthsOfYear(val: string | number): string,
     readCountries(): Array<any>,
+    listCountries(): Array<{ code: string, name: string, phone: string }>
     sortData(data: Array<any>, filter: string): Array<any>,
     attachPhoneCode(code: string, phone: string, include: boolean): string,
     capitalizeWord(value: string): string,
     shrinkWordInString(value: string, ret: number): string,
     truncateText(text: string, max: number): string
-    joinText(arr: String[], separator?: string): string
     objectToArray(data: Object | any): Array<any>,
     displayBalance(value: number): string,
     parseInputNumber(value: string, type: 'number' | 'decimal'): number,
@@ -221,10 +256,12 @@ export interface IHelper {
     currentDate(): Date,
     getCurrentPage(data: IPagination): number;
     getInitials(value: string): string,
-    splitGenTime(value: string): { value: string, handle: string },
-    randomNum(min: number, max: number): number,
-    canNext(data: IPagination): boolean,
-    canPrev(data: IPagination): boolean
+    hyphenate(action: 'add' | 'remove', val: string): string,
+    daysFromDates(start: string, end: string): number,
+    getCountry(code: string): ICountry | null,
+    getAvatar(select: string | number): string,
+    enumToArray(data: Object, type: 'all' | 'values-only' | 'keys-only'): Array<any>,
+    statusType(status: string): SemanticType
 
 }
 
@@ -237,10 +274,11 @@ export interface IRoutil {
     resolveRouteParams(params: Array<IRouteParam>, stickTo: 'app' | 'page'): string
 }
 
-export interface IQuestionUtil {
+export interface IQuestionHelper {
     shortenRubric(question: Question, type: RubricType): string,
     rubricBadge(type: RubricType): SemanticType,
     formatTime(time: IQuestionTime): string,
+    splitGenTime(value: string): { value: string, handle: string },
 }
 
 export interface IICon {
@@ -248,8 +286,7 @@ export interface IICon {
     name: string,
     size?: number,
     position?: 'absolute' | 'relative',
-    isActive?: boolean,
-    clickable: boolean,
+    clickable?: boolean,
     url?: string,
     height?: number,
     className?: string,
@@ -267,7 +304,6 @@ export interface IPanelBox {
 }
 
 export interface ITextInput {
-    ref?: LegacyRef<HTMLInputElement>,
     type: 'text' | 'email',
     readonly?: boolean,
     name?: string,
@@ -280,15 +316,21 @@ export interface ITextInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    icon?: {
+        enable: boolean,
+        position: PositionType
+        child: ReactNode,
+        onClick?(e: any): void
+    },
     label?: {
         title: string,
         className?: string,
         required?: boolean,
         fontSize?: number
     },
+    onFocus?(e: any): void,
     onKeyUp?(e: KeyboardEvent<HTMLInputElement>): void
     onChange(e: ChangeEvent<HTMLInputElement>): void
-
 }
 
 export interface IPinInput {
@@ -310,7 +352,6 @@ export interface IPinInput {
 }
 
 export interface IPasswordInput {
-    ref?: RefObject<HTMLInputElement>
     readonly?: boolean,
     name?: string,
     id?: string
@@ -322,13 +363,19 @@ export interface IPasswordInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    disabled?: boolean
     label?: {
         title: string,
         className?: string,
         required?: boolean,
         fontSize?: number
     },
-    onKeyUp?(e: KeyboardEvent<HTMLInputElement>): void
+    icon?: {
+        enable: boolean,
+        position: PositionType
+        child: ReactNode,
+        onClick?(e: any): void
+    },
     onChange(e: ChangeEvent<HTMLInputElement>): void
 
 }
@@ -346,45 +393,47 @@ export interface ISearchInput {
     showFocus?: boolean,
     isError?: boolean,
     hasResult?: boolean,
+    disabled?: boolean
     label?: {
         title: string,
         className?: string,
         required?: boolean,
         fontSize?: number
     },
-    onSearch(e: MouseEvent<HTMLAnchorElement>): void
+    onFocus?(e: any): void,
     onChange(e: ChangeEvent<HTMLInputElement>): void
+    onSearch(e: MouseEvent<HTMLAnchorElement>): void
 }
 
 export interface ISelectInput {
+    readonly?: boolean,
     name?: string,
     id?: string
-    defaultValue?: string,
+    selected?: string,
     size?: SizeType,
     className?: string,
-    selected?: string,
+    showFocus?: boolean,
+    isError?: boolean,
     placeholder: {
         value: string,
         enable?: boolean
-    },
-    showFocus?: boolean,
-    readonly?: boolean,
-    isError?: boolean,
-    label?: {
-        title: string,
-        className?: string,
-        required?: boolean,
-        fontSize?: number
     },
     options: Array<{
         name: string,
         value: any
     }>
+    label?: {
+        title: string,
+        className?: string,
+        required?: boolean,
+        fontSize?: number
+    },
     onSelect(e: ChangeEvent<HTMLSelectElement>): void
 }
 
 export interface ITextAreaInput {
-    ref?: RefObject<HTMLTextAreaElement>
+    rows?: number,
+    cols?: number,
     readonly?: boolean,
     name?: string,
     id?: string
@@ -396,14 +445,20 @@ export interface ITextAreaInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
-    rows?: number,
-    cols?: number,
+    icon?: {
+        enable: boolean,
+        position: PositionType
+        child: ReactNode,
+        onClick?(e: any): void
+    },
     label?: {
         title: string,
         className?: string,
         required?: boolean,
         fontSize?: number
     },
+    onFocus?(e: any): void,
+    onKeyUp?(e: KeyboardEvent<HTMLTextAreaElement>): void
     onChange(e: ChangeEvent<HTMLTextAreaElement>): void
 
 }
@@ -468,7 +523,6 @@ export interface ICountryInput {
 }
 
 export interface INumberInput {
-    ref?: RefObject<HTMLInputElement>,
     readonly?: boolean,
     name?: string,
     id?: string
@@ -483,22 +537,123 @@ export interface INumberInput {
     min?: string | number,
     max?: string | number,
     step?: string,
+    icon?: {
+        enable: boolean,
+        position: PositionType
+        child: ReactNode,
+        onClick?(e: any): void
+    },
     label?: {
         title: string,
         className?: string,
         required?: boolean,
         fontSize?: number
+    },
+    onChange(e: ChangeEvent<HTMLInputElement>): void
+
+}
+
+export interface IFilter {
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    size?: SizeType,
+    className?: string,
+    placeholder?: string,
+    showFocus?: boolean,
+    isError?: boolean,
+    position?: PositionType,
+    noFilter?: boolean,
+    disabled?: boolean,
+    icon?: {
+        type?: any,
+        name?: string,
+        style?: CSSProperties,
+        child?: ReactNode
     }
+    menu?: {
+        style?: CSSProperties,
+        search?: boolean,
+        className?: string,
+        fullWidth?: boolean,
+        limitHeight?: SizeType,
+    }
+    items: Array<IFilterItem>,
+    onChange(item: IFilterItem): void
+}
+
+export interface IFilterItem {
+    label: string,
+    value: string,
+    image?: string,
+    check?: {
+        enable: boolean
+    }
+}
+
+export interface ISearchFilter {
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    defaultValue?: string,
+    size?: SizeType,
+    className?: string,
+    placeholder?: string,
+    showFocus?: boolean,
+    isError?: boolean,
+    position?: PositionType,
+    noFilter?: boolean,
+    disabled?: boolean,
+    icon?: {
+        type?: any,
+        name?: string,
+        style?: CSSProperties,
+        child?: ReactNode
+    }
+    menu?: {
+        style?: CSSProperties,
+        search?: boolean,
+        className?: string,
+        fullWidth?: boolean,
+        limitHeight?: SizeType,
+    }
+    items: Array<ISearchFilterItem>,
+    onChange(item: ISearchFilterItem): void
+}
+export interface ISearchFilterItem {
+    label: string,
+    value: string,
+    image?: string,
+    check?: {
+        enable: boolean
+    }
+}
+
+export interface ICheckbox {
+    readonly?: boolean,
+    name?: string,
+    id?: string
+    checked?: boolean,
+    className?: string,
+    size?: SizeType,
+    style?: CSSProperties,
+    wraper?: {
+        className?: string
+    }
+    label?: {
+        title: string,
+        className?: string,
+        fontSize?: string,
+        fontWeight?: FontWeightType
+    },
     onChange(e: ChangeEvent<HTMLInputElement>): void
 
 }
 
 export interface IFileInput {
-    ref?: RefObject<HTMLInputElement>
-    readonly?: boolean,
     name?: string,
     id?: string
-    defaultValue?: string,
     value?: string,
     size?: SizeType,
     className?: string,
@@ -506,18 +661,21 @@ export interface IFileInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
-    file: {
-        name: string,
-        type: string,
-        accept?: 'image' | 'file' | 'csv' | 'pdf' | 'zip'
-    }
+    disabled?: boolean
+    accept?: FileAcceptType
     label?: {
         title: string,
         className?: string,
         required?: boolean,
         fontSize?: number
     },
-    onChange(e: ChangeEvent<HTMLInputElement>, type: string): void
+    icon?: {
+        enable: boolean,
+        position: PositionType
+        child: ReactNode,
+        onClick?(e: any): void
+    },
+    onChange(file: IFileUpload | null): void
 
 }
 
@@ -616,12 +774,12 @@ export interface IDateInput {
     onChange(calendar: ICalendar): void
 }
 
-export interface ICalendar{
-    date: string, 
+export interface ICalendar {
+    date: string,
     time: string,
-    data: { 
-        date: Date, 
-        time: ITimeProps 
+    data: {
+        date: Date,
+        time: ITimeProps
     },
 }
 
@@ -632,82 +790,63 @@ export interface ITimeProps {
     ampm: string
 }
 
-export interface IButton {
-    id?: string,
-    text: string,
-    type?: ButtonType,
-    semantic?: SemanticType,
-    size?: SizeType
-    loading?: boolean,
-    disabled?: boolean,
-    block?: boolean,
-    className?: string,
-    fontSize?: number,
-    fontWeight?: FontWeightType,
-    lineHeight?: number,
-    reverse?: FlexReverseType,
-    style?: CSSProperties,
+export interface ILinkButton {
+    text: {
+        label: string,
+        className?: string,
+        weight?: FontWeightType
+    },
+    url?: string,
     icon?: {
         enable?: boolean,
-        name?: string,
-        size?: number,
-        style?: CSSProperties
-        loaderColor?: string,
-        type?: IconFamilyType
-    },
+        child?: ReactNode
+    }
+    loading?: boolean,
+    disabled?: boolean,
+    className?: string
     onClick(e: MouseEvent<HTMLAnchorElement>): void
 }
 
-export interface ILinkButton {
+export interface IIconButton {
+    icon: {
+        size?: number,
+        className?: string,
+        name: string,
+        type: IconFamilyType
+    },
+    active?: boolean,
+    url?: string,
+    size?: string,
+    className?: string,
+    radius?: string,
+    onClick(e?: any): void
+}
+
+export interface IButton {
     id?: string,
-    text: string,
-    color?: string,
-    weight?: string,
+    text: {
+        label: string,
+        size?: number,
+        weight?: FontWeightType,
+    },
+    type?: ButtonType,
+    url?: string,
+    semantic?: SemanticType,
     size?: SizeType
+    fill?: boolean,
     loading?: boolean,
     disabled?: boolean,
+    disabledType?: DisabledType,
+    block?: boolean,
     className?: string,
-    lineHeight?: number,
-    newtab?: boolean,
+    reverse?: FlexReverseType,
+    style?: CSSProperties,
     icon?: {
-        enable?: boolean,
-        name?: string,
-        size?: number,
-        style?: CSSProperties
+        enable: boolean,
+        className?: string,
+        child: ReactNode
     },
-    url?: string,
-    onClick?(e: MouseEvent<HTMLAnchorElement>): void
-}
-
-export interface IFilter {
-    readonly?: boolean,
-    name?: string,
-    id?: string
-    defaultValue?: string,
-    size?: SizeType,
-    className?: string,
-    placeholder?: string,
-    showFocus?: boolean,
-    isError?: boolean,
-    position?: PositionType,
-    noFilter?: boolean,
-    disabled?: boolean,
-    icon?: {
-        type: IconFamilyType,
-        name: string,
-        style?: CSSProperties
-    }
-    items: Array<IFilterItem>,
-    onChange(item: ISelectedFilter): void
-}
-
-export interface IFilterItem {
-    label: string,
-    value: any,
-    subitems?: Array<{
-        label: string,
-        value: any
-    }>
+    onClick(e: MouseEvent<HTMLAnchorElement>): void
 }
 
 export interface ISelectedFilter {
@@ -717,19 +856,27 @@ export interface ISelectedFilter {
 }
 
 export interface IPopout {
-    ref?: RefObject<HTMLInputElement>
-    readonly?: boolean,
-    name?: string,
-    id?: string
     defaultValue?: string,
     className?: string,
+    showFocus?: boolean,
+    isError?: boolean,
     position?: PositionType,
+    noFilter?: boolean,
+    disabled?: boolean,
+    menu?: {
+        style?: CSSProperties,
+        search?: boolean,
+        className?: string,
+        fullWidth?: boolean,
+        limitHeight?: SizeType,
+    }
     items: Array<IPopoutItem>,
 }
 
 export interface IPopoutItem {
     label: string,
-    value: any,
+    value: string,
+    image?: string,
     disabled?: boolean,
     className?: string,
     icon?: {
@@ -737,10 +884,14 @@ export interface IPopoutItem {
         name: string,
         size?: number
     }
-    onClick(e: MouseEvent<HTMLAnchorElement>): void
+    check?: {
+        enable: boolean
+    }
+    onClick(e: MouseEvent<HTMLAnchorElement>, item: IPopoutItem): void
 }
 
 export interface IAlert {
+    name: string,
     type: SemanticType,
     show: boolean,
     className?: string,
@@ -754,10 +905,10 @@ export interface IToast {
     message: string,
     type: SemanticType,
     position: PositionType,
-    close(e: MouseEvent<HTMLAnchorElement>): void,
+    close(e?: MouseEvent<HTMLAnchorElement>): void,
 }
 
-export interface IToastState {
+export interface IToast {
     show: boolean,
     title?: string,
     message: string,
@@ -835,6 +986,7 @@ export interface IFileUpload {
     raw: any,
     base64: string,
     parsedSize: number,
+    sizeExt: string,
     name: string,
     size: number,
     type: string,
@@ -850,6 +1002,7 @@ export interface IFileog {
 
 export interface IListQuery {
     limit?: number,
+    paginate?: string,
     page?: number,
     select?: string,
     order?: QueryOrderType,
@@ -861,7 +1014,8 @@ export interface IListQuery {
     resource?: ResourceType,
     resourceId?: string,
     key?: string,
-    payload?: any
+    payload?: any,
+    report?: boolean
 }
 
 export interface IMetricQuery {
@@ -876,13 +1030,38 @@ export interface IMetricQuery {
     questionTypes?: Array<string>
 }
 
+export interface ICoreMetrics {
+    loading: boolean,
+    message: string,
+    type: FilterType,
+    resource?: FilterType,
+    question?: {
+        total: number,
+        enabled: number,
+        disabled: number,
+        resource: {
+            total: number,
+            enabled: number,
+            disabled: number,
+        }
+    }
+}
+
 export interface IListUI {
-    type: 'self' | 'resource',
+    type: ListUIType,
     resource?: ResourceType
     resourceId?: string,
+    subsource?: ResourceType
     headers?: Array<{ label: string, style?: CSSProperties }>,
     rows?: Array<IListUIRow>
 
+}
+
+export interface IAPIReport {
+    format: string,
+    csv?: string,
+    xml?: any,
+    pdf?: any
 }
 
 export interface IListUIRow {
@@ -908,13 +1087,22 @@ export interface IAPIKey {
     updatedAt: string
 }
 
+export interface IToastState {
+    show: boolean,
+    title?: string,
+    error?: string,
+    message: string,
+    type: SemanticType,
+    position: PositionType
+}
+
 export interface IPagination {
     next: { page: number, limit: number },
     prev: { page: number, limit: number },
 }
 
-export interface IDashboardMaster {
-    component: ReactNode,
+export interface IDashboardLayout {
+    component: any,
     title: string,
     back: boolean,
     sidebar: {
@@ -925,6 +1113,7 @@ export interface IDashboardMaster {
 export interface IAPIResponse {
     error: boolean,
     errors: Array<any>,
+    report?: IAPIReport
     count?: number,
     total?: number,
     pagination?: IPagination,
@@ -939,15 +1128,17 @@ export interface ISidebar {
     collapsed: boolean
 }
 
-export interface ISidebarAttrs {
+export interface ISidebarProps {
     collapsed: boolean,
     route: IRouteItem,
+    inroutes: Array<IInRoute>,
     subroutes: Array<IRouteItem>,
     isOpen: boolean
 }
 
 export interface ITopbar {
     pageTitle: string,
+    sticky?: boolean,
     showBack: boolean
 }
 
@@ -992,20 +1183,23 @@ export interface ICellHead {
 export interface ICellData {
     fontSize?: number,
     className?: string,
-    status?: {
-        enable: boolean,
-        type: StatusType,
-        value: boolean | string,
-    },
-    render: any,
+    style?: CSSProperties,
+    children: ReactNode,
     onClick?(e: MouseEvent<any>): void
 }
 export interface IBadge {
     type: SemanticType,
     label: string
+    display?: 'badge' | 'status',
     className?: string,
     style?: CSSProperties,
     size?: SizeType,
+    padding?: { y: number, x: number }
+    font?: {
+        weight: FontWeightType,
+        size: number
+    }
+    upper?: boolean
     close?: boolean,
     onClose?(e: any): void
 }
@@ -1040,6 +1234,8 @@ export interface IAIQuestion {
     difficulties: Array<string>,
     types: Array<string>,
     fields: Array<{ name: string, id: string }>,
+    skills: Array<{ name: string, id: string }>,
+    topics: Array<{ name: string, id: string }>,
 }
 
 export interface IAddQuestion {
@@ -1058,6 +1254,32 @@ export interface IAddQuestion {
     difficulties: Array<string>,
     types: Array<string>,
     fields: Array<string>,
+    skills: Array<string>,
+    topics: Array<string>,
+}
+
+export interface IAnswer {
+    code: string,
+    alphabet: string,
+    body: string,
+}
+
+export interface IQuestionOption {
+    answer: IAnswer,
+    type: 'option' | 'selected',
+    isActive?: boolean,
+    disabled?: boolean
+    onClick?(answer: IAnswer): void
+}
+
+export interface IDivider {
+    show?: boolean,
+    bg?: string,
+    padding?: {
+        enable?: boolean,
+        top?: string,
+        bottom?: string
+    }
 }
 
 export interface IPlaceholder {
@@ -1080,19 +1302,21 @@ export interface IPlaceholder {
 export interface IPageSearch {
     key: string,
     hasResult: boolean,
+    refine?: RefineType,
+    payload?: any,
     type: PagesearchType,
-    filters: any,
-    resource: FilterType,
-    resourceId: string
+    filters?: any,
+    resource?: ResourceType,
+    resourceId?: string
 }
 
 // contexts
 
-export interface ICoreMetrics {
+export interface IAppMetrics {
     loading: boolean,
     message: string,
-    type: FilterType,
-    resource?: FilterType,
+    type: ResourceType,
+    resource?: ResourceType,
     question?: {
         total: number,
         enabled: number,
@@ -1112,72 +1336,35 @@ export interface IClearResource {
 
 export interface ICollection {
     data: Array<any>,
+    report?: IAPIReport
     count: number,
     total: number,
     pagination: IPagination,
     loading: boolean,
-    message?: string
+    refineType?: RefineType,
+    message?: string,
+    payload?: any
 }
 
 export interface IUserContext {
-    audits: ICollection,
     users: ICollection,
-    admins: ICollection,
     user: User,
-    userDetails: User,
-    userType: UserType,
-    isSuper: boolean,
-    isAdmin: boolean,
+    userType: string,
     loading: boolean,
-    total: number,
-    count: number,
-    pagination: any,
-    response: any,
-    sidebar: ISidebarAttrs
-    getAudits(data: IListQuery): void,
-    getUser(id: string): void,
-    getUsers(limit: number, page: number): void,
-    getUserDetails(id: string): void
-    setUserType(n: string): void,
-    setSidebar(data: ISidebarAttrs): void,
-    currentSidebar(collapse: boolean): ISidebarAttrs | null,
-    getUserType(): string,
-    setUser(data: any): void,
-    unsetLoading(): void,
-    isLoggedIn(): void,
-    setResponse(data: any): void
+    sidebar: ISidebarProps,
+    toast: IToastState,
+    setToast(data: IToastState): void,
+    clearToast(): void,
+    setSidebar(data: ISidebarProps): void,
+    currentSidebar(collapse: boolean): ISidebarProps | null,
+    setUserType(type: string): void,
+    setCollection(type: string, data: ICollection): void,
+    setResource(type: string, data: any): void
+    setLoading(data: ISetLoading): void,
+    unsetLoading(data: IUnsetLoading): void,
 }
 
-export interface IGeniusContext {
-    industries: ICollection,
-    industry: Industry,
-    careers: ICollection,
-    career: Industry,
-    fields: ICollection,
-    field: Industry,
-    skills: ICollection,
-    skill: any,
-    questions: ICollection,
-    question: any,
-    topics: ICollection,
-    topic: any,
-    message: string,
-    loading: boolean,
-    total: number,
-    count: number,
-    pagination: any,
-    getIndustries(data: IListQuery): Promise<void>,
-    getCareers(data: IListQuery): Promise<void>,
-    getFields(data: IListQuery): Promise<void>,
-    getSkills(data: IListQuery): Promise<void>,
-    getQuestions(data: IListQuery): Promise<void>,
-    getTopics(data: IListQuery): Promise<void>,
-    getTopic(id: string): Promise<void>,
-    setLoading(data: ISetLoading): Promise<void>,
-    unsetLoading(data: IUnsetLoading): Promise<void>,
-}
-
-export interface ICoreContext {
+export interface IAppContext {
     industries: ICollection,
     industry: Industry,
     careers: ICollection,
@@ -1192,45 +1379,13 @@ export interface ICoreContext {
     topics: ICollection,
     topic: any,
     search: ICollection,
-    metrics: ICoreMetrics,
+    metrics: IAppMetrics,
     items: Array<any>
     message: string,
     loading: boolean,
-    total: number,
-    count: number,
-    pagination: any,
-    getIndustries(data: IListQuery): Promise<void>,
-    getIndustry(id: string): Promise<void>,
-    getCareers(data: IListQuery): Promise<void>,
-    getCareer(id: string): Promise<void>,
-    getFields(data: IListQuery): Promise<void>,
-    getField(id: string): Promise<void>,
-    getSkills(data: IListQuery): Promise<void>,
-    getSkill(id: string): Promise<void>,
-    getQuestions(data: IListQuery): Promise<void>,
-    getQuestion(id: string): Promise<void>,
-    getTopics(data: IListQuery): Promise<void>,
-    getTopic(id: string): Promise<void>,
-    setAIQuestions(data: Array<IAIQuestion>): void,
     clearResource(data: IClearResource): void,
-    setItems(data: Array<any>): void,
-    getResourceQuestions(data: IListQuery): Promise<void>,
-    getResourceQuestions(data: IListQuery): Promise<void>,
-    getResourceMetrics(data: IMetricQuery): Promise<void>,
-    setResourceMetrics(data: ICoreMetrics): Promise<void>
-    searchResource(data: IListQuery): Promise<void>,
-    filterResource(data: IListQuery): Promise<void>,
-    clearSearch(): void,
+    setCollection(type: string, data: ICollection): void,
+    setResource(type: string, data: any): void
     setLoading(data: ISetLoading): void,
     unsetLoading(data: IUnsetLoading): void,
-}
-
-export interface IResourceContext {
-    countries: Array<any>,
-    country: any,
-    toast: IToastState,
-    loading: boolean,
-    setToast(data: IToastState): void,
-    clearToast(): void,
-    getCountries(): Promise<void>
 }

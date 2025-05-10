@@ -1,9 +1,10 @@
 import $ from 'jquery';
 import moment from 'moment'
-import { IDateToday, IHelper, IPagination, IResourceContext, IRoundButton, IRoute, IRouteParam, ISidebarAttrs } from './interfaces.util';
+import { ICountry, IDateToday, IHelper, IPagination } from './interfaces.util';
 import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
-import { FormatDateType } from './types.util';
+import { FormatDateType, SemanticType } from './types.util';
+import { avatars } from '../_data/seed';
 
 const init = (type: string) => {
 
@@ -189,7 +190,7 @@ const decodeBase64 = (data: string) => {
 
 }
 
-const isEmpty = (data: any, type: 'object' | 'array') => {
+const isEmpty = (data: any, type: 'object' | 'object-all' | 'array') => {
 
     let result: boolean = false;
 
@@ -199,6 +200,22 @@ const isEmpty = (data: any, type: 'object' | 'array') => {
 
     if (type === 'array') {
         result = data.length <= 0 ? true : false;
+    }
+
+    if (type === 'object-all') {
+
+        const keys = Object.keys(data);
+        const values: Array<number> = Object.values(data)
+            .map((x: any) => x.toString())
+            .map((m) => {
+                if (!m || m === 'undefined') { return 0 } else { return 1 }
+            })
+        const vl = values.reduce((a, b) => a + b, 0);
+
+        if (keys.length === vl) {
+            result = true;
+        }
+
     }
 
     return result;
@@ -265,25 +282,16 @@ const random = (size: number = 6, isAlpha?: boolean) => {
 
 }
 
-const randomNum = (min: number, max: number): number => {
-
-    let result = 0;
-    result = Math.floor(Math.random() * max) + min;
-
-    return result;
-
-}
-
 const formatDate = (date: any, type: FormatDateType) => {
 
     let result: string = '';
 
     if (type === 'basic') {
-        result = moment(date).format('Do MMM, YYYY')
+        result = moment(date).format('MMM Do, YYYY')
     }
 
     if (type === 'datetime') {
-        result = moment(date).format('Do MMM, YYYY HH:mm:ss A')
+        result = moment(date).format('MMM Do, YYYY HH:mm:ss A')
     }
 
     if (type === 'datetime-slash') {
@@ -555,6 +563,54 @@ const readCountries = (): Array<any> => {
 
 }
 
+const listCountries = () => {
+
+    let result: Array<{ code: string, name: string, phone: string }> = [];
+    const countries: Array<ICountry> = readCountries();
+
+    if (countries.length > 0) {
+
+        result = countries.map((x) => {
+
+            let phone = x.phoneCode ? x.phoneCode : '';
+            if(x.phoneCode && x.phoneCode.includes('-')){
+                phone = '+' + x.phoneCode.substring(3)
+            }
+
+            return {
+                code: x.code2,
+                name: x.name,
+                phone: phone
+            }
+        })
+
+        result = result.filter((x) => x.phone !== '')
+
+    }
+
+    return result
+
+}
+
+const getCountry = (code: string): ICountry | null => {
+
+    let result: ICountry | null = null;
+    const countries: Array<ICountry> = readCountries();
+
+    if (countries.length > 0) {
+
+        const country = countries.find((x) => x.code2 === code);
+
+        if (country) {
+            result = country
+        }
+
+    }
+
+    return result;
+
+}
+
 const sortData = (data: Array<any>, filter: string = ''): Array<any> => {
 
     let sorted: Array<any> = [];
@@ -608,7 +664,7 @@ const capitalizeWord = (value: string): string => {
 
     if (value.includes('-')) {
 
-        const split = value.toLowerCase().split("-");
+        const split = value.split("-");
 
         for (var i = 0; i < split.length; i++) {
             split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
@@ -617,7 +673,7 @@ const capitalizeWord = (value: string): string => {
         result = split.join('-')
 
     } else {
-        const split = value.toLowerCase().split(" ");
+        const split = value.split(" ");
 
         for (var i = 0; i < split.length; i++) {
             split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
@@ -645,21 +701,6 @@ const shrinkWordInString = (value: string, ret: number): string => {
 
 const truncateText = (text: string, max: number): string => {
     return (text?.length > max) ? text.slice(0, max) + '...' : text;
-}
-
-const joinText = (arr: String[], separator?: string): string => {
-
-    let result = ''
-
-    if (separator === ',') {
-        result = arr?.join(',')
-    }
-
-    else {
-        result = arr?.join()
-    }
-
-    return result
 }
 
 const getChargebacks = (): Array<any> => {
@@ -806,30 +847,6 @@ const getCurrentPage = (data: IPagination) => {
 
 }
 
-const canNext = (data: IPagination): boolean => {
-
-    let result: boolean = false;
-
-    if (data.next && data.next.limit) {
-        result = true;
-    }
-
-    return result;
-
-}
-
-const canPrev = (data: IPagination): boolean => {
-
-    let result: boolean = false;
-
-    if (data.prev && data.prev.limit) {
-        result = true;
-    }
-
-    return result;
-
-}
-
 const getInitials = (value: string): string => {
 
     let result = '';
@@ -856,39 +873,85 @@ const getInitials = (value: string): string => {
 
 }
 
-const splitGenTime = (value: string): { value: string, handle: string } => {
+const hyphenate = (action: 'add' | 'remove', val: string) => {
 
-    let result: { value: string, handle: string } = { value: '', handle: '' };
+    let result: string = val;
 
-    const split = value.split(' ');
+    if (action === 'add') {
+        result = val.split(' ').join('-')
+    }
 
-    if (split.length === 2) {
-
-        result.value = split[0];
-
-        if (split[1].includes('s')) {
-            result.handle = split[1].substring(0, split[1].length - 1)
-        } else {
-            result.handle = split[1];
-        }
-
-    } else if (split.length > 2 && split.length === 4) {
-
-        result.value = split[0];
-
-        if (split[1].includes('s')) {
-            result.handle = split[1].substring(0, split[1].length - 1)
-        } else {
-            result.handle = split[1];
-        }
-
-    } else {
-        result.value = '1';
-        result.handle = 'minute'
+    if (action === 'remove' && val.includes('-')) {
+        result = val.split('-').join(' ')
     }
 
     return result;
 
+}
+
+const daysFromDates = (start: string, end: string): number => {
+
+    let result: number = 0;
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    result = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+
+    return result;
+
+}
+
+const getAvatar = (select: string | number): string => {
+
+    let result: string = 'no-avatar.png';
+
+    if (typeof (select) === 'string') {
+        const ava = avatars.find((x) => x.name === select);
+        if (ava) {
+            result = ava.avatar;
+        }
+    } else if (typeof (select) === 'number') {
+        result = avatars[select] ? avatars[select].avatar : 'no-avatar.png';
+    }
+
+    return result;
+
+}
+
+export const enumToArray = (data: Object, type: 'all' | 'values-only' | 'keys-only') => {
+
+    let result: Array<any> = [];
+    const list = Object.entries(data).map(([key, value]) => ({ key, value }))
+
+    if (type === 'all') {
+        result = list;
+    } else if (type === 'values-only') {
+        result = list.map((x) => x.value)
+    } else if (type === 'keys-only') {
+        result = list.map((x) => x.key)
+    }
+
+    return result;
+}
+
+const statusType = (status: string) => {
+
+    let result: SemanticType = 'info';
+
+    if (status === 'pending') {
+        result = 'warning';
+    } else if (status === 'assessed' || status === 'draft') {
+        result = 'info';
+    } else if (status === 'eligible' || status === 'active' || status === 'paid' || status === 'completed' || status === 'approved' || status === 'successful' || status === 'new') {
+        result = 'success';
+    } else if (status === 'not-eligible' || status === 'high' || status === 'overdue' || status === 'rejected') {
+        result = 'error';
+    }  else if (status === 'medium' || status === 'in-progress') {
+        result = 'ongoing';
+    }
+
+    return result;
 }
 
 const helper: IHelper = {
@@ -921,12 +984,12 @@ const helper: IHelper = {
     encodeCardNumber: encodeCardNumber,
     monthsOfYear: monthsOfYear,
     readCountries: readCountries,
+    listCountries: listCountries,
     sortData: sortData,
     attachPhoneCode: attachPhoneCode,
     capitalizeWord: capitalizeWord,
     shrinkWordInString: shrinkWordInString,
     truncateText: truncateText,
-    joinText: joinText,
     objectToArray: objectToArray,
     displayBalance: displayBalance,
     parseInputNumber: parseInputNumber,
@@ -935,10 +998,12 @@ const helper: IHelper = {
     currentDate: currentDate,
     getCurrentPage: getCurrentPage,
     getInitials: getInitials,
-    splitGenTime: splitGenTime,
-    randomNum: randomNum,
-    canNext: canNext,
-    canPrev: canPrev
+    hyphenate: hyphenate,
+    daysFromDates: daysFromDates,
+    getCountry: getCountry,
+    getAvatar: getAvatar,
+    enumToArray: enumToArray,
+    statusType: statusType
 }
 
 export default helper;
