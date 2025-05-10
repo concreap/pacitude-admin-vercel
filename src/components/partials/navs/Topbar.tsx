@@ -80,7 +80,9 @@ const Topbar = (props: ITopbar) => {
                             />
                         </div>
 
-                        <Link onClick={(e) => { setDropbar(!dropBar) }} to="" className="user-bar">
+                        <Link 
+                        onClick={(e) => { setDropbar(!dropBar) }} to="" 
+                        className="user-bar">
                             <div className="topbar-avatar ui-full-bg" style={{ backgroundImage: 'url("../../../images/assets/avatar_vivek.png")' }}>
                                 <span className="empty">OI</span>
                             </div>

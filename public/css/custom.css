@@ -1126,7 +1126,6 @@ input.error.show-focus:focus {
     min-height: 100px;
     padding: 0.55rem 0.95rem;
     border-radius: 8px;
-    min-height: 68px;
     background-color: #2196F3;
     box-shadow: 0 8px 40px 0 rgba(96, 108, 115, 0.2);
 
