@@ -53,26 +53,24 @@ const SideBar = (props: ISidebar) => {
 
         if (nav.action === 'navigate' && nav.path) {
 
-            console.log(nav)
-
             goTo(nav.path);
 
-            // setSidebar({
-            //     collapsed: collapsed,
-            //     route: route,
-            //     subroutes: sidebar.subroutes,
-            //     inroutes: sidebar.inroutes ? sidebar.inroutes : [],
-            //     isOpen: sidebar.subroutes.length > 0 ? true : false
-            // });
+            setSidebar({
+                collapsed: collapsed,
+                route: route,
+                subroutes: sidebar.subroutes,
+                inroutes: sidebar.inroutes ? sidebar.inroutes : [],
+                isOpen: sidebar.subroutes.length > 0 ? true : false
+            });
 
-            // // store current route name in local storage
-            // storage.keep('route.name', route.name);
+            // store current route name in local storage
+            storage.keep('route.name', route.name);
 
-            // if (subroute && route.name !== subroute.name) {
-            //     storage.keep('route.subroute', subroute.name);
-            // } else {
-            //     storage.deleteItem('route.subroute')
-            // }
+            if (subroute && route.name !== subroute.name) {
+                storage.keep('route.subroute', subroute.name);
+            } else {
+                storage.deleteItem('route.subroute')
+            }
 
         }
 

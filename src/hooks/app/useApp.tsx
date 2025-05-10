@@ -6,7 +6,7 @@ import { GET_CAREER, GET_CAREERS, GET_FIELD, GET_FIELDS, GET_INDUSTRIES, GET_IND
 import AxiosService from '../../services/axios.service'
 import { URL_CAREER, URL_CONFIG, URL_FIELD, URL_INDUSTRY } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
-import { pagination } from '../../_data/seed'
+import { collection, pagination } from '../../_data/seed'
 
 const useApp = () => {
 
@@ -148,6 +148,16 @@ const useApp = () => {
 
     }, [setLoading, unsetLoading, setCollection])
 
+    const clearCoreResources = useCallback(async () => {
+
+        setCollection(GET_INDUSTRIES, collection)
+        setCollection(GET_CAREERS, collection)
+        setCollection(GET_FIELDS, collection)
+        setCollection(GET_SKILLS, collection)
+        setCollection(GET_TOPICS, collection)
+
+    }, [setCollection])
+
     return {
         industries,
         careers,
@@ -157,6 +167,7 @@ const useApp = () => {
         loading,
 
         getCoreResources,
+        clearCoreResources
     }
 }
 
