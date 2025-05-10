@@ -1,98 +1,192 @@
-import React, { useEffect, useState, useRef } from "react"
-import { IFileInput } from "../../../utils/interfaces.util";
+import React, { useEffect, useState, useRef, useImperativeHandle, forwardRef, ForwardedRef } from "react"
+import { IFileInput, IFileUpload, IPasswordInput, ISearchInput, ITextInput } from "../../../utils/interfaces.util";
 import helper from "../../../utils/helper.util";
 import Icon from "../icons/Icon";
+import Fileog from "../dialogs/Fileog";
+import useSize from "../../../hooks/useSize";
 
-const FileInput = (props: IFileInput) => {
+const FileInput = forwardRef((props: IFileInput, ref: ForwardedRef<any>) => {
 
     const {
-        name, id, value, defaultValue, placeholder,
-        autoComplete, className, label, ref, file,
-        size = 'sz-md',
-        showFocus = false,
-        onChange
-    } = props
+        id,
+        name,
+        placeholder,
+        autoComplete,
+        className,
+        label,
+        isError = false,
+        size = 'rg',
+        showFocus = true,
+        accept = 'image',
+        icon = {
+            enable: false,
+            position: 'right',
+            child: <></>
+        },
+        onChange,
+    } = props;
+
+    const ch = useSize({ size })
+    const { pos } = useSize({ size, type: 'input-icon' })
 
     const [inputId, setInputId] = useState<string>(helper.random(8, true))
     const inputRef = useRef<HTMLInputElement>(null)
     const fileRef = useRef<any>(null)
+    const [file, setFile] = useState<IFileUpload | null>(null)
 
     useEffect(() => {
 
     }, [])
 
-    const labelFontSize = () => {
+    const lfs = () => {
 
-        let result: string = '12';
+        let result: string = 'text-[12px]';
 
         if (label && label.fontSize) {
-            result = label.fontSize.toString()
+            result = `text-[${label.fontSize.toString()}px]`
         }
 
         return result;
     }
 
-    const computeClass = () => {
+    const cc = () => {
 
-        let result: string = 'form-control font-manrope pas-950 fs-14';
+        let result: string = `form-control transition-all duration-250 w-full py-[0.5rem] px-[1rem] font-rethink text-[13px] border ${ch.h}`;
 
-        result = result + ` ${size} ${showFocus ? 'show-focus' : ''}`;
+        // colors, borders and focus
+        if (isError) {
+            result = result + ` par-700 bdr-par-700`
+        } else {
+            result = result + ` color-black bdr-pag-200 ${showFocus ? 'bdrf-pacb-400 bdrh-pacb-200' : ''}`
+        }
+
+        // padding
+        if (icon && icon.enable) {
+
+            if (icon.position && icon.position === 'left') {
+                result = result + ` py-[0.5rem] pl-[2.5rem] pr-[1rem]`
+            } else if (icon.position && icon.position === 'right') {
+                result = result + ` py-[0.5rem] pl-[2.5rem] pr-[1rem]`
+            }
+
+        } else {
+            result = result + ` py-[0.5rem] px-[1rem]`
+        }
 
         if (className) {
-            result = result + `${className}`
+            result = result + ` ${className}`
         }
 
         return result;
 
     }
 
-    const openDialogue = (e: any) => {
+    const cic = () => {
 
-        if (e) { e.preventDefault() }
+        let result: string = `absolute`;
 
-        if (fileRef.current) {
-            fileRef.current.click()
+        if (icon && icon.enable) {
+
+            if (icon.position === 'right') {
+                result = result + `${pos} right-[0.7rem]`
+            }
+
+            if (icon.position === 'left') {
+                result = result + `${pos} left-[0.7rem]`
+            }
+
+        }
+
+        return result;
+    }
+
+    const ceye = () => {
+
+        let result: string = `absolute`;
+        result = result + `${pos} right-[0.7rem]`
+
+        return result;
+    }
+
+    const handleClear = () => {
+        if (inputRef.current) {
+            inputRef.current.value = ''
         }
     }
+
+    const handleFocus = () => {
+        if (inputRef.current) {
+            inputRef.current.focus()
+        }
+    }
+
+    // expose child component functions to parent component
+    useImperativeHandle(ref, () => ({
+        clear: handleClear,
+        focus: handleFocus,
+        file: file
+    }))
 
     return (
         <>
+
             {
                 label &&
-                <label htmlFor={id ? id : inputId} className={`fs-${labelFontSize()} font-manrope-medium pas-950 mrgb0 ${label.className}`}>
-                    {label.title}
-                    {label.required ? <span className="color-red font-manrope-bold ui-relative fs-16" style={{ top: '4px', left: '1px' }}>*</span> : ''}
+                <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
+                    <span className={`font-rethink pag-900`} style={{ fontSize: `${label.fontSize}px` }}>{label.title}</span>
+                    {label.required ? <span className="color-red font-rethink-medium relative text-[16px] top-[5px] left-[3px]">*</span> : ''}
                 </label>
             }
 
-            <input ref={fileRef} type="file" className="ui-hide" onChange={(e) => { onChange(e, file.type) }} />
+            <div className="w-full relative">
 
-            <div className="search-input ui-relative">
-                <Icon 
-                    type="polio"
-                    name={'cloud-upload'}
-                    size={20}
-                    clickable={true}
-                    position="absolute"
-                    style={{ top: '1rem', right: '1rem' }}
-                    onClick={(e) => openDialogue(e)}
+                <Fileog
+                    ref={fileRef}
+                    type={accept}
+                    accept={['image/jpeg', 'image/jpg', 'image/png']}
+                    sizeLimit={8}
+                    onSelect={(file) => {
+                        setFile(file);
+                        onChange(file)
+                    }}
                 />
+
+                {
+                    icon && icon.enable &&
+                    <span className={cic()}>{icon.child}</span>
+                }
+
+                <span className={`${ceye()}`}>
+                    <Icon
+                        name={'cloud-upload'}
+                        type="polio"
+                        className={`pacb-800`}
+                        size={16}
+                        clickable={true}
+                        onClick={(e) => {
+                            fileRef.current.open(e)
+                        }}
+                    />
+                </span>
+
                 <input
-                    ref={ref ? ref : inputRef}
+                    ref={inputRef}
                     id={id ? id : inputId}
                     name={name ? name : ''}
-                    defaultValue={defaultValue ? defaultValue : ''}
+                    defaultValue={file ? file.name : ''}
                     type={'text'}
-                    className={computeClass()}
-                    placeholder={placeholder ? placeholder : 'No file chosen'}
+                    className={cc()}
+                    placeholder={placeholder ? placeholder : 'Type here'}
                     autoComplete={autoComplete ? 'on' : 'off'}
                     readOnly={true}
-                    onChange={(e) => {  }}
+                    onChange={(e) => {}}
                 />
+
             </div>
+
         </>
     )
 
-};
+})
 
 export default FileInput;

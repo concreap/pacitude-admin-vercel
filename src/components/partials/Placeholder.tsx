@@ -1,0 +1,53 @@
+import React, { useEffect, useState } from 'react'
+import { IPlaceholder } from '../../utils/interfaces.util'
+
+const Placeholder = (props: Partial<IPlaceholder>) => {
+
+    // https://jamesinkala.com/blog/make-animated-content-placeholders-with-html-and-css/
+    const {
+        height = "10px",
+        width = 160,
+        bgColor = 'bg-pag-100', 
+        animate = true,
+        className,
+        radius = 'rounded-full'
+    } = props
+
+    useEffect(() => {
+
+    }, [])
+
+    const cc = () => {
+
+        let result = `placeholder inline-block relative ${radius} overflow-x-hidden overflow-y-hidden ${bgColor}`
+
+        if (height) {
+            result = result + ` h-[${height}] min-h-[${height}]`
+        }
+
+        if (width) {
+            result = result + ` ${width}`
+        } else {
+            result = result + ` w-[100%] min-w-[100%]`
+        }
+
+        if (className) {
+            result = result + ` ${className}`
+        }
+
+        return result;
+
+    }
+
+    return (
+        <>
+
+            <div className={cc()}>
+                <div className={`activity ${animate ? 'flicker' : ''}`}></div>
+            </div>
+
+        </>
+    )
+}
+
+export default Placeholder

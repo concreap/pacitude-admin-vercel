@@ -8,7 +8,7 @@ class ENV {
      * @returns {boolean} boolean
      */
     public isStaging(): boolean {
-        let result: boolean = process.env.REACT_APP_ENV === 'staging' ? true :false;
+        let result: boolean = import.meta.env.VITE_ENV === 'staging' ? true :false;
         return result
     }
 
@@ -18,7 +18,7 @@ class ENV {
      * @returns {boolean} boolean
      */
     public isProduction(): boolean {
-        let result: boolean = process.env.REACT_APP_ENV === 'production' ? true :false;
+        let result: boolean = import.meta.env.VITE_ENV === 'production' ? true :false;
         return result
     }
 
@@ -28,7 +28,7 @@ class ENV {
      * @returns {boolean} boolean
      */
     public isDev(): boolean {
-        let result: boolean = process.env.REACT_APP_ENV === 'development' ? true :false;
+        let result: boolean = import.meta.env.VITE_ENV === 'development' ? true :false;
         return result
     }
 

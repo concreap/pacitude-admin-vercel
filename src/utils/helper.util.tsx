@@ -1,8 +1,10 @@
 import $ from 'jquery';
 import moment from 'moment'
-import { IDateToday, IHelper } from './interfaces.util';
+import { ICountry, IDateToday, IHelper, IPagination } from './interfaces.util';
 import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
+import { FormatDateType, SemanticType } from './types.util';
+import { avatars } from '../_data/seed';
 
 const init = (type: string) => {
 
@@ -21,6 +23,10 @@ const scrollTo = (id: string) => {
         elem.scrollIntoView({ behavior: 'smooth' });
     }
 
+}
+
+const scrollToTop = () => {
+    window.scrollTo(0, 0)
 }
 
 const addClass = (id: string, cn: string) => {
@@ -184,7 +190,7 @@ const decodeBase64 = (data: string) => {
 
 }
 
-const isEmpty = (data: any, type: 'object' | 'array') => {
+const isEmpty = (data: any, type: 'object' | 'object-all' | 'array') => {
 
     let result: boolean = false;
 
@@ -194,6 +200,22 @@ const isEmpty = (data: any, type: 'object' | 'array') => {
 
     if (type === 'array') {
         result = data.length <= 0 ? true : false;
+    }
+
+    if (type === 'object-all') {
+
+        const keys = Object.keys(data);
+        const values: Array<number> = Object.values(data)
+            .map((x: any) => x.toString())
+            .map((m) => {
+                if (!m || m === 'undefined') { return 0 } else { return 1 }
+            })
+        const vl = values.reduce((a, b) => a + b, 0);
+
+        if (keys.length === vl) {
+            result = true;
+        }
+
     }
 
     return result;
@@ -219,13 +241,13 @@ const sort = (data: Array<any>) => {
 const days = () => {
 
     return [
-        { id: 0, name: 'sunday' },
-        { id: 1, name: 'monday' },
-        { id: 2, name: 'tuesday' },
-        { id: 3, name: 'wednesday' },
-        { id: 4, name: 'thursday' },
-        { id: 5, name: 'friday' },
-        { id: 6, name: 'saturday' },
+        { id: 0, name: 'sunday', label: 'sun' },
+        { id: 1, name: 'monday', label: 'mon' },
+        { id: 2, name: 'tuesday', label: 'tue' },
+        { id: 3, name: 'wednesday', label: 'wed' },
+        { id: 4, name: 'thursday', label: 'thur' },
+        { id: 5, name: 'friday', label: 'fri' },
+        { id: 6, name: 'saturday', label: 'sat' },
     ]
 
 }
@@ -233,18 +255,18 @@ const days = () => {
 const months = () => {
 
     return [
-        { id: 0, name: 'january' },
-        { id: 1, name: 'february' },
-        { id: 2, name: 'march' },
-        { id: 3, name: 'april' },
-        { id: 4, name: 'may' },
-        { id: 5, name: 'june' },
-        { id: 6, name: 'july' },
-        { id: 7, name: 'august' },
-        { id: 8, name: 'september' },
-        { id: 9, name: 'october' },
-        { id: 10, name: 'november' },
-        { id: 11, name: 'december' },
+        { id: 0, name: 'january', label: 'jan' },
+        { id: 1, name: 'february', label: 'feb' },
+        { id: 2, name: 'march', label: 'mar' },
+        { id: 3, name: 'april', label: 'apr' },
+        { id: 4, name: 'may', label: 'may' },
+        { id: 5, name: 'june', label: 'jun' },
+        { id: 6, name: 'july', label: 'jul' },
+        { id: 7, name: 'august', label: 'aug' },
+        { id: 8, name: 'september', label: 'sept' },
+        { id: 9, name: 'october', label: 'oct' },
+        { id: 10, name: 'november', label: 'nov' },
+        { id: 11, name: 'december', label: 'dec' },
     ]
 
 }
@@ -260,16 +282,36 @@ const random = (size: number = 6, isAlpha?: boolean) => {
 
 }
 
-const formatDate = (date: any, type: 'basic' | 'datetime') => {
+const formatDate = (date: any, type: FormatDateType) => {
 
     let result: string = '';
 
     if (type === 'basic') {
-        result = moment(date).format('Do MMM, YYYY')
+        result = moment(date).format('MMM Do, YYYY')
     }
 
     if (type === 'datetime') {
-        result = moment(date).format('Do MMM, YYYY HH:mm:ss A')
+        result = moment(date).format('MMM Do, YYYY HH:mm:ss A')
+    }
+
+    if (type === 'datetime-slash') {
+        result = moment(date).format('YYYY/MM/DD HH:mm:ss')
+    }
+
+    if (type === 'datetime-separated') {
+        result = moment(date).format('YYYY-MM-DD HH:mm:ss')
+    }
+
+    if (type === 'localtime') {
+        result = moment(date).format('h:mm A')
+    }
+
+    if (type === 'separated') {
+        result = moment(date).format('YYYY-MM-DD')
+    }
+
+    if (type === 'slashed') {
+        result = moment(date).format('YYYY/MM/DD')
     }
 
     return result;
@@ -521,6 +563,54 @@ const readCountries = (): Array<any> => {
 
 }
 
+const listCountries = () => {
+
+    let result: Array<{ code: string, name: string, phone: string }> = [];
+    const countries: Array<ICountry> = readCountries();
+
+    if (countries.length > 0) {
+
+        result = countries.map((x) => {
+
+            let phone = x.phoneCode ? x.phoneCode : '';
+            if(x.phoneCode && x.phoneCode.includes('-')){
+                phone = '+' + x.phoneCode.substring(3)
+            }
+
+            return {
+                code: x.code2,
+                name: x.name,
+                phone: phone
+            }
+        })
+
+        result = result.filter((x) => x.phone !== '')
+
+    }
+
+    return result
+
+}
+
+const getCountry = (code: string): ICountry | null => {
+
+    let result: ICountry | null = null;
+    const countries: Array<ICountry> = readCountries();
+
+    if (countries.length > 0) {
+
+        const country = countries.find((x) => x.code2 === code);
+
+        if (country) {
+            result = country
+        }
+
+    }
+
+    return result;
+
+}
+
 const sortData = (data: Array<any>, filter: string = ''): Array<any> => {
 
     let sorted: Array<any> = [];
@@ -570,13 +660,29 @@ const attachPhoneCode = (code: string, phone: string, include: boolean): string 
 
 const capitalizeWord = (value: string): string => {
 
-    const split = value.toLowerCase().split(" ");
+    let result: string = '';
 
-    for (var i = 0; i < split.length; i++) {
-        split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+    if (value.includes('-')) {
+
+        const split = value.split("-");
+
+        for (var i = 0; i < split.length; i++) {
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+
+        result = split.join('-')
+
+    } else {
+        const split = value.split(" ");
+
+        for (var i = 0; i < split.length; i++) {
+            split[i] = split[i].charAt(0).toUpperCase() + split[i].slice(1);
+        }
+
+        result = split.join(' ')
     }
 
-    return split.join(' ');
+    return result;
 
 }
 
@@ -716,10 +822,142 @@ export const formatCurrency = (currency: string): string => {
 
 }
 
+const currentDate = () => {
+    return new Date()
+}
+
+const getCurrentPage = (data: IPagination) => {
+
+    let result = 1;
+
+    if (data.next && data.next.page && data.prev && data.prev.page) {
+        const page = data.next.page - 1;
+        result = page === 0 ? 1 : page;
+    } else {
+        if (data.next && data.next.page) {
+            const page = data.next.page - 1;
+            result = page === 0 ? 1 : page;
+        } else if (data.prev && data.prev.page) {
+            const page = data.prev.page - 1;
+            result = page === 0 ? 1 : page;
+        }
+    }
+
+    return result;
+
+}
+
+const getInitials = (value: string): string => {
+
+    let result = '';
+
+    if (value.includes('-')) {
+
+        const split = value.split('-');
+        result = split[0].substring(0, 1)
+
+        if (split[1]) {
+            result = result + split[1].substring(0, 1)
+        }
+
+    } else {
+        const split = value.split(' ')
+        result = split[0].substring(0, 1)
+
+        if (split[1]) {
+            result = result + split[1].substring(0, 1)
+        }
+    }
+
+    return result;
+
+}
+
+const hyphenate = (action: 'add' | 'remove', val: string) => {
+
+    let result: string = val;
+
+    if (action === 'add') {
+        result = val.split(' ').join('-')
+    }
+
+    if (action === 'remove' && val.includes('-')) {
+        result = val.split('-').join(' ')
+    }
+
+    return result;
+
+}
+
+const daysFromDates = (start: string, end: string): number => {
+
+    let result: number = 0;
+
+    const startDate = new Date(start);
+    const endDate = new Date(end);
+
+    result = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
+
+    return result;
+
+}
+
+const getAvatar = (select: string | number): string => {
+
+    let result: string = 'no-avatar.png';
+
+    if (typeof (select) === 'string') {
+        const ava = avatars.find((x) => x.name === select);
+        if (ava) {
+            result = ava.avatar;
+        }
+    } else if (typeof (select) === 'number') {
+        result = avatars[select] ? avatars[select].avatar : 'no-avatar.png';
+    }
+
+    return result;
+
+}
+
+export const enumToArray = (data: Object, type: 'all' | 'values-only' | 'keys-only') => {
+
+    let result: Array<any> = [];
+    const list = Object.entries(data).map(([key, value]) => ({ key, value }))
+
+    if (type === 'all') {
+        result = list;
+    } else if (type === 'values-only') {
+        result = list.map((x) => x.value)
+    } else if (type === 'keys-only') {
+        result = list.map((x) => x.key)
+    }
+
+    return result;
+}
+
+const statusType = (status: string) => {
+
+    let result: SemanticType = 'info';
+
+    if (status === 'pending') {
+        result = 'warning';
+    } else if (status === 'assessed' || status === 'draft') {
+        result = 'info';
+    } else if (status === 'eligible' || status === 'active' || status === 'paid' || status === 'completed' || status === 'approved' || status === 'successful' || status === 'new') {
+        result = 'success';
+    } else if (status === 'not-eligible' || status === 'high' || status === 'overdue' || status === 'rejected') {
+        result = 'error';
+    }  else if (status === 'medium' || status === 'in-progress') {
+        result = 'ongoing';
+    }
+
+    return result;
+}
 
 const helper: IHelper = {
     init: init,
     scrollTo: scrollTo,
+    scrollToTop: scrollToTop,
     addClass: addClass,
     removeClass: removeClass,
     splitQueries: splitQueries,
@@ -746,6 +984,7 @@ const helper: IHelper = {
     encodeCardNumber: encodeCardNumber,
     monthsOfYear: monthsOfYear,
     readCountries: readCountries,
+    listCountries: listCountries,
     sortData: sortData,
     attachPhoneCode: attachPhoneCode,
     capitalizeWord: capitalizeWord,
@@ -756,7 +995,15 @@ const helper: IHelper = {
     parseInputNumber: parseInputNumber,
     toDecimal: toDecimal,
     formatCurrency: formatCurrency,
-
+    currentDate: currentDate,
+    getCurrentPage: getCurrentPage,
+    getInitials: getInitials,
+    hyphenate: hyphenate,
+    daysFromDates: daysFromDates,
+    getCountry: getCountry,
+    getAvatar: getAvatar,
+    enumToArray: enumToArray,
+    statusType: statusType
 }
 
 export default helper;

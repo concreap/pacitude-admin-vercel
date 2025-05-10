@@ -11,8 +11,12 @@ node_modules
 
 # production
 /build
-
+.txt
+/.txt
+*.txt
+*/.txt
 # misc
+.env
 .DS_Store
 .env.local
 .env.development.local
