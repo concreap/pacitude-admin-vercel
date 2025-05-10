@@ -21,6 +21,10 @@ import QuestionEdit from "../../../../components/app/question/QuestionEdit";
 import helper from "../../../../utils/helper.util";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
 import useApp from "../../../../hooks/app/useApp";
+import useCareer from "../../../../hooks/app/useCareer";
+import useField from "../../../../hooks/app/useField";
+import useSkill from "../../../../hooks/app/useSkill";
+import useTopic from "../../../../hooks/app/useTopic";
 
 const QuestionDetailsPage = ({ }) => {
 
@@ -29,7 +33,11 @@ const QuestionDetailsPage = ({ }) => {
 
     useSidebar(true)
     const { question, getQuestion, loading } = useQuestion();
-    const { getCoreResources } = useApp()
+    const { getCoreResources, clearCoreResources } = useApp()
+    const { getCareers } = useCareer();
+    const { getFields } = useField();
+    const { getSkills } = useSkill();
+    const { getTopics } = useTopic();
 
     const [isEditing, setIsEditing] = useState<boolean>(false)
 
@@ -37,7 +45,10 @@ const QuestionDetailsPage = ({ }) => {
 
         if (id) {
             getQuestion(id);
-            getCoreResources({ limit: 9999, page: 1, order: 'desc' });
+            getCareers({ limit: 9999, page: 1, order: 'desc' })
+            getFields({ limit: 9999, page: 1, order: 'desc' })
+            getSkills({ limit: 9999, page: 1, order: 'desc' })
+            getFields({ limit: 9999, page: 1, order: 'desc' })
         }
 
     }, [])

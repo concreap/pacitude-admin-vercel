@@ -54,6 +54,7 @@ const CareerList = (props: IListUI) => {
     }, [])
 
     const initList = (limit: number) => {
+        
         if (type === 'self') {
             getCareers({ limit: limit, page: 1, order: 'desc' })
         }

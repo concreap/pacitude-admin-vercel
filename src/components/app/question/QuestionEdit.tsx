@@ -37,7 +37,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
     const skiRef = useRef<any>(null)
     const toRef = useRef<any>(null)
 
-    const { careers, fields, skills, topics, getCoreResources } = useApp()
+    const { careers, fields, skills, topics, clearCoreResources } = useApp()
     const { question } = useQuestion()
 
     const [career, setCareer] = useState({ _id: '', name: '' })
