@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import moment from 'moment'
-import { IDateToday, IHelper, IPagination, IRoundButton, IRoute, IRouteParam, ISidebarAttrs } from './interfaces.util';
+import { IDateToday, IHelper, IPagination, IResourceContext, IRoundButton, IRoute, IRouteParam, ISidebarAttrs } from './interfaces.util';
 import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
 import { FormatDateType } from './types.util';
@@ -268,7 +268,7 @@ const random = (size: number = 6, isAlpha?: boolean) => {
 const randomNum = (min: number, max: number): number => {
 
     let result = 0;
-    result = Math.floor(Math.random() * max ) + min;
+    result = Math.floor(Math.random() * max) + min;
 
     return result;
 
@@ -647,6 +647,21 @@ const truncateText = (text: string, max: number): string => {
     return (text?.length > max) ? text.slice(0, max) + '...' : text;
 }
 
+const joinText = (arr: String[], separator?: string): string => {
+
+    let result = ''
+
+    if (separator === ',') {
+        result = arr?.join(',')
+    }
+
+    else {
+        result = arr?.join()
+    }
+
+    return result
+}
+
 const getChargebacks = (): Array<any> => {
 
     let result: Array<any> = [];
@@ -795,7 +810,7 @@ const canNext = (data: IPagination): boolean => {
 
     let result: boolean = false;
 
-    if(data.next && data.next.limit){
+    if (data.next && data.next.limit) {
         result = true;
     }
 
@@ -807,7 +822,7 @@ const canPrev = (data: IPagination): boolean => {
 
     let result: boolean = false;
 
-    if(data.prev && data.prev.limit){
+    if (data.prev && data.prev.limit) {
         result = true;
     }
 
@@ -819,20 +834,20 @@ const getInitials = (value: string): string => {
 
     let result = '';
 
-    if(value.includes('-')){
+    if (value.includes('-')) {
 
         const split = value.split('-');
         result = split[0].substring(0, 1)
 
-        if(split[1]){
+        if (split[1]) {
             result = result + split[1].substring(0, 1)
         }
 
-    }else {
+    } else {
         const split = value.split(' ')
         result = split[0].substring(0, 1)
 
-        if(split[1]){
+        if (split[1]) {
             result = result + split[1].substring(0, 1)
         }
     }
@@ -847,21 +862,21 @@ const splitGenTime = (value: string): { value: string, handle: string } => {
 
     const split = value.split(' ');
 
-    if(split.length === 2){
+    if (split.length === 2) {
 
         result.value = split[0];
 
-        if(split[1].includes('s')){
+        if (split[1].includes('s')) {
             result.handle = split[1].substring(0, split[1].length - 1)
         } else {
             result.handle = split[1];
         }
 
-    } else if(split.length > 2 && split.length === 4) {
+    } else if (split.length > 2 && split.length === 4) {
 
         result.value = split[0];
 
-        if(split[1].includes('s')){
+        if (split[1].includes('s')) {
             result.handle = split[1].substring(0, split[1].length - 1)
         } else {
             result.handle = split[1];
@@ -875,7 +890,6 @@ const splitGenTime = (value: string): { value: string, handle: string } => {
     return result;
 
 }
-
 
 const helper: IHelper = {
     init: init,
@@ -912,6 +926,7 @@ const helper: IHelper = {
     capitalizeWord: capitalizeWord,
     shrinkWordInString: shrinkWordInString,
     truncateText: truncateText,
+    joinText: joinText,
     objectToArray: objectToArray,
     displayBalance: displayBalance,
     parseInputNumber: parseInputNumber,

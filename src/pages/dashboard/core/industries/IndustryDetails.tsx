@@ -16,12 +16,15 @@ import RoundButton from '../../../../components/partials/buttons/RoundButton'
 import Icon from '../../../../components/partials/icons/Icon'
 import Fileog from '../../../../components/partials/dialogs/Fileog'
 import CoreContext from '../../../../context/core/coreContext'
+import useCopyText from '../../../../hooks/useCopyText'
 
 const IndustryDetailsPage = () => {
 
   const dpRef = useRef<any>(null)
 
   const { id } = useParams();
+
+  const { copyText } = useCopyText()
 
   const resourceContext = useContext<IResourceContext>(ResourceContext)
   const userContext = useContext<IUserContext>(UserContext)
@@ -59,20 +62,6 @@ const IndustryDetailsPage = () => {
     }
 
     setShowPanel(!showPanel)
-
-  }
-
-  const copy = (e: MouseEvent<HTMLElement>, text: string) => {
-
-    if (e) e.preventDefault()
-
-    storage.copyCode(text)
-    resourceContext.setToast({
-      ...resourceContext.toast,
-      show: true,
-      type: 'info',
-      message: `Code ${text} copied to clipboard`
-    })
 
   }
 
@@ -202,7 +191,7 @@ const IndustryDetailsPage = () => {
                       name='copy'
                       clickable={true}
                       size={15}
-                      onClick={(e) => copy(e, coreContext.industry.code)}
+                      onClick={(e) => copyText(e, coreContext.industry.code)}
                       className='pdl pab-500'
                     />
                   </>

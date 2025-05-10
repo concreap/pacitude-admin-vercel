@@ -212,6 +212,7 @@ export interface IHelper {
     capitalizeWord(value: string): string,
     shrinkWordInString(value: string, ret: number): string,
     truncateText(text: string, max: number): string
+    joinText(arr: String[], separator?: string): string
     objectToArray(data: Object | any): Array<any>,
     displayBalance(value: number): string,
     parseInputNumber(value: string, type: 'number' | 'decimal'): number,
@@ -1205,6 +1206,7 @@ export interface ICoreContext {
     getFields(data: IListQuery): Promise<void>,
     getField(id: string): Promise<void>,
     getSkills(data: IListQuery): Promise<void>,
+    getSkill(id: string): Promise<void>,
     getQuestions(data: IListQuery): Promise<void>,
     getQuestion(id: string): Promise<void>,
     getTopics(data: IListQuery): Promise<void>,
@@ -1212,6 +1214,7 @@ export interface ICoreContext {
     setAIQuestions(data: Array<IAIQuestion>): void,
     clearResource(data: IClearResource): void,
     setItems(data: Array<any>): void,
+    getResourceQuestions(data: IListQuery): Promise<void>,
     getResourceQuestions(data: IListQuery): Promise<void>,
     getResourceMetrics(data: IMetricQuery): Promise<void>,
     setResourceMetrics(data: ICoreMetrics): Promise<void>

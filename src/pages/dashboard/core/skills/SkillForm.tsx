@@ -24,35 +24,28 @@ import DropDown from "../../../../components/layouts/DropDown";
 import Badge from "../../../../components/partials/badges/Badge";
 import ResourceContext from "../../../../context/resource/resourceContext";
 
-interface ICareerForm {
+interface ISkillForm {
     show: boolean,
-    careerId?: string,
+    skillId?: string,
     title: string,
     type: FormActionType,
     display?: UIDisplayType
     closeForm(e: any): void
 }
 
-interface ICareerData {
-    name: string, label: string, description: string, error: string
-}
-
-const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' }: ICareerForm) => {
+const SkillForm = ({ show, skillId, title, closeForm, type, display = 'table' }: ISkillForm) => {
 
     const panelRef = useRef<any>();
     const bulkRef = useRef<any>();
     const LIMIT = 25
 
     const coreContext = useContext<ICoreContext>(CoreContext)
-    const resourceContext = useContext<IResourceContext>(ResourceContext)
 
-    const [career, setCareer] = useState<ICareerData>({ name: '', label: '', description: '', error: '' })
+    const [skill, setSkill] = useState({ name: '', label: '', description: '', error: '' })
     const [file, setFile] = useState<IFileUpload | null>(null)
     const [step, setStep] = useState<number>(0)
     const [view, setView] = useState<string>(UIView.FORM)
     const [loading, setLoading] = useState<boolean>(false)
-    const [careerSynonyms, setCareerSynonyms] = useState<string>('');
-    const [prefilledSynonymns, setPrefilledSynonyms] = useState<string>('')
     const [error, setError] = useState<string>('');
     const [alert, setAlert] = useState<IAlert>({
         type: 'success',
@@ -67,35 +60,21 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
             panelRef.current.open(null);
 
             if (type === 'edit-resource' && display === 'table' || display === 'list') {
-                if (careerId) {
-                    getCareer(careerId)
+                if (skillId) {
+                    getSkill(skillId)
                 }
             }
-
-            coreContext.getSkills({ limit: LIMIT, page: 1, order: 'desc' })
-            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
-            coreContext.setItems([])
         }
 
     }, [show])
 
-    const addSynonyms = (data: any): any => {
-
-        let result
-        const splitText = data.split(',')
-        result = splitText
-        return result
-        // return coreContext.setItems(result)
-
-    }
-
     const configTab = (e: any, val: any) => {
         if (e) { e.preventDefault(); }
-        storage.keep('field-form-tab', val.toString())
+        storage.keep('skill-form-tab', val.toString())
     }
 
-    const getCareer = (id: string) => {
-        coreContext.getCareer(id);
+    const getSkill = (id: string) => {
+        coreContext.getSkill(id);
     }
 
     const validateForm = (e: any): boolean => {
@@ -104,12 +83,12 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
         let result: boolean = false;
 
-        if (!career.name) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Career name is required' })
+        if (!skill.name) {
+            setAlert({ ...alert, show: true, type: 'error', message: 'Skill name is required' })
             setError('name')
         }
-        else if (!career.label) {
-            setAlert({ ...alert, show: true, type: 'error', message: 'Career display name is required' })
+        else if (!skill.label) {
+            setAlert({ ...alert, show: true, type: 'error', message: 'Skill display name is required' })
             setError('label')
         }
 
@@ -126,7 +105,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
     }
 
-    const createCareer = async (e: any) => {
+    const createSkill = async (e: any) => {
 
         if (e) { e.preventDefault(); }
 
@@ -134,18 +113,15 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
         if (validated) {
 
-            const synonymText = addSynonyms(careerSynonyms)
-
             let payload: any = {};
-            Object.assign(payload, career);
-            payload.synonyms = synonymText
+            Object.assign(payload, skill);
 
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'default',
+                type: 'core',
                 method: 'POST',
-                path: `/careers`,
+                path: `/skills`,
                 isAuth: true,
                 payload: payload
             });
@@ -178,25 +154,21 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
 
     }
 
-    const updateCareer = async (e: any) => {
+    const updateSkill = async (e: any) => {
 
         if (e) { e.preventDefault(); }
 
-
-        const synonymText = addSynonyms(careerSynonyms)
-
         let payload: any = {};
-        Object.assign(payload, career);
-        payload.synonyms = synonymText
+        Object.assign(payload, skill);
 
         if (!helper.isEmpty(payload, 'object')) {
 
             setLoading(true);
 
             const response = await AxiosService.call({
-                type: 'default',
+                type: 'core',
                 method: 'PUT',
-                path: `/careers/${coreContext.career._id}`,
+                path: `/skills/${coreContext.skill._id}`,
                 isAuth: true,
                 payload: payload
             });
@@ -238,16 +210,16 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
         }
 
         if (display === 'table' || display === 'list') {
-            coreContext.getCareers({ limit: LIMIT, page: 1, order: 'desc' })
+            coreContext.getSkills({ limit: LIMIT, page: 1, order: 'desc' })
         } else if (display === 'single' || display === 'details') {
-            coreContext.getCareer(coreContext.career._id);
+            coreContext.getSkill(coreContext.skill._id);
             // userContext.getPermissions({ limit: 9999, page: 1, order: 'desc' })
         }
 
         setTimeout(() => {
             setView(UIView.FORM)
-            setCareer({
-                ...career,
+            setSkill({
+                ...skill,
                 name: '',
                 label: '',
                 description: '',
@@ -311,14 +283,14 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                                 showFocus={true}
                                                                 size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Ex. Doctor"
+                                                                placeholder="Ex. Design Systems & Components"
                                                                 isError={error === 'name' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
                                                                     title: "Career Name",
                                                                     required: true
                                                                 }}
-                                                                onChange={(e) => setCareer({ ...career, name: e.target.value })}
+                                                                onChange={(e) => setSkill({ ...skill, name: e.target.value })}
                                                             />
 
                                                         </div>
@@ -330,14 +302,14 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                                 showFocus={true}
                                                                 size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Ex. Doctor"
+                                                                placeholder="Ex. Design Systems & Components"
                                                                 isError={error === 'label' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
                                                                     title: "Display Name",
                                                                     required: true
                                                                 }}
-                                                                onChange={(e) => setCareer({ ...career, label: e.target.value })}
+                                                                onChange={(e) => setSkill({ ...skill, label: e.target.value })}
                                                             />
 
                                                         </div>
@@ -349,14 +321,14 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                                 showFocus={true}
                                                                 size="sm"
                                                                 autoComplete={false}
-                                                                placeholder="Ex. Product management, Financial analyst"
+                                                                placeholder="Ex. Design Systems & Components"
                                                                 isError={error === 'synonyms' ? true : false}
                                                                 label={{
                                                                     fontSize: 13,
                                                                     title: "Synonymns",
                                                                     required: true
                                                                 }}
-                                                                onChange={(e) => setCareerSynonyms(e.target.value)}
+                                                                onChange={(e) => setSkill({ ...skill, description: e.target.value })}
                                                             />
 
                                                         </div>
@@ -378,7 +350,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                             icon={{
                                                                 enable: false
                                                             }}
-                                                            onClick={(e) => createCareer(e)}
+                                                            onClick={(e) => createSkill(e)}
                                                         />
 
                                                     </div>
@@ -518,7 +490,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                             title={'Successful!'}
                                             displayTitle={true}
                                             icon='shield'
-                                            message={'You have successfully added a career on Pacitude'}
+                                            message={'You have successfully added a skill on Pacitude'}
                                             action={(e: any) => closePanel(e)}
                                             status="success"
                                             actionType={'action'}
@@ -557,15 +529,15 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                         showFocus={true}
                                                         size="sm"
                                                         autoComplete={false}
-                                                        placeholder="Ex. Doctor"
+                                                        placeholder="Ex. Design Systems & Components"
                                                         isError={error === 'name' ? true : false}
                                                         label={{
                                                             fontSize: 13,
                                                             title: "Career Name",
                                                             required: true
                                                         }}
-                                                        defaultValue={coreContext.career.name}
-                                                        onChange={(e) => setCareer({ ...career, name: e.target.value })}
+                                                        defaultValue={coreContext.skill.name}
+                                                        onChange={(e) => setSkill({ ...skill, name: e.target.value })}
                                                     />
 
                                                 </div>
@@ -577,15 +549,15 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                         showFocus={true}
                                                         size="sm"
                                                         autoComplete={false}
-                                                        placeholder="Ex. Doctor"
+                                                        placeholder="Ex. Design Systems & Components"
                                                         isError={error === 'label' ? true : false}
                                                         label={{
                                                             fontSize: 13,
                                                             title: "Display Name",
                                                             required: true
                                                         }}
-                                                        defaultValue={coreContext.career.label}
-                                                        onChange={(e) => setCareer({ ...career, label: e.target.value })}
+                                                        defaultValue={coreContext.skill.label}
+                                                        onChange={(e) => setSkill({ ...skill, label: e.target.value })}
                                                     />
 
                                                 </div>
@@ -597,15 +569,15 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                         showFocus={true}
                                                         size="sm"
                                                         autoComplete={false}
-                                                        placeholder="Ex. Product management, Financial analyst"
-                                                        isError={error === 'synonyms' ? true : false}
+                                                        placeholder="Ex. Design Systems & Components"
+                                                        isError={error === 'description' ? true : false}
                                                         label={{
                                                             fontSize: 13,
-                                                            title: "Synonymns",
+                                                            title: "Description",
                                                             required: true
                                                         }}
-                                                        defaultValue={helper.joinText(coreContext?.career?.synonyms, ',')}
-                                                        onChange={(e) => setCareerSynonyms(e.target.value)}
+                                                        defaultValue={coreContext?.skill?.description}
+                                                        onChange={(e) => setSkill({ ...skill, description: e.target.value })}
                                                         className="text-lowercase"
                                                     />
 
@@ -628,7 +600,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                                     icon={{
                                                         enable: false
                                                     }}
-                                                    onClick={(e) => updateCareer(e)}
+                                                    onClick={(e) => updateSkill(e)}
                                                 />
 
                                             </div>
@@ -646,7 +618,7 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                                             title={'Successful!'}
                                             displayTitle={true}
                                             icon='shield'
-                                            message={'You have successfully updated a career details on Pacitude'}
+                                            message={'You have successfully updated a skill details on Pacitude'}
                                             action={(e: any) => closePanel(e)}
                                             status="success"
                                             actionType={'action'}
@@ -668,8 +640,9 @@ const CareerForm = ({ show, careerId, title, closeForm, type, display = 'table' 
                 }
 
             </PanelBox>
+
         </>
     )
 };
 
-export default CareerForm;
+export default SkillForm;

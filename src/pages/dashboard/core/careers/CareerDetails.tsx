@@ -16,12 +16,15 @@ import RoundButton from '../../../../components/partials/buttons/RoundButton'
 import Icon from '../../../../components/partials/icons/Icon'
 import Fileog from '../../../../components/partials/dialogs/Fileog'
 import CoreContext from '../../../../context/core/coreContext'
+import useCopyText from '../../../../hooks/useCopyText'
 
 const CareerDetailsPage = () => {
 
   const dpRef = useRef<any>(null)
 
   const { id } = useParams();
+
+  const { copyText } = useCopyText()
 
   const resourceContext = useContext<IResourceContext>(ResourceContext)
   const userContext = useContext<IUserContext>(UserContext)
@@ -59,20 +62,6 @@ const CareerDetailsPage = () => {
     }
 
     setShowPanel(!showPanel)
-
-  }
-
-  const copy = (e: MouseEvent<HTMLElement>, text: string) => {
-
-    if (e) e.preventDefault()
-
-    storage.copyCode(text)
-    resourceContext.setToast({
-      ...resourceContext.toast,
-      show: true,
-      type: 'info',
-      message: `Code ${text} copied to clipboard`
-    })
 
   }
 
@@ -125,7 +114,7 @@ const CareerDetailsPage = () => {
                       name='copy'
                       clickable={true}
                       size={15}
-                      onClick={(e) => copy(e, coreContext.career.code)}
+                      onClick={(e) => copyText(e, coreContext.career.code)}
                       className='pdl pab-500'
                     />
                   </>
@@ -256,7 +245,7 @@ const CareerDetailsPage = () => {
               {
                 coreContext.loading ?
                   <Placeholder height='17px' width="160px" radius={'10px'} bgColor='#eceaf1' animate={true} />
-                  : <span className='font-hostgro fs-14 pag-500'> {coreContext.career.name} </span>
+                  : <span className='font-hostgro fs-14 pag-500 text-lowercase'> {helper.joinText(coreContext?.career?.synonyms, ',')} </span>
               }
 
             </div>
