@@ -124,7 +124,7 @@ const QuestionDetailsPage = ({ }) => {
                     {
                         helper.isEmpty(question, 'object') &&
                         <EmptyState bgColor='bg-pag-25' className="min-h-[50vh]" noBound={true} >
-                            <span className="font-rethink text-[14px] pas-950">Question not found!</span>
+                            <span className="font-mona text-[14px] pas-950">Question not found!</span>
                         </EmptyState>
                     }
 

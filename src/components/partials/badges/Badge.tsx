@@ -29,7 +29,7 @@ const Badge = (props: IBadge) => {
 
     const csc = () => {
 
-        let label = `font-rethink${font.weight !== 'regular' ? `-${font.weight}` : ''}`;
+        let label = `font-mona${font.weight !== 'regular' ? `-${font.weight}` : ''}`;
         let style: CSSProperties = {};
         let result = `inline-flex items-center border justify-center rounded-full gap-x-[8px]`;
         result = upper ? result + ' uppercase' : result;
@@ -98,7 +98,7 @@ const Badge = (props: IBadge) => {
 
     const cbc = () => {
 
-        let label = `font-rethink${font.weight !== 'regular' ? `-${font.weight}` : ''}`;
+        let label = `font-mona${font.weight !== 'regular' ? `-${font.weight}` : ''}`;
         let style: CSSProperties = {};
         let result = `inline-flex items-center border justify-center rounded-full gap-x-[8px]`;
         result = upper ? result + ' uppercase' : result;

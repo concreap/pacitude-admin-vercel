@@ -562,7 +562,7 @@ const CreateQuestionPage = ({ }) => {
                             loading &&
                             <EmptyState className="min-h-[50vh]" noBound={true}>
                                 <span className="loader lg primary"></span>
-                                <span className="font-rethink text-[16px] pas-950">AI is thinking</span>
+                                <span className="font-mona text-[16px] pas-950">AI is thinking</span>
                             </EmptyState>
                         }
                         {
@@ -571,7 +571,7 @@ const CreateQuestionPage = ({ }) => {
                                 {
                                     aiQuestions.length === 0 &&
                                     <EmptyState bgColor='#f7f9ff' className="min-h-[50vh]" noBound={true} >
-                                        <span className="font-rethink text-[16px] pas-950">No questions generated</span>
+                                        <span className="font-mona text-[16px] pas-950">No questions generated</span>
                                     </EmptyState>
                                 }
                                 {
@@ -604,7 +604,7 @@ const CreateQuestionPage = ({ }) => {
                                                     {
                                                         (!code || questions.length === 0) &&
                                                         <EmptyState bgColor='bg-pag-25' className="min-h-[50vh]" noBound={true} >
-                                                            <span className="font-rethink text-[14px] pas-950">Select a question</span>
+                                                            <span className="font-mona text-[14px] pas-950">Select a question</span>
                                                         </EmptyState>
                                                     }
 
@@ -621,7 +621,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                 <div className="w-full space-y-[0.75rem]">
 
                                                                                     <div className="flex items-center">
-                                                                                        {/* <h3 className="font-rethink text-[13px]">Attach qestion to fields</h3> */}
+                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
                                                                                         <div className="min-w-[20%]">
                                                                                             <Filter
                                                                                                 ref={fiRef}
@@ -736,7 +736,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                 <div className="w-full space-y-[0.75rem]">
 
                                                                                     <div className="flex items-center">
-                                                                                        {/* <h3 className="font-rethink text-[13px]">Attach qestion to fields</h3> */}
+                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
                                                                                         <div className="min-w-[20%]">
                                                                                             <Filter
                                                                                                 ref={leRef}
@@ -793,7 +793,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                 <div className="w-full space-y-[0.75rem]">
 
                                                                                     <div className="flex items-center">
-                                                                                        {/* <h3 className="font-rethink text-[13px]">Attach qestion to fields</h3> */}
+                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
                                                                                         <div className="min-w-[20%]">
                                                                                             <Filter
                                                                                                 ref={diRef}
@@ -850,7 +850,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                 <div className="w-full space-y-[0.75rem]">
 
                                                                                     <div className="flex items-center">
-                                                                                        {/* <h3 className="font-rethink text-[13px]">Attach qestion to fields</h3> */}
+                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
                                                                                         <div className="min-w-[20%]">
                                                                                             <Filter
                                                                                                 ref={tyRef}
@@ -907,7 +907,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                 <div className="w-full space-y-[0.75rem]">
 
                                                                                     <div className="flex items-center">
-                                                                                        {/* <h3 className="font-rethink text-[13px]">Attach qestion to fields</h3> */}
+                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
                                                                                         <div className="min-w-[20%]">
                                                                                             <Filter
                                                                                                 ref={toRef}
@@ -964,7 +964,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                 <div className="w-full space-y-[0.75rem]">
 
                                                                                     <div className="flex items-center">
-                                                                                        {/* <h3 className="font-rethink text-[13px]">Attach qestion to fields</h3> */}
+                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
                                                                                         <div className="min-w-[20%]">
                                                                                             <Filter
                                                                                                 ref={skiRef}
@@ -1040,7 +1040,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                         </div>
 
                                                                                         <div className="flex-col w-1/2">
-                                                                                            <h3 className={`text-[13px] font-rethink pag-900`}>Select Handle</h3>
+                                                                                            <h3 className={`text-[13px] font-mona pag-900`}>Select Handle</h3>
                                                                                             <Filter
                                                                                                 ref={tyRef}
                                                                                                 size='xsm'

@@ -58,7 +58,7 @@ const NavItem = (props: INavItem) => {
                                 />
 
                             }
-                            <span className={`nav-text ${active ? 'pab-900' : 'pag-900 pabh-900'} font-rethink text-[14px]`}>{label}</span>
+                            <span className={`nav-text ${active ? 'pab-900' : 'pag-900 pabh-900'} font-mona text-[14px]`}>{label}</span>
                         </Link>
                     </li>
                 </>
@@ -82,7 +82,7 @@ const NavItem = (props: INavItem) => {
                             />
 
                         }
-                        <span className={`nav-text ${active ? 'pab-900' : 'pag-900 pabh-900'} font-rethink text-[14px]`}>{label}</span>
+                        <span className={`nav-text ${active ? 'pab-900' : 'pag-900 pabh-900'} font-mona text-[14px]`}>{label}</span>
                     </Link>
                 </>
             }

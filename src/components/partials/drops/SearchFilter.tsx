@@ -242,7 +242,7 @@ const SearchFilter = forwardRef((props: ISearchFilter, ref: ForwardedRef<any>) =
                                         <span className="pl-[0.5rem]"></span>
                                     </>
                                 }
-                                <span className="text-[13px] font-rethink pag-600 relative pr-[0.5rem] truncate top-[0px]">{selected.label}</span>
+                                <span className="text-[13px] font-mona pag-600 relative pr-[0.5rem] truncate top-[0px]">{selected.label}</span>
                             </div>
                         </>
                     }
@@ -276,7 +276,7 @@ const SearchFilter = forwardRef((props: ISearchFilter, ref: ForwardedRef<any>) =
                     {
                         items.length === 0 &&
                         <div className="empty">
-                            <span className="text-[14px] font-rethink pag-600">No Items</span>
+                            <span className="text-[14px] font-mona pag-600">No Items</span>
                         </div>
                     }
                     {
@@ -288,7 +288,7 @@ const SearchFilter = forwardRef((props: ISearchFilter, ref: ForwardedRef<any>) =
                                 {
                                     search.length === 0 &&
                                     <div className="empty">
-                                        <span className="text-[14px] font-rethink pag-600">No Results</span>
+                                        <span className="text-[14px] font-mona pag-600">No Results</span>
                                     </div>
                                 }
 
@@ -308,7 +308,7 @@ const SearchFilter = forwardRef((props: ISearchFilter, ref: ForwardedRef<any>) =
                                                         <span className="pl-[0.5rem]"></span>
                                                     </>
                                                 }
-                                                <span className="text-[13px] font-rethink pag-900">{item.label}</span>
+                                                <span className="text-[13px] font-mona pag-900">{item.label}</span>
 
                                                 {
                                                     selected && selected.value === item.value &&

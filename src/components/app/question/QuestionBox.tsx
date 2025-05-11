@@ -31,7 +31,7 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
                     <div className="min-h-[25vh] rounded-tl-[0.6rem] rounded-bl-[0.6rem] px-[1.3rem] py-[1rem]">
 
                         <div className="flex items-center">
-                            <h3 className="font-rethink text-[16px] pas-900">Question</h3>
+                            <h3 className="font-mona text-[16px] pas-900">Question</h3>
                             <div className="flex items-center ml-auto gap-x-[0.3rem]">
                                 <QuestionRubric
                                     items={question.types}
@@ -44,7 +44,7 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
                         <Divider show={false} />
 
                         <div className="w-full leading-[24px]">
-                            <p className="mb-0 font-rethink text-[15px] pag-700">{question.body}</p>
+                            <p className="mb-0 font-mona text-[15px] pag-700">{question.body}</p>
                         </div>
 
                         <Divider padding={{ enable: true, top: 'pt-[1rem]', bottom: 'pb-[1rem]' }} />
@@ -76,18 +76,18 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
 
                         <div className="w-full space-y-[2rem]">
 
-                            <h3 className="font-rethink text-[14px] pacb-700">Quick Overview</h3>
+                            <h3 className="font-mona text-[14px] pacb-700">Quick Overview</h3>
 
                             <div className="space-y-[1.5rem]">
 
                                 <div className="flex items-center">
-                                    <span className="font-rethink text-[13px] pag-500">Career</span>
-                                    <span className="font-rethink text-[13px] pag-500 ml-auto">{helper.capitalizeWord(question?.career?.name || '---')}</span>
+                                    <span className="font-mona text-[13px] pag-500">Career</span>
+                                    <span className="font-mona text-[13px] pag-500 ml-auto">{helper.capitalizeWord(question?.career?.name || '---')}</span>
                                 </div>
 
                                 <div className="flex items-center">
-                                    <span className="font-rethink text-[13px] pag-500">Fields</span>
-                                    {/* <span className="font-rethink text-[13px] pag-500 ml-auto">Product Management</span> */}
+                                    <span className="font-mona text-[13px] pag-500">Fields</span>
+                                    {/* <span className="font-mona text-[13px] pag-500 ml-auto">Product Management</span> */}
                                     <QuestionRubric
                                         items={question.fields.map((x) => helper.capitalizeWord(x.name))}
                                         limit={1}
@@ -96,7 +96,7 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
                                 </div>
 
                                 <div className="flex items-center">
-                                    <span className="font-rethink text-[13px] pag-500">Difficulty</span>
+                                    <span className="font-mona text-[13px] pag-500">Difficulty</span>
                                     <QuestionRubric
                                         className="ml-auto"
                                         items={question.difficulties}
@@ -112,13 +112,13 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
                             <div className="space-y-[1.5rem]">
 
                                 <div className="flex items-center">
-                                    <span className="font-rethink text-[13px] pacb-800">Question Score</span>
-                                    <span className="font-rethink text-[13px] pacb-800 ml-auto">{ question.score.default }</span>
+                                    <span className="font-mona text-[13px] pacb-800">Question Score</span>
+                                    <span className="font-mona text-[13px] pacb-800 ml-auto">{ question.score.default }</span>
                                 </div>
 
                                 <div className="flex items-center">
-                                    <span className="font-rethink text-[13px] pacb-800">Skill Level</span>
-                                    {/* <span className="font-rethink text-[13px] pacb-800 ml-auto">Beginner</span> */}
+                                    <span className="font-mona text-[13px] pacb-800">Skill Level</span>
+                                    {/* <span className="font-mona text-[13px] pacb-800 ml-auto">Beginner</span> */}
                                     <QuestionRubric
                                         items={question.levels.map((x) => helper.capitalizeWord(x))}
                                         limit={1}
@@ -127,8 +127,8 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
                                 </div>
 
                                 <div className="flex items-center">
-                                    <span className="font-rethink text-[13px] pacb-800">Time</span>
-                                    <span className="font-rethink text-[13px] pacb-800 ml-auto">{ question.time.duration } { helper.capitalize(question.time.handle) }</span>
+                                    <span className="font-mona text-[13px] pacb-800">Time</span>
+                                    <span className="font-mona text-[13px] pacb-800 ml-auto">{ question.time.duration } { helper.capitalize(question.time.handle) }</span>
                                 </div>
 
                             </div>

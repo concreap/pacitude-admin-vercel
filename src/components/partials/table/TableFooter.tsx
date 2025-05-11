@@ -251,7 +251,7 @@ const TableFooter = (props: ITableFooter) => {
                             />
                         </div>
 
-                        <span className="font-rethink text-[13px] pag-700">{ displayCount() }</span>
+                        <span className="font-mona text-[13px] pag-700">{ displayCount() }</span>
 
                     </div>
 

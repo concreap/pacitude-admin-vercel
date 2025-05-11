@@ -87,8 +87,8 @@ const LoginPage = ({ }) => {
                     <div className="w-[100%]">
 
                         <div className="text-center">
-                            <h3 className="font-rethink-medium text-[20px] pas-950">Welcome back!</h3>
-                            <p className="mb-0 font-rethink text-[16px] pag-800">Login to your admin account</p>
+                            <h3 className="font-mona-medium text-[20px] pas-950">Welcome back!</h3>
+                            <p className="mb-0 font-mona text-[16px] pag-800">Login to your admin account</p>
                         </div>
 
                         <Divider show={false} />

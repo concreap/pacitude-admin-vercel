@@ -39,7 +39,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
 
     const cac = () => {
 
-        let result = `flex items-center justify-center min-w-[25px] min-h-[25px] text-[14px] font-rethink-medium rounded-full uppercase`;
+        let result = `flex items-center justify-center min-w-[25px] min-h-[25px] text-[14px] font-mona-medium rounded-full uppercase`;
 
         return result;
 
@@ -54,7 +54,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
         <>
             <div onClick={(e) => handleSelect(e)} className={cc()} style={{ borderColor: active ? '#45c2f0' : '' }}>
 
-                <div className="mrgb font-rethink text-[16px] pag-950 leading-[28px]">{question.body} {question.code ? question.code : 'lax'}</div>
+                <div className="mrgb font-mona text-[16px] pag-950 leading-[28px]">{question.body} {question.code ? question.code : 'lax'}</div>
 
                 <Divider />
 
@@ -67,8 +67,8 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
                                     <Fragment key={answer.alphabet + (index + 1)}>
 
                                         <div className="flex items-center gap-x-[0.8rem] mb-[1rem]">
-                                            <span className={`${cac()} ${answer.alphabet === question.correct ? 'bg-pagr-600 color-white font-rethink-bold' : 'bg-pab-50 pab-700'}`}>{answer.alphabet}</span>
-                                            <div className={`grow text-[14px] font-rethink ${answer.alphabet === question.correct ? 'pagr-700' : 'pag-800'}`}>
+                                            <span className={`${cac()} ${answer.alphabet === question.correct ? 'bg-pagr-600 color-white font-mona-bold' : 'bg-pab-50 pab-700'}`}>{answer.alphabet}</span>
+                                            <div className={`grow text-[14px] font-mona ${answer.alphabet === question.correct ? 'pagr-700' : 'pag-800'}`}>
                                                 {answer.answer}
                                             </div>
                                         </div>
@@ -87,7 +87,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
                     {
                         question.levels.length > 0 &&
                         <div className="flex items-center gap-x-[0.5rem]">
-                            <span className="font-rethink text-[14px]">Level:</span>
+                            <span className="font-mona text-[14px]">Level:</span>
                             <Badge
                                 type={'info'}
                                 size="xxsm"
@@ -100,7 +100,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
                     {
                         question.difficulties.length > 0 &&
                         <div className="flex items-center gap-x-[0.5rem]">
-                            <span className="font-rethink text-[14px]">Difficulty:</span>
+                            <span className="font-mona text-[14px]">Difficulty:</span>
                             <Badge
                                 type={'ongoing'}
                                 size="xxsm"
@@ -119,7 +119,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
                     {
                         question.types.length > 0 &&
                         <div className="flex items-center gap-x-[0.5rem]">
-                            <span className="font-rethink text-[14px]">Types:</span>
+                            <span className="font-mona text-[14px]">Types:</span>
                             <Badge
                                 type={'warning'}
                                 size="xxsm"
@@ -130,7 +130,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
                     }
 
                     <div className="flex items-center gap-x-[0.5rem]">
-                        <span className="font-rethink text-[14px]">Time:</span>
+                        <span className="font-mona text-[14px]">Time:</span>
                         <Badge
                             type={'success'}
                             size="xxsm"
@@ -140,7 +140,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
                     </div>
 
                     <div className="flex items-center gap-x-[0.5rem]">
-                        <span className="font-rethink text-[14px]">Score:</span>
+                        <span className="font-mona text-[14px]">Score:</span>
                         <Badge
                             type={'default'}
                             size="xxsm"

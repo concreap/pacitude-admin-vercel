@@ -263,7 +263,7 @@ const FieldList = (props: IListUI) => {
                                 {
                                     fields.data.length === 0 &&
                                     <EmptyState className="min-h-[50vh]" noBound={true}>
-                                        <span className="font-rethink pag-600 text-[13px]">Fields will appear here</span>
+                                        <span className="font-mona pag-600 text-[13px]">Fields will appear here</span>
                                     </EmptyState>
                                 }
 
@@ -274,7 +274,7 @@ const FieldList = (props: IListUI) => {
                                             search.count < 0 &&
                                             <>
                                                 <EmptyState className="min-h-[30vh]" noBound={true} style={{ backgroundColor: '#fffafa' }}>
-                                                    <div className="font-rethink par-700 text-[14px] mb-[0.35rem]">No results found for {pageSearch.key}</div>
+                                                    <div className="font-mona par-700 text-[14px] mb-[0.35rem]">No results found for {pageSearch.key}</div>
                                                     <Button
                                                         type="ghost"
                                                         semantic="error"

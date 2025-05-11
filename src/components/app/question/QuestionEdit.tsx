@@ -404,7 +404,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Career</h3>
+                                    <h3 className="font-mona text-[13px]">Question Career</h3>
                                 </div>
 
                                 <div className="w-full flex items-center gap-x-[1rem]">
@@ -460,7 +460,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Fields</h3>
+                                    <h3 className="font-mona text-[13px]">Question Fields</h3>
                                 </div>
 
                                 <div className="w-full flex items-start gap-x-[1rem]">
@@ -521,7 +521,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Body</h3>
+                                    <h3 className="font-mona text-[13px]">Question Body</h3>
                                 </div>
 
                                 <FormField className="">
@@ -541,7 +541,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Skills</h3>
+                                    <h3 className="font-mona text-[13px]">Question Skills</h3>
                                 </div>
 
                                 <div className="w-full flex items-start gap-x-[1rem]">
@@ -602,7 +602,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Topics</h3>
+                                    <h3 className="font-mona text-[13px]">Question Topics</h3>
                                 </div>
 
                                 <div className="w-full flex items-start gap-x-[1rem]">
@@ -663,7 +663,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Levels</h3>
+                                    <h3 className="font-mona text-[13px]">Question Levels</h3>
                                 </div>
 
                                 <div className="w-full flex items-start gap-x-[1rem]">
@@ -724,7 +724,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Types</h3>
+                                    <h3 className="font-mona text-[13px]">Question Types</h3>
                                 </div>
 
                                 <div className="w-full flex items-start gap-x-[1rem]">
@@ -785,7 +785,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Difficulties</h3>
+                                    <h3 className="font-mona text-[13px]">Question Difficulties</h3>
                                 </div>
 
                                 <div className="w-full flex items-start gap-x-[1rem]">
@@ -846,7 +846,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[0.55rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Question Duration and Score</h3>
+                                    <h3 className="font-mona text-[13px]">Question Duration and Score</h3>
                                 </div>
 
                                 <FormField className="mb-[0.5rem] flex items-center gap-x-[1.5rem]">
@@ -873,7 +873,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                                         <div className="flex-col w-1/2">
 
                                             <div className="relative top-[2px]">
-                                                <h3 className={`text-[13px] font-rethink pag-900`}>Select Handle</h3>
+                                                <h3 className={`text-[13px] font-mona pag-900`}>Select Handle</h3>
                                                 <Filter
                                                     ref={tyRef}
                                                     size='xsm'
@@ -943,7 +943,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                             <div className="w-full space-y-[1.5rem]">
 
                                 <div className="flex items-center">
-                                    <h3 className="font-rethink text-[13px]">Edit Question Answers ( options )</h3>
+                                    <h3 className="font-mona text-[13px]">Edit Question Answers ( options )</h3>
                                 </div>
 
                                 <FormField className="space-y-[0.8rem]">

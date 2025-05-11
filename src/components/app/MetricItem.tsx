@@ -30,7 +30,7 @@ const MetricItem = (props: IMetricItem) => {
             >
 
                 <div>
-                    <p className="truncate text-[13px] font-rethink pag-600">{metric.name}</p>
+                    <p className="truncate text-[13px] font-mona pag-600">{metric.name}</p>
                     <div className="flex items-center">
                         <h3 className="font-uncut-bold text-[34px] pas-950">{metric.value}</h3>
                         <span className="pl-[0.5rem]"></span>
@@ -54,14 +54,14 @@ const MetricItem = (props: IMetricItem) => {
                                     metric.isChange &&
                                     <>
                                         <span className="pl-[0.2rem]"></span>
-                                        <span className={`font-rethink text-[14px] ${metric.changeType === 'increase' ? 'pagr-600' : 'par-600'}`}>{metric.change}</span>
+                                        <span className={`font-mona text-[14px] ${metric.changeType === 'increase' ? 'pagr-600' : 'par-600'}`}>{metric.change}</span>
                                     </>
                                 }
                             </>
                         }
 
                     </div>
-                    { metric.description && <p className="mt-1 font-rethink text-[12px] pag-500">{metric.description}</p> }
+                    { metric.description && <p className="mt-1 font-mona text-[12px] pag-500">{metric.description}</p> }
                 </div>
             </div>
         </>

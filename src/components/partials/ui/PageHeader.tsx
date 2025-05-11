@@ -22,8 +22,8 @@ const PageHeader = (props: IPageHeader) => {
             <div className="page-header w-full flex items-center">
 
                 <div>
-                    <h2 className="font-rethink text-[18px] pag-700">{ title }</h2>
-                    <p className="font-rethink text-[13px] pag-400">{ description }</p>
+                    <h2 className="font-mona text-[18px] pag-700">{ title }</h2>
+                    <p className="font-mona text-[13px] pag-400">{ description }</p>
                 </div>
 
                 {

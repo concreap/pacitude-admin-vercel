@@ -113,11 +113,11 @@ const Toast = (props: IToast) => {
             <div className={`toast ${cc()} ${ccl(type).bg}`}>
 
                 <div className="flex items-center">
-                    <h3 className="font-rethink-medium text-[14px] color-white">{title ? title : 'Notification'}</h3>
+                    <h3 className="font-mona-medium text-[14px] color-white">{title ? title : 'Notification'}</h3>
                     <Link to="" className="ml-auto" onClick={(e) => handleClose(e)}><span className="fe fe-x text-[15px] color-white"></span></Link>
                 </div>
 
-                <span className={`font-rethink text-[13px] ${ccl(type).color} mb-0`}>
+                <span className={`font-mona text-[13px] ${ccl(type).color} mb-0`}>
                     {message ? message : 'No message'}
                 </span>
 

@@ -51,7 +51,7 @@ const FileInput = forwardRef((props: IFileInput, ref: ForwardedRef<any>) => {
 
     const cc = () => {
 
-        let result: string = `form-control transition-all duration-250 w-full py-[0.5rem] px-[1rem] font-rethink text-[13px] border ${ch.h}`;
+        let result: string = `form-control transition-all duration-250 w-full py-[0.5rem] px-[1rem] font-mona text-[13px] border ${ch.h}`;
 
         // colors, borders and focus
         if (isError) {
@@ -133,8 +133,8 @@ const FileInput = forwardRef((props: IFileInput, ref: ForwardedRef<any>) => {
             {
                 label &&
                 <label htmlFor={id ? id : inputId} className={`mrgb0 ${label.className ? label.className : ''}`}>
-                    <span className={`font-rethink pag-900`} style={{ fontSize: `${label.fontSize}px` }}>{label.title}</span>
-                    {label.required ? <span className="color-red font-rethink-medium relative text-[16px] top-[5px] left-[3px]">*</span> : ''}
+                    <span className={`font-mona pag-900`} style={{ fontSize: `${label.fontSize}px` }}>{label.title}</span>
+                    {label.required ? <span className="color-red font-mona-medium relative text-[16px] top-[5px] left-[3px]">*</span> : ''}
                 </label>
             }
 

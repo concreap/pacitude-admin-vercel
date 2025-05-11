@@ -115,7 +115,7 @@ const Topbar = (props: ITopbar) => {
                             />
                         }
 
-                        <h3 className="font-rethink-medium mrgb0 text-[18px] pas-950">{pageTitle}</h3>
+                        <h3 className="font-mona-medium mrgb0 text-[18px] pas-950">{pageTitle}</h3>
 
                     </div>
 
