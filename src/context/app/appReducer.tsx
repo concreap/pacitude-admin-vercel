@@ -16,12 +16,18 @@ import {
     SET_AIQUESTION,
     SET_SEARCH,
     GET_METRICS,
-    SET_ITEMS
+    SET_ITEMS,
+    GET_CORE
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
 
     switch (action.type) {
+        case GET_CORE:
+            return {
+                ...state,
+                core: action.payload
+            }
         case GET_INDUSTRIES:
             return {
                 ...state,

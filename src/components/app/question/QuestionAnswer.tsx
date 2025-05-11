@@ -2,12 +2,14 @@ import React, { useEffect, useState, useContext, Fragment } from "react"
 import { IQuestionOption } from "../../../utils/interfaces.util";
 import EmptyState from "../../partials/dialogs/EmptyState";
 import QuestionOption from "./QuestionOption";
+import IconButton from "../../partials/buttons/IconButton";
 
 interface IQuestionAnswer {
     options: Array<IQuestionOption>
+    onEdit(e: any): void
 }
 
-const QuestionAnswer = ({ options }: IQuestionAnswer) => {
+const QuestionAnswer = ({ options, onEdit }: IQuestionAnswer) => {
 
     useEffect(() => {
 
@@ -29,8 +31,21 @@ const QuestionAnswer = ({ options }: IQuestionAnswer) => {
                 {
                     options.length > 0 &&
                     <>
+                        <div className="w-full flex items-center">
+                            <IconButton
+                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                className="ml-auto bg-pag-100 bgh-pab-200"
+                                icon={{
+                                    type: 'polio',
+                                    name: 'edit',
+                                    size: 16,
+                                }}
+                                onClick={(e) => onEdit(e)}
+                            />
+                        </div>
+
                         {
-                            options.map((option) => 
+                            options.map((option) =>
                                 <Fragment key={option.answer.code}>
                                     <QuestionOption {...option} />
                                 </Fragment>

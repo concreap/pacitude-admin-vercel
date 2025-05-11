@@ -1,5 +1,5 @@
 import sidebarRoutes from "../routes/sidebar.route";
-import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast } from "../utils/interfaces.util";
+import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource } from "../utils/interfaces.util";
 
 const avatars = [
     { name: 'sandra', avatar: 'https://storage.googleapis.com/pacitude-buckets/sandra.png' },
@@ -86,7 +86,7 @@ const toast: IToast = {
     message: '',
     title: 'Feedback',
     position: 'top-right',
-    close: () => {}
+    close: () => { }
 }
 
 // special to project
@@ -140,6 +140,14 @@ const allocatedTimes = [
     { name: 'Five', value: '5' }
 ]
 
+const coreResource: ICoreResource = {
+    industries: [],
+    careers: [],
+    fields: [],
+    skills: [],
+    topics: []
+}
+
 export {
     sidebar,
     avatars,
@@ -153,6 +161,7 @@ export {
     questionTypes,
     timeHandles,
     allocatedTimes,
+    coreResource,
 
     // special to project
     aiquestion,

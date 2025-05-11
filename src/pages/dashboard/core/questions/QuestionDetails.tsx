@@ -33,25 +33,28 @@ const QuestionDetailsPage = ({ }) => {
 
     useSidebar(true)
     const { question, getQuestion, loading } = useQuestion();
-    const { getCoreResources, clearCoreResources } = useApp()
-    const { getCareers } = useCareer();
-    const { getFields } = useField();
-    const { getSkills } = useSkill();
-    const { getTopics } = useTopic();
+    const { getCoreResources } = useApp()
 
     const [isEditing, setIsEditing] = useState<boolean>(false)
+    const [editType, setEditType] = useState<string>('')
 
     useEffect(() => {
 
         if (id) {
             getQuestion(id);
-            getCareers({ limit: 9999, page: 1, order: 'desc' })
-            getFields({ limit: 9999, page: 1, order: 'desc' })
-            getSkills({ limit: 9999, page: 1, order: 'desc' })
-            getFields({ limit: 9999, page: 1, order: 'desc' })
+            getCoreResources({ limit: 9999, page: 1, order: 'desc' })
         }
 
     }, [])
+
+    const toggleEdit = (e: any, type: string) => {
+
+        if (e) { e.preventDefault() }
+
+        setEditType(type)
+        setIsEditing(!isEditing)
+
+    }
 
     return (
         <>
@@ -74,7 +77,7 @@ const QuestionDetailsPage = ({ }) => {
                             child: isEditing ? <Icon name="x" type="feather" size={16} className="par-600" /> : <Icon name="edit" type="polio" size={16} className="pag-900" />
                         }}
                         reverse="row"
-                        onClick={(e) => setIsEditing(!isEditing)}
+                        onClick={(e) => toggleEdit(e, 'question')}
                     />
                     {
                         isEditing &&
@@ -87,7 +90,18 @@ const QuestionDetailsPage = ({ }) => {
                                 label: "Save Changes",
                                 size: 13,
                             }}
-                            onClick={(e) => editRef.current.save(e)}
+                            onClick={async (e) => {
+
+                                setIsEditing(false)
+                                setEditType('')
+
+                                if (editType === 'question') {
+                                    editRef.current.save(e);
+                                } else {
+                                    editRef.current.saveAnswer(e);
+                                }
+
+                            }}
                         />
                     }
                 </div>
@@ -119,12 +133,12 @@ const QuestionDetailsPage = ({ }) => {
                         <>
                             {
                                 !isEditing &&
-                                <QuestionBox question={question} />
+                                <QuestionBox question={question} onEdit={(e) => toggleEdit(e, 'answer')} />
                             }
 
                             {
                                 isEditing &&
-                                <QuestionEdit ref={editRef} />
+                                <QuestionEdit ref={editRef} editType={editType as any} />
                             }
                         </>
                     }
@@ -167,7 +181,16 @@ const QuestionDetailsPage = ({ }) => {
                                                 label: "Save Changes",
                                                 size: 13,
                                             }}
-                                            onClick={(e) => editRef.current.save(e)}
+                                            onClick={async (e) => {
+                                                setIsEditing(false)
+                                                setEditType('')
+
+                                                if (editType === 'question') {
+                                                    editRef.current.save(e);
+                                                } else {
+                                                    editRef.current.saveAnswer(e);
+                                                }
+                                            }}
                                         />
                                     }
                                 </div>

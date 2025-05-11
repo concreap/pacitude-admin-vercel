@@ -37,7 +37,7 @@ const CreateQuestionPage = ({ }) => {
 
     useSidebar(true)
     
-    const { toast, setToast, clearToast } = useToast()
+    const { toast, setToast } = useToast()
     const { fields, getFields } = useField()
     const { getTopics, topics } = useTopic()
     const { getSkills, skills } = useSkill()
