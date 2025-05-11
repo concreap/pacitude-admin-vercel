@@ -935,24 +935,22 @@ export const enumToArray = (data: Object, type: 'all' | 'values-only' | 'keys-on
     return result;
 }
 
-const statusType = (status: string) => {
+const extractor = (data: any) => {
 
-    let result: SemanticType = 'info';
+    let result: any = null;
 
-    if (status === 'pending') {
-        result = 'warning';
-    } else if (status === 'assessed' || status === 'draft') {
-        result = 'info';
-    } else if (status === 'eligible' || status === 'active' || status === 'paid' || status === 'completed' || status === 'approved' || status === 'successful' || status === 'new') {
-        result = 'success';
-    } else if (status === 'not-eligible' || status === 'high' || status === 'overdue' || status === 'rejected') {
-        result = 'error';
-    }  else if (status === 'medium' || status === 'in-progress') {
-        result = 'ongoing';
+    if(typeof(data) === 'object'){
+        for(const x in data){
+            if(data[x] !== null && data[x] !== ''){
+                result[x] = data[x]
+            }
+        }
     }
 
     return result;
+
 }
+
 
 const helper: IHelper = {
     init: init,
@@ -1003,7 +1001,7 @@ const helper: IHelper = {
     getCountry: getCountry,
     getAvatar: getAvatar,
     enumToArray: enumToArray,
-    statusType: statusType
+    extractor: extractor
 }
 
 export default helper;

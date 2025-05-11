@@ -10,10 +10,11 @@ import Question from "../../../models/Question.model";
 import helper from "../../../utils/helper.util";
 
 interface IQuestionBox {
-    question: Question
+    question: Question,
+    onEdit(e: any): void
 }
 
-const QuestionBox = ({ question }: IQuestionBox) => {
+const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
 
     const [option, setOption] = useState<string>('')
 
@@ -46,9 +47,10 @@ const QuestionBox = ({ question }: IQuestionBox) => {
                             <p className="mb-0 font-rethink text-[15px] pag-700">{question.body}</p>
                         </div>
 
-                        <Divider padding={{ enable: true, top: 'pt-[1.8rem]', bottom: 'pb-[1.8rem]' }} />
+                        <Divider padding={{ enable: true, top: 'pt-[1rem]', bottom: 'pb-[1rem]' }} />
 
                         <QuestionAnswer
+                            onEdit={onEdit}
                             options={question.answers.map((answer) => {
                                 return {
                                     type: "option",

@@ -4,6 +4,9 @@ import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 import Question, { IQuestionTime } from "../models/Question.model";
 import Career from "../models/Career.model";
+import Field from "../models/Field.model";
+import Skill from "../models/Skill.model";
+import Topic from "../models/Topic.model";
 
 export interface ISetCookie {
     key: string,
@@ -261,7 +264,7 @@ export interface IHelper {
     getCountry(code: string): ICountry | null,
     getAvatar(select: string | number): string,
     enumToArray(data: Object, type: 'all' | 'values-only' | 'keys-only'): Array<any>,
-    statusType(status: string): SemanticType
+    extractor(data: any): any
 
 }
 
@@ -1346,6 +1349,14 @@ export interface ICollection {
     payload?: any
 }
 
+export interface ICoreResource {
+    industries: Array<Industry>,
+    careers: Array<Career>,
+    fields: Array<Field>,
+    skills: Array<Skill>,
+    topics: Array<Topic>
+}
+
 export interface IUserContext {
     users: ICollection,
     user: User,
@@ -1381,6 +1392,7 @@ export interface IAppContext {
     search: ICollection,
     metrics: IAppMetrics,
     items: Array<any>
+    core: ICoreResource
     message: string,
     loading: boolean,
     clearResource(data: IClearResource): void,

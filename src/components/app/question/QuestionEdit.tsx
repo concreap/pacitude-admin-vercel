@@ -22,12 +22,19 @@ import useApp from "../../../hooks/app/useApp";
 import TextAreaInput from "../../partials/inputs/TextAreaInput";
 import TextInput from "../../partials/inputs/TextInput";
 import { difficulties, levels, questionTypes, timeHandles } from "../../../_data/seed";
+import Career from "../../../models/Career.model";
+import Skill from "../../../models/Skill.model";
+import Topic from "../../../models/Topic.model";
+import useToast from "../../../hooks/useToast";
+import { ResourceType } from "../../../utils/types.util";
 
 interface IQuestionEdit {
-
+    editType: 'question' | 'answer'
 }
 
 const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) => {
+
+    const { editType } = props;
 
     const carRef = useRef<any>(null)
     const fiRef = useRef<any>(null)
@@ -37,11 +44,12 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
     const skiRef = useRef<any>(null)
     const toRef = useRef<any>(null)
 
-    const { careers, fields, skills, topics, clearCoreResources } = useApp()
-    const { question } = useQuestion()
+    const { core } = useApp()
+    const { question, updateQuestion, detachResource, updateAnswer, getQuestion } = useQuestion()
+    const { toast, setToast, clearToast } = useToast()
 
     const [career, setCareer] = useState({ _id: '', name: '' })
-    const [answers, setAnswers] = useState<Array<IQuestionAnswer>>([])
+    const [answers, setAnswers] = useState<Array<any>>([])
     const [qData, setQData] = useState({ body: '', duration: 0, handle: '', score: 0 })
     const [fieldList, setFieldList] = useState<Array<{ id: string, name: string, ex: boolean }>>([])
     const [skillList, setSkillList] = useState<Array<{ id: string, name: string, ex: boolean }>>([])
@@ -59,7 +67,8 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
 
     // expose child component functions to parent component
     useImperativeHandle(ref, () => ({
-        save: handleUpdateQuestion
+        save: handleUpdateQuestion,
+        saveAnswer: handleUpdateAnswer
     }))
 
     const init = () => {
@@ -140,7 +149,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
         if (type === 'field') {
             const fi = fieldList.find((x) => x.id === id)
             if (fi && fi.ex) {
-
+                handleDetach(null, { type: 'field', fields: [fi.id] })
             } else {
                 setFieldList(prev => prev.filter((x) => x.id !== id))
             }
@@ -150,7 +159,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
         if (type === 'skill') {
             const fi = skillList.find((x) => x.id === id)
             if (fi && fi.ex) {
-
+                handleDetach(null, { type: 'skill', skills: [fi.id] })
             } else {
                 setSkillList(prev => prev.filter((x) => x.id !== id))
             }
@@ -160,7 +169,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
         if (type === 'topic') {
             const fi = topicList.find((x) => x.id === id)
             if (fi && fi.ex) {
-
+                handleDetach(null, { type: 'topic', topics: [fi.id] })
             } else {
                 setTopicList(prev => prev.filter((x) => x.id !== id))
             }
@@ -170,7 +179,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
         if (type === 'level') {
             const fi = levelList.find((x) => x.id === id)
             if (fi && fi.ex) {
-
+                handleDetach(null, { type: 'level', levels: [fi.id] })
             } else {
                 setLevelList(prev => prev.filter((x) => x.id !== id))
             }
@@ -180,7 +189,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
         if (type === 'type') {
             const fi = typeList.find((x) => x.id === id)
             if (fi && fi.ex) {
-
+                handleDetach(null, { type: 'type', types: [fi.id] })
             } else {
                 setTypeList(prev => prev.filter((x) => x.id !== id))
             }
@@ -190,7 +199,7 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
         if (type === 'difficulty') {
             const fi = difficultyList.find((x) => x.id === id)
             if (fi && fi.ex) {
-
+                handleDetach(null, { type: 'difficulty', difficulties: [fi.id] })
             } else {
                 setDifficultyList(prev => prev.filter((x) => x.id !== id))
             }
@@ -199,13 +208,30 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
 
     }
 
+    const extractRubric = (data: Array<{ id: string, name: string, ex: boolean }>) => {
+
+        let result: Array<string> = []
+
+        for (let i = 0; i < data.length; i++) {
+            if (!data[i].ex) {
+                result.push(data[i].id)
+            }
+        }
+
+        return result
+
+    }
+
     const editOption = (alpha: string, val: string) => {
 
-        let currlist = question.answers;
+        let currlist: Array<any> = question.answers;
+
         let option = currlist.find((x) => x.alphabet === alpha)
         let optionI = currlist.findIndex((x) => x.alphabet === alpha)
+
         if (option) {
             option.body = val;
+            option.action = 'update'
             currlist.splice(optionI, 1, option)
             setAnswers(currlist)
         }
@@ -226,11 +252,142 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
 
     }
 
-    const handleUpdateQuestion = (e: any) => {
+    const handleUpdateQuestion = async (e: any) => {
 
         if (e) { e.preventDefault() }
 
-        
+        const payload = {
+            careerId: career._id,
+            body: qData.body,
+            time: {
+                duration: qData.duration,
+                handle: qData.handle,
+            },
+            score: qData.score,
+            isEnabled: true,
+            difficulties: extractRubric(difficultyList),
+            levels: extractRubric(levelList),
+            types: extractRubric(typeList),
+            fields: extractRubric(fieldList),
+            skills: extractRubric(skillList),
+            topics: extractRubric(topicList)
+        }
+
+        const response = await updateQuestion(question._id, payload);
+
+        if (!response.error) {
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                message: 'Question saved successfully'
+            })
+
+            getQuestion(question._id)
+            setQData({ ...qData, body: '', duration: 0, handle: '', score: 0 })
+        }
+
+        if (response.error) {
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: response.errors.join(',')
+            })
+
+        }
+
+        setTimeout(() => {
+            setToast({
+                ...toast,
+                show: false,
+            })
+        }, 1000)
+
+    }
+
+    const handleDetach = async (e: any, data: any) => {
+
+        if (e) { e.preventDefault() }
+
+        const response = await detachResource(question._id, data);
+
+        if (!response.error) {
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                message: 'Question saved successfully'
+            })
+
+            getQuestion(question._id)
+            setQData({ ...qData, body: '', duration: 0, handle: '', score: 0 })
+        }
+
+        if (response.error) {
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: response.errors.join(',')
+            })
+
+        }
+
+        setTimeout(() => {
+            setToast({
+                ...toast,
+                show: false,
+            })
+        }, 1000)
+
+    }
+
+    const handleUpdateAnswer = async (e: any) => {
+
+        if (e) { e.preventDefault() }
+
+        const al = answers.filter((x) => x.action && x.action === 'update');
+        const payload = al.map((x) => {
+            return {
+                code: x.code,
+                body: x.body
+            }
+        })
+
+        const response = await updateAnswer(question._id, { action: 'update', answers: payload });
+
+        if (!response.error) {
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                message: 'Question saved successfully'
+            })
+
+            getQuestion(question._id)
+            setQData({ ...qData, body: '', duration: 0, handle: '', score: 0 })
+        }
+
+        if (response.error) {
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: response.errors.join(',')
+            })
+
+        }
+
+        setTimeout(() => {
+            clearToast()
+        }, 1000)
 
     }
 
@@ -241,535 +398,291 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
 
                 <form onSubmit={(e) => { e.preventDefault() }} className="w-[65%] mx-auto my-0">
 
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Career</h3>
-                        </div>
-
-                        <div className="w-full flex items-center gap-x-[1rem]">
-
-                            <div className="min-w-[20%]">
-                                <Filter
-                                    ref={carRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Career"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        careers.data.map((x: Field) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x._id
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        setCareer({ _id: data.value, name: data.label })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                {
-                                    question.career &&
-                                    <Badge
-                                        key={career._id}
-                                        type={'default'}
-                                        size="xsm"
-                                        close={false}
-                                        label={helper.capitalize(career.name)}
-                                        upper={true}
-                                    />
-                                }
-                            </FormField>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Fields</h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[20%]">
-                                <Filter
-                                    ref={fiRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Field"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        fields.data.map((x: Field) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x._id
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        addRubric('field', { id: data.value, name: data.label, ex: false })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                {
-                                    fieldList.map((field) =>
-                                        <Badge
-                                            key={field.id}
-                                            type={'default'}
-                                            size="xsm"
-                                            close={true}
-                                            label={helper.capitalize(field.name)}
-                                            upper={true}
-                                            onClose={(e) => {
-                                                removeRubric('field', field.id)
-                                                fiRef.current.clear()
-                                            }}
-                                        />
-                                    )
-                                }
-                            </FormField>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Body</h3>
-                        </div>
-
-                        <FormField className="">
-                            <TextAreaInput
-                                showFocus={true}
-                                autoComplete={false}
-                                placeholder="Question body"
-                                defaultValue={question.body}
-                                onChange={(e) => editQuestion('body', e.target.value)}
-                            />
-                        </FormField>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Answers</h3>
-                        </div>
-
-                        <FormField className="space-y-[0.8rem]">
-
-                            {
-                                question.answers.length > 0 &&
-                                question.answers.map((answer, index) =>
-                                    <Fragment key={answer.alphabet}>
-
-                                        <div className={`form-field ${(index + 1) === question.answers.length ? 'mrgb2' : 'mrgb'}`}>
-                                            <TextInput
-                                                type="text"
-                                                showFocus={true}
-                                                size="sm"
-                                                defaultValue={answer.body}
-                                                autoComplete={false}
-                                                placeholder="Type answer here"
-                                                isError={false}
-                                                label={{
-                                                    required: false,
-                                                    fontSize: 12,
-                                                    title: `Option ${answer.alphabet.toUpperCase()}`
-                                                }}
-                                                onChange={(e) => { editOption(answer.alphabet, e.target.value) }}
-                                            />
-                                        </div>
-
-                                    </Fragment>
-                                )
-                            }
-
-                        </FormField>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Skills</h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[20%]">
-                                <Filter
-                                    ref={skiRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Skill"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        skills.data.map((x: Field) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x._id
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        addRubric('skill', { id: data.value, name: data.label, ex: false })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                {
-                                    skillList.map((skill) =>
-                                        <Badge
-                                            key={skill.id}
-                                            type={'default'}
-                                            size="xsm"
-                                            close={true}
-                                            label={helper.capitalize(skill.name)}
-                                            upper={true}
-                                            onClose={(e) => {
-                                                removeRubric('skill', skill.id)
-                                                skiRef.current.clear()
-                                            }}
-                                        />
-                                    )
-                                }
-                            </FormField>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Topics</h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[20%]">
-                                <Filter
-                                    ref={toRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Topic"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        topics.data.map((x: Field) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x._id
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        addRubric('topic', { id: data.value, name: data.label, ex: false })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                {
-                                    topicList.map((topic) =>
-                                        <Badge
-                                            key={topic.id}
-                                            type={'default'}
-                                            size="xsm"
-                                            close={true}
-                                            label={helper.capitalize(topic.name)}
-                                            upper={true}
-                                            onClose={(e) => {
-                                                removeRubric('topic', topic.id)
-                                                toRef.current.clear()
-                                            }}
-                                        />
-                                    )
-                                }
-                            </FormField>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Levels</h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[20%]">
-                                <Filter
-                                    ref={leRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Level"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        levels.map((x) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x.value
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        addRubric('level', { id: data.value, name: data.label, ex: false })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                {
-                                    levelList.map((level) =>
-                                        <Badge
-                                            key={level.id}
-                                            type={'default'}
-                                            size="xsm"
-                                            close={true}
-                                            label={helper.capitalize(level.name)}
-                                            upper={true}
-                                            onClose={(e) => {
-                                                removeRubric('level', level.id)
-                                                leRef.current.clear()
-                                            }}
-                                        />
-                                    )
-                                }
-                            </FormField>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Types</h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[20%]">
-                                <Filter
-                                    ref={tyRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Type"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        questionTypes.map((x) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x.value
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        addRubric('type', { id: data.value, name: data.label, ex: false })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                {
-                                    typeList.map((type) =>
-                                        <Badge
-                                            key={type.id}
-                                            type={'default'}
-                                            size="xsm"
-                                            close={true}
-                                            label={helper.capitalize(type.name)}
-                                            upper={true}
-                                            onClose={(e) => {
-                                                removeRubric('type', type.id)
-                                                tyRef.current.clear()
-                                            }}
-                                        />
-                                    )
-                                }
-                            </FormField>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Difficulties</h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[20%]">
-                                <Filter
-                                    ref={diRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Difficulty"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        difficulties.map((x) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x.value
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        addRubric('difficulty', { id: data.value, name: data.label, ex: false })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                {
-                                    difficultyList.map((diff) =>
-                                        <Badge
-                                            key={diff.id}
-                                            type={'default'}
-                                            size="xsm"
-                                            close={true}
-                                            label={helper.capitalize(diff.name)}
-                                            upper={true}
-                                            onClose={(e) => {
-                                                removeRubric('difficulty', diff.id)
-                                                diRef.current.clear()
-                                            }}
-                                        />
-                                    )
-                                }
-                            </FormField>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-rethink text-[13px]">Question Duration and Score</h3>
-                        </div>
-
-                        <FormField className="mb-[0.5rem] flex items-center gap-x-[1.5rem]">
-
-                            <div className="flex w-1/2 items-center gap-x-[0.55rem]">
-
-                                <div className="flex-col w-1/2">
-                                    <TextInput
-                                        type="text"
-                                        showFocus={true}
-                                        size="xsm"
-                                        defaultValue={question.time.duration.toString()}
-                                        autoComplete={false}
-                                        placeholder="Type time value"
-                                        isError={false}
-                                        label={{
-                                            title: 'Enter Time',
-                                            fontSize: 13
-                                        }}
-                                        onChange={(e) => editQuestion('time-duration', parseInt(e.target.value))}
-                                    />
+                    {
+                        editType === 'question' &&
+                        <>
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Career</h3>
                                 </div>
 
-                                <div className="flex-col w-1/2">
+                                <div className="w-full flex items-center gap-x-[1rem]">
 
-                                    <div className="relative top-[2px]">
-                                        <h3 className={`text-[13px] font-rethink pag-900`}>Select Handle</h3>
+                                    <div className="min-w-[20%]">
                                         <Filter
-                                            ref={tyRef}
-                                            size='xsm'
+                                            ref={carRef}
+                                            size='xxsm'
                                             className='la-filter'
-                                            placeholder="Select Handle"
+                                            placeholder="Select Career"
                                             position="bottom"
-                                            defaultValue={question.time.handle}
                                             menu={{
-                                                style: {},
-                                                search: false,
-                                                fullWidth: true,
+                                                style: { minWidth: '250px' },
+                                                search: true,
+                                                fullWidth: false,
                                                 limitHeight: 'md'
                                             }}
                                             items={
-                                                timeHandles.map((x) => {
+                                                core.careers.map((x: Career) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x._id
+                                                    }
+                                                })
+                                            }
+                                            noFilter={false}
+                                            onChange={(data) => {
+                                                setCareer({ _id: data.value, name: data.label })
+                                            }}
+                                        />
+                                    </div>
+
+                                    <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        {
+                                            question.career &&
+                                            <Badge
+                                                key={career._id}
+                                                type={'default'}
+                                                size="xsm"
+                                                close={false}
+                                                label={helper.capitalize(career.name)}
+                                                upper={true}
+                                            />
+                                        }
+                                    </FormField>
+
+                                </div>
+
+                            </div>
+
+                            <Divider />
+
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Fields</h3>
+                                </div>
+
+                                <div className="w-full flex items-start gap-x-[1rem]">
+
+                                    <div className="min-w-[20%]">
+                                        <Filter
+                                            ref={fiRef}
+                                            size='xxsm'
+                                            className='la-filter'
+                                            placeholder="Select Field"
+                                            position="bottom"
+                                            menu={{
+                                                style: { minWidth: '250px' },
+                                                search: true,
+                                                fullWidth: false,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                core.fields.map((x: Field) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x._id
+                                                    }
+                                                })
+                                            }
+                                            noFilter={false}
+                                            onChange={(data) => {
+                                                addRubric('field', { id: data.value, name: data.label, ex: false })
+                                            }}
+                                        />
+                                    </div>
+
+                                    <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        {
+                                            fieldList.map((field) =>
+                                                <Badge
+                                                    key={field.id}
+                                                    type={'default'}
+                                                    size="xsm"
+                                                    close={true}
+                                                    label={helper.capitalize(field.name)}
+                                                    upper={true}
+                                                    onClose={(e) => {
+                                                        removeRubric('field', field.id)
+                                                        fiRef.current.clear()
+                                                    }}
+                                                />
+                                            )
+                                        }
+                                    </FormField>
+
+                                </div>
+
+                            </div>
+
+                            <Divider />
+
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Body</h3>
+                                </div>
+
+                                <FormField className="">
+                                    <TextAreaInput
+                                        showFocus={true}
+                                        autoComplete={false}
+                                        placeholder="Question body"
+                                        defaultValue={question.body}
+                                        onChange={(e) => editQuestion('body', e.target.value)}
+                                    />
+                                </FormField>
+
+                            </div>
+
+                            <Divider />
+
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Skills</h3>
+                                </div>
+
+                                <div className="w-full flex items-start gap-x-[1rem]">
+
+                                    <div className="min-w-[20%]">
+                                        <Filter
+                                            ref={skiRef}
+                                            size='xxsm'
+                                            className='la-filter'
+                                            placeholder="Select Skill"
+                                            position="bottom"
+                                            menu={{
+                                                style: { minWidth: '250px' },
+                                                search: true,
+                                                fullWidth: false,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                core.skills.map((x: Skill) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x._id
+                                                    }
+                                                })
+                                            }
+                                            noFilter={false}
+                                            onChange={(data) => {
+                                                addRubric('skill', { id: data.value, name: data.label, ex: false })
+                                            }}
+                                        />
+                                    </div>
+
+                                    <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        {
+                                            skillList.map((skill) =>
+                                                <Badge
+                                                    key={skill.id}
+                                                    type={'default'}
+                                                    size="xsm"
+                                                    close={true}
+                                                    label={helper.capitalize(skill.name)}
+                                                    upper={true}
+                                                    onClose={(e) => {
+                                                        removeRubric('skill', skill.id)
+                                                        skiRef.current.clear()
+                                                    }}
+                                                />
+                                            )
+                                        }
+                                    </FormField>
+
+                                </div>
+
+                            </div>
+
+                            <Divider />
+
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Topics</h3>
+                                </div>
+
+                                <div className="w-full flex items-start gap-x-[1rem]">
+
+                                    <div className="min-w-[20%]">
+                                        <Filter
+                                            ref={toRef}
+                                            size='xxsm'
+                                            className='la-filter'
+                                            placeholder="Select Topic"
+                                            position="bottom"
+                                            menu={{
+                                                style: { minWidth: '250px' },
+                                                search: true,
+                                                fullWidth: false,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                core.topics.map((x: Topic) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x._id
+                                                    }
+                                                })
+                                            }
+                                            noFilter={false}
+                                            onChange={(data) => {
+                                                addRubric('topic', { id: data.value, name: data.label, ex: false })
+                                            }}
+                                        />
+                                    </div>
+
+                                    <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        {
+                                            topicList.map((topic) =>
+                                                <Badge
+                                                    key={topic.id}
+                                                    type={'default'}
+                                                    size="xsm"
+                                                    close={true}
+                                                    label={helper.capitalize(topic.name)}
+                                                    upper={true}
+                                                    onClose={(e) => {
+                                                        removeRubric('topic', topic.id)
+                                                        toRef.current.clear()
+                                                    }}
+                                                />
+                                            )
+                                        }
+                                    </FormField>
+
+                                </div>
+
+                            </div>
+
+                            <Divider />
+
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Levels</h3>
+                                </div>
+
+                                <div className="w-full flex items-start gap-x-[1rem]">
+
+                                    <div className="min-w-[20%]">
+                                        <Filter
+                                            ref={leRef}
+                                            size='xxsm'
+                                            className='la-filter'
+                                            placeholder="Select Level"
+                                            position="bottom"
+                                            menu={{
+                                                style: { minWidth: '250px' },
+                                                search: true,
+                                                fullWidth: false,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                levels.map((x) => {
                                                     return {
                                                         label: helper.capitalizeWord(x.name),
                                                         value: x.value
@@ -778,41 +691,297 @@ const QuestionEdit = forwardRef((props: IQuestionEdit, ref: ForwardedRef<any>) =
                                             }
                                             noFilter={false}
                                             onChange={(data) => {
-                                                editQuestion('time-handle', data.value)
+                                                addRubric('level', { id: data.value, name: data.label, ex: false })
                                             }}
                                         />
                                     </div>
+
+                                    <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        {
+                                            levelList.map((level) =>
+                                                <Badge
+                                                    key={level.id}
+                                                    type={'default'}
+                                                    size="xsm"
+                                                    close={true}
+                                                    label={helper.capitalize(level.name)}
+                                                    upper={true}
+                                                    onClose={(e) => {
+                                                        removeRubric('level', level.id)
+                                                        leRef.current.clear()
+                                                    }}
+                                                />
+                                            )
+                                        }
+                                    </FormField>
 
                                 </div>
 
                             </div>
 
-                            <div className="flex-col w-1/2">
+                            <Divider />
 
-                                <FormField className="">
+                            <div className="w-full space-y-[0.55rem]">
 
-                                    <TextInput
-                                        type="text"
-                                        showFocus={true}
-                                        size="xsm"
-                                        defaultValue={question.score.default.toString()}
-                                        autoComplete={false}
-                                        placeholder="Type score value"
-                                        label={{
-                                            fontSize: 13,
-                                            title: 'Enter Question Score'
-                                        }}
-                                        isError={false}
-                                        onChange={(e) => editQuestion('score', parseInt(e.target.value))}
-                                    />
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Types</h3>
+                                </div>
+
+                                <div className="w-full flex items-start gap-x-[1rem]">
+
+                                    <div className="min-w-[20%]">
+                                        <Filter
+                                            ref={tyRef}
+                                            size='xxsm'
+                                            className='la-filter'
+                                            placeholder="Select Type"
+                                            position="bottom"
+                                            menu={{
+                                                style: { minWidth: '250px' },
+                                                search: true,
+                                                fullWidth: false,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                questionTypes.map((x) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x.value
+                                                    }
+                                                })
+                                            }
+                                            noFilter={false}
+                                            onChange={(data) => {
+                                                addRubric('type', { id: data.value, name: data.label, ex: false })
+                                            }}
+                                        />
+                                    </div>
+
+                                    <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        {
+                                            typeList.map((type) =>
+                                                <Badge
+                                                    key={type.id}
+                                                    type={'default'}
+                                                    size="xsm"
+                                                    close={true}
+                                                    label={helper.capitalize(type.name)}
+                                                    upper={true}
+                                                    onClose={(e) => {
+                                                        removeRubric('type', type.id)
+                                                        tyRef.current.clear()
+                                                    }}
+                                                />
+                                            )
+                                        }
+                                    </FormField>
+
+                                </div>
+
+                            </div>
+
+                            <Divider />
+
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Difficulties</h3>
+                                </div>
+
+                                <div className="w-full flex items-start gap-x-[1rem]">
+
+                                    <div className="min-w-[20%]">
+                                        <Filter
+                                            ref={diRef}
+                                            size='xxsm'
+                                            className='la-filter'
+                                            placeholder="Select Difficulty"
+                                            position="bottom"
+                                            menu={{
+                                                style: { minWidth: '250px' },
+                                                search: true,
+                                                fullWidth: false,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                difficulties.map((x) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x.value
+                                                    }
+                                                })
+                                            }
+                                            noFilter={false}
+                                            onChange={(data) => {
+                                                addRubric('difficulty', { id: data.value, name: data.label, ex: false })
+                                            }}
+                                        />
+                                    </div>
+
+                                    <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        {
+                                            difficultyList.map((diff) =>
+                                                <Badge
+                                                    key={diff.id}
+                                                    type={'default'}
+                                                    size="xsm"
+                                                    close={true}
+                                                    label={helper.capitalize(diff.name)}
+                                                    upper={true}
+                                                    onClose={(e) => {
+                                                        removeRubric('difficulty', diff.id)
+                                                        diRef.current.clear()
+                                                    }}
+                                                />
+                                            )
+                                        }
+                                    </FormField>
+
+                                </div>
+
+                            </div>
+
+                            <Divider />
+
+                            <div className="w-full space-y-[0.55rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Question Duration and Score</h3>
+                                </div>
+
+                                <FormField className="mb-[0.5rem] flex items-center gap-x-[1.5rem]">
+
+                                    <div className="flex w-1/2 items-center gap-x-[0.55rem]">
+
+                                        <div className="flex-col w-1/2">
+                                            <TextInput
+                                                type="text"
+                                                showFocus={true}
+                                                size="xsm"
+                                                defaultValue={question.time.duration.toString()}
+                                                autoComplete={false}
+                                                placeholder="Type time value"
+                                                isError={false}
+                                                label={{
+                                                    title: 'Enter Time',
+                                                    fontSize: 13
+                                                }}
+                                                onChange={(e) => editQuestion('time-duration', parseInt(e.target.value))}
+                                            />
+                                        </div>
+
+                                        <div className="flex-col w-1/2">
+
+                                            <div className="relative top-[2px]">
+                                                <h3 className={`text-[13px] font-rethink pag-900`}>Select Handle</h3>
+                                                <Filter
+                                                    ref={tyRef}
+                                                    size='xsm'
+                                                    className='la-filter'
+                                                    placeholder="Select Handle"
+                                                    position="bottom"
+                                                    defaultValue={question.time.handle}
+                                                    menu={{
+                                                        style: {},
+                                                        search: false,
+                                                        fullWidth: true,
+                                                        limitHeight: 'md'
+                                                    }}
+                                                    items={
+                                                        timeHandles.map((x) => {
+                                                            return {
+                                                                label: helper.capitalizeWord(x.name),
+                                                                value: x.value
+                                                            }
+                                                        })
+                                                    }
+                                                    noFilter={false}
+                                                    onChange={(data) => {
+                                                        editQuestion('time-handle', data.value)
+                                                    }}
+                                                />
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div className="flex-col w-1/2">
+
+                                        <FormField className="">
+
+                                            <TextInput
+                                                type="text"
+                                                showFocus={true}
+                                                size="xsm"
+                                                defaultValue={question.score.default.toString()}
+                                                autoComplete={false}
+                                                placeholder="Type score value"
+                                                label={{
+                                                    fontSize: 13,
+                                                    title: 'Enter Question Score'
+                                                }}
+                                                isError={false}
+                                                onChange={(e) => editQuestion('score', parseInt(e.target.value))}
+                                            />
+
+                                        </FormField>
+
+                                    </div>
+
+                                </FormField>
+
+                            </div>
+                        </>
+                    }
+
+                    {
+                        editType === 'answer' &&
+                        <>
+                            {/* <Divider show={false} /> */}
+
+                            <div className="w-full space-y-[1.5rem]">
+
+                                <div className="flex items-center">
+                                    <h3 className="font-rethink text-[13px]">Edit Question Answers ( options )</h3>
+                                </div>
+
+                                <FormField className="space-y-[0.8rem]">
+
+                                    {
+                                        question.answers.length > 0 &&
+                                        question.answers.map((answer, index) =>
+                                            <Fragment key={answer.alphabet}>
+
+                                                <div className={`form-field ${(index + 1) === question.answers.length ? 'mrgb2' : 'mrgb'}`}>
+                                                    <TextInput
+                                                        type="text"
+                                                        showFocus={true}
+                                                        size="sm"
+                                                        defaultValue={answer.body}
+                                                        autoComplete={false}
+                                                        placeholder="Type answer here"
+                                                        isError={false}
+                                                        label={{
+                                                            required: false,
+                                                            fontSize: 12,
+                                                            title: `Option ${answer.alphabet.toUpperCase()}`
+                                                        }}
+                                                        onChange={(e) => { editOption(answer.alphabet, e.target.value) }}
+                                                    />
+                                                </div>
+
+                                            </Fragment>
+                                        )
+                                    }
 
                                 </FormField>
 
                             </div>
 
-                        </FormField>
-
-                    </div>
+                            <Divider show={false} />
+                        </>
+                    }
 
                 </form>
 

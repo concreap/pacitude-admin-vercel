@@ -3,15 +3,52 @@ import { IAddQuestion, IAIQuestion, ICollection, IGeneratedQuestion, IListQuery,
 import useContextType from '../useContextType'
 import { GET_FIELD, GET_FIELDS, GET_QUESTION, GET_QUESTIONS, GET_SKILL, GET_SKILLS, GET_TOPIC, GET_TOPICS, SET_AIQUESTION, } from '../../context/types'
 import AxiosService from '../../services/axios.service'
-import { URL_FIELD, URL_QUESTION, URL_SKILL, URL_TOPIC } from '../../utils/path.util'
+import { URL_FIELD, URL_QUESTION } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
 import helper from '../../utils/helper.util'
 import QHelper from '../../utils/question.util'
+import { ResourceType } from '../../utils/types.util'
 
 interface IGenerate {
     model: string,
     prompt: string,
     total: number
+}
+
+interface IDetachResource {
+    skills?: Array<string>,
+    fields?: Array<string>,
+    topics?: Array<string>,
+    levels?: Array<string>,
+    difficulties?: Array<string>,
+    types?: Array<string>,
+    type: ResourceType
+}
+
+interface IUpdateAnswer {
+    action: string,
+    answers: Array<{
+        body?: string,
+        code: string,
+        toIndex?: number
+    }>
+}
+
+interface IUpdateQuestion {
+    body?: string,
+    isEnabled?: boolean,
+    difficulties?: Array<string>,
+    levels?: Array<string>,
+    types?: Array<string>,
+    time?: {
+        duration: number,
+        handle: string
+    },
+    score?: number,
+    careerId?: string
+    fields?: Array<string>,
+    skills?: Array<string>
+    topics?: Array<string>
 }
 
 const useQuestion = () => {
@@ -173,6 +210,9 @@ const useQuestion = () => {
 
     }, [setLoading, unsetLoading, setCollection])
 
+    /**
+     * @name getResourceQuestions
+     */
     const getResourceQuestions = useCallback(async (data: IListQuery) => {
 
         const { limit, page, select, order, resource, resourceId } = data;
@@ -290,6 +330,9 @@ const useQuestion = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    /**
+     * @name generateQuestions
+     */
     const generateQuestions = useCallback(async (data: IGenerate) => {
 
         setLoading({ option: 'default' })
@@ -364,7 +407,9 @@ const useQuestion = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
-
+    /**
+     * @name addGeneratedQuestions
+     */
     const addGeneratedQuestions = useCallback(async () => {
 
         const mapped = await mapAIQuestions()
@@ -420,6 +465,165 @@ const useQuestion = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    /**
+     * @name updateQuestion
+     */
+    const updateQuestion = useCallback(async (id: string, data: IUpdateQuestion) => {
+
+        setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_QUESTION}/${id}`,
+            payload: { ...data }
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+
+            }
+
+            unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+            else if (response.data) {
+                console.log(`Error! Could not update question ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading])
+
+    /**
+     * @name detachResource
+     */
+    const detachResource = useCallback(async (id: string, data: IDetachResource) => {
+
+        setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_QUESTION}/detach/${id}`,
+            payload: { ...data }
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+
+            }
+
+            unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+            else if (response.data) {
+                console.log(`Error! Could not detach resource ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading])
+
+    const updateAnswer = useCallback(async (id: string, data: IUpdateAnswer) => {
+
+        setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_QUESTION}/update-answer/${id}`,
+            payload: { ...data }
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+
+            }
+
+            unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+            else if (response.data) {
+                console.log(`Error! Could not detach resource ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading])
+
 
     return {
         questions,
@@ -435,7 +639,10 @@ const useQuestion = () => {
         getResourceQuestions,
         getQuestion,
         generateQuestions,
-        addGeneratedQuestions
+        addGeneratedQuestions,
+        updateQuestion,
+        detachResource,
+        updateAnswer
     }
 }
 

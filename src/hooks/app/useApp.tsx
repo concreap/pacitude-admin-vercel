@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ICollection, IListQuery, IUserContext } from '../../utils/interfaces.util'
 import UserContext from '../../context/user/userContext'
 import useContextType from '../useContextType'
-import { GET_CAREER, GET_CAREERS, GET_FIELD, GET_FIELDS, GET_INDUSTRIES, GET_INDUSTRY, GET_SKILLS, GET_TOPICS } from '../../context/types'
+import { GET_CAREER, GET_CAREERS, GET_CORE, GET_FIELD, GET_FIELDS, GET_INDUSTRIES, GET_INDUSTRY, GET_SKILLS, GET_TOPICS } from '../../context/types'
 import AxiosService from '../../services/axios.service'
 import { URL_CAREER, URL_CONFIG, URL_FIELD, URL_INDUSTRY } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
@@ -13,11 +13,7 @@ const useApp = () => {
     const { appContext } = useContextType()
     const { popNetwork } = useNetwork(false)
     const {
-        industries,
-        careers,
-        fields,
-        skills,
-        topics,
+        core,
         loading,
         setCollection,
         setResource,
@@ -50,80 +46,18 @@ const useApp = () => {
 
             if (response.status === 200) {
 
-                if(response.data.industries){
+                setResource(GET_CORE, {
+                    industries: response.data.industries,
+                    careers: response.data.careers,
+                    fields: response.data.fields,
+                    skills: response.data.skills,
+                    topics: response.data.topics,
+                })
 
-                    const result: ICollection = {
-                        data: response.data.industries,
-                        count: response.data.industries.length,
-                        total: response.data.industries.length,
-                        pagination: pagination,
-                        loading: false,
-                        message: response.data.industries.length > 0 ? `displaying ${response.data.industries.length} industries` : 'There are no industries currently'
-                    }
-    
-                    setCollection(GET_INDUSTRIES, result)
-
-                }
-
-                if(response.data.careers){
-
-                    const result: ICollection = {
-                        data: response.data.careers,
-                        count: response.data.careers.length,
-                        total: response.data.careers.length,
-                        pagination: pagination,
-                        loading: false,
-                        message: response.data.careers.length > 0 ? `displaying ${response.data.careers.length} careers` : 'There are no careers currently'
-                    }
-    
-                    setCollection(GET_CAREERS, result)
-
-                }
-
-                if(response.data.fields){
-
-                    const result: ICollection = {
-                        data: response.data.fields,
-                        count: response.data.fields.length,
-                        total: response.data.fields.length,
-                        pagination: pagination,
-                        loading: false,
-                        message: response.data.fields.length > 0 ? `displaying ${response.data.fields.length} fields` : 'There are no fields currently'
-                    }
-    
-                    setCollection(GET_FIELDS, result)
-
-                }
-
-                if(response.data.skills){
-
-                    const result: ICollection = {
-                        data: response.data.skills,
-                        count: response.data.skills.length,
-                        total: response.data.skills.length,
-                        pagination: pagination,
-                        loading: false,
-                        message: response.data.skills.length > 0 ? `displaying ${response.data.skills.length} skills` : 'There are no skills currently'
-                    }
-    
-                    setCollection(GET_SKILLS, result)
-
-                }
-
-                if(response.data.topics){
-
-                    const result: ICollection = {
-                        data: response.data.topics,
-                        count: response.data.topics.length,
-                        total: response.data.topics.length,
-                        pagination: pagination,
-                        loading: false,
-                        message: response.data.topics.length > 0 ? `displaying ${response.data.topics.length} topics` : 'There are no topics currently'
-                    }
-    
-                    setCollection(GET_TOPICS, result)
-
-                }
+                unsetLoading({
+                    option: 'default',
+                    message: response.message ? response.message : ''
+                })
 
             }
 
@@ -146,28 +80,13 @@ const useApp = () => {
 
         }
 
-    }, [setLoading, unsetLoading, setCollection])
-
-    const clearCoreResources = useCallback(async () => {
-
-        setCollection(GET_INDUSTRIES, collection)
-        setCollection(GET_CAREERS, collection)
-        setCollection(GET_FIELDS, collection)
-        setCollection(GET_SKILLS, collection)
-        setCollection(GET_TOPICS, collection)
-
-    }, [setCollection])
+    }, [setLoading, unsetLoading, setResource])
 
     return {
-        industries,
-        careers,
-        fields,
-        skills,
-        topics,
+        core,
         loading,
 
         getCoreResources,
-        clearCoreResources
     }
 }
 

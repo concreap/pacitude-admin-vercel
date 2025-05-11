@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import storage from '../../utils/storage.util'
 import loader from '../../utils/loader.util'
 import { LoadingType } from '../../utils/types.util'
-import { aiquestion, collection, metrics } from '../../_data/seed'
+import { aiquestion, collection, coreResource, metrics } from '../../_data/seed'
 import helper from '../../utils/helper.util'
 import {
     SET_LOADING,
@@ -33,6 +33,7 @@ const AppState = (props: any) => {
         topics: collection,
         topic: {},
         items: [],
+        core: coreResource,
         metrics: metrics,
         search: collection,
         message: '',
@@ -148,6 +149,7 @@ const AppState = (props: any) => {
         topics: state.topics,
         topic: state.topic,
         items: state.items,
+        core: state.core,
         metrics: state.metrics,
         search: state.search,
         message: state.message,
@@ -176,6 +178,7 @@ const AppState = (props: any) => {
         state.search,
         state.message,
         state.loading,
+        state.core,
         setLoading,
         unsetLoading,
         clearResource,
