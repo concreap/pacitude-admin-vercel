@@ -35,7 +35,7 @@ const CreateQuestionPage = ({ }) => {
     const skiRef = useRef<any>(null)
     const toRef = useRef<any>(null)
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
     
     const { toast, setToast } = useToast()
     const { fields, getFields } = useField()

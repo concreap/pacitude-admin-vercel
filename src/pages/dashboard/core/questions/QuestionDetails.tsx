@@ -31,7 +31,7 @@ const QuestionDetailsPage = ({ }) => {
     const { id } = useParams()
     const editRef = useRef<any>(null)
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
     const { question, getQuestion, loading } = useQuestion();
     const { getCoreResources } = useApp()
 

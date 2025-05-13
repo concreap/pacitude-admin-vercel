@@ -8,7 +8,7 @@ import FieldList from "./FieldList";
 
 const FieldsPage = ({ }) => {
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
 
     useEffect(() => {
 

@@ -8,7 +8,7 @@ import TopicList from "./TopicList";
 
 const SkillsPage = ({ }) => {
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
 
     useEffect(() => {
 

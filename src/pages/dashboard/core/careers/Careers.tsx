@@ -8,7 +8,7 @@ import useSidebar from "../../../../hooks/useSidebar";
 
 const CareersPage = ({ }) => {
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
 
     useEffect(() => {
 

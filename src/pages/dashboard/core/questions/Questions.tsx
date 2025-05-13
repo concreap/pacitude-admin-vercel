@@ -13,7 +13,7 @@ import MetricItem from "../../../../components/app/MetricItem";
 
 const QuestionsPage = ({ }) => {
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
     const { toDetailRoute } = useGoTo()
     const { getResourceMetrics, handleSetMetric, metric, metrics, loading } = useMetrics()
 

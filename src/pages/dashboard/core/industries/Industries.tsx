@@ -8,7 +8,7 @@ import useSidebar from "../../../../hooks/useSidebar";
 
 const IndustriesPage = ({ }) => {
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
 
     useEffect(() => {
 
