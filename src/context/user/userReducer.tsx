@@ -47,13 +47,11 @@ const reducer = (state: any, action: any) => {
             return {
                 ...state,
                 user: action.payload,
-                loading: false
             }
         case GET_USER:
             return {
                 ...state,
                 userDetails: action.payload,
-                loading: false
             }
         case SET_USER:
             return {
