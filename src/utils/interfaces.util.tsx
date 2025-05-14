@@ -41,7 +41,7 @@ export interface IRouteItem {
     action?: RouteActionType,
     content: {
         backButton?: boolean,
-        sidebar?: boolean
+        collapsed?: boolean
     }
     params?: Array<IRouteParam>
 }

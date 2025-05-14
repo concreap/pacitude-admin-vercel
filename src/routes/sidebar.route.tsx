@@ -10,7 +10,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'navigate',
         isAuth: true,
         params: [],
-        content: { sidebar: false, backButton: false }
+        content: { collapsed: false, backButton: false }
     },
     {
         name: 'users',
@@ -20,7 +20,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'open-secondary',
         isAuth: true,
         params: [],
-        content: { sidebar: false },
+        content: { collapsed: false },
         subroutes: [
             {
                 name: 'all-users',
@@ -30,7 +30,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'talents',
@@ -40,7 +40,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'businesses',
@@ -50,7 +50,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'divider',
@@ -67,7 +67,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             }
         ]
     },
@@ -79,7 +79,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'open-secondary',
         isAuth: true,
         params: [],
-        content: { sidebar: true },
+        content: { collapsed: false },
         subroutes: [
             {
                 name: 'industries',
@@ -89,7 +89,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'careers',
@@ -99,7 +99,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'fields',
@@ -109,7 +109,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'skills',
@@ -119,7 +119,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'divider',
@@ -136,7 +136,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'topics',
@@ -146,7 +146,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             }
         ],
         inroutes: [
@@ -160,7 +160,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 route: 'core',
@@ -172,7 +172,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 route: 'core',
@@ -184,7 +184,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 route: 'core',
@@ -196,7 +196,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 route: 'core',
@@ -208,7 +208,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 route: 'core',
@@ -220,7 +220,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             }
         ]
     },
@@ -232,7 +232,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'navigate',
         isAuth: true,
         params: [],
-        content: { sidebar: false, backButton: true }
+        content: { collapsed: false, backButton: true }
     },
     {
         name: 'payments',
@@ -242,7 +242,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'open-secondary',
         isAuth: true,
         params: [],
-        content: { sidebar: true },
+        content: { collapsed: false },
         subroutes: [
             {
                 name: 'transactions',
@@ -252,7 +252,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'subscriptions',
@@ -262,7 +262,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'divider',
@@ -288,7 +288,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'open-secondary',
         isAuth: true,
         params: [],
-        content: { sidebar: true },
+        content: { collapsed: false },
         subroutes: [
             {
                 name: 'profile',
@@ -298,7 +298,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'preferences',
@@ -308,7 +308,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'divider',
@@ -325,7 +325,7 @@ const sidebarRoutes: Array<IRoute> = [
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],
-                content: { sidebar: false, backButton: true }
+                content: { collapsed: false, backButton: true }
             }
         ]
     },
@@ -337,7 +337,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'navigate',
         isAuth: true,
         params: [],
-        content: { sidebar: false, backButton: true }
+        content: { collapsed: false, backButton: true }
     },
     {
         name: 'feedbacks',
@@ -347,7 +347,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'navigate',
         isAuth: true,
         params: [],
-        content: { sidebar: false, backButton: true }
+        content: { collapsed: false, backButton: true }
     },
     {
         name: 'referrals',
@@ -357,7 +357,7 @@ const sidebarRoutes: Array<IRoute> = [
         action: 'navigate',
         isAuth: true,
         params: [],
-        content: { sidebar: false, backButton: true }
+        content: { collapsed: false, backButton: true }
     },
 ]
 
