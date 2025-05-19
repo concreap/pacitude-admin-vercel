@@ -607,8 +607,7 @@ const CreateQuestionPage = ({ }) => {
                                                                 active={code === question.code}
                                                                 disabled={false}
                                                                 onClick={(code: string) => {
-                                                                    setCode(code)
-                                                                    clearOnSelect()
+                                                                    setCode(code);
                                                                 }}
                                                             />
                                                         </Fragment>
@@ -645,8 +644,12 @@ const CreateQuestionPage = ({ }) => {
                                                                 noFilter={false}
                                                                 onChange={(data) => {
                                                                     setAiData({ ...aiData, career: { id: data.value, name: data.label } })
-                                                                    const filtered = fields.filter((x) => x.career === data.value)
-                                                                    setFields(filtered);
+                                                                    const fd = core.fields.filter((x) => x.career === data.value)
+                                                                    const sd = core.skills.filter((x) => x.career === data.value)
+                                                                    const td = core.topics.filter((x) => x.career === data.value)
+                                                                    setFields(fd);
+                                                                    setSkills(sd.length > 0 ? sd : core.skills)
+                                                                    setTopics(td.length > 0 ? td : core.topics)
                                                                     carRef.current.clear()
                                                                 }}
                                                             />
