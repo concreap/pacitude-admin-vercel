@@ -193,7 +193,7 @@ const Button = (props: IButton) => {
                 {
                     !loading &&
                     <>
-                        <span className={`font-rethink${text.weight ? '-' + text.weight : ''}`} style={{ fontSize: `${text.size ? text.size : '14'}px` }}>{text.label}</span>
+                        <span className={`font-mona${text.weight ? '-' + text.weight : ''}`} style={{ fontSize: `${text.size ? text.size : '14'}px` }}>{text.label}</span>
                         {icon.enable && <>{icon.child}</>}
                     </>
                 }

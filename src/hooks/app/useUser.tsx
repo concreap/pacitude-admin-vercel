@@ -3,7 +3,7 @@ import useContextType from '../useContextType'
 import storage from '../../utils/storage.util'
 import AxiosService from '../../services/axios.service'
 import { URL_LOGGEDIN_USER, URL_USERS } from '../../utils/path.util'
-import { GET_USER, GET_USERS } from '../../context/types'
+import { GET_LOGGEDIN_USER, GET_USER, GET_USERS } from '../../context/types'
 import { ICollection, IListQuery } from '../../utils/interfaces.util'
 
 const useUser = () => {
@@ -76,10 +76,10 @@ const useUser = () => {
         });
 
         if (!response.error) {
-            setResource(GET_USER, response.data)
+            setResource(GET_LOGGEDIN_USER, response.data)
             unsetLoading({ option: 'default', message: 'data fetched successfully' })
         } else {
-            setResource(GET_USER, null)
+            setResource(GET_LOGGEDIN_USER, null)
             unsetLoading({ option: 'default', message: response.message })
         }
 

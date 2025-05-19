@@ -34,9 +34,9 @@ const QuestionOption = (props: IQuestionOption) => {
         let result = ''
 
         if (isActive) {
-            result = result + ` font-rethink-medium ${type === 'option' ? 'pagr-700' : 'pacb-600'}`
+            result = result + ` font-mona-medium ${type === 'option' ? 'pagr-700' : 'pacb-600'}`
         } else {
-            result = result + ` font-rethink pag-700`
+            result = result + ` font-mona pag-700`
         }
 
         return result;

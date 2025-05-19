@@ -40,7 +40,7 @@ const Checkbox = forwardRef((props: ICheckbox, ref: ForwardedRef<any>) => {
 
     const cc = () => {
 
-        let result: string = `check-input cursor-pointer checkbox ${size} font-rethink text-[13px] ${ch.sz}`;
+        let result: string = `check-input cursor-pointer checkbox ${size} font-mona text-[13px] ${ch.sz}`;
 
         if (className) {
             result = result + ` ${className}`
@@ -72,7 +72,7 @@ const Checkbox = forwardRef((props: ICheckbox, ref: ForwardedRef<any>) => {
             {
                 label &&
                 <label htmlFor={id ? id : ''} className={`mb-0 pl-[0.65rem] relative top-[1px] ${label.className ? label.className : ''}`}>
-                    <span className={`text-${lfs()} font-rethink${label.fontWeight ? '-' + label.fontWeight : ''} color-black`}>{label.title}</span>
+                    <span className={`text-${lfs()} font-mona${label.fontWeight ? '-' + label.fontWeight : ''} color-black`}>{label.title}</span>
                 </label>
             }
 

@@ -23,7 +23,7 @@ const QuestionAnswer = ({ options, onEdit }: IQuestionAnswer) => {
                     options.length === 0 &&
                     <>
                         <EmptyState className="min-h-[20vh]" noBound={true}>
-                            <span className="font-rethink pag-600 text-[13px]">Options will appear here</span>
+                            <span className="font-mona pag-600 text-[13px]">Options will appear here</span>
                         </EmptyState>
                     </>
                 }

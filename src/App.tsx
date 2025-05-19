@@ -104,7 +104,7 @@ function App() {
                                                                     title={route.title ? route.title : route.name}
                                                                     back={route.content.backButton ? route.content.backButton : false}
                                                                     sidebar={{
-                                                                        collapsed: route.content.sidebar ? route.content.sidebar : false
+                                                                        collapsed: route.content.collapsed ? route.content.collapsed : false
                                                                     }}
                                                                 />
                                                             }
@@ -123,7 +123,7 @@ function App() {
                                                                                 title={subroute.title ? subroute.title : subroute.name}
                                                                                 back={true}
                                                                                 sidebar={{
-                                                                                    collapsed: subroute.content.sidebar ? subroute.content.sidebar : false
+                                                                                    collapsed: subroute.content.collapsed ? subroute.content.collapsed : false
                                                                                 }}
                                                                             />
                                                                         }
@@ -146,7 +146,7 @@ function App() {
                                                                                 title={inroute.title ? inroute.title : inroute.name}
                                                                                 back={true}
                                                                                 sidebar={{
-                                                                                    collapsed: inroute.content.sidebar ? inroute.content.sidebar : false
+                                                                                    collapsed: inroute.content.collapsed ? inroute.content.collapsed : false
                                                                                 }}
                                                                             />
                                                                         }

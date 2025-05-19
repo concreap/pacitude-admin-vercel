@@ -9,7 +9,7 @@ import useSidebar from "../../hooks/useSidebar";
 
 const Name = ({ component, back, sidebar: sidenav, title }: IDashboardLayout) => {
 
-    const { sidebar } = useSidebar(false)
+    const { sidebar } = useSidebar({})
     const { toast, clearToast } = useToast()
 
     useEffect(() => {

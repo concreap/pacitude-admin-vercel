@@ -23,7 +23,7 @@ const SideBar = (props: ISidebar) => {
     } = props;
 
     const { goTo, getSubroutes, getRoute, getInRoutes, computePath, getRouteAction } = useGoTo()
-    const { sidebar, setSidebar, initSidebar } = useSidebar(false)
+    const { sidebar, setSidebar, initSidebar } = useSidebar({})
     const { redirect } = useAuth()
     const { getUser, user } = useUser()
 
@@ -60,7 +60,7 @@ const SideBar = (props: ISidebar) => {
                 route: route,
                 subroutes: sidebar.subroutes,
                 inroutes: sidebar.inroutes ? sidebar.inroutes : [],
-                isOpen: sidebar.subroutes.length > 0 ? true : false
+                isOpen: false
             });
 
             // store current route name in local storage

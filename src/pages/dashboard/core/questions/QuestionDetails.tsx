@@ -31,7 +31,7 @@ const QuestionDetailsPage = ({ }) => {
     const { id } = useParams()
     const editRef = useRef<any>(null)
 
-    useSidebar(true)
+    useSidebar({ type: 'page', init: true })
     const { question, getQuestion, loading } = useQuestion();
     const { getCoreResources } = useApp()
 
@@ -124,7 +124,7 @@ const QuestionDetailsPage = ({ }) => {
                     {
                         helper.isEmpty(question, 'object') &&
                         <EmptyState bgColor='bg-pag-25' className="min-h-[50vh]" noBound={true} >
-                            <span className="font-rethink text-[14px] pas-950">Question not found!</span>
+                            <span className="font-mona text-[14px] pas-950">Question not found!</span>
                         </EmptyState>
                     }
 

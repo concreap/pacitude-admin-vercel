@@ -208,13 +208,13 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
             <div className={cc()}>
 
                 <div onClick={(e) => toggleMenu(e)} className={`selected ${ch.h}`}>
-                    {!selected && <span className="text-[13px] font-rethink pag-600 relative pr-[0.5rem] truncate top-[0px]">{placeholder}</span>}
+                    {!selected && <span className="text-[13px] font-mona pag-600 relative pr-[0.5rem] truncate top-[0px]">{placeholder}</span>}
                     {
                         selected &&
                         <>
                             <div className="flex items-center w-[95%]">
                                 {selected.image && <> <AvatarUI url={selected.image} /> <span className="pl-[0.5rem]"></span> </>}
-                                <span className="text-[13px] font-rethink pag-600 relative pr-[0.5rem] truncate top-[0px]">{selected.label}</span>
+                                <span className="text-[13px] font-mona pag-600 relative pr-[0.5rem] truncate top-[0px]">{selected.label}</span>
                             </div>
                         </>
                     }
@@ -227,7 +227,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
                     {
                         items.length === 0 &&
                         <div className="empty">
-                            <span className="text-[14px] font-rethink pag-600">No Items</span>
+                            <span className="text-[14px] font-mona pag-600">No Items</span>
                         </div>
                     }
                     {
@@ -256,7 +256,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
                                 {
                                     noFilter &&
                                     <Link onClick={(e) => selectItem(e, 'no-filter')} to="" className="filter-item">
-                                        <span className="text-[13px] font-rethink pag-600">No Filter</span>
+                                        <span className="text-[13px] font-mona pag-600">No Filter</span>
                                     </Link>
                                 }
 
@@ -272,7 +272,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
                                                         <span className="pl-[0.5rem]"></span>
                                                     </>
                                                 }
-                                                <span className="text-[13px] font-rethink pag-600">{item.label}</span>
+                                                <span className="text-[13px] font-mona pag-600">{item.label}</span>
 
                                                 {
                                                     selected && selected.value === item.value &&
@@ -295,7 +295,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
                                                         <span className="pl-[0.5rem]"></span>
                                                     </>
                                                 }
-                                                <span className="text-[13px] font-rethink pag-600">{item.label}</span>
+                                                <span className="text-[13px] font-mona pag-600">{item.label}</span>
                                                 {
                                                     selected && selected.value === item.value &&
                                                     <Icon name="check" className="pacb-800 ml-auto" type="feather" size={16} />

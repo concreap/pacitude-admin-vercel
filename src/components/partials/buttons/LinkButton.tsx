@@ -43,7 +43,7 @@ const LinkButton = (props: ILinkButton) => {
     return (
         <>
             <Link onClick={(e) => handleClick(e)} to={''} className={`inline-flex transition-all duration-[0.25s] items-center ${className}`}>
-                <span className={`font-hostgro-${text.weight} pacb-900 pr-[0.5rem] ${text.className}`}>{text.label}</span>
+                <span className={`font-mona-${text.weight} pacb-900 pr-[0.5rem] ${text.className}`}>{text.label}</span>
                 {
                     icon.enable &&
                     <span className="ml-auto">

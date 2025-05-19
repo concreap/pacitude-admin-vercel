@@ -67,7 +67,7 @@ const QuestionRubric = ({ type, items, limit = 3, className = '' }: IQuestionRub
                     )
                 }
 
-                { remBadges.length > 0 && <span className="text-[13px] color-black font-rethink">+{ remBadges.length }</span> }
+                { remBadges.length > 0 && <span className="text-[13px] color-black font-mona">+{ remBadges.length }</span> }
 
             </div>
         </>
