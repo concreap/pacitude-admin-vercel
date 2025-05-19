@@ -54,7 +54,7 @@ const GeneratedQuestion = (props: IGeneratedQuestion) => {
         <>
             <div onClick={(e) => handleSelect(e)} className={cc()} style={{ borderColor: active ? '#45c2f0' : '' }}>
 
-                <div className="mrgb font-mona text-[16px] pag-950 leading-[28px]">{question.body} {question.code ? question.code : 'lax'}</div>
+                <div className="mrgb font-mona text-[16px] pag-950 leading-[28px]">{question.body}</div>
 
                 <Divider />
 

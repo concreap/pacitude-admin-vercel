@@ -18,7 +18,7 @@ const Topbar = (props: ITopbar) => {
         sticky = true
     } = props;
 
-    const { sidebar } = useSidebar()
+    const { sidebar } = useSidebar({})
     const { goBack } = useGoBack()
     const dropRef = useRef<any>(null)
 

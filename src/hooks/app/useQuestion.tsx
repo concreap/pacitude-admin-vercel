@@ -51,6 +51,10 @@ interface IUpdateQuestion {
     topics?: Array<string>
 }
 
+interface IAddGenerated{
+    careerId: string
+}
+
 const useQuestion = () => {
 
     const { appContext } = useContextType()
@@ -410,7 +414,7 @@ const useQuestion = () => {
     /**
      * @name addGeneratedQuestions
      */
-    const addGeneratedQuestions = useCallback(async () => {
+    const addGeneratedQuestions = useCallback(async (data: IAddGenerated) => {
 
         const mapped = await mapAIQuestions()
 
@@ -422,6 +426,7 @@ const useQuestion = () => {
             isAuth: true,
             path: `${URL_QUESTION}/add-generated`,
             payload: {
+                careerId: data.careerId,
                 generated: mapped
             }
         })

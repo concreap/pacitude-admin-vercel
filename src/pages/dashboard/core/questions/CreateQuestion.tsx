@@ -21,6 +21,9 @@ import Divider from "../../../../components/partials/Divider";
 import TextAreaInput from "../../../../components/partials/inputs/TextAreaInput";
 import { difficulties, levels, questionTypes, timeHandles } from "../../../../_data/seed";
 import Topic from "../../../../models/Topic.model";
+import useApp from "../../../../hooks/app/useApp";
+import Skill from "../../../../models/Skill.model";
+import Career from "../../../../models/Career.model";
 
 const CreateQuestionPage = ({ }) => {
 
@@ -28,6 +31,7 @@ const CreateQuestionPage = ({ }) => {
     const modelref = useRef<any>(null)
     const pmRef = useRef<any>(null)
 
+    const carRef = useRef<any>(null)
     const fiRef = useRef<any>(null)
     const leRef = useRef<any>(null)
     const diRef = useRef<any>(null)
@@ -36,37 +40,38 @@ const CreateQuestionPage = ({ }) => {
     const toRef = useRef<any>(null)
 
     useSidebar({ type: 'page', init: true })
-    
+
     const { toast, setToast } = useToast()
-    const { fields, getFields } = useField()
-    const { getTopics, topics } = useTopic()
-    const { getSkills, skills } = useSkill()
+    const { core, getCoreResources } = useApp()
     const { aiQuestions, loading, validateAIQuestions, generateQuestions, addGeneratedQuestions, setAIQuestions } = useQuestion()
 
     const [questions, setQuestions] = useState<Array<IAIQuestion>>([])
+    const [fields, setFields] = useState<Array<Field>>([])
+    const [skills, setSkills] = useState<Array<Skill>>([])
+    const [topics, setTopics] = useState<Array<Topic>>([])
+    const [careers, setCareers] = useState<Array<Career>>([])
     const [code, setCode] = useState<string>('')
     const [aiData, setAiData] = useState({
         prompt: '',
         model: 'openai',
         total: 3,
-        error: ''
+        error: '',
+        career: {
+            id: '',
+            name: ''
+        }
     });
 
     useEffect(() => {
-
-        if (helper.isEmpty(fields.data, 'array')) {
-            getFields({ limit: 9999, page: 1, order: 'desc' })
-        }
-
-        if (helper.isEmpty(skills.data, 'array')) {
-            getSkills({ limit: 9999, page: 1, order: 'desc' })
-        }
-
-        if (helper.isEmpty(topics.data, 'array')) {
-            getTopics({ limit: 9999, page: 1, order: 'desc' })
-        }
-
+        getCoreResources({ limit: 9999, page: 1, order: 'desc' })
     }, [])
+
+    useEffect(() => {
+        setFields(core.fields)
+        setSkills(core.skills)
+        setTopics(core.topics)
+        setCareers(core.careers)
+    }, [core])
 
     useEffect(() => {
         setQuestions(aiQuestions)
@@ -329,6 +334,10 @@ const CreateQuestionPage = ({ }) => {
 
     }
 
+    const clearOnSelect = () => {
+        setAiData({ ...aiData, career: { id: '', name: '' } })
+    }
+
     const handleGenerate = async (e: any) => {
 
         if (e) { e.preventDefault() }
@@ -392,7 +401,16 @@ const CreateQuestionPage = ({ }) => {
 
         const validate = await validateAIQuestions(e)
 
-        if (validate.error) {
+        if (!aiData.career.id) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                title: 'Error',
+                message: 'Select a career'
+            })
+        }
+        else if (validate.error) {
             setToast({
                 ...toast,
                 show: true,
@@ -401,7 +419,7 @@ const CreateQuestionPage = ({ }) => {
             })
         } else {
 
-            const response = await addGeneratedQuestions();
+            const response = await addGeneratedQuestions({ careerId: aiData.career.id });
 
             if (!response.error) {
                 setToast({
@@ -590,6 +608,7 @@ const CreateQuestionPage = ({ }) => {
                                                                 disabled={false}
                                                                 onClick={(code: string) => {
                                                                     setCode(code)
+                                                                    clearOnSelect()
                                                                 }}
                                                             />
                                                         </Fragment>
@@ -597,519 +616,576 @@ const CreateQuestionPage = ({ }) => {
                                                 }
                                             </div>
 
-                                            <CardUI>
+                                            <div className="space-y-[1.5rem]">
 
-                                                <div className="">
+                                                <CardUI className="bg-pag-25">
+                                                    <div className="w-full flex items-center gap-x-[1.5rem]">
 
-                                                    {
-                                                        (!code || questions.length === 0) &&
-                                                        <EmptyState bgColor='bg-pag-25' className="min-h-[50vh]" noBound={true} >
-                                                            <span className="font-mona text-[14px] pas-950">Select a question</span>
-                                                        </EmptyState>
-                                                    }
+                                                        <div className="min-w-[30%]">
+                                                            <Filter
+                                                                ref={carRef}
+                                                                size='xxsm'
+                                                                className='la-filter bg-white'
+                                                                placeholder="Select Career"
+                                                                position="bottom"
+                                                                menu={{
+                                                                    style: { minWidth: '250px' },
+                                                                    search: true,
+                                                                    fullWidth: false,
+                                                                    limitHeight: 'md'
+                                                                }}
+                                                                items={
+                                                                    careers.map((x: Career) => {
+                                                                        return {
+                                                                            label: helper.capitalizeWord(x.name),
+                                                                            value: x._id
+                                                                        }
+                                                                    })
+                                                                }
+                                                                noFilter={false}
+                                                                onChange={(data) => {
+                                                                    setAiData({ ...aiData, career: { id: data.value, name: data.label } })
+                                                                    const filtered = fields.filter((x) => x.career === data.value)
+                                                                    setFields(filtered);
+                                                                    carRef.current.clear()
+                                                                }}
+                                                            />
+                                                        </div>
 
-                                                    {
-                                                        code && questions.length > 0 &&
-                                                        <form className="form" onSubmit={(e) => { e.preventDefault() }}>
-                                                            {
-                                                                questions.map((question) =>
-                                                                    <Fragment key={question.code}>
+                                                        {
+                                                            aiData.career.id &&
+                                                            <FormField className="grow">
+                                                                <Badge
+                                                                    type={'info'}
+                                                                    size="xsm"
+                                                                    close={false}
+                                                                    label={helper.capitalize(aiData.career.name)}
+                                                                    upper={true}
+                                                                    onClose={(e) => { }}
+                                                                />
+                                                            </FormField>
+                                                        }
 
-                                                                        {
-                                                                            question.code === code &&
-                                                                            <>
-                                                                                <div className="w-full space-y-[0.75rem]">
+                                                    </div>
+                                                </CardUI>
 
-                                                                                    <div className="flex items-center">
-                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                        <div className="min-w-[20%]">
-                                                                                            <Filter
-                                                                                                ref={fiRef}
-                                                                                                size='xxsm'
-                                                                                                className='la-filter'
-                                                                                                placeholder="Select Fields"
-                                                                                                position="bottom"
-                                                                                                menu={{
-                                                                                                    style: { minWidth: '250px' },
-                                                                                                    search: true,
-                                                                                                    fullWidth: false,
-                                                                                                    limitHeight: 'md'
-                                                                                                }}
-                                                                                                items={
-                                                                                                    fields.data.map((x: Field) => {
-                                                                                                        return {
-                                                                                                            label: helper.capitalizeWord(x.name),
-                                                                                                            value: x._id
-                                                                                                        }
-                                                                                                    })
-                                                                                                }
-                                                                                                noFilter={false}
-                                                                                                onChange={(data) => {
-                                                                                                    addRubric('field', { name: data.label, id: data.value })
-                                                                                                }}
-                                                                                            />
+                                                <CardUI>
+
+                                                    <div className="">
+
+                                                        {
+                                                            (!code || questions.length === 0) &&
+                                                            <EmptyState bgColor='bg-pag-25' className="min-h-[50vh]" noBound={true} >
+                                                                <span className="font-mona text-[14px] pas-950">Select a question</span>
+                                                            </EmptyState>
+                                                        }
+
+                                                        {
+                                                            code && questions.length > 0 &&
+                                                            <form className="form" onSubmit={(e) => { e.preventDefault() }}>
+
+                                                                {
+                                                                    questions.map((question) =>
+                                                                        <Fragment key={question.code}>
+
+                                                                            {
+                                                                                question.code === code &&
+                                                                                <>
+
+                                                                                    <div className={`w-full space-y-[0.75rem] ${!aiData.career.id ? 'disabled-light' : ''}`}>
+
+                                                                                        <div className="flex items-center">
+                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
+                                                                                            <div className="min-w-[20%]">
+                                                                                                <Filter
+                                                                                                    ref={fiRef}
+                                                                                                    size='xxsm'
+                                                                                                    className='la-filter'
+                                                                                                    placeholder="Select Fields"
+                                                                                                    position="bottom"
+                                                                                                    menu={{
+                                                                                                        style: { minWidth: '250px' },
+                                                                                                        search: true,
+                                                                                                        fullWidth: false,
+                                                                                                        limitHeight: 'md'
+                                                                                                    }}
+                                                                                                    items={
+                                                                                                        fields.map((x: Field) => {
+                                                                                                            return {
+                                                                                                                label: helper.capitalizeWord(x.name),
+                                                                                                                value: x._id
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }
+                                                                                                    noFilter={false}
+                                                                                                    onChange={(data) => {
+                                                                                                        addRubric('field', { name: data.label, id: data.value })
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+
                                                                                         </div>
+
+                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                                                            {
+                                                                                                question.fields.map((field) =>
+                                                                                                    <Badge
+                                                                                                        key={field.id}
+                                                                                                        type={'default'}
+                                                                                                        size="xsm"
+                                                                                                        close={true}
+                                                                                                        label={helper.capitalize(field.name)}
+                                                                                                        upper={true}
+                                                                                                        onClose={(e) => {
+                                                                                                            removeRubric('field', field.id)
+                                                                                                            fiRef.current.clear()
+                                                                                                        }}
+                                                                                                    />
+                                                                                                )
+                                                                                            }
+                                                                                        </FormField>
 
                                                                                     </div>
 
-                                                                                    <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                        {
-                                                                                            question.fields.map((field) =>
-                                                                                                <Badge
-                                                                                                    key={field.id}
-                                                                                                    type={'default'}
-                                                                                                    size="xsm"
-                                                                                                    close={true}
-                                                                                                    label={helper.capitalize(field.name)}
-                                                                                                    upper={true}
-                                                                                                    onClose={(e) => {
-                                                                                                        removeRubric('field', field.id)
-                                                                                                        fiRef.current.clear()
-                                                                                                    }}
-                                                                                                />
-                                                                                            )
-                                                                                        }
-                                                                                    </FormField>
+                                                                                    <Divider />
 
-                                                                                </div>
+                                                                                    <div className="w-full space-y-[0.75rem]">
 
-                                                                                <Divider />
-
-                                                                                <div className="w-full space-y-[0.75rem]">
-
-                                                                                    <FormField className="mb-[0.5rem]">
-                                                                                        <TextAreaInput
-                                                                                            showFocus={true}
-                                                                                            autoComplete={false}
-                                                                                            placeholder="Edit question or type a new one"
-                                                                                            defaultValue={question.body}
-                                                                                            label={{
-                                                                                                required: false,
-                                                                                                fontSize: 14,
-                                                                                                title: "Edit question or type a new one"
-                                                                                            }}
-                                                                                            onChange={(e) => editQuestion('body', e.target.value)}
-                                                                                        />
-                                                                                    </FormField>
-
-                                                                                </div>
-
-                                                                                <Divider />
-
-                                                                                <div className="w-full space-y-[0.75rem]">
-
-                                                                                    <FormField className="mb-[0.5rem]">
-
-                                                                                        {
-                                                                                            question.answers.length > 0 &&
-                                                                                            question.answers.map((answer, index) =>
-                                                                                                <Fragment key={answer.alphabet}>
-
-                                                                                                    <div className={`form-field ${(index + 1) === question.answers.length ? 'mrgb2' : 'mrgb'}`}>
-                                                                                                        <TextInput
-                                                                                                            type="text"
-                                                                                                            showFocus={true}
-                                                                                                            size="sm"
-                                                                                                            defaultValue={answer.answer}
-                                                                                                            autoComplete={false}
-                                                                                                            placeholder="Type answer here"
-                                                                                                            isError={false}
-                                                                                                            label={{
-                                                                                                                required: false,
-                                                                                                                fontSize: 13,
-                                                                                                                title: `Option ${answer.alphabet.toUpperCase()}`
-                                                                                                            }}
-                                                                                                            onChange={(e) => editOption(answer.alphabet, e.target.value)}
-                                                                                                        />
-                                                                                                    </div>
-
-                                                                                                </Fragment>
-                                                                                            )
-                                                                                        }
-
-                                                                                    </FormField>
-
-                                                                                </div>
-
-                                                                                <Divider />
-
-                                                                                <div className="w-full space-y-[0.75rem]">
-
-                                                                                    <div className="flex items-center">
-                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                        <div className="min-w-[20%]">
-                                                                                            <Filter
-                                                                                                ref={leRef}
-                                                                                                size='xxsm'
-                                                                                                className='la-filter'
-                                                                                                placeholder="Skill Levels"
-                                                                                                position="bottom"
-                                                                                                menu={{
-                                                                                                    style: { minWidth: '250px' },
-                                                                                                    search: true,
-                                                                                                    fullWidth: false,
-                                                                                                    limitHeight: 'md'
+                                                                                        <FormField className="mb-[0.5rem]">
+                                                                                            <TextAreaInput
+                                                                                                showFocus={true}
+                                                                                                autoComplete={false}
+                                                                                                placeholder="Edit question or type a new one"
+                                                                                                defaultValue={question.body}
+                                                                                                label={{
+                                                                                                    required: false,
+                                                                                                    fontSize: 14,
+                                                                                                    title: "Edit question or type a new one"
                                                                                                 }}
-                                                                                                items={
-                                                                                                    levels.map((x) => {
-                                                                                                        return {
-                                                                                                            label: helper.capitalizeWord(x.name),
-                                                                                                            value: x.value
-                                                                                                        }
-                                                                                                    })
-                                                                                                }
-                                                                                                noFilter={false}
-                                                                                                onChange={(data) => {
-                                                                                                    addRubric('level', data.value)
-                                                                                                }}
+                                                                                                onChange={(e) => editQuestion('body', e.target.value)}
                                                                                             />
-                                                                                        </div>
+                                                                                        </FormField>
 
                                                                                     </div>
 
-                                                                                    <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                        {
-                                                                                            question.levels.map((level) =>
-                                                                                                <Badge
-                                                                                                    key={level}
-                                                                                                    type={'default'}
-                                                                                                    size="xsm"
-                                                                                                    close={true}
-                                                                                                    label={helper.capitalize(level)}
-                                                                                                    upper={true}
-                                                                                                    onClose={(e) => {
-                                                                                                        removeRubric('level', level)
-                                                                                                        leRef.current.clear()
-                                                                                                    }}
-                                                                                                />
-                                                                                            )
-                                                                                        }
-                                                                                    </FormField>
+                                                                                    <Divider />
 
-                                                                                </div>
+                                                                                    <div className="w-full space-y-[0.75rem]">
 
-                                                                                <Divider />
+                                                                                        <FormField className="mb-[0.5rem]">
 
-                                                                                <div className="w-full space-y-[0.75rem]">
+                                                                                            {
+                                                                                                question.answers.length > 0 &&
+                                                                                                question.answers.map((answer, index) =>
+                                                                                                    <Fragment key={answer.alphabet}>
 
-                                                                                    <div className="flex items-center">
-                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                        <div className="min-w-[20%]">
-                                                                                            <Filter
-                                                                                                ref={diRef}
-                                                                                                size='xxsm'
-                                                                                                className='la-filter'
-                                                                                                placeholder="Difficulties"
-                                                                                                position="bottom"
-                                                                                                menu={{
-                                                                                                    style: { minWidth: '250px' },
-                                                                                                    search: true,
-                                                                                                    fullWidth: false,
-                                                                                                    limitHeight: 'md'
-                                                                                                }}
-                                                                                                items={
-                                                                                                    difficulties.map((x) => {
-                                                                                                        return {
-                                                                                                            label: helper.capitalizeWord(x.name),
-                                                                                                            value: x.value
-                                                                                                        }
-                                                                                                    })
-                                                                                                }
-                                                                                                noFilter={false}
-                                                                                                onChange={(data) => {
-                                                                                                    addRubric('difficulty', data.value)
-                                                                                                }}
-                                                                                            />
-                                                                                        </div>
+                                                                                                        <div className={`form-field ${(index + 1) === question.answers.length ? 'mrgb2' : 'mrgb'}`}>
+                                                                                                            <TextInput
+                                                                                                                type="text"
+                                                                                                                showFocus={true}
+                                                                                                                size="sm"
+                                                                                                                defaultValue={answer.answer}
+                                                                                                                autoComplete={false}
+                                                                                                                placeholder="Type answer here"
+                                                                                                                isError={false}
+                                                                                                                label={{
+                                                                                                                    required: false,
+                                                                                                                    fontSize: 13,
+                                                                                                                    title: `Option ${answer.alphabet.toUpperCase()}`
+                                                                                                                }}
+                                                                                                                onChange={(e) => editOption(answer.alphabet, e.target.value)}
+                                                                                                            />
+                                                                                                        </div>
+
+                                                                                                    </Fragment>
+                                                                                                )
+                                                                                            }
+
+                                                                                        </FormField>
 
                                                                                     </div>
 
-                                                                                    <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                        {
-                                                                                            question.difficulties.map((diff) =>
-                                                                                                <Badge
-                                                                                                    key={diff}
-                                                                                                    type={'default'}
-                                                                                                    size="xsm"
-                                                                                                    close={true}
-                                                                                                    label={helper.capitalize(diff)}
-                                                                                                    upper={true}
-                                                                                                    onClose={(e) => {
-                                                                                                        removeRubric('difficulty', diff)
-                                                                                                        diRef.current.clear()
+                                                                                    <Divider />
+
+                                                                                    <div className="w-full space-y-[0.75rem]">
+
+                                                                                        <div className="flex items-center">
+                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
+                                                                                            <div className="min-w-[20%]">
+                                                                                                <Filter
+                                                                                                    ref={leRef}
+                                                                                                    size='xxsm'
+                                                                                                    className='la-filter'
+                                                                                                    placeholder="Skill Levels"
+                                                                                                    position="bottom"
+                                                                                                    menu={{
+                                                                                                        style: { minWidth: '250px' },
+                                                                                                        search: true,
+                                                                                                        fullWidth: false,
+                                                                                                        limitHeight: 'md'
+                                                                                                    }}
+                                                                                                    items={
+                                                                                                        levels.map((x) => {
+                                                                                                            return {
+                                                                                                                label: helper.capitalizeWord(x.name),
+                                                                                                                value: x.value
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }
+                                                                                                    noFilter={false}
+                                                                                                    onChange={(data) => {
+                                                                                                        addRubric('level', data.value)
                                                                                                     }}
                                                                                                 />
-                                                                                            )
-                                                                                        }
-                                                                                    </FormField>
+                                                                                            </div>
 
-                                                                                </div>
-
-                                                                                <Divider />
-
-                                                                                <div className="w-full space-y-[0.75rem]">
-
-                                                                                    <div className="flex items-center">
-                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                        <div className="min-w-[20%]">
-                                                                                            <Filter
-                                                                                                ref={tyRef}
-                                                                                                size='xxsm'
-                                                                                                className='la-filter'
-                                                                                                placeholder="Question Types"
-                                                                                                position="bottom"
-                                                                                                menu={{
-                                                                                                    style: { minWidth: '250px' },
-                                                                                                    search: true,
-                                                                                                    fullWidth: false,
-                                                                                                    limitHeight: 'md'
-                                                                                                }}
-                                                                                                items={
-                                                                                                    questionTypes.map((x) => {
-                                                                                                        return {
-                                                                                                            label: helper.capitalizeWord(x.name),
-                                                                                                            value: x.value
-                                                                                                        }
-                                                                                                    })
-                                                                                                }
-                                                                                                noFilter={false}
-                                                                                                onChange={(data) => {
-                                                                                                    addRubric('type', data.value)
-                                                                                                }}
-                                                                                            />
                                                                                         </div>
+
+                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                                                            {
+                                                                                                question.levels.map((level) =>
+                                                                                                    <Badge
+                                                                                                        key={level}
+                                                                                                        type={'default'}
+                                                                                                        size="xsm"
+                                                                                                        close={true}
+                                                                                                        label={helper.capitalize(level)}
+                                                                                                        upper={true}
+                                                                                                        onClose={(e) => {
+                                                                                                            removeRubric('level', level)
+                                                                                                            leRef.current.clear()
+                                                                                                        }}
+                                                                                                    />
+                                                                                                )
+                                                                                            }
+                                                                                        </FormField>
 
                                                                                     </div>
 
-                                                                                    <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                        {
-                                                                                            question.types.map((type) =>
-                                                                                                <Badge
-                                                                                                    key={type}
-                                                                                                    type={'default'}
-                                                                                                    size="xsm"
-                                                                                                    close={true}
-                                                                                                    label={helper.capitalize(type)}
-                                                                                                    upper={true}
-                                                                                                    onClose={(e) => {
-                                                                                                        removeRubric('type', type)
-                                                                                                        tyRef.current.clear()
+                                                                                    <Divider />
+
+                                                                                    <div className="w-full space-y-[0.75rem]">
+
+                                                                                        <div className="flex items-center">
+                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
+                                                                                            <div className="min-w-[20%]">
+                                                                                                <Filter
+                                                                                                    ref={diRef}
+                                                                                                    size='xxsm'
+                                                                                                    className='la-filter'
+                                                                                                    placeholder="Difficulties"
+                                                                                                    position="bottom"
+                                                                                                    menu={{
+                                                                                                        style: { minWidth: '250px' },
+                                                                                                        search: true,
+                                                                                                        fullWidth: false,
+                                                                                                        limitHeight: 'md'
+                                                                                                    }}
+                                                                                                    items={
+                                                                                                        difficulties.map((x) => {
+                                                                                                            return {
+                                                                                                                label: helper.capitalizeWord(x.name),
+                                                                                                                value: x.value
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }
+                                                                                                    noFilter={false}
+                                                                                                    onChange={(data) => {
+                                                                                                        addRubric('difficulty', data.value)
                                                                                                     }}
                                                                                                 />
-                                                                                            )
-                                                                                        }
-                                                                                    </FormField>
+                                                                                            </div>
 
-                                                                                </div>
-
-                                                                                <Divider />
-
-                                                                                <div className="w-full space-y-[0.75rem]">
-
-                                                                                    <div className="flex items-center">
-                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                        <div className="min-w-[20%]">
-                                                                                            <Filter
-                                                                                                ref={toRef}
-                                                                                                size='xxsm'
-                                                                                                className='la-filter'
-                                                                                                placeholder="Select Topic"
-                                                                                                position="bottom"
-                                                                                                menu={{
-                                                                                                    style: { minWidth: '250px' },
-                                                                                                    search: true,
-                                                                                                    fullWidth: false,
-                                                                                                    limitHeight: 'md'
-                                                                                                }}
-                                                                                                items={
-                                                                                                    topics.data.map((x: Topic) => {
-                                                                                                        return {
-                                                                                                            label: helper.capitalizeWord(x.name),
-                                                                                                            value: x._id
-                                                                                                        }
-                                                                                                    })
-                                                                                                }
-                                                                                                noFilter={false}
-                                                                                                onChange={(data) => {
-                                                                                                    addRubric('topic', { name: data.label, id: data.value })
-                                                                                                }}
-                                                                                            />
                                                                                         </div>
+
+                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                                                            {
+                                                                                                question.difficulties.map((diff) =>
+                                                                                                    <Badge
+                                                                                                        key={diff}
+                                                                                                        type={'default'}
+                                                                                                        size="xsm"
+                                                                                                        close={true}
+                                                                                                        label={helper.capitalize(diff)}
+                                                                                                        upper={true}
+                                                                                                        onClose={(e) => {
+                                                                                                            removeRubric('difficulty', diff)
+                                                                                                            diRef.current.clear()
+                                                                                                        }}
+                                                                                                    />
+                                                                                                )
+                                                                                            }
+                                                                                        </FormField>
 
                                                                                     </div>
 
-                                                                                    <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                        {
-                                                                                            question.topics.map((topic) =>
-                                                                                                <Badge
-                                                                                                    key={topic.id}
-                                                                                                    type={'default'}
-                                                                                                    size="xsm"
-                                                                                                    close={true}
-                                                                                                    label={helper.capitalize(topic.name)}
-                                                                                                    upper={true}
-                                                                                                    onClose={(e) => {
-                                                                                                        removeRubric('topic', topic.id)
-                                                                                                        toRef.current.clear()
+                                                                                    <Divider />
+
+                                                                                    <div className="w-full space-y-[0.75rem]">
+
+                                                                                        <div className="flex items-center">
+                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
+                                                                                            <div className="min-w-[20%]">
+                                                                                                <Filter
+                                                                                                    ref={tyRef}
+                                                                                                    size='xxsm'
+                                                                                                    className='la-filter'
+                                                                                                    placeholder="Question Types"
+                                                                                                    position="bottom"
+                                                                                                    menu={{
+                                                                                                        style: { minWidth: '250px' },
+                                                                                                        search: true,
+                                                                                                        fullWidth: false,
+                                                                                                        limitHeight: 'md'
+                                                                                                    }}
+                                                                                                    items={
+                                                                                                        questionTypes.map((x) => {
+                                                                                                            return {
+                                                                                                                label: helper.capitalizeWord(x.name),
+                                                                                                                value: x.value
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }
+                                                                                                    noFilter={false}
+                                                                                                    onChange={(data) => {
+                                                                                                        addRubric('type', data.value)
                                                                                                     }}
                                                                                                 />
-                                                                                            )
-                                                                                        }
-                                                                                    </FormField>
+                                                                                            </div>
 
-                                                                                </div>
-
-                                                                                <Divider />
-
-                                                                                <div className="w-full space-y-[0.75rem]">
-
-                                                                                    <div className="flex items-center">
-                                                                                        {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                        <div className="min-w-[20%]">
-                                                                                            <Filter
-                                                                                                ref={skiRef}
-                                                                                                size='xxsm'
-                                                                                                className='la-filter'
-                                                                                                placeholder="Select Skill"
-                                                                                                position="bottom"
-                                                                                                menu={{
-                                                                                                    style: { minWidth: '250px' },
-                                                                                                    search: true,
-                                                                                                    fullWidth: false,
-                                                                                                    limitHeight: 'md'
-                                                                                                }}
-                                                                                                items={
-                                                                                                    skills.data.map((x: Topic) => {
-                                                                                                        return {
-                                                                                                            label: helper.capitalizeWord(x.name),
-                                                                                                            value: x._id
-                                                                                                        }
-                                                                                                    })
-                                                                                                }
-                                                                                                noFilter={false}
-                                                                                                onChange={(data) => {
-                                                                                                    addRubric('skill', { name: data.label, id: data.value })
-                                                                                                }}
-                                                                                            />
                                                                                         </div>
+
+                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                                                            {
+                                                                                                question.types.map((type) =>
+                                                                                                    <Badge
+                                                                                                        key={type}
+                                                                                                        type={'default'}
+                                                                                                        size="xsm"
+                                                                                                        close={true}
+                                                                                                        label={helper.capitalize(type)}
+                                                                                                        upper={true}
+                                                                                                        onClose={(e) => {
+                                                                                                            removeRubric('type', type)
+                                                                                                            tyRef.current.clear()
+                                                                                                        }}
+                                                                                                    />
+                                                                                                )
+                                                                                            }
+                                                                                        </FormField>
 
                                                                                     </div>
 
-                                                                                    <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                        {
-                                                                                            question.skills.map((skill) =>
-                                                                                                <Badge
-                                                                                                    key={skill.id}
-                                                                                                    type={'default'}
-                                                                                                    size="xsm"
-                                                                                                    close={true}
-                                                                                                    label={helper.capitalize(skill.name)}
-                                                                                                    upper={true}
-                                                                                                    onClose={(e) => {
-                                                                                                        removeRubric('skill', skill.id)
-                                                                                                        skiRef.current.clear()
+                                                                                    <Divider />
+
+                                                                                    <div className="w-full space-y-[0.75rem]">
+
+                                                                                        <div className="flex items-center">
+                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
+                                                                                            <div className="min-w-[20%]">
+                                                                                                <Filter
+                                                                                                    ref={toRef}
+                                                                                                    size='xxsm'
+                                                                                                    className='la-filter'
+                                                                                                    placeholder="Select Topic"
+                                                                                                    position="bottom"
+                                                                                                    menu={{
+                                                                                                        style: { minWidth: '250px' },
+                                                                                                        search: true,
+                                                                                                        fullWidth: false,
+                                                                                                        limitHeight: 'md'
+                                                                                                    }}
+                                                                                                    items={
+                                                                                                        topics.map((x: Topic) => {
+                                                                                                            return {
+                                                                                                                label: helper.capitalizeWord(x.name),
+                                                                                                                value: x._id
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }
+                                                                                                    noFilter={false}
+                                                                                                    onChange={(data) => {
+                                                                                                        addRubric('topic', { name: data.label, id: data.value })
                                                                                                     }}
                                                                                                 />
-                                                                                            )
-                                                                                        }
-                                                                                    </FormField>
+                                                                                            </div>
 
-                                                                                </div>
+                                                                                        </div>
 
-                                                                                <Divider />
+                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                                                            {
+                                                                                                question.topics.map((topic) =>
+                                                                                                    <Badge
+                                                                                                        key={topic.id}
+                                                                                                        type={'default'}
+                                                                                                        size="xsm"
+                                                                                                        close={true}
+                                                                                                        label={helper.capitalize(topic.name)}
+                                                                                                        upper={true}
+                                                                                                        onClose={(e) => {
+                                                                                                            removeRubric('topic', topic.id)
+                                                                                                            toRef.current.clear()
+                                                                                                        }}
+                                                                                                    />
+                                                                                                )
+                                                                                            }
+                                                                                        </FormField>
 
-                                                                                <div className="w-full space-y-[0.75rem]">
+                                                                                    </div>
 
-                                                                                    <FormField className="mb-[0.5rem] flex items-center gap-x-[1rem]">
+                                                                                    <Divider />
 
-                                                                                        <div className="flex-col w-1/2">
+                                                                                    <div className="w-full space-y-[0.75rem]">
+
+                                                                                        <div className="flex items-center">
+                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
+                                                                                            <div className="min-w-[20%]">
+                                                                                                <Filter
+                                                                                                    ref={skiRef}
+                                                                                                    size='xxsm'
+                                                                                                    className='la-filter'
+                                                                                                    placeholder="Select Skill"
+                                                                                                    position="bottom"
+                                                                                                    menu={{
+                                                                                                        style: { minWidth: '250px' },
+                                                                                                        search: true,
+                                                                                                        fullWidth: false,
+                                                                                                        limitHeight: 'md'
+                                                                                                    }}
+                                                                                                    items={
+                                                                                                        skills.map((x: Skill) => {
+                                                                                                            return {
+                                                                                                                label: helper.capitalizeWord(x.name),
+                                                                                                                value: x._id
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }
+                                                                                                    noFilter={false}
+                                                                                                    onChange={(data) => {
+                                                                                                        addRubric('skill', { name: data.label, id: data.value })
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+
+                                                                                        </div>
+
+                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                                                            {
+                                                                                                question.skills.map((skill) =>
+                                                                                                    <Badge
+                                                                                                        key={skill.id}
+                                                                                                        type={'default'}
+                                                                                                        size="xsm"
+                                                                                                        close={true}
+                                                                                                        label={helper.capitalize(skill.name)}
+                                                                                                        upper={true}
+                                                                                                        onClose={(e) => {
+                                                                                                            removeRubric('skill', skill.id)
+                                                                                                            skiRef.current.clear()
+                                                                                                        }}
+                                                                                                    />
+                                                                                                )
+                                                                                            }
+                                                                                        </FormField>
+
+                                                                                    </div>
+
+                                                                                    <Divider />
+
+                                                                                    <div className="w-full space-y-[0.75rem]">
+
+                                                                                        <FormField className="mb-[0.5rem] flex items-center gap-x-[1rem]">
+
+                                                                                            <div className="flex-col w-1/2">
+                                                                                                <TextInput
+                                                                                                    type="text"
+                                                                                                    showFocus={true}
+                                                                                                    size="xsm"
+                                                                                                    defaultValue={question.time.value}
+                                                                                                    autoComplete={false}
+                                                                                                    placeholder="Type time value"
+                                                                                                    isError={false}
+                                                                                                    label={{
+                                                                                                        title: 'Enter Time',
+                                                                                                        fontSize: 14
+                                                                                                    }}
+                                                                                                    onChange={(e) => editQuestion('time-value', e.target.value)}
+                                                                                                />
+                                                                                            </div>
+
+                                                                                            <div className="flex-col w-1/2">
+                                                                                                <h3 className={`text-[13px] font-mona pag-900`}>Select Handle</h3>
+                                                                                                <Filter
+                                                                                                    ref={tyRef}
+                                                                                                    size='xsm'
+                                                                                                    className='la-filter'
+                                                                                                    placeholder="Select Handle"
+                                                                                                    position="bottom"
+                                                                                                    defaultValue={question.time.handle}
+                                                                                                    menu={{
+                                                                                                        style: {},
+                                                                                                        search: false,
+                                                                                                        fullWidth: true,
+                                                                                                        limitHeight: 'md'
+                                                                                                    }}
+                                                                                                    items={
+                                                                                                        timeHandles.map((x) => {
+                                                                                                            return {
+                                                                                                                label: helper.capitalizeWord(x.name),
+                                                                                                                value: x.value
+                                                                                                            }
+                                                                                                        })
+                                                                                                    }
+                                                                                                    noFilter={false}
+                                                                                                    onChange={(data) => {
+                                                                                                        editQuestion('time-handle', data.value)
+                                                                                                    }}
+                                                                                                />
+                                                                                            </div>
+
+                                                                                        </FormField>
+
+                                                                                    </div>
+
+                                                                                    <Divider />
+
+                                                                                    <div className="w-full space-y-[0.75rem]">
+
+                                                                                        <FormField className="mb-[0.5rem]">
+
                                                                                             <TextInput
                                                                                                 type="text"
                                                                                                 showFocus={true}
                                                                                                 size="xsm"
-                                                                                                defaultValue={question.time.value}
+                                                                                                defaultValue={question.score}
                                                                                                 autoComplete={false}
-                                                                                                placeholder="Type time value"
-                                                                                                isError={false}
+                                                                                                placeholder="Type score value"
                                                                                                 label={{
-                                                                                                    title: 'Enter Time',
-                                                                                                    fontSize: 14
+                                                                                                    fontSize: 14,
+                                                                                                    title: 'Enter Question Score'
                                                                                                 }}
-                                                                                                onChange={(e) => editQuestion('time-value', e.target.value)}
+                                                                                                isError={false}
+                                                                                                onChange={(e) => editQuestion('score', e.target.value)}
                                                                                             />
-                                                                                        </div>
 
-                                                                                        <div className="flex-col w-1/2">
-                                                                                            <h3 className={`text-[13px] font-mona pag-900`}>Select Handle</h3>
-                                                                                            <Filter
-                                                                                                ref={tyRef}
-                                                                                                size='xsm'
-                                                                                                className='la-filter'
-                                                                                                placeholder="Select Handle"
-                                                                                                position="bottom"
-                                                                                                defaultValue={question.time.handle}
-                                                                                                menu={{
-                                                                                                    style: {},
-                                                                                                    search: false,
-                                                                                                    fullWidth: true,
-                                                                                                    limitHeight: 'md'
-                                                                                                }}
-                                                                                                items={
-                                                                                                    timeHandles.map((x) => {
-                                                                                                        return {
-                                                                                                            label: helper.capitalizeWord(x.name),
-                                                                                                            value: x.value
-                                                                                                        }
-                                                                                                    })
-                                                                                                }
-                                                                                                noFilter={false}
-                                                                                                onChange={(data) => {
-                                                                                                    editQuestion('time-handle', data.value)
-                                                                                                }}
-                                                                                            />
-                                                                                        </div>
+                                                                                        </FormField>
 
-                                                                                    </FormField>
+                                                                                    </div>
+                                                                                </>
+                                                                            }
 
-                                                                                </div>
-
-                                                                                <Divider />
-
-                                                                                <div className="w-full space-y-[0.75rem]">
-
-                                                                                    <FormField className="mb-[0.5rem]">
-
-                                                                                        <TextInput
-                                                                                            type="text"
-                                                                                            showFocus={true}
-                                                                                            size="xsm"
-                                                                                            defaultValue={question.score}
-                                                                                            autoComplete={false}
-                                                                                            placeholder="Type score value"
-                                                                                            label={{
-                                                                                                fontSize: 14,
-                                                                                                title: 'Enter Question Score'
-                                                                                            }}
-                                                                                            isError={false}
-                                                                                            onChange={(e) => editQuestion('score', e.target.value)}
-                                                                                        />
-
-                                                                                    </FormField>
-
-                                                                                </div>
-                                                                            </>
-                                                                        }
-
-                                                                    </Fragment>
-                                                                )
-                                                            }
-                                                        </form>
-                                                    }
+                                                                        </Fragment>
+                                                                    )
+                                                                }
+                                                            </form>
+                                                        }
 
 
-                                                </div>
+                                                    </div>
 
-                                            </CardUI>
+                                                </CardUI>
+                                            </div>
+
 
 
                                         </div>
