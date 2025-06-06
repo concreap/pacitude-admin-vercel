@@ -135,11 +135,13 @@ const inRoute = (payload: { route: string, name: string, params?: Array<IRoutePa
                 const merged = subroute.url === inroute.url ? subroute.url : subroute.url + inroute.url;
                 result = result + _route.url + merged + resolved;
 
+            } else {
+                result = result + _route.url + inroute.url + resolved;
             }
 
         }
 
-        if (inroute && (!_route.subroutes || _route.subroutes.length === 0)) {
+        else if (inroute) {
             result = result + _route.url + inroute.url + resolved;
         }
 
