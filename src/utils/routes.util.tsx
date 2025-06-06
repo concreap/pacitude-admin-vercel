@@ -62,6 +62,8 @@ const computeInPath = (inroute: IInRoute): string => {
         if (subroute) {
             const merged = subroute.url === inroute.url ? subroute.url : subroute.url + inroute.url;
             result = result + route.url + merged + resolved;
+        } else {
+            result = result + route.url + inroute.url + resolved;
         }
 
     } else if (route && (!route.subroutes || route.subroutes.length === 0) && route.inroutes && route.inroutes.length > 0) {
