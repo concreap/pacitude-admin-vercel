@@ -164,6 +164,50 @@ const sidebarRoutes: Array<IRoute> = [
             },
             {
                 route: 'core',
+                parent: 'careers',
+                name: 'create-career',
+                title: 'Create Career',
+                iconName: 'flash',
+                url: '/create',
+                action: 'navigate',
+                isAuth: true,
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'fields',
+                name: 'create-field',
+                title: 'Create Field',
+                iconName: 'flash',
+                url: '/create',
+                action: 'navigate',
+                isAuth: true,
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'topics',
+                name: 'create-topic',
+                title: 'Create Topic',
+                iconName: 'flash',
+                url: '/create',
+                action: 'navigate',
+                isAuth: true,
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'skills',
+                name: 'create-skill',
+                title: 'Create Skill',
+                iconName: 'flash',
+                url: '/create',
+                action: 'navigate',
+                isAuth: true,
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
                 parent: 'topics',
                 name: 'topic-details',
                 title: 'Topic Details',

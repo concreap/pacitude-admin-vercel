@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import { ICollection, IListQuery, IUserContext } from '../../utils/interfaces.util'
 import UserContext from '../../context/user/userContext'
 import useContextType from '../useContextType'
@@ -7,8 +7,14 @@ import AxiosService from '../../services/axios.service'
 import { URL_CAREER, URL_INDUSTRY } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
 import Career from '../../models/Career.model'
+import useGoTo from '../useGoTo'
+import routil from '../../utils/routes.util'
 
 const useCareer = () => {
+
+    const { toDetailRoute } = useGoTo()
+
+    const addRef = useRef<any>(null)
 
     const { appContext } = useContextType()
     const { popNetwork } = useNetwork(false)
@@ -25,6 +31,16 @@ const useCareer = () => {
     useEffect(() => {
 
     }, [])
+
+
+    const toggleAddCareer = (e: any) => {
+
+        if (e) { e.preventDefault(); }
+
+        toDetailRoute(e, { route: 'core', name: 'create-career' })
+
+    }
+
 
     const getCareerById = (id: string) => {
 
@@ -219,9 +235,10 @@ const useCareer = () => {
         careers,
         career,
         loading,
+        toggleAddCareer,
 
         getCareerById,
-        
+
         getCareers,
         getResourceCareers,
         getCareer

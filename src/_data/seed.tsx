@@ -20,6 +20,11 @@ const levels = [
     { name: 'Expert', value: 'expert' }
 ]
 
+const statusOptions = [
+    { name: 'Enable', value: 'enable' },
+    { name: 'Disable', value: 'disable' },
+]
+
 const talents = [
     {
         id: '34567890',
@@ -155,6 +160,7 @@ export {
     collection,
     pagination,
     talents,
+    statusOptions,
     limits,
     levels,
     difficulties,

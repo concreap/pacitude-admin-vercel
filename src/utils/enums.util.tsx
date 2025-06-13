@@ -61,3 +61,10 @@ export enum QuestionTypeEnum {
     PRACTICAL = 'practical',
     GENERAL = 'general'
 }
+
+export enum coreTypeEnum {
+    CAREER = 'career',
+    FIELD = 'field',
+    SKILL = 'skill',
+    TOPIC = 'topic'
+}

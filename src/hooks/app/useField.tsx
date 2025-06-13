@@ -6,9 +6,11 @@ import { GET_CAREER, GET_CAREERS, GET_FIELD, GET_FIELDS, GET_INDUSTRIES, GET_IND
 import AxiosService from '../../services/axios.service'
 import { URL_CAREER, URL_FIELD, URL_INDUSTRY } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
+import useGoTo from '../useGoTo'
 
 const useField = () => {
 
+    const { toDetailRoute } = useGoTo()
     const { appContext } = useContextType()
     const { popNetwork } = useNetwork(false)
     const {
@@ -24,6 +26,16 @@ const useField = () => {
     useEffect(() => {
 
     }, [])
+
+
+    const toggleAddField = (e: any) => {
+
+        if (e) { e.preventDefault(); }
+
+        toDetailRoute(e, { route: 'core', name: 'create-field' })
+
+
+    }
 
     /**
      * @name getFields
@@ -203,6 +215,7 @@ const useField = () => {
         field,
         loading,
 
+        toggleAddField,
         getFields,
         getResourceFields,
         getField

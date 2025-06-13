@@ -15,9 +15,13 @@ const Home = lazy(() => import('../../../pages/Home'))
 const Dashboard = lazy(() => import('../../../pages/dashboard/Dashboard'))
 const Industries = lazy(() => import('../../../pages/dashboard/core/industries/Industries'))
 const Careers = lazy(() => import('../../../pages/dashboard/core/careers/Careers'))
+const CreateCareer = lazy(() => import('../../../pages/dashboard/core/careers/CreateCareer'))
 const Fields = lazy(() => import('../../../pages/dashboard/core/fields/Fields'))
+const CreateField = lazy(() => import('../../../pages/dashboard/core/fields/CreateField'))
 const Skills = lazy(() => import('../../../pages/dashboard/core/skills/Skills'))
+const CreateSkill = lazy(() => import('../../../pages/dashboard/core/skills/CreateSkill'))
 const Topics = lazy(() => import('../../../pages/dashboard/core/topics/Topics'))
+const CreateTopic = lazy(() => import('../../../pages/dashboard/core/topics/CreateTopic'))
 const Questions = lazy(() => import('../../../pages/dashboard/core/questions/Questions'))
 const CreateQuestion = lazy(() => import('../../../pages/dashboard/core/questions/CreateQuestion'))
 const QuestionDetails = lazy(() => import('../../../pages/dashboard/core/questions/QuestionDetails'))
@@ -45,10 +49,18 @@ const DynamicRoutes = () => {
                 return <Skills />
             case 'topics':
                 return <Topics />
+            case 'create-topic':
+                return <CreateTopic />
             case 'questions':
                 return <Questions />
             case 'create-question':
                 return <CreateQuestion />
+            case 'create-career':
+                return <CreateCareer />
+            case 'create-field':
+                return <CreateField />
+            case 'create-skill':
+                return <CreateSkill />
             case 'question-details':
                 return <QuestionDetails />
             default:
