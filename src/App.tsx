@@ -6,7 +6,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import UserState from './context/user/userState'
 import AppState from './context/app/appState'
 
-// Pages
+// Pages imported
 import MainLoader from './pages/MainLoader'
 import ErrorPage from './pages/ErrorPage'
 import DynamicRoutes from './components/app/navigation/DynamicRoutes';
