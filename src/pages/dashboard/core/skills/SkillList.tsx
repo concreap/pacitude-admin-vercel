@@ -107,7 +107,8 @@ const SkillList = (props: IListUI) => {
 
         if (e) { e.preventDefault(); }
 
-        toDetailRoute(e, { id: id, route: 'core', name: 'skill-details' })
+        // toDetailRoute(e, { id: id, route: 'core', name: 'skill-details' })
+        toDetailRoute(e, { id: id, route: 'core', name: 'update-skill' })
 
     }
 

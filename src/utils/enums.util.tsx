@@ -66,5 +66,6 @@ export enum coreTypeEnum {
     CAREER = 'career',
     FIELD = 'field',
     SKILL = 'skill',
-    TOPIC = 'topic'
+    TOPIC = 'topic',
+    INDUSTRY = 'industry'
 }

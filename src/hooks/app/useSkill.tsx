@@ -1,17 +1,18 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { ICollection, IListQuery } from '../../utils/interfaces.util'
 import useContextType from '../useContextType'
 import { GET_SKILL, GET_SKILLS, } from '../../context/types'
 import AxiosService from '../../services/axios.service'
-import { URL_FIELD, URL_SKILL } from '../../utils/path.util'
+import { URL_SKILL } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
 import useToast from '../useToast'
+import helper from '../../utils/helper.util'
 
 interface ISkillData {
     name: string,
     label: string,
     description: string,
-    isEnabled: boolean,
+    isEnabled: any,
     careerId: string,
     fields: string[]
 }
@@ -29,7 +30,7 @@ const useSkill = () => {
         name: '',
         label: '',
         description: '',
-        isEnabled: false,
+        isEnabled: null,
         careerId: '',
         fields: []
     })
@@ -123,7 +124,7 @@ const useSkill = () => {
                 setToast({ ...toast, show: false })
             }, 2500)
             isValid = false;
-        } 
+        }
 
         return isValid
 
@@ -307,12 +308,7 @@ const useSkill = () => {
      */
     const createSkill = useCallback(async () => {
 
-        const pay = skillData
-        console.log('validated', pay)
-
         const isValidated = validateSkill()
-
-        console.log('validate', isValidated)
 
         if (isValidated === true) {
             const payload = { ...skillData }
@@ -358,12 +354,94 @@ const useSkill = () => {
                 else if (response.data) {
                     console.log(`Error! Could not create skill ${response.data}`)
                 }
+                else if (response.errors && response.errors.length > 0) {
+                    console.log(`Error! Could not create skill ${response.errors[0]}`)
+                }
                 else if (response.status === 500) {
                     console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
                 }
 
             }
-        } 
+        }
+
+    }, [skillData, setLoading, unsetLoading, setResource])
+
+    /**
+     * @name updateSkill
+     */
+    const updateSkill = useCallback(async (e: MouseEvent<HTMLAnchorElement>) => {
+
+        const payload: any = { ...skillData }
+
+        Object.keys(payload).forEach((key) => {
+            const k = key as keyof typeof payload;
+            const value = payload[k];
+
+            if (
+                value === '' ||
+                value === null ||
+                value === undefined ||
+                (Array.isArray(value) && value.length === 0)
+            ) {
+                delete payload[k];
+            }
+        });
+
+        setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_SKILL}/${skill._id}`,
+            payload: payload
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+                setToast({ ...toast, show: true, error: 'skill', type: 'success', message: `Skill updated successfully` })
+                setResource(GET_SKILL, response.data)
+            }
+
+            setTimeout(() => {
+                setToast({ ...toast, show: false })
+            }, 3000)
+
+            unsetLoading({
+                option: 'default',
+                message: 'data saved successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+            else if (!helper.isEmpty(response.data, 'object')) {
+                setToast({ ...toast, show: true, error: 'skill', type: 'error', message: `Error! Could not update skill ${response?.data}` })
+            }
+            else if (response.errors && response.errors.length > 0) {
+                setToast({ ...toast, show: true, error: 'skill', type: 'error', message: `Error! Could not update skill ${response?.errors[0]}` })
+            }
+            else if (response.status === 500) {
+                setToast({ ...toast, show: true, error: 'skill', type: 'error', message: `Sorry, there was an error processing your request. Please try again later.` })
+            }
+            setTimeout(() => {
+                setToast({ ...toast, show: false })
+            }, 3000)
+
+        }
+
 
     }, [skillData, setLoading, unsetLoading, setResource])
 
@@ -385,6 +463,7 @@ const useSkill = () => {
         handleChange,
         handleAddFieldsChange,
         createSkill,
+        updateSkill,
         getSkills,
         getResourceSkills,
         getSkill

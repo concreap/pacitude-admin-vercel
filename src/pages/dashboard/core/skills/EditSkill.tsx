@@ -1,72 +1,46 @@
 import { useEffect, useState, useRef } from "react"
+import PageHeader from "../../../../components/partials/ui/PageHeader";
 import Button from "../../../../components/partials/buttons/Button";
 import Icon from "../../../../components/partials/icons/Icon";
 import Divider from "../../../../components/partials/Divider";
 import CardUI from "../../../../components/partials/ui/CardUI";
-import useField from "../../../../hooks/app/useField";
+import useSkill from "../../../../hooks/app/useSkill";
+import useQuestion from "../../../../hooks/app/useQuestion";
 import helper from "../../../../utils/helper.util";
+import EmptyState from "../../../../components/partials/dialogs/EmptyState";
 import Filter from "../../../../components/partials/drops/Filter";
-import Field from "../../../../models/Field.model";
 import FormField from "../../../../components/partials/inputs/FormField";
 import Badge from "../../../../components/partials/badges/Badge";
-import useCareer from "../../../../hooks/app/useCareer";
+import useApp from "../../../../hooks/app/useApp";
 import TextAreaInput from "../../../../components/partials/inputs/TextAreaInput";
 import TextInput from "../../../../components/partials/inputs/TextInput";
 import { statusOptions } from "../../../../_data/seed";
+import Career from "../../../../models/Career.model";
 import useToast from "../../../../hooks/useToast";
-import useIndustry from "../../../../hooks/app/useIndustry";
 import useGoTo from "../../../../hooks/useGoTo";
+import { useParams } from "react-router-dom";
 
-const CreateCareer = () => {
+const EditSkill = () => {
 
-    const statusRef = useRef<any>(null)
-    const toRef = useRef<any>(null)
+    const {id} = useParams<{ id: string }>()
 
-    const { careerData, industry, loading, setIndustry, handleChange, onSynonymsChange, createCareer } = useCareer()
-    const { industries, getIndustries } = useIndustry()
-    const { toast, setToast, clearToast } = useToast()
+    const {
+        loading, careerRef, skillData, skill,
+        handleChange, updateSkill, getSkill,
+    } = useSkill()
     const { goTo } = useGoTo()
 
-
     useEffect(() => {
-        initList(25)
+        initList()
     }, [])
 
-    const initList = (limit: number) => {
-        getIndustries({ limit: limit, page: 1, order: 'desc' })
+    const initList = () => {
+        getSkill(id ? id : '')
     }
-
-
-    const validateCareer = () => {
-
-        let isValid: boolean = true;
-
-        if (!careerData.name) {
-            setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Career name is required' })
-            isValid = false;
-
-        } else if (!careerData.label) {
-            setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Career display name is required' })
-            isValid = false;
-        } else if (careerData.synonyms.length === 0) {
-            setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Career synonymns are required' })
-            isValid = false;
-        }
-        else if (!careerData.industryId) {
-            setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Industry is required' })
-            isValid = false;
-        }
-        else if (careerData.description.length < 10) {
-            setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Description must be at least 10 characters long' })
-            isValid = false;
-        }
-
-        setTimeout(() => {
-            setToast({ ...toast, show: false })
-        }, 3000)
-
-        return isValid
-
+    const getDefaultStatus = (status: boolean) => {
+        let flag = status === true ? 'enable' : 'disable'
+        console.log('flag', flag)
+        return flag
     }
 
     return (
@@ -74,9 +48,9 @@ const CreateCareer = () => {
 
             <CardUI>
 
-                <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto my-5">
+                <form onSubmit={(e) => { e.preventDefault() }} className="w-[45%] mx-auto mt-5 mb-10">
 
-                    <div className="w-full space-y-[0.55rem]" onClick={() => console.log(careerData)}>
+                    <div className="w-full space-y-[0.55rem]">
 
                         <div className="grid grid-cols-2 gap-5 w-full">
 
@@ -87,13 +61,13 @@ const CreateCareer = () => {
                                     showFocus={true}
                                     autoComplete={false}
                                     placeholder="Topic name"
-                                    defaultValue={''}
+                                    defaultValue={skill?.name ?? skillData.name}
                                     label={{
                                         title: 'Topic Name',
                                         required: true,
                                         className: 'text-[13px]'
                                     }}
-                                    onChange={(e) => { handleChange('name', e.target.value) }}
+                                    onChange={(e) => handleChange('name', e.target.value)}
                                 />
                             </div>
 
@@ -104,97 +78,15 @@ const CreateCareer = () => {
                                     showFocus={true}
                                     autoComplete={false}
                                     placeholder="Display name"
-                                    defaultValue={''}
+                                    defaultValue={skill?.label ?? skillData.label}
                                     label={{
                                         title: 'Display Name',
                                         required: true,
                                         className: 'text-[13px]'
                                     }}
-                                    onChange={(e) => { handleChange('label', e.target.value) }}
+                                    onChange={(e) => handleChange('label', e.target.value)}
                                 />
                             </div>
-
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className=" mb-4">
-                            <TextInput
-                                type="text"
-                                size="sm"
-                                showFocus={true}
-                                autoComplete={false}
-                                placeholder="Synonyms"
-                                defaultValue={''}
-                                label={{
-                                    title: 'Synonyms (separate words with comma)',
-                                    required: true,
-                                    className: 'text-[13px]'
-                                }}
-                                onChange={(e) => { onSynonymsChange(e) }}
-                            />
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem]">
-
-                        <div className="flex items-center">
-                            <h3 className="font-mona text-[13px]">Industry</h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[30%]">
-                                <Filter
-                                    ref={toRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder={"Select Industry"}
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '250px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        industries.data.map((x: Field) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x._id
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => {
-                                        handleChange('industryId', data.value)
-                                        setIndustry({ _id: data.value, name: data.label })
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-
-                                {
-                                    industry.name !== '' &&
-                                    <Badge
-                                        key={industry._id}
-                                        type={'default'}
-                                        size="xsm"
-                                        close={false}
-                                        label={helper.capitalize(industry.name)}
-                                        upper={true}
-                                    />
-                                }
-
-                            </FormField>
 
                         </div>
 
@@ -215,7 +107,7 @@ const CreateCareer = () => {
 
                             <div className="min-w-[40%]">
                                 <Filter
-                                    ref={statusRef}
+                                    ref={careerRef}
                                     size='xxsm'
                                     className='la-filter'
                                     placeholder="Select Status"
@@ -235,7 +127,6 @@ const CreateCareer = () => {
                                         })
                                     }
                                     noFilter={false}
-                                    defaultValue={''}
                                     onChange={(data) => {
                                         handleChange('isEnabled', data.value === 'enable')
                                     }}
@@ -245,10 +136,10 @@ const CreateCareer = () => {
                             <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
 
                                 <Badge
-                                    type={'success'}
+                                    type={(skill.isEnabled || skillData.isEnabled) === true ? 'success' : 'error'}
                                     size="xsm"
                                     close={false}
-                                    label={`${helper.capitalize(careerData.isEnabled ? 'Enabled' : 'Disabled')}`}
+                                    label={`${helper.capitalize((skill.isEnabled || skillData.isEnabled) ? 'Enabled' : 'Disabled')}`}
                                     upper={true}
                                 />
 
@@ -268,13 +159,13 @@ const CreateCareer = () => {
                                 showFocus={true}
                                 autoComplete={false}
                                 placeholder="Type here"
-                                defaultValue={''}
+                                defaultValue={skill?.description ?? skillData.description ?? ''}
                                 label={{
                                     title: 'Description',
                                     className: 'text-[13px]',
                                     required: true
                                 }}
-                                onChange={(e) => { handleChange('description', e.target.value) }}
+                                onChange={(e) => handleChange('description', e.target.value)}
                             />
                         </FormField>
 
@@ -299,7 +190,7 @@ const CreateCareer = () => {
                         child: <Icon name="x" type="feather" size={16} className="par-600" />
                     }}
                     reverse="row"
-                    onClick={(e) => { goTo('/dashboard/core/careers')}}
+                    onClick={(e) => goTo('/dashboard/core/skills')}
                 />
 
                 <Button
@@ -308,11 +199,11 @@ const CreateCareer = () => {
                     size="sm"
                     className="form-button"
                     text={{
-                        label: "Create Career",
+                        label: "Update Skill",
                         size: 13,
                     }}
                     loading={loading}
-                    onClick={async (e) => { createCareer(validateCareer) }}
+                    onClick={async (e) => { updateSkill(e) }}
                 />
 
             </div>
@@ -321,4 +212,4 @@ const CreateCareer = () => {
     )
 }
 
-export default CreateCareer;
+export default EditSkill;

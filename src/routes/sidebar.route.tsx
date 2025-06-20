@@ -175,6 +175,18 @@ const sidebarRoutes: Array<IRoute> = [
             },
             {
                 route: 'core',
+                parent: 'careers',
+                name: 'update-career',
+                title: 'Update Career',
+                iconName: 'flash',
+                url: '/update',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
                 parent: 'fields',
                 name: 'create-field',
                 title: 'Create Field',
@@ -197,6 +209,18 @@ const sidebarRoutes: Array<IRoute> = [
             },
             {
                 route: 'core',
+                parent: 'topics',
+                name: 'update-topic',
+                title: 'Update Topic',
+                iconName: 'flash',
+                url: '/update',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
                 parent: 'skills',
                 name: 'create-skill',
                 title: 'Create Skill',
@@ -204,6 +228,41 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/create',
                 action: 'navigate',
                 isAuth: true,
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'skills',
+                name: 'update-skill',
+                title: 'Update Skill',
+                iconName: 'flash',
+                url: '/update',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'industries',
+                name: 'create-industry',
+                title: 'Create Industry',
+                iconName: 'flash',
+                url: '/create',
+                action: 'navigate',
+                isAuth: true,
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'industries',
+                name: 'edit-industry',
+                title: 'Update Industry',
+                iconName: 'flash',
+                url: '/create',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
                 content: { collapsed: false, backButton: true }
             },
             {
@@ -249,6 +308,18 @@ const sidebarRoutes: Array<IRoute> = [
                 title: 'Field Details',
                 iconName: 'flash',
                 url: '/fields',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'core',
+                parent: 'fields',
+                name: 'update-field',
+                title: 'Update Field',
+                iconName: 'flash',
+                url: '/update',
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],

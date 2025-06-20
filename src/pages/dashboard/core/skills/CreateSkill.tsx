@@ -23,11 +23,10 @@ const CreateSkill = () => {
     const { core, getCoreResources } = useApp()
 
     const {
-        fieldRef, careerRef, skillData, fieldList, career,
+        loading, fieldRef, careerRef, skillData, fieldList, career,
         setCareer, addField, removeField, handleChange, createSkill
     } = useSkill()
 
-    const { toast, setToast, clearToast } = useToast()
 
     useEffect(() => {
         initList(25)
@@ -81,7 +80,6 @@ const CreateSkill = () => {
                                     onChange={(e) => handleChange('label', e.target.value)}
                                 />
                             </div>
-
 
                         </div>
 
@@ -226,7 +224,7 @@ const CreateSkill = () => {
                                     ref={careerRef}
                                     size='xxsm'
                                     className='la-filter'
-                                    placeholder="Select Career"
+                                    placeholder="Select Status"
                                     position="bottom"
                                     menu={{
                                         style: { minWidth: '290px' },
@@ -246,7 +244,6 @@ const CreateSkill = () => {
                                     defaultValue={skillData.isEnabled ? 'enable' : 'disable'}
                                     onChange={(data) => {
                                         handleChange('isEnabled', data.value === 'enable')
-                                        // handleStatus(data)
                                     }}
                                 />
                             </div>
@@ -320,6 +317,7 @@ const CreateSkill = () => {
                         label: "Create Career",
                         size: 13,
                     }}
+                    loading={loading}
                     onClick={async (e) => { console.log(skillData); createSkill() }}
                 />
 
