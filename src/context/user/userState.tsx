@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react'
+import React, { useMemo, useReducer } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Cookies from 'universal-cookie';
 import Axios from 'axios';
@@ -110,20 +110,20 @@ const UserState = (props: any) => {
         })
     }
 
-    const currentSidebar = (collapse:boolean): ISidebarProps | null => {
+    const currentSidebar = (collapse: boolean): ISidebarProps | null => {
 
         let result: ISidebarProps | null = null;
-    
+
         const name = storage.fetch('route.name');
         const sub = storage.fetch('route.subroute');
-    
+
         const route = sidebarRoutes.find((x) => x.name === name);
-    
-        if(route && route.subroutes && route.subroutes.length > 0){
-    
+
+        if (route && route.subroutes && route.subroutes.length > 0) {
+
             const subroute = route.subroutes.find((m) => m.name === sub);
-    
-            if(subroute){
+
+            if (subroute) {
                 result = {
                     collapsed: collapse,
                     route: route,
@@ -140,8 +140,8 @@ const UserState = (props: any) => {
                     isOpen: true
                 }
             }
-    
-        } else if(route) {
+
+        } else if (route) {
             result = {
                 collapsed: collapse,
                 route: route,
@@ -150,9 +150,9 @@ const UserState = (props: any) => {
                 isOpen: false
             }
         }
-    
+
         return result;
-    
+
     }
 
     const setToast = (data: IToast) => {
@@ -189,24 +189,42 @@ const UserState = (props: any) => {
         })
     }
 
+    const contextValues = useMemo(() => ({
+        users: state.users,
+        user: state.user,
+        userType: state.userType,
+        loading: state.loading,
+        toast: state.toast,
+        sidebar: state.sidebar,
+        setToast: setToast,
+        clearToast: clearToast,
+        setUserType,
+        setSidebar,
+        currentSidebar,
+        setCollection,
+        setResource,
+        setLoading,
+        unsetLoading
+    }), [
+        state.users,
+        state.user,
+        state.userType,
+        state.loading,
+        state.toast,
+        state.sidebar,
+        setToast,
+        clearToast,
+        setUserType,
+        setSidebar,
+        currentSidebar,
+        setCollection,
+        setResource,
+        setLoading,
+        unsetLoading
+    ])
+
     return <UserContext.Provider
-        value={{
-            users: state.users,
-            user: state.user,
-            userType: state.userType,
-            loading: state.loading,
-            toast: state.toast,
-            sidebar: state.sidebar,
-            setToast: setToast,
-            clearToast: clearToast,
-            setUserType,
-            setSidebar,
-            currentSidebar,
-            setCollection,
-            setResource,
-            setLoading,
-            unsetLoading
-        }}
+        value={contextValues}
     >
         {props.children}
 
