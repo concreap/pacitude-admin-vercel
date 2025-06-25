@@ -27,8 +27,6 @@ const SideBar = (props: ISidebar) => {
     const { redirect } = useAuth()
     const { getUser, user } = useUser()
 
-    const userContext = useContext<IUserContext>(UserContext)
-
     const [isOpen, setIsOpen] = useState<boolean>(true);
     const [ticon, setTicon] = useState<string>('menu')
 
@@ -38,7 +36,7 @@ const SideBar = (props: ISidebar) => {
 
     useEffect(() => {
 
-        if (helper.isEmpty(userContext.user, 'object')) {
+        if (helper.isEmpty(user, 'object')) {
             getUser()
         }
 

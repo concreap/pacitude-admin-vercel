@@ -5,10 +5,12 @@ import AxiosService from '../../services/axios.service'
 import { URL_LOGGEDIN_USER, URL_USERS } from '../../utils/path.util'
 import { GET_LOGGEDIN_USER, GET_USER, GET_USERS } from '../../context/types'
 import { ICollection, IListQuery } from '../../utils/interfaces.util'
+import useNetwork from '../useNetwork'
 
 const useUser = () => {
 
     const { userContext } = useContextType()
+    const { popNetwork } = useNetwork()
     const {
         users,
         user,
@@ -79,8 +81,16 @@ const useUser = () => {
             setResource(GET_LOGGEDIN_USER, response.data)
             unsetLoading({ option: 'default', message: 'data fetched successfully' })
         } else {
-            setResource(GET_LOGGEDIN_USER, null)
+            setResource(GET_LOGGEDIN_USER, {})
             unsetLoading({ option: 'default', message: response.message })
+            
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            } else if (response.data) {
+                console.log(`Error! Could not get careers ${response.data}`)
+            }
         }
 
     }, [setLoading, unsetLoading, setResource])
