@@ -14,10 +14,20 @@ import NotFound from '../../../pages/NotFound'
 const Home = lazy(() => import('../../../pages/Home'))
 const Dashboard = lazy(() => import('../../../pages/dashboard/Dashboard'))
 const Industries = lazy(() => import('../../../pages/dashboard/core/industries/Industries'))
+const CreateIndustry = lazy(() => import('../../../pages/dashboard/core/industries/CreateIndustry'))
+const EditIndustry = lazy(() => import('../../../pages/dashboard/core/industries/EditIndustry'))
 const Careers = lazy(() => import('../../../pages/dashboard/core/careers/Careers'))
+const CreateCareer = lazy(() => import('../../../pages/dashboard/core/careers/CreateCareer'))
+const EditCareer = lazy(() => import('../../../pages/dashboard/core/careers/EditCareer'))
 const Fields = lazy(() => import('../../../pages/dashboard/core/fields/Fields'))
+const CreateField = lazy(() => import('../../../pages/dashboard/core/fields/CreateField'))
+const EditField = lazy(() => import('../../../pages/dashboard/core/fields/EditField'))
 const Skills = lazy(() => import('../../../pages/dashboard/core/skills/Skills'))
+const CreateSkill = lazy(() => import('../../../pages/dashboard/core/skills/CreateSkill'))
+const EditSkill = lazy(() => import('../../../pages/dashboard/core/skills/EditSkill'))
 const Topics = lazy(() => import('../../../pages/dashboard/core/topics/Topics'))
+const CreateTopic = lazy(() => import('../../../pages/dashboard/core/topics/CreateTopic'))
+const EditTopic = lazy(() => import('../../../pages/dashboard/core/topics/EditTopic'))
 const Questions = lazy(() => import('../../../pages/dashboard/core/questions/Questions'))
 const CreateQuestion = lazy(() => import('../../../pages/dashboard/core/questions/CreateQuestion'))
 const QuestionDetails = lazy(() => import('../../../pages/dashboard/core/questions/QuestionDetails'))
@@ -45,10 +55,30 @@ const DynamicRoutes = () => {
                 return <Skills />
             case 'topics':
                 return <Topics />
+            case 'create-topic':
+                return <CreateTopic />
+            case 'update-topic':
+                return <EditTopic />
             case 'questions':
                 return <Questions />
             case 'create-question':
                 return <CreateQuestion />
+            case 'create-career':
+                return <CreateCareer />
+            case 'update-career':
+                return <EditCareer />
+            case 'create-field':
+                return <CreateField />
+            case 'update-field':
+                return <EditField />
+            case 'create-skill':
+                return <CreateSkill />
+            case 'update-skill':
+                return <EditSkill />
+            case 'create-industry':
+                return <CreateIndustry />
+            case 'update-industry':
+                return <EditIndustry />
             case 'question-details':
                 return <QuestionDetails />
             default:

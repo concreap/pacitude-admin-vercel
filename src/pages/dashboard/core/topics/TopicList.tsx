@@ -109,7 +109,16 @@ const TopicList = (props: IListUI) => {
 
         if (e) { e.preventDefault(); }
 
-        toDetailRoute(e, { id: id, route: 'core', name: 'topic-details' })
+        toDetailRoute(e, { id: id, route: 'core', name: 'update-topic' })
+        // toDetailRoute(e, { id: id, route: 'core', name: 'topic-details' })
+
+    }
+
+    const toEdit = (e: any, id: string) => {
+
+        if (e) { e.preventDefault(); }
+
+        toDetailRoute(e, { id: id, route: 'core', name: 'edit-topic' })
 
     }
 
@@ -402,6 +411,7 @@ const TopicList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Edit', value: 'details', onClick: (e) => toDetails(e, topic._id) },
                                                                             { label: 'Remove', value: 'remove', onClick: () => { } }
                                                                         ]}
                                                                         noFilter={false}
@@ -444,6 +454,7 @@ const TopicList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
+                                                                            { label: 'Edit', value: 'details', onClick: (e) => toDetails(e, topic._id)},
                                                                             { label: 'Remove', value: 'remove', onClick: () => { } }
                                                                         ]}
                                                                         noFilter={false}

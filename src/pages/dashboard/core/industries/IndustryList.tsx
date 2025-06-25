@@ -64,7 +64,8 @@ const IndustryList = (props: IListUI) => {
 
         if (e) { e.preventDefault(); }
 
-        toDetailRoute(e, { id: id, route: 'core', name: 'industry-details' })
+        // toDetailRoute(e, { id: id, route: 'core', name: 'industry-details' })
+        toDetailRoute(e, { id: id, route: 'core', name: 'edit-industry' })
 
     }
 

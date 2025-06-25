@@ -7,10 +7,13 @@ import AxiosService from '../../services/axios.service'
 import { URL_CAREER, URL_CONFIG, URL_FIELD, URL_INDUSTRY } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
 import { collection, pagination } from '../../_data/seed'
+import useGoTo from '../useGoTo'
+import { coreTypeEnum } from '../../utils/enums.util'
 
 const useApp = () => {
 
     const { appContext } = useContextType()
+    const { toDetailRoute } = useGoTo()
     const { popNetwork } = useNetwork(false)
     const {
         core,
@@ -24,6 +27,15 @@ const useApp = () => {
     useEffect(() => {
 
     }, [])
+
+
+    const toggleAddResource = (e: any, type: string) => {
+
+        if (e) { e.preventDefault(); }
+
+        toDetailRoute(e, { route: 'core', name: `create-${type}` })
+    
+    }
 
     /**
      * @name getCoreResources
@@ -86,6 +98,7 @@ const useApp = () => {
         core,
         loading,
 
+        toggleAddResource,
         getCoreResources,
     }
 }
