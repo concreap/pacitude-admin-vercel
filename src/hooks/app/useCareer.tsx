@@ -282,8 +282,8 @@ const useCareer = () => {
 
 
     /**
-        * @name createSkill
-        */
+    * @name createSkill
+    */
     const createCareer = useCallback(async (validate: () => boolean) => {
 
         const isValidated = validate()
@@ -353,8 +353,8 @@ const useCareer = () => {
     }, [careerData, synonyms, setLoading, unsetLoading, setResource])
 
     /**
-        * @name editCareer
-        */
+    * @name updateCareer
+    */
     const updateCareer = useCallback(async (e: MouseEvent<HTMLAnchorElement>) => {
 
         if (e) { e.preventDefault(); }
@@ -365,12 +365,7 @@ const useCareer = () => {
             const k = key as keyof typeof payload;
             const value = payload[k];
 
-            if (
-                value === '' ||
-                value === null ||
-                value === undefined ||
-                (Array.isArray(value) && value.length === 0)
-            ) {
+            if (!value || (Array.isArray(value) && value.length === 0) ) {
                 delete payload[k];
             }
         });
@@ -430,7 +425,7 @@ const useCareer = () => {
 
         }
 
-    }, [careerData, synonyms, setLoading, unsetLoading, setResource])
+    }, [setLoading, unsetLoading, setResource])
 
     return {
         industry,
