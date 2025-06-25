@@ -314,7 +314,7 @@ const CreateSkill = () => {
                     size="sm"
                     className="form-button"
                     text={{
-                        label: "Create Career",
+                        label: "Create Skill",
                         size: 13,
                     }}
                     loading={loading}

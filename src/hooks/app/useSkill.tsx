@@ -351,7 +351,7 @@ const useSkill = () => {
                 } else if (response.message && response.message === 'Error: Network Error') {
                     popNetwork();
                 }
-                else if (response.data) {
+                else if (!helper.isEmpty(response.data, 'object')) {
                     console.log(`Error! Could not create skill ${response.data}`)
                 }
                 else if (response.errors && response.errors.length > 0) {

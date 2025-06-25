@@ -126,7 +126,7 @@ const useTopic = () => {
                 } else if (response.message && response.message === 'Error: Network Error') {
                     popNetwork();
                 }
-                else if (response.data) {
+                else if (!helper.isEmpty(response.data, 'object')) {
                     setToast({ ...toast, show: true, error: 'topic', type: 'error', message: `Error! Could not create topic ${response?.data}` })
                 }
                 else if (response.errors && response.errors.length > 0) {
