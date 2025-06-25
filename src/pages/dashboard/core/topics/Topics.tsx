@@ -5,10 +5,13 @@ import Icon from "../../../../components/partials/icons/Icon";
 import Divider from "../../../../components/partials/Divider";
 import useSidebar from "../../../../hooks/useSidebar";
 import TopicList from "./TopicList";
+import useApp from "../../../../hooks/app/useApp";
+import { coreTypeEnum } from "../../../../utils/enums.util";
 
 const SkillsPage = ({ }) => {
 
     useSidebar({ type: 'page', init: true })
+    const { toggleAddResource } = useApp()
 
     useEffect(() => {
 
@@ -35,7 +38,7 @@ const SkillsPage = ({ }) => {
                             child: <Icon name="plus" type="feather" size={16} className="color-white" />
                         }}
                         reverse="row"
-                        onClick={(e) => {}}
+                        onClick={(e) => toggleAddResource(e, coreTypeEnum.TOPIC)}
                     />
                 </div>
 

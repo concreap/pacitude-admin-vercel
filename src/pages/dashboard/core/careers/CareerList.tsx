@@ -95,7 +95,8 @@ const CareerList = (props: IListUI) => {
 
         if (e) { e.preventDefault(); }
 
-        toDetailRoute(e, { id: id, route: 'core', name: 'career-details' })
+        // toDetailRoute(e, { id: id, route: 'core', name: 'career-details' })
+        toDetailRoute(e, { id: id, route: 'core', name: 'update-career' })
 
     }
 
