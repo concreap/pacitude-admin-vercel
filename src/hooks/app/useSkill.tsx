@@ -327,10 +327,14 @@ const useSkill = () => {
 
             if (response.error === false) {
 
-                // if (response.status === 200) {
+                
+                if (response.status === 200) {
+                    setToast({ ...toast, show: true, type: 'success', message: 'Skill created successfully' })
+                }
 
-                //     setResource(GET_SKILL, response.data)
-                // }
+                setTimeout(() => {
+                    setToast({ ...toast, show: false })
+                }, 3000)
 
                 unsetLoading({
                     option: 'default',

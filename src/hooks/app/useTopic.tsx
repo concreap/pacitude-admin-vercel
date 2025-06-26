@@ -99,8 +99,7 @@ const useTopic = () => {
             if (response.error === false) {
 
                 if (response.status === 200) {
-
-                    setToast({ ...toast, show: true, type: 'success', message: 'Topic updated successfully' })
+                    setToast({ ...toast, show: true, type: 'success', message: 'Topic created successfully' })
                 }
 
                 setTimeout(() => {
