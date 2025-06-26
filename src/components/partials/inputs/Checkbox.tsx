@@ -24,7 +24,6 @@ const Checkbox = forwardRef((props: ICheckbox, ref: ForwardedRef<any>) => {
     const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
-
     }, [])
 
     const lfs = () => {
@@ -62,7 +61,7 @@ const Checkbox = forwardRef((props: ICheckbox, ref: ForwardedRef<any>) => {
                 ref={inputRef}
                 id={id ? id : ''}
                 name={name ? name : ''}
-                defaultChecked={checked !== undefined ? checked : false}
+                defaultChecked={checked}
                 type={'checkbox'}
                 className={cc()}
                 readOnly={readonly ? readonly : false}
@@ -71,7 +70,7 @@ const Checkbox = forwardRef((props: ICheckbox, ref: ForwardedRef<any>) => {
 
             {
                 label &&
-                <label htmlFor={id ? id : ''} className={`mb-0 pl-[0.65rem] relative top-[1px] ${label.className ? label.className : ''}`}>
+                <label htmlFor={id ? id : ''} className={`mb-0 pl-[0.65rem] relative top-[0px] cursor-pointer ${label.className ? label.className : ''}`}>
                     <span className={`text-${lfs()} font-mona${label.fontWeight ? '-' + label.fontWeight : ''} color-black`}>{label.title}</span>
                 </label>
             }

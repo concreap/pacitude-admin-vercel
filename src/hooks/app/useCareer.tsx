@@ -10,14 +10,15 @@ import useGoTo from '../useGoTo'
 import useToast from '../useToast'
 import helper from '../../utils/helper.util'
 
-interface ICareerData {
+interface ICreateCareer {
     name: string,
     label: string,
     description: string,
     isEnabled: any,
     industryId: string,
-    synonyms: string[]
+    synonyms: Array<string>
 }
+interface IUpdateCareer extends ICreateCareer { }
 
 const useCareer = () => {
 
@@ -25,7 +26,7 @@ const useCareer = () => {
 
     const { appContext } = useContextType()
     const { popNetwork } = useNetwork(false)
-    const { toast, setToast } = useToast()
+    
     const [industry, setIndustry] = useState({ _id: '', name: '' })
 
     const {
@@ -38,51 +39,16 @@ const useCareer = () => {
         unsetLoading
     } = appContext
 
-    const [careerData, setCareerData] = useState<ICareerData>({
-        name: '',
-        label: '',
-        description: '',
-        isEnabled: null,
-        industryId: '',
-        synonyms: []
-    })
-    const [synonyms, setSynonyms] = useState<Array<string>>([])
-
     useEffect(() => {
 
     }, [])
 
-
-    const toggleAddCareer = (e: any) => {
-
-        if (e) { e.preventDefault(); }
-
-        toDetailRoute(e, { route: 'core', name: 'create-career' })
-
-    }
-
-    const handleChange = <K extends keyof ICareerData>(field: K, value: ICareerData[K]) => {
-        setCareerData((prev) => ({
-            ...prev,
-            [field]: value
-        }))
-    };
-
-    const handleSynonyms = (value: string) => {
+    const splitSynonyms = (value: string) => {
         if (!value) return [];
         return value
             .split(/\s*,\s*/g)         // Split by commas and optional spaces
             .map(item => item.trim()) // Trim whitespace
             .filter(item => item.length > 0); // Remove empty items
-    };
-
-    const onSynonymsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const synonymsArray = handleSynonyms(value);
-        setCareerData(prev => ({
-            ...prev,
-            synonyms: synonymsArray
-        }));
     };
 
     const getCareerById = (id: string) => {
@@ -263,18 +229,6 @@ const useCareer = () => {
             } else if (response.message && response.message === 'Error: Network Error') {
                 popNetwork();
             }
-            else if (response.data) {
-                setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Error! Could not get career ${response?.data}` })
-            }
-            else if (response.errors && response.errors.length > 0) {
-                setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Error! Could not get career ${response?.errors[0]}` })
-            }
-            else if (response.status === 500) {
-                setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Sorry, there was an error processing your request. Please try again later.` })
-            }
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 3000)
 
         }
 
@@ -284,112 +238,19 @@ const useCareer = () => {
     /**
     * @name createSkill
     */
-    const createCareer = useCallback(async (validate: () => boolean) => {
-
-        const isValidated = validate()
-
-        if (isValidated === true) {
-            let payload = { ...careerData }
-
-            console.log('pay', payload)
-
-            setLoading({ option: 'default' })
-
-            const response = await AxiosService.call({
-                type: 'default',
-                method: 'POST',
-                isAuth: true,
-                path: `${URL_CAREER}`,
-                payload: payload
-            })
-
-            if (response.error === false) {
-
-                if (response.status === 200) {
-                    setToast({ ...toast, show: true, type: 'success', message: 'Career created successfully' })
-                    setCareerData({
-                        name: '',
-                        label: '',
-                        description: '',
-                        isEnabled: false,
-                        industryId: '',
-                        synonyms: []
-                    })
-                    setSynonyms([]);
-                }
-
-                unsetLoading({
-                    option: 'default',
-                    message: 'data saved successfully'
-                })
-
-            }
-
-            if (response.error === true) {
-
-                unsetLoading({
-                    option: 'default',
-                    message: response.message ? response.message : response.data
-                })
-
-                if (response.status === 401) {
-                    AxiosService.logout()
-                } else if (response.message && response.message === 'Error: Network Error') {
-                    popNetwork();
-                }
-                else if (response.data) {
-                    setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Error! Could not create career ${response?.errors[0]}` })
-                }
-                else if (response.status === 500) {
-                    setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Sorry, there was an error processing your request. Please try again later.` })
-                }
-                setTimeout(() => {
-                    setToast({ ...toast, show: false })
-                }, 3000)
-
-            }
-        }
-
-    }, [careerData, synonyms, setLoading, unsetLoading, setResource])
-
-    /**
-    * @name updateCareer
-    */
-    const updateCareer = useCallback(async (e: MouseEvent<HTMLAnchorElement>) => {
-
-        if (e) { e.preventDefault(); }
-
-        let payload: any = { ...careerData }
-
-        Object.keys(payload).forEach((key) => {
-            const k = key as keyof typeof payload;
-            const value = payload[k];
-
-            if (!value || (Array.isArray(value) && value.length === 0) ) {
-                delete payload[k];
-            }
-        });
+    const createCareer = useCallback(async (data: ICreateCareer) => {
 
         setLoading({ option: 'default' })
 
         const response = await AxiosService.call({
             type: 'default',
-            method: 'PUT',
+            method: 'POST',
             isAuth: true,
-            path: `${URL_CAREER}/${career._id}`,
-            payload: payload
+            path: `${URL_CAREER}`,
+            payload: data
         })
 
         if (response.error === false) {
-
-            if (response.status === 200) {
-                setToast({ ...toast, show: true, type: 'success', message: 'Career created successfully' })
-                setSynonyms([]);
-            }
-
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 3000)
 
             unsetLoading({
                 option: 'default',
@@ -410,36 +271,66 @@ const useCareer = () => {
             } else if (response.message && response.message === 'Error: Network Error') {
                 popNetwork();
             }
-            else if (!helper.isEmpty(response.data, 'object')) {
-                setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Error! Could not update career ${response?.data}` })
-            }
-            else if (response.errors && response.errors.length > 0) {
-                setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Error! Could not update career ${response?.errors[0]}` })
-            }
-            else if (response.status === 500) {
-                setToast({ ...toast, show: true, error: 'career', type: 'error', message: `Sorry, there was an error processing your request. Please try again later.` })
-            }
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 3000)
 
         }
+
+        return response;
+
+    }, [setLoading, unsetLoading, setResource])
+
+    /**
+    * @name updateCareer
+    */
+    const updateCareer = useCallback(async (data: IUpdateCareer) => {
+
+        setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_CAREER}/${career._id}`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'default',
+                message: 'data saved successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
 
     }, [setLoading, unsetLoading, setResource])
 
     return {
         industry,
-        careerData,
-        synonyms,
         careers,
         career,
         loading,
 
+        splitSynonyms,
         setIndustry,
-        toggleAddCareer,
-        handleChange,
-        onSynonymsChange,
         getCareerById,
+
         getCareers,
         getResourceCareers,
         getCareer,

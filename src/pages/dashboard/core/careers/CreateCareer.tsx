@@ -22,11 +22,20 @@ const CreateCareer = () => {
     const statusRef = useRef<any>(null)
     const toRef = useRef<any>(null)
 
-    const { careerData, industry, loading, setIndustry, handleChange, onSynonymsChange, createCareer } = useCareer()
+    const { industry, loading, setIndustry, createCareer } = useCareer()
     const { industries, getIndustries } = useIndustry()
     const { toast, setToast, clearToast } = useToast()
     const { goTo } = useGoTo()
 
+
+    const [form, setForm] = useState({
+        name: '',
+        label: '',
+        description: '',
+        isEnabled: false,
+        industryId: '',
+        synonyms: [] as Array<string>
+    })
 
     useEffect(() => {
         initList(25)
@@ -41,22 +50,22 @@ const CreateCareer = () => {
 
         let isValid: boolean = true;
 
-        if (!careerData.name) {
+        if (!form.name) {
             setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Career name is required' })
             isValid = false;
 
-        } else if (!careerData.label) {
+        } else if (!form.label) {
             setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Career display name is required' })
             isValid = false;
-        } else if (careerData.synonyms.length === 0) {
+        } else if (form.synonyms.length === 0) {
             setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Career synonymns are required' })
             isValid = false;
         }
-        else if (!careerData.industryId) {
+        else if (!form.industryId) {
             setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Industry is required' })
             isValid = false;
         }
-        else if (careerData.description.length < 10) {
+        else if (form.description.length < 10) {
             setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Description must be at least 10 characters long' })
             isValid = false;
         }
@@ -76,7 +85,7 @@ const CreateCareer = () => {
 
                 <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto my-5">
 
-                    <div className="w-full space-y-[0.55rem]" onClick={() => console.log(careerData)}>
+                    <div className="w-full space-y-[0.55rem]">
 
                         <div className="grid grid-cols-2 gap-5 w-full">
 
@@ -86,14 +95,14 @@ const CreateCareer = () => {
                                     size="sm"
                                     showFocus={true}
                                     autoComplete={false}
-                                    placeholder="Topic name"
+                                    placeholder="Type here"
                                     defaultValue={''}
                                     label={{
-                                        title: 'Topic Name',
+                                        title: 'Career Name',
                                         required: true,
                                         className: 'text-[13px]'
                                     }}
-                                    onChange={(e) => { handleChange('name', e.target.value) }}
+                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 />
                             </div>
 
@@ -103,14 +112,14 @@ const CreateCareer = () => {
                                     size="sm"
                                     showFocus={true}
                                     autoComplete={false}
-                                    placeholder="Display name"
+                                    placeholder="Type here"
                                     defaultValue={''}
                                     label={{
                                         title: 'Display Name',
                                         required: true,
                                         className: 'text-[13px]'
                                     }}
-                                    onChange={(e) => { handleChange('label', e.target.value) }}
+                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
                                 />
                             </div>
 
@@ -135,7 +144,9 @@ const CreateCareer = () => {
                                     required: true,
                                     className: 'text-[13px]'
                                 }}
-                                onChange={(e) => { onSynonymsChange(e) }}
+                                onChange={(e) => {
+                                    
+                                }}
                             />
                         </div>
 
@@ -174,7 +185,7 @@ const CreateCareer = () => {
                                     }
                                     noFilter={false}
                                     onChange={(data) => {
-                                        handleChange('industryId', data.value)
+                                        setForm({ ...form, industryId: data.value })
                                         setIndustry({ _id: data.value, name: data.label })
                                     }}
                                 />
@@ -204,58 +215,7 @@ const CreateCareer = () => {
 
                     <div className="w-full space-y-[0.55rem] mb-4">
 
-                        <div className="flex items-center">
-                            <h3 className="font-mona text-[13px] flex items-center">
-                                <span>Status</span>
-                                <span className="text-red-600 text-base relative top-1 pl-1">*</span>
-                            </h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[40%]">
-                                <Filter
-                                    ref={statusRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Status"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '290px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        statusOptions.map((x) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x.value
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    defaultValue={''}
-                                    onChange={(data) => {
-                                        handleChange('isEnabled', data.value === 'enable')
-                                    }}
-                                />
-                            </div>
-
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-
-                                <Badge
-                                    type={'success'}
-                                    size="xsm"
-                                    close={false}
-                                    label={`${helper.capitalize(careerData.isEnabled ? 'Enabled' : 'Disabled')}`}
-                                    upper={true}
-                                />
-
-
-                            </FormField>
-
-                        </div>
+                        
 
                     </div>
 
@@ -274,7 +234,7 @@ const CreateCareer = () => {
                                     className: 'text-[13px]',
                                     required: true
                                 }}
-                                onChange={(e) => { handleChange('description', e.target.value) }}
+                                onChange={(e) => setForm({ ...form, description: e.target.value })}
                             />
                         </FormField>
 
@@ -312,7 +272,7 @@ const CreateCareer = () => {
                         size: 13,
                     }}
                     loading={loading}
-                    onClick={async (e) => { createCareer(validateCareer) }}
+                    onClick={async (e) => {}}
                 />
 
             </div>

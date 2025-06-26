@@ -816,7 +816,14 @@ export interface IIconButton {
         className?: string,
         name: string,
         type: IconFamilyType
+        child?: ReactNode
     },
+    label?: {
+        text: string,
+        className?: string,
+        size?: number,
+        weight?: FontWeightType,
+    }
     active?: boolean,
     url?: string,
     size?: string,
@@ -1395,6 +1402,7 @@ export interface IAppContext {
     core: ICoreResource
     message: string,
     loading: boolean,
+    loader: boolean,
     clearResource(data: IClearResource): void,
     setCollection(type: string, data: ICollection): void,
     setResource(type: string, data: any): void

@@ -10,8 +10,10 @@ const IconButton = (props: IIconButton) => {
             name: 'edit2',
             type: 'feather',
             size: 16,
-            className: ''
+            className: '',
+            child: null
         },
+        label = null,
         url = '',
         active = false,
         size = 'min-w-[2.2rem] min-h-[2.2rem]',
@@ -60,13 +62,34 @@ const IconButton = (props: IIconButton) => {
         <>
             <Link to={''}
                 onClick={(e) => handleClick(e)}
-                className={cc()}>
-                <Icon 
-                    type={icon.type}
-                    name={icon.name}
-                    className={icon.className}
-                    size={icon.size}
-                />
+                className={`flex items-center gap-x-[0.5rem] ${className && className.includes('ml-auto') ? 'ml-auto' : ''}`}>
+                <div className={cc()}>
+                    {
+                        icon.child &&
+                        <>{icon.child}</>
+                    }
+                    {
+                        !icon.child &&
+                        <>
+                            <Icon
+                                type={icon.type}
+                                name={icon.name}
+                                className={icon.className}
+                                size={icon.size}
+                            />
+                        </>
+                    }
+
+
+
+                </div>
+                {
+                    label &&
+                    <>
+                        <span style={{ fontSize: `${label.size ? label.size : '13'}px` }}
+                            className={`pas-950 font-mona${label.weight && label.weight !== 'regular' ? '-' + label.weight : ''} ${label.className ? label.className : ''}`}>{label.text}</span>
+                    </>
+                }
             </Link>
         </>
     )

@@ -31,6 +31,7 @@ export const SET_SEARCH = 'SET_SEARCH';
 export const SET_TOTAL = 'SET_TOTAL';
 export const SET_COUNT = 'SET_COUNT';
 export const SET_LOADING = 'SET_LOADING';
+export const SET_LOADER = 'SET_LOADER';
 export const SET_TOAST = 'SET_TOAST';
 export const UNSET_LOADING = 'UNSET_LOADING';
 export const SET_USERTYPE = 'SET_USERTYPE';
