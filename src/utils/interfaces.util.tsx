@@ -319,6 +319,7 @@ export interface ITextInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    clear?: boolean,
     icon?: {
         enable: boolean,
         position: PositionType

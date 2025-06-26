@@ -15,6 +15,7 @@ const TextInput = forwardRef((props: ITextInput, ref: ForwardedRef<any>) => {
         className,
         label,
         readonly,
+        clear = false,
         icon = {
             enable: false,
             position: 'right',
@@ -37,6 +38,12 @@ const TextInput = forwardRef((props: ITextInput, ref: ForwardedRef<any>) => {
     useEffect(() => {
 
     }, [])
+
+    useEffect(() => {
+        if(clear){
+            handleClear()
+        }
+    }, [clear])
 
     const lfs = () => {
 

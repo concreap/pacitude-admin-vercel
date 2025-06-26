@@ -99,8 +99,7 @@ const useTopic = () => {
             if (response.error === false) {
 
                 if (response.status === 200) {
-
-                    setToast({ ...toast, show: true, type: 'success', message: 'Topic updated successfully' })
+                    setToast({ ...toast, show: true, type: 'success', message: 'Topic created successfully' })
                 }
 
                 setTimeout(() => {
@@ -126,7 +125,7 @@ const useTopic = () => {
                 } else if (response.message && response.message === 'Error: Network Error') {
                     popNetwork();
                 }
-                else if (response.data) {
+                else if (!helper.isEmpty(response.data, 'object')) {
                     setToast({ ...toast, show: true, error: 'topic', type: 'error', message: `Error! Could not create topic ${response?.data}` })
                 }
                 else if (response.errors && response.errors.length > 0) {

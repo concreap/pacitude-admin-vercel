@@ -24,7 +24,7 @@ const EditCareer = () => {
     const { id } = useParams<{ id: string }>()
 
     const { toast, setToast } = useToast()
-    const { loading, career, updateCareer, getCareer } = useCareer()
+    const { loading, loader, career, updateCareer, getCareer } = useCareer()
     const { goBack } = useGoBack();
 
     const [form, setForm] = useState({
@@ -40,22 +40,6 @@ const EditCareer = () => {
         if (id) { getCareer(id) }
     }, [])
 
-    useEffect(() => {
-
-        if (!helper.isEmpty(career, 'object')) {
-            setForm({
-                ...form,
-                name: career?.name || '',
-                label: career?.label || '',
-                description: career?.description || '',
-                isEnabled: career.isEnabled ? true : false,
-                industryId: career.industry && career.industry._id ? career.industry._id : '',
-                synonyms: career?.synonyms || []
-            })
-        }
-
-    }, [career])
-
     const handleUpdate = async (e: any) => {
 
         if (e) { e.preventDefault() }
@@ -69,6 +53,7 @@ const EditCareer = () => {
                 type: 'success',
                 message: `Changes saved successfully`
             })
+            getCareer(career._id);
         }
 
         if (response.error) {
@@ -117,11 +102,11 @@ const EditCareer = () => {
                                             showFocus={true}
                                             autoComplete={false}
                                             placeholder="Topic name"
-                                            defaultValue={form.name}
+                                            defaultValue={career.name}
                                             label={{
                                                 title: 'Career Name',
                                                 required: true,
-                                                className: 'text-[13px]'
+                                                fontSize: 13
                                             }}
                                             onChange={(e) => setForm({ ...form, name: e.target.value })}
                                         />
@@ -137,9 +122,9 @@ const EditCareer = () => {
                                             label={{
                                                 title: 'Display Name',
                                                 required: true,
-                                                className: 'text-[13px]'
+                                                fontSize: 13
                                             }}
-                                            defaultValue={form.label}
+                                            defaultValue={career.label}
                                             onChange={(e) => setForm({ ...form, label: e.target.value })}
                                         />
                                     </div>
@@ -153,7 +138,7 @@ const EditCareer = () => {
                                     showFocus={true}
                                     autoComplete={false}
                                     placeholder="Type here"
-                                    defaultValue={form.description}
+                                    defaultValue={career.description}
                                     label={{
                                         title: 'Description',
                                         className: 'text-[13px]',
@@ -170,7 +155,7 @@ const EditCareer = () => {
                                     size="sm"
                                     checked={career.isEnabled ? true : false}
                                     label={{
-                                        title: form.isEnabled ? 'Career is Enabled' : 'Career is Disabled',
+                                        title: (form.isEnabled || career.isEnabled) ? 'Career is Enabled' : 'Career is Disabled',
                                         className: '',
                                         fontSize: '[13px]'
                                     }}
@@ -183,7 +168,7 @@ const EditCareer = () => {
 
                             <div className="flex items-center gap-x-[0.65rem] mt-10">
 
-                                <IconButton
+                                {/* <IconButton
                                     size="min-w-[1.8rem] min-h-[1.8rem]"
                                     className="bg-pab-50 bgh-pab-100"
                                     icon={{
@@ -199,6 +184,23 @@ const EditCareer = () => {
                                     onClick={(e) => {
                                         goBack()
                                     }}
+                                /> */}
+
+                                <Button
+                                    type="ghost"
+                                    semantic={'default'}
+                                    size="sm"
+                                    className="form-button"
+                                    text={{
+                                        label: "Cancel",
+                                        size: 13,
+                                    }}
+                                    icon={{
+                                        enable: true,
+                                        child: <Icon name="x" type="feather" size={16} className="par-600" />
+                                    }}
+                                    reverse="row"
+                                    onClick={(e) => { goBack() }}
                                 />
 
                                 <Button
@@ -210,8 +212,8 @@ const EditCareer = () => {
                                         label: "Save Changes",
                                         size: 13,
                                     }}
-                                    loading={loading}
-                                    onClick={async (e) => { }}
+                                    loading={loader}
+                                    onClick={(e) => handleUpdate(e)}
                                 />
 
                             </div>

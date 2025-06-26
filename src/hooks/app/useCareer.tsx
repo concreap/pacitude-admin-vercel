@@ -26,13 +26,12 @@ const useCareer = () => {
 
     const { appContext } = useContextType()
     const { popNetwork } = useNetwork(false)
-    
-    const [industry, setIndustry] = useState({ _id: '', name: '' })
 
     const {
         careers,
         career,
         loading,
+        loader,
         setCollection,
         setResource,
         setLoading,
@@ -240,7 +239,7 @@ const useCareer = () => {
     */
     const createCareer = useCallback(async (data: ICreateCareer) => {
 
-        setLoading({ option: 'default' })
+        setLoading({ option: 'loader' })
 
         const response = await AxiosService.call({
             type: 'default',
@@ -253,7 +252,7 @@ const useCareer = () => {
         if (response.error === false) {
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: 'data saved successfully'
             })
 
@@ -262,7 +261,7 @@ const useCareer = () => {
         if (response.error === true) {
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: response.message ? response.message : response.data
             })
 
@@ -283,7 +282,7 @@ const useCareer = () => {
     */
     const updateCareer = useCallback(async (data: IUpdateCareer) => {
 
-        setLoading({ option: 'default' })
+        setLoading({ option: 'loader' })
 
         const response = await AxiosService.call({
             type: 'default',
@@ -296,7 +295,7 @@ const useCareer = () => {
         if (response.error === false) {
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: 'data saved successfully'
             })
 
@@ -305,7 +304,7 @@ const useCareer = () => {
         if (response.error === true) {
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: response.message ? response.message : response.data
             })
 
@@ -322,13 +321,12 @@ const useCareer = () => {
     }, [setLoading, unsetLoading, setResource])
 
     return {
-        industry,
         careers,
         career,
         loading,
+        loader,
 
         splitSynonyms,
-        setIndustry,
         getCareerById,
 
         getCareers,

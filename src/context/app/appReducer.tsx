@@ -17,7 +17,8 @@ import {
     SET_SEARCH,
     GET_METRICS,
     SET_ITEMS,
-    GET_CORE
+    GET_CORE,
+    SET_LOADER
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -112,6 +113,11 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 loading: true
+            }
+        case SET_LOADER:
+            return {
+                ...state,
+                loader: action.payload
             }
         case UNSET_LOADING:
             return {

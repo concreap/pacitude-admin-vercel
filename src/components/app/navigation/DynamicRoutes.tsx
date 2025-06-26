@@ -17,7 +17,7 @@ const Industries = lazy(() => import('../../../pages/dashboard/core/industries/I
 const CreateIndustry = lazy(() => import('../../../pages/dashboard/core/industries/CreateIndustry'))
 const EditIndustry = lazy(() => import('../../../pages/dashboard/core/industries/EditIndustry'))
 const Careers = lazy(() => import('../../../pages/dashboard/core/careers/Careers'))
-const CreateCareer = lazy(() => import('../../../pages/dashboard/core/careers/CreateCareer'))
+const CreateCareer = lazy(() => import('../../../pages/dashboard/core/careers/NewCareer'))
 const EditCareer = lazy(() => import('../../../pages/dashboard/core/careers/EditCareer'))
 const Fields = lazy(() => import('../../../pages/dashboard/core/fields/Fields'))
 const CreateField = lazy(() => import('../../../pages/dashboard/core/fields/CreateField'))
