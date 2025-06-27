@@ -319,6 +319,7 @@ export interface ITextInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    clear?: boolean,
     icon?: {
         enable: boolean,
         position: PositionType
@@ -448,6 +449,7 @@ export interface ITextAreaInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    clear?: boolean,
     icon?: {
         enable: boolean,
         position: PositionType
@@ -816,7 +818,14 @@ export interface IIconButton {
         className?: string,
         name: string,
         type: IconFamilyType
+        child?: ReactNode
     },
+    label?: {
+        text: string,
+        className?: string,
+        size?: number,
+        weight?: FontWeightType,
+    }
     active?: boolean,
     url?: string,
     size?: string,
@@ -1381,20 +1390,21 @@ export interface IAppContext {
     careers: ICollection,
     career: Career,
     fields: ICollection,
-    field: Industry,
+    field: Field,
     skills: ICollection,
-    skill: any,
+    skill: Skill,
     questions: ICollection,
     question: Question,
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
-    topic: any,
+    topic: Topic,
     search: ICollection,
     metrics: IAppMetrics,
     items: Array<any>
     core: ICoreResource
     message: string,
     loading: boolean,
+    loader: boolean,
     clearResource(data: IClearResource): void,
     setCollection(type: string, data: ICollection): void,
     setResource(type: string, data: any): void

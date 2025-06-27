@@ -10,6 +10,7 @@ import { LoadingType } from '../../utils/types.util'
 import { aiquestion, collection, coreResource, metrics } from '../../_data/seed'
 import helper from '../../utils/helper.util'
 import {
+    SET_LOADER,
     SET_LOADING,
     UNSET_LOADING
 } from '../types'
@@ -37,7 +38,8 @@ const AppState = (props: any) => {
         metrics: metrics,
         search: collection,
         message: '',
-        loading: false
+        loading: false,
+        loader: false
     }
 
     const [state, dispatch] = useReducer(GeniusReducer, initialState);
@@ -51,6 +53,13 @@ const AppState = (props: any) => {
         if (data.option === 'default') {
             dispatch({
                 type: SET_LOADING
+            })
+        }
+
+        if (data.option === 'loader') {
+            dispatch({
+                type: SET_LOADER,
+                payload: true
             })
         }
 
@@ -80,6 +89,13 @@ const AppState = (props: any) => {
             dispatch({
                 type: UNSET_LOADING,
                 payload: data.message
+            })
+        }
+
+        if (data.option === 'loader') {
+            dispatch({
+                type: SET_LOADER,
+                payload: false
             })
         }
 
@@ -154,6 +170,7 @@ const AppState = (props: any) => {
         search: state.search,
         message: state.message,
         loading: state.loading,
+        loader: state.loader,
         setLoading: setLoading,
         unsetLoading: unsetLoading,
         clearResource: clearResource,
@@ -178,6 +195,7 @@ const AppState = (props: any) => {
         state.search,
         state.message,
         state.loading,
+        state.loader,
         state.core,
         setLoading,
         unsetLoading,

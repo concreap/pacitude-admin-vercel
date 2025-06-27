@@ -7,41 +7,35 @@ import { URL_FIELD } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
 import useToast from '../useToast'
 import helper from '../../utils/helper.util'
+import { FormActionType, ResourceType } from '../../utils/types.util'
 
-interface IField {
+interface ICreateField {
     name: string,
     label: string,
     description: string,
     isEnabled: any,
     careerId: string,
+    skills: Array<string>
+}
+
+interface IUPdateField extends ICreateField {
+    id: string
+}
+
+interface IChangeResource {
+    id: string,
+    resource: ResourceType,
+    type: 'attach' | 'detach',
+    careerId?: string,
+    skills?: Array<string>
 }
 
 const useField = () => {
 
-    const skillRef = useRef<any>(null)
-    const statusRef = useRef<any>(null)
-
     const { appContext } = useContextType()
     const { popNetwork } = useNetwork(false)
-    const { toast, setToast } = useToast()
-    const { fields, field, loading, setCollection, setResource, setLoading, unsetLoading } = appContext
+    const { fields, field, loading, loader, setCollection, setResource, setLoading, unsetLoading } = appContext
 
-    const [fieldData, setFieldData] = useState<IField>({
-        name: '',
-        label: '',
-        description: '',
-        isEnabled: null,
-        careerId: '',
-    })
-
-    const [career, setCareer] = useState({ _id: '', name: '' })
-
-    const handleChange = <K extends keyof IField>(field: K, value: IField[K]) => {
-        setFieldData((prev) => ({
-            ...prev,
-            [field]: value
-        }))
-    };
 
     /**
      * @name getFields
@@ -99,6 +93,9 @@ const useField = () => {
 
     }, [setLoading, unsetLoading, setCollection])
 
+    /**
+     * @name getResourceFields
+     */
     const getResourceFields = useCallback(async (data: IListQuery) => {
 
         const { limit, page, select, order, resource, resourceId } = data;
@@ -218,113 +215,24 @@ const useField = () => {
 
 
     /**
-        * @name createField
-        */
-    const createField = useCallback(async (validate: () => boolean) => {
+    * @name createField
+    */
+    const createField = useCallback(async (data: ICreateField) => {
 
-        const isValidated = validate()
-
-        if (isValidated === true) {
-            const payload = { ...fieldData }
-
-            setLoading({ option: 'default' })
-
-            const response = await AxiosService.call({
-                type: 'default',
-                method: 'POST',
-                isAuth: true,
-                path: `${URL_FIELD}`,
-                payload: payload
-            })
-
-            if (response.error === false) {
-
-                if (response.status === 200) {
-                    setToast({ ...toast, show: true, type: 'success', message: 'Field created successfully' })
-                    setFieldData({
-                        name: '',
-                        label: '',
-                        description: '',
-                        isEnabled: false,
-                        careerId: '',
-                    })
-                }
-
-                unsetLoading({
-                    option: 'default',
-                    message: 'data saved successfully'
-                })
-
-            }
-
-            if (response.error === true) {
-
-                unsetLoading({
-                    option: 'default',
-                    message: response.message ? response.message : response.data
-                })
-
-                if (response.status === 401) {
-                    AxiosService.logout()
-                } else if (response.message && response.message === 'Error: Network Error') {
-                    popNetwork();
-                }
-                else if (response.data) {
-                    setToast({ ...toast, show: true, error: 'field', type: 'error', message: `Error! Could not create field ${response?.errors[0]}` })
-                }
-                else if (response.status === 500) {
-                    setToast({ ...toast, show: true, error: 'field', type: 'error', message: `Sorry, there was an error processing your request. Please try again later.` })
-                }
-                setTimeout(() => {
-                    setToast({ ...toast, show: false })
-                }, 3000)
-
-            }
-        }
-
-    }, [fieldData, setLoading, unsetLoading, setResource])
-
-    /**
-        * @name updateField
-        */
-    const updateField = useCallback(async (e: MouseEvent<HTMLAnchorElement>) => {
-
-        if (e) e.preventDefault()
-
-        const payload: any = { ...fieldData }
-
-        Object.keys(payload).forEach((key) => {
-            const k = key as keyof typeof payload;
-            const value = payload[k];
-
-            if (
-                value === '' ||
-                value === null ||
-                value === undefined ||
-                (Array.isArray(value) && value.length === 0)
-            ) {
-                delete payload[k];
-            }
-        });
-
-        setLoading({ option: 'default' })
+        setLoading({ option: 'loader' })
 
         const response = await AxiosService.call({
             type: 'default',
-            method: 'PUT',
+            method: 'POST',
             isAuth: true,
-            path: `${URL_FIELD}/${field._id}`,
-            payload: payload
+            path: `${URL_FIELD}`,
+            payload: data
         })
 
         if (response.error === false) {
 
-            if (response.status === 200) {
-                setToast({ ...toast, show: true, type: 'success', message: 'Field updated successfully' })
-            }
-
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: 'data saved successfully'
             })
 
@@ -333,7 +241,7 @@ const useField = () => {
         if (response.error === true) {
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: response.message ? response.message : response.data
             })
 
@@ -342,39 +250,116 @@ const useField = () => {
             } else if (response.message && response.message === 'Error: Network Error') {
                 popNetwork();
             }
-            else if (!helper.isEmpty(response.data, 'object')) {
-                setToast({ ...toast, show: true, error: 'field', type: 'error', message: `Error! Could not update field ${response?.data}` })
-            }
-            else if (response.errors && response.errors.length > 0) {
-                setToast({ ...toast, show: true, error: 'field', type: 'error', message: `Error! Could not update field ${response?.errors[0]}` })
-            }
-            else if (response.status === 500) {
-                setToast({ ...toast, show: true, error: 'field', type: 'error', message: `Sorry, there was an error processing your request. Please try again later.` })
-            }
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 3000)
 
         }
 
-    }, [fieldData, setLoading, unsetLoading, setResource])
+        return response
+
+    }, [setLoading, unsetLoading, setResource])
+
+    /**
+    * @name updateField
+    */
+    const updateField = useCallback( async (data: IUPdateField) => {
+
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_FIELD}/${data.id}`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'data saved successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading, setResource])
+
+    /**
+     * @name changeFieldResource
+     */
+    const changeFieldResource = useCallback( async (data: IChangeResource) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_FIELD}/${data.type}/${data.id}`,
+            payload: {
+                type: data.resource,
+                careerId: data.careerId,
+                skills: data.skills
+            }
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'changes saved successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading, setResource])
 
     return {
-        skillRef,
-        statusRef,
-        fieldData,
         fields,
         field,
-        career,
         loading,
+        loader,
 
         getFields,
         getResourceFields,
         getField,
-        handleChange,
-        setCareer,
         createField,
         updateField,
+        changeFieldResource
     }
 }
 

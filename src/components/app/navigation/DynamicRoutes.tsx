@@ -14,19 +14,19 @@ import NotFound from '../../../pages/NotFound'
 const Home = lazy(() => import('../../../pages/Home'))
 const Dashboard = lazy(() => import('../../../pages/dashboard/Dashboard'))
 const Industries = lazy(() => import('../../../pages/dashboard/core/industries/Industries'))
-const CreateIndustry = lazy(() => import('../../../pages/dashboard/core/industries/CreateIndustry'))
+const CreateIndustry = lazy(() => import('../../../pages/dashboard/core/industries/NewIndustry'))
 const EditIndustry = lazy(() => import('../../../pages/dashboard/core/industries/EditIndustry'))
 const Careers = lazy(() => import('../../../pages/dashboard/core/careers/Careers'))
-const CreateCareer = lazy(() => import('../../../pages/dashboard/core/careers/CreateCareer'))
+const CreateCareer = lazy(() => import('../../../pages/dashboard/core/careers/NewCareer'))
 const EditCareer = lazy(() => import('../../../pages/dashboard/core/careers/EditCareer'))
 const Fields = lazy(() => import('../../../pages/dashboard/core/fields/Fields'))
-const CreateField = lazy(() => import('../../../pages/dashboard/core/fields/CreateField'))
+const CreateField = lazy(() => import('../../../pages/dashboard/core/fields/NewField'))
 const EditField = lazy(() => import('../../../pages/dashboard/core/fields/EditField'))
 const Skills = lazy(() => import('../../../pages/dashboard/core/skills/Skills'))
-const CreateSkill = lazy(() => import('../../../pages/dashboard/core/skills/CreateSkill'))
+const CreateSkill = lazy(() => import('../../../pages/dashboard/core/skills/NewSkill'))
 const EditSkill = lazy(() => import('../../../pages/dashboard/core/skills/EditSkill'))
 const Topics = lazy(() => import('../../../pages/dashboard/core/topics/Topics'))
-const CreateTopic = lazy(() => import('../../../pages/dashboard/core/topics/CreateTopic'))
+const CreateTopic = lazy(() => import('../../../pages/dashboard/core/topics/NewTopic'))
 const EditTopic = lazy(() => import('../../../pages/dashboard/core/topics/EditTopic'))
 const Questions = lazy(() => import('../../../pages/dashboard/core/questions/Questions'))
 const CreateQuestion = lazy(() => import('../../../pages/dashboard/core/questions/CreateQuestion'))
@@ -47,38 +47,38 @@ const DynamicRoutes = () => {
                 return <Dashboard />
             case 'industries':
                 return <Industries />
+            case 'create-industry':
+                return <CreateIndustry />
+            case 'edit-industry':
+                return <EditIndustry />
             case 'careers':
                 return <Careers />
+            case 'create-career':
+                return <CreateCareer />
+            case 'edit-career':
+                return <EditCareer />
             case 'fields':
                 return <Fields />
+            case 'create-field':
+                return <CreateField />
+            case 'edit-field':
+                return <EditField />
             case 'skills':
                 return <Skills />
+            case 'create-skill':
+                return <CreateSkill />
+            case 'edit-skill':
+                return <EditSkill />
             case 'topics':
                 return <Topics />
             case 'create-topic':
                 return <CreateTopic />
-            case 'update-topic':
+            case 'edit-topic':
                 return <EditTopic />
             case 'questions':
                 return <Questions />
             case 'create-question':
                 return <CreateQuestion />
-            case 'create-career':
-                return <CreateCareer />
-            case 'update-career':
-                return <EditCareer />
-            case 'create-field':
-                return <CreateField />
-            case 'update-field':
-                return <EditField />
-            case 'create-skill':
-                return <CreateSkill />
-            case 'update-skill':
-                return <EditSkill />
-            case 'create-industry':
-                return <CreateIndustry />
-            case 'update-industry':
-                return <EditIndustry />
             case 'question-details':
                 return <QuestionDetails />
             default:
