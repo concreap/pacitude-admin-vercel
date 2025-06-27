@@ -345,7 +345,7 @@ const EditSkill = () => {
                                             size="sm"
                                             checked={skill.isEnabled ? true : false}
                                             label={{
-                                                title: (form.isEnabled || skill.isEnabled) ? 'Field is Enabled' : 'Field is Disabled',
+                                                title: (form.isEnabled || skill.isEnabled) ? 'Skill is Enabled' : 'Skill is Disabled',
                                                 className: '',
                                                 fontSize: '[13px]'
                                             }}
