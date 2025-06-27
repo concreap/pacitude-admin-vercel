@@ -97,7 +97,7 @@ const FieldList = (props: IListUI) => {
         if (e) { e.preventDefault(); }
 
         // toDetailRoute(e, { id: id, route: 'core', name: 'field-details' })
-        toDetailRoute(e, { id: id, route: 'core', name: 'update-field' })
+        toDetailRoute(e, { id: id, route: 'core', name: 'edit-field' })
 
     }
 

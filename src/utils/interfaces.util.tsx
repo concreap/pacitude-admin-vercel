@@ -449,6 +449,7 @@ export interface ITextAreaInput {
     placeholder?: string,
     showFocus?: boolean,
     isError?: boolean,
+    clear?: boolean,
     icon?: {
         enable: boolean,
         position: PositionType
@@ -1389,14 +1390,14 @@ export interface IAppContext {
     careers: ICollection,
     career: Career,
     fields: ICollection,
-    field: Industry,
+    field: Field,
     skills: ICollection,
-    skill: any,
+    skill: Skill,
     questions: ICollection,
     question: Question,
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
-    topic: any,
+    topic: Topic,
     search: ICollection,
     metrics: IAppMetrics,
     items: Array<any>

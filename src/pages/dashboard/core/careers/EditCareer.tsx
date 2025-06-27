@@ -89,136 +89,130 @@ const EditCareer = () => {
 
                     <CardUI>
 
-                        <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto my-0 space-y-[1.5rem] py-[1.5rem]">
+                        {
+                            helper.isEmpty(career, 'object') &&
+                            <EmptyState className="min-h-[50vh]" noBound={true}>
+                                <h3 className="font-mona text-[14px] pas-900">Career not found!</h3>
+                            </EmptyState>
+                        }
 
-                            <FormField>
+                        {
+                            !helper.isEmpty(career, 'object') &&
+                            <>
+                                <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto my-0 space-y-[1.5rem] py-[1.5rem]">
 
-                                <div className="grid grid-cols-[48%_48%] gap-x-[4%]">
+                                    <FormField>
 
-                                    <div className="">
-                                        <TextInput
-                                            type="text"
-                                            size="sm"
+                                        <div className="grid grid-cols-[48%_48%] gap-x-[4%]">
+
+                                            <div className="">
+                                                <TextInput
+                                                    type="text"
+                                                    size="sm"
+                                                    showFocus={true}
+                                                    autoComplete={false}
+                                                    placeholder="Topic name"
+                                                    defaultValue={career.name}
+                                                    label={{
+                                                        title: 'Career Name',
+                                                        required: true,
+                                                        fontSize: 13
+                                                    }}
+                                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                                />
+                                            </div>
+
+                                            <div className="">
+                                                <TextInput
+                                                    type="text"
+                                                    size="sm"
+                                                    showFocus={true}
+                                                    autoComplete={false}
+                                                    placeholder="Display name"
+                                                    label={{
+                                                        title: 'Display Name',
+                                                        required: true,
+                                                        fontSize: 13
+                                                    }}
+                                                    defaultValue={career.label}
+                                                    onChange={(e) => setForm({ ...form, label: e.target.value })}
+                                                />
+                                            </div>
+
+                                        </div>
+
+                                    </FormField>
+
+                                    <FormField>
+                                        <TextAreaInput
                                             showFocus={true}
                                             autoComplete={false}
-                                            placeholder="Topic name"
-                                            defaultValue={career.name}
+                                            placeholder="Type here"
+                                            defaultValue={career.description}
                                             label={{
-                                                title: 'Career Name',
-                                                required: true,
-                                                fontSize: 13
+                                                title: 'Description',
+                                                className: 'text-[13px]',
+                                                required: true
                                             }}
-                                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                            onChange={(e) => setForm({ ...form, description: e.target.value })}
                                         />
-                                    </div>
+                                    </FormField>
 
-                                    <div className="">
-                                        <TextInput
-                                            type="text"
+                                    <FormField>
+
+                                        <Checkbox
+                                            id="career-status"
                                             size="sm"
-                                            showFocus={true}
-                                            autoComplete={false}
-                                            placeholder="Display name"
+                                            checked={career.isEnabled ? true : false}
                                             label={{
-                                                title: 'Display Name',
-                                                required: true,
-                                                fontSize: 13
+                                                title: (form.isEnabled || career.isEnabled) ? 'Career is Enabled' : 'Career is Disabled',
+                                                className: '',
+                                                fontSize: '[13px]'
                                             }}
-                                            defaultValue={career.label}
-                                            onChange={(e) => setForm({ ...form, label: e.target.value })}
+                                            onChange={(e) => {
+                                                setForm({ ...form, isEnabled: e.target.checked })
+                                            }}
                                         />
+
+                                    </FormField>
+
+                                    <div className="flex items-center gap-x-[0.65rem] mt-10">
+                                        <Button
+                                            type="ghost"
+                                            semantic={'default'}
+                                            size="sm"
+                                            className="form-button"
+                                            text={{
+                                                label: "Cancel",
+                                                size: 13,
+                                            }}
+                                            icon={{
+                                                enable: true,
+                                                child: <Icon name="x" type="feather" size={16} className="par-600" />
+                                            }}
+                                            reverse="row"
+                                            onClick={(e) => { goBack() }}
+                                        />
+
+                                        <Button
+                                            type="primary"
+                                            semantic="normal"
+                                            size="rg"
+                                            className="form-button ml-auto min-w-[150px]"
+                                            text={{
+                                                label: "Save Changes",
+                                                size: 13,
+                                            }}
+                                            loading={loader}
+                                            onClick={(e) => handleUpdate(e)}
+                                        />
+
                                     </div>
 
-                                </div>
+                                </form>
+                            </>
+                        }
 
-                            </FormField>
-
-                            <FormField>
-                                <TextAreaInput
-                                    showFocus={true}
-                                    autoComplete={false}
-                                    placeholder="Type here"
-                                    defaultValue={career.description}
-                                    label={{
-                                        title: 'Description',
-                                        className: 'text-[13px]',
-                                        required: true
-                                    }}
-                                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                />
-                            </FormField>
-
-                            <FormField>
-
-                                <Checkbox
-                                    id="career-status"
-                                    size="sm"
-                                    checked={career.isEnabled ? true : false}
-                                    label={{
-                                        title: (form.isEnabled || career.isEnabled) ? 'Career is Enabled' : 'Career is Disabled',
-                                        className: '',
-                                        fontSize: '[13px]'
-                                    }}
-                                    onChange={(e) => {
-                                        setForm({ ...form, isEnabled: e.target.checked })
-                                    }}
-                                />
-
-                            </FormField>
-
-                            <div className="flex items-center gap-x-[0.65rem] mt-10">
-
-                                {/* <IconButton
-                                    size="min-w-[1.8rem] min-h-[1.8rem]"
-                                    className="bg-pab-50 bgh-pab-100"
-                                    icon={{
-                                        type: 'polio',
-                                        name: 'arrow-left',
-                                        size: 16,
-                                        className: 'pab-800'
-                                    }}
-                                    label={{
-                                        text: 'Back to Careers',
-                                        weight: 'medium'
-                                    }}
-                                    onClick={(e) => {
-                                        goBack()
-                                    }}
-                                /> */}
-
-                                <Button
-                                    type="ghost"
-                                    semantic={'default'}
-                                    size="sm"
-                                    className="form-button"
-                                    text={{
-                                        label: "Cancel",
-                                        size: 13,
-                                    }}
-                                    icon={{
-                                        enable: true,
-                                        child: <Icon name="x" type="feather" size={16} className="par-600" />
-                                    }}
-                                    reverse="row"
-                                    onClick={(e) => { goBack() }}
-                                />
-
-                                <Button
-                                    type="primary"
-                                    semantic="normal"
-                                    size="rg"
-                                    className="form-button ml-auto min-w-[150px]"
-                                    text={{
-                                        label: "Save Changes",
-                                        size: 13,
-                                    }}
-                                    loading={loader}
-                                    onClick={(e) => handleUpdate(e)}
-                                />
-
-                            </div>
-
-                        </form>
 
                     </CardUI>
 

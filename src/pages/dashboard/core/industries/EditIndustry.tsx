@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Divider from "../../../../components/partials/Divider";
 import CardUI from "../../../../components/partials/ui/CardUI";
 import useField from "../../../../hooks/app/useField";
@@ -18,186 +18,213 @@ import useToast from "../../../../hooks/useToast";
 import useGoTo from "../../../../hooks/useGoTo";
 import useIndustry from "../../../../hooks/app/useIndustry";
 import { useParams } from "react-router-dom";
+import useGoBack from "../../../../hooks/useGoBack";
+import EmptyState from "../../../../components/partials/dialogs/EmptyState";
+import Checkbox from "../../../../components/partials/inputs/Checkbox";
 
 const EditIndustry = () => {
 
-    const {id} = useParams<{ id: string }>()
+    const { id } = useParams<{ id: string }>()
     const { toast, setToast } = useToast()
-    const { core, getCoreResources } = useApp()
-    const { loading, statusRef, industryData, industry, handleChange, editIndustry, getIndustry } = useIndustry()
-    const { goTo } = useGoTo()
+    const { loading, loader, industry, getIndustry, updateIndustry } = useIndustry()
+    const { goBack } = useGoBack()
+
+    const [form, setForm] = useState({
+        name: '',
+        label: '',
+        description: '',
+        isEnabled: false,
+    })
 
     useEffect(() => {
-        initList(25)
-    }, [])
+        if(id){
+            getIndustry(id)
+        }
+    }, [id])
 
-    const initList = (limit: number) => {
-        getCoreResources({ limit: 9999, page: 1, order: 'desc' })
-        getIndustry(id ? id : '')
+    const handleUpdate = async (e: any) => {
+
+        if (e) { e.preventDefault() }
+
+        const response = await updateIndustry({ id: industry._id, ...form });
+
+        if (!response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                message: `Changes saved successfully`
+            })
+            getIndustry(industry._id);
+        }
+
+        if (response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: response.errors.length > 0 ? response.errors[0] : response.message
+            })
+        }
+
+        setTimeout(() => {
+            setToast({ ...toast, show: false })
+        }, 3000)
+
     }
 
     return (
         <>
 
-            <CardUI>
+            {
+                loading &&
+                <>
+                    <EmptyState className="min-h-[50vh]" noBound={true}>
+                        <span className="loader lg primary"></span>
+                    </EmptyState>
+                </>
+            }
 
-                <form onSubmit={(e) => { e.preventDefault() }} className="w-[65%] mx-auto my-5">
+            {
+                !loading &&
+                <>
 
-                    <div className="w-full space-y-[0.55rem]">
-                        <div className="w-full">
+                    {
+                        helper.isEmpty(industry, 'object') &&
+                        <EmptyState className="min-h-[50vh]" noBound={true}>
+                            <h3 className="font-mona text-[14px] pas-900">Industry not found!</h3>
+                        </EmptyState>
+                    }
 
-                            <div className="w-[40%] mb-4">
-                                <TextInput
-                                    type="text"
-                                    showFocus={true}
-                                    autoComplete={false}
-                                    placeholder="Industry name"
-                                    defaultValue={industry?.name ?? industryData?.name ?? ''}
-                                    label={{
-                                        title: 'Industry Name',
-                                        required: true,
-                                        className: 'text-[13px]'
-                                    }}
-                                    onChange={(e) => handleChange('name', e.target.value)}
-                                />
-                            </div>
+                    {
+                        !helper.isEmpty(industry, 'object') &&
+                        <>
 
-                            <Divider />
+                            <CardUI>
 
-                            <div className="w-[40%] mb-4">
-                                <TextInput
-                                    type="text"
-                                    showFocus={true}
-                                    autoComplete={false}
-                                    placeholder="Display name"
-                                    defaultValue={industry?.label ?? industryData?.label ?? ''}
-                                    label={{
-                                        title: 'Display Name',
-                                        required: true,
-                                        className: 'text-[13px]'
-                                    }}
-                                    onChange={(e) => handleChange('label', e.target.value)}
-                                />
-                            </div>
+                                <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.5rem] py-[1.5rem]">
 
-                        </div>
+                                    <FormField>
 
-                    </div>
+                                        <div className="grid grid-cols-[48%_48%] gap-x-[4%]">
 
-                    <Divider />
+                                            <div className="">
+                                                <TextInput
+                                                    type="text"
+                                                    size="sm"
+                                                    showFocus={true}
+                                                    autoComplete={false}
+                                                    placeholder="Type here"
+                                                    defaultValue={industry.name}
+                                                    label={{
+                                                        title: 'Industry Name',
+                                                        required: true,
+                                                        fontSize: 13
+                                                    }}
+                                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                                />
+                                            </div>
 
-                    <div className="w-full space-y-[0.55rem] mb-4">
+                                            <div className="">
+                                                <TextInput
+                                                    type="text"
+                                                    size="sm"
+                                                    showFocus={true}
+                                                    autoComplete={false}
+                                                    placeholder="Type here"
+                                                    defaultValue={industry.label}
+                                                    label={{
+                                                        title: 'Display Name',
+                                                        required: true,
+                                                        fontSize: 13
+                                                    }}
+                                                    onChange={(e) => setForm({ ...form, label: e.target.value })}
+                                                />
+                                            </div>
 
-                        <div className="flex items-center">
-                            <h3 className="font-mona text-[13px] flex items-center">
-                                <span>Status</span>
-                                <span className="text-red-600 text-base relative top-1 pl-1">*</span>
-                            </h3>
-                        </div>
+                                        </div>
 
-                        <div className="w-full flex items-start gap-x-[1rem]">
+                                    </FormField>
 
-                            <div className="min-w-[40%]">
-                                <Filter
-                                    ref={statusRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Status"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '290px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        statusOptions.map((x) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x.value
-                                            }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => handleChange('isEnabled', data.value === 'enable')}
-                                />
-                            </div>
+                                    <FormField>
 
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                        <TextAreaInput
+                                            showFocus={true}
+                                            autoComplete={false}
+                                            placeholder="Type here"
+                                            defaultValue={industry.description}
+                                            label={{
+                                                title: 'Description',
+                                                className: 'text-[13px]',
+                                                required: true
+                                            }}
+                                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                        />
 
-                                <Badge
-                                    type={(industry?.isEnabled || industryData.isEnabled) === true ? 'success' : 'error'}
-                                    size="xsm"
-                                    close={false}
-                                    label={`${helper.capitalize((industry?.isEnabled || industryData.isEnabled) ? 'Enabled' : 'Disabled')}`}
-                                    upper={true}
-                                />
+                                    </FormField>
 
-                            </FormField>
+                                    <FormField>
 
-                        </div>
+                                        <Checkbox
+                                            id="career-status"
+                                            size="sm"
+                                            checked={industry.isEnabled ? true : false}
+                                            label={{
+                                                title: (form.isEnabled || industry.isEnabled) ? 'Industry is Enabled' : 'Industry is Disabled',
+                                                className: '',
+                                                fontSize: '[13px]'
+                                            }}
+                                            onChange={(e) => {
+                                                setForm({ ...form, isEnabled: e.target.checked })
+                                            }}
+                                        />
 
-                    </div>
+                                    </FormField>
 
-                    <Divider />
+                                    <div className="flex items-center gap-x-[0.65rem] mt-10">
+                                        <Button
+                                            type="ghost"
+                                            semantic={'default'}
+                                            size="sm"
+                                            className="form-button"
+                                            text={{
+                                                label: "Cancel",
+                                                size: 13,
+                                            }}
+                                            icon={{
+                                                enable: true,
+                                                child: <Icon name="x" type="feather" size={16} className="par-600" />
+                                            }}
+                                            reverse="row"
+                                            onClick={(e) => { goBack() }}
+                                        />
 
-                    <div className="w-full flex items-start gap-x-[1rem] ">
+                                        <Button
+                                            type="primary"
+                                            semantic="normal"
+                                            size="sm"
+                                            className="form-button ml-auto"
+                                            text={{
+                                                label: "Save Changes",
+                                                size: 13,
+                                            }}
+                                            loading={loader}
+                                            onClick={async (e) => handleUpdate(e)}
+                                        />
 
-                        <div className="w-[40%] mb-4">
-                            <FormField className="w-full">
-                                <TextAreaInput
-                                    showFocus={true}
-                                    autoComplete={false}
-                                    placeholder="Type here"
-                                    label={{
-                                        title: 'Description',
-                                        className: 'text-[13px]',
-                                        required: true
-                                    }}
-                                    defaultValue={industry?.description ?? industryData?.description ?? ''}
-                                    onChange={(e) => handleChange('description', e.target.value)}
-                                />
-                            </FormField>
-                        </div>
+                                    </div>
 
-                    </div>
+                                </form>
 
-                </form>
+                            </CardUI>
 
-            </CardUI>
+                        </>
+                    }
 
-            <div className="flex justify-end items-center gap-x-[0.65rem] mt-10">
-                <Button
-                    type="ghost"
-                    semantic={'default'}
-                    size="sm"
-                    className="form-button"
-                    text={{
-                        label: "Cancel",
-                        size: 13,
-                    }}
-                    icon={{
-                        enable: true,
-                        child: <Icon name="x" type="feather" size={16} className="par-600" />
-                    }}
-                    reverse="row"
-                    onClick={(e) => goTo('/dashboard/core/industries')}
-                />
+                </>
+            }
 
-                <Button
-                    type="primary"
-                    semantic="normal"
-                    size="sm"
-                    className="form-button"
-                    text={{
-                        label: "Update Industry",
-                        size: 13,
-                    }}
-                    loading={loading}
-                    onClick={async (e) => { editIndustry(e) }}
-                />
 
-            </div>
 
         </>
     )

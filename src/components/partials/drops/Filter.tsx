@@ -118,7 +118,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
     const handleAutoSelect = () => {
 
-        if (defaultValue) {
+        if (defaultValue && items.length > 0) {
             const item = items.find((x) => x.value === defaultValue);
             if (item) {
                 setSelected(item)

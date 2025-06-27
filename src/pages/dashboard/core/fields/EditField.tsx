@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import Divider from "../../../../components/partials/Divider";
 import CardUI from "../../../../components/partials/ui/CardUI";
 import useField from "../../../../hooks/app/useField";
@@ -14,182 +14,386 @@ import Button from "../../../../components/partials/buttons/Button";
 import Icon from "../../../../components/partials/icons/Icon";
 import useGoTo from "../../../../hooks/useGoTo";
 import { useParams } from "react-router-dom";
+import useGoBack from "../../../../hooks/useGoBack";
+import useApp from "../../../../hooks/app/useApp";
+import EmptyState from "../../../../components/partials/dialogs/EmptyState";
+import Career from "../../../../models/Career.model";
+import Skill from "../../../../models/Skill.model";
+import Checkbox from "../../../../components/partials/inputs/Checkbox";
+import useToast from "../../../../hooks/useToast";
+import useSidebar from "../../../../hooks/useSidebar";
 
 const EditField = () => {
 
+    const skiRef = useRef<any>(null)
+    const carRef = useRef<any>(null)
+
     const { id } = useParams<{ id: string }>()
-    const { question } = useQuestion()
-    const { loading, statusRef, fieldData, field, handleChange, updateField, getField } = useField()
-    const { goTo } = useGoTo()
+    const { loading, loader, field, updateField, getField, changeFieldResource } = useField()
+    const { core, getCoreResources } = useApp()
+    const { toast, setToast } = useToast()
+    const { goBack } = useGoBack();
+
+    useSidebar({ type: 'page', init: true });
+
+    const [form, setForm] = useState({
+        name: '',
+        label: '',
+        description: '',
+        isEnabled: true,
+        careerId: '',
+        skills: [] as Array<{ id: string, name: string }>
+    })
 
     useEffect(() => {
-        initList()
+        if (id) {
+            getField(id)
+            getCoreResources({ limit: 9999, page: 1, order: 'desc' })
+        }
     }, [])
 
-    const initList = () => {
-        getField(id ? id : '')
+    useEffect(() => {
+        if (!helper.isEmpty(field, 'object')) {
+            setForm({
+                ...form,
+                careerId: field.career ? field.career?._id || '' : '',
+                skills: field.skills.map((x: Skill) => ({ id: x._id, name: x.name }))
+            })
+        }
+    }, [field])
+
+    const handleUpdate = async (e: any) => {
+
+        if (e) { e.preventDefault() }
+
+        const response = await updateField({
+            id: field._id,
+            careerId: form.careerId,
+            description: form.description,
+            isEnabled: form.isEnabled,
+            label: form.label,
+            name: form.name,
+            skills: form.skills.map((x) => x.id)
+        });
+
+        if (!response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                message: `Changes saved successfully`
+            })
+            getField(field._id);
+        }
+
+        if (response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: response.errors.length > 0 ? response.errors[0] : response.message
+            })
+        }
+
+        setTimeout(() => {
+            setToast({ ...toast, show: false })
+        }, 3000)
+
+    }
+
+    const handleRemove = async (e: any, id: string) => {
+
+        if (e) { e.preventDefault() }
+
+        const response = await changeFieldResource({
+            id: field._id,
+            type: 'detach',
+            resource: 'skills',
+            skills: [id]
+        });
+
+        if (!response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                message: `Changes saved successfully`
+            })
+            getField(field._id);
+        }
+
+        if (response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: response.errors.length > 0 ? response.errors[0] : response.message
+            })
+        }
+
+        setTimeout(() => {
+            setToast({ ...toast, show: false })
+        }, 3000)
+
     }
 
     return (
         <>
 
-            <CardUI>
+            {
+                loading &&
+                <>
+                    <EmptyState className="min-h-[50vh]" noBound={true}>
+                        <span className="loader lg primary"></span>
+                    </EmptyState>
+                </>
+            }
 
-                <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto my-5">
+            {
+                !loading &&
+                <>
 
-                    <div className="w-full space-y-[0.55rem]">
-                        <div className="grid grid-cols-2 gap-x-[1rem]">
+                    {
+                        helper.isEmpty(field, 'object') &&
+                        <EmptyState className="min-h-[50vh]" noBound={true}>
+                            <h3 className="font-mona text-[14px] pas-900">Field not found!</h3>
+                        </EmptyState>
+                    }
 
-                            <div className="w-full mb-4">
-                                <TextInput
-                                    type="text"
-                                    showFocus={true}
-                                    autoComplete={false}
-                                    placeholder="Field name"
-                                    defaultValue={field?.name ?? fieldData.name}
-                                    label={{
-                                        title: 'Field Name',
-                                        required: true,
-                                        className: 'text-[13px]'
-                                    }}
-                                    onChange={(e) => handleChange('name', e.target.value)}
-                                />
-                            </div>
+                    {
+                        !helper.isEmpty(field, 'object') &&
+                        <>
+                            <CardUI>
 
-                            <div className="w-full mb-4">
-                                <TextInput
-                                    type="text"
-                                    showFocus={true}
-                                    autoComplete={false}
-                                    placeholder="Display name"
-                                    defaultValue={field?.label ?? fieldData.label}
-                                    label={{
-                                        title: 'Display Name',
-                                        required: true,
-                                        className: 'text-[13px]'
-                                    }}
-                                    onChange={(e) => handleChange('label', e.target.value)}
-                                />
-                            </div>
+                                <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.5rem] py-[1.5rem]">
 
-                        </div>
-
-                    </div>
-
-                    <Divider />
-
-                    <div className="w-full space-y-[0.55rem] mb-4">
-
-                        <div className="flex items-center">
-                            <h3 className="font-mona text-[13px] flex items-center">
-                                <span>Status</span>
-                                <span className="text-red-600 text-base relative top-1 pl-1">*</span>
-                            </h3>
-                        </div>
-
-                        <div className="w-full flex items-start gap-x-[1rem]">
-
-                            <div className="min-w-[40%]">
-                                <Filter
-                                    ref={statusRef}
-                                    size='xxsm'
-                                    className='la-filter'
-                                    placeholder="Select Status"
-                                    position="bottom"
-                                    menu={{
-                                        style: { minWidth: '290px' },
-                                        search: true,
-                                        fullWidth: false,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={
-                                        statusOptions.map((x) => {
-                                            return {
-                                                label: helper.capitalizeWord(x.name),
-                                                value: x.value
+                                    <FormField
+                                        className={`${loading || core.careers.length === 0 ? 'disabled-light' : ''}`}
+                                        label={{
+                                            title: 'Select Career',
+                                            required: true,
+                                            fontSize: 13
+                                        }}
+                                    >
+                                        <Filter
+                                            ref={carRef}
+                                            size='sm'
+                                            className='la-filter'
+                                            placeholder={"Choose"}
+                                            position="bottom"
+                                            defaultValue={form.careerId}
+                                            menu={{
+                                                search: true,
+                                                fullWidth: true,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                core.careers.map((x: Career) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x._id
+                                                    }
+                                                })
                                             }
-                                        })
-                                    }
-                                    noFilter={false}
-                                    onChange={(data) => handleChange('isEnabled', data.value === 'enable')}
-                                />
-                            </div>
+                                            noFilter={false}
+                                            onChange={(data) => {
+                                                setForm({ ...form, careerId: data.value })
+                                            }}
+                                        />
 
-                            <FormField className="grow flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                    </FormField>
 
-                                <Badge
-                                    type={(field?.isEnabled || fieldData.isEnabled) === true ? 'success' : 'error'}
-                                    size="xsm"
-                                    close={false}
-                                    label={`${helper.capitalize((field?.isEnabled || fieldData.isEnabled) ? 'Enabled' : 'Disabled')}`}
-                                    upper={true}
-                                />
+                                    <FormField>
 
-                            </FormField>
+                                        <div className="grid grid-cols-[48%_48%] gap-x-[4%]">
 
-                        </div>
+                                            <div className="">
+                                                <TextInput
+                                                    type="text"
+                                                    size="sm"
+                                                    showFocus={true}
+                                                    autoComplete={false}
+                                                    placeholder="Type here"
+                                                    defaultValue={field.name}
+                                                    label={{
+                                                        title: 'Field Name',
+                                                        required: true,
+                                                        fontSize: 13
+                                                    }}
+                                                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                                />
+                                            </div>
 
-                    </div>
+                                            <div className="">
+                                                <TextInput
+                                                    type="text"
+                                                    size="sm"
+                                                    showFocus={true}
+                                                    autoComplete={false}
+                                                    placeholder="Type here"
+                                                    defaultValue={field.label}
+                                                    label={{
+                                                        title: 'Display Name',
+                                                        required: true,
+                                                        fontSize: 13
+                                                    }}
+                                                    onChange={(e) => setForm({ ...form, label: e.target.value })}
+                                                />
+                                            </div>
 
-                    <Divider />
+                                        </div>
 
-                    <div className="w-full flex items-start gap-x-[1rem] ">
+                                    </FormField>
 
-                        <div className="w-full mb-4">
-                            <FormField className="w-full">
-                                <TextAreaInput
-                                    showFocus={true}
-                                    autoComplete={false}
-                                    placeholder="Type here"
-                                    defaultValue={field?.description ?? fieldData.description}
-                                    label={{
-                                        title: 'Description',
-                                        className: 'text-[13px]',
-                                        required: true
-                                    }}
-                                    onChange={(e) => handleChange('description', e.target.value)}
-                                />
-                            </FormField>
-                        </div>
+                                    <FormField
+                                        className={`${loading ? 'disabled-light' : ''} space-y-[0.6rem]`}
+                                        label={{
+                                            title: 'Select Skills',
+                                            required: true,
+                                            fontSize: 13
+                                        }}
+                                    >
+                                        <Filter
+                                            ref={skiRef}
+                                            size='sm'
+                                            className='la-filter'
+                                            placeholder={"Choose"}
+                                            position="bottom"
+                                            menu={{
+                                                search: true,
+                                                fullWidth: true,
+                                                limitHeight: 'md'
+                                            }}
+                                            items={
+                                                core.skills.map((x: Skill) => {
+                                                    return {
+                                                        label: helper.capitalizeWord(x.name),
+                                                        value: x._id
+                                                    }
+                                                })
+                                            }
+                                            noFilter={false}
+                                            onChange={(data) => {
 
-                    </div>
+                                                let list = form.skills;
+                                                let idList = form.skills.map((x) => x.id);
 
-                </form>
+                                                if (!idList.includes(data.value)) {
+                                                    list.push({ id: data.value, name: data.label })
+                                                }
 
-            </CardUI>
+                                                setForm({ ...form, skills: list })
+                                                skiRef.current.clear()
 
-            <div className="flex justify-end items-center gap-x-[0.65rem] mt-10">
-                <Button
-                    type="ghost"
-                    semantic={'default'}
-                    size="sm"
-                    className="form-button"
-                    text={{
-                        label: "Cancel",
-                        size: 13,
-                    }}
-                    icon={{
-                        enable: true,
-                        child: <Icon name="x" type="feather" size={16} className="par-600" />
-                    }}
-                    reverse="row"
-                    onClick={(e) => goTo('/dashboard/core/fields')}
-                />
+                                            }}
+                                        />
 
-                <Button
-                    type="primary"
-                    semantic="normal"
-                    size="sm"
-                    className="form-button"
-                    text={{
-                        label: "Update Field",
-                        size: 13,
-                    }}
-                    loading={loading}
-                    onClick={async (e) => { updateField(e) }}
-                />
+                                        {
+                                            form.skills.length > 0 &&
+                                            <div className="flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                {
+                                                    form.skills.map((skill) =>
+                                                        <Badge
+                                                            key={skill.id}
+                                                            type={'default'}
+                                                            size="xsm"
+                                                            close={!loader ? true : false}
+                                                            label={skill.name}
+                                                            upper={true}
+                                                            onClose={(e) => {
+                                                                const sk = field.skills.find((x) => x._id === skill.id);
+                                                                if (sk) {
+                                                                    handleRemove(e, skill.id)
+                                                                } else {
+                                                                    let list = form.skills;
+                                                                    list = list.filter((x) => x.id !== skill.id);
+                                                                    setForm({ ...form, skills: list })
+                                                                }
+                                                            }}
+                                                        />
+                                                    )
+                                                }
+                                            </div>
+                                        }
 
-            </div>
+                                    </FormField>
+
+                                    <FormField>
+
+                                        <TextAreaInput
+                                            showFocus={true}
+                                            autoComplete={false}
+                                            placeholder="Type here"
+                                            defaultValue={field.description}
+                                            label={{
+                                                title: 'Description',
+                                                className: 'text-[13px]',
+                                                required: true
+                                            }}
+                                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                        />
+
+                                    </FormField>
+
+                                    <FormField>
+
+                                        <Checkbox
+                                            id="career-status"
+                                            size="sm"
+                                            checked={field.isEnabled ? true : false}
+                                            label={{
+                                                title: (form.isEnabled || field.isEnabled) ? 'Field is Enabled' : 'Field is Disabled',
+                                                className: '',
+                                                fontSize: '[13px]'
+                                            }}
+                                            onChange={(e) => {
+                                                setForm({ ...form, isEnabled: e.target.checked })
+                                            }}
+                                        />
+
+                                    </FormField>
+
+                                    <div className="flex items-center gap-x-[0.65rem] mt-10">
+                                        <Button
+                                            type="ghost"
+                                            semantic={'default'}
+                                            size="sm"
+                                            className="form-button"
+                                            text={{
+                                                label: "Cancel",
+                                                size: 13,
+                                            }}
+                                            icon={{
+                                                enable: true,
+                                                child: <Icon name="x" type="feather" size={16} className="par-600" />
+                                            }}
+                                            reverse="row"
+                                            onClick={(e) => { goBack() }}
+                                        />
+
+                                        <Button
+                                            type="primary"
+                                            semantic="normal"
+                                            size="sm"
+                                            className="form-button ml-auto"
+                                            text={{
+                                                label: "Save Changes",
+                                                size: 13,
+                                            }}
+                                            loading={loader}
+                                            onClick={async (e) => handleUpdate(e)}
+                                        />
+
+                                    </div>
+
+                                </form>
+
+                            </CardUI>
+                        </>
+                    }
+
+                </>
+            }
 
         </>
     )

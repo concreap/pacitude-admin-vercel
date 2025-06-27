@@ -22,6 +22,7 @@ const TextAreaInput = forwardRef((props: ITextAreaInput, ref: ForwardedRef<any>)
             child: <></>
         },
         isError = false,
+        clear= false,
         showFocus = true,
         onChange,
         onKeyUp,
@@ -35,6 +36,14 @@ const TextAreaInput = forwardRef((props: ITextAreaInput, ref: ForwardedRef<any>)
     useEffect(() => {
 
     }, [])
+
+    useEffect(() => {
+
+        if(clear){
+            handleClear()
+        }
+
+    }, [clear])
 
     const lfs = () => {
 

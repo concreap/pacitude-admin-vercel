@@ -109,16 +109,8 @@ const TopicList = (props: IListUI) => {
 
         if (e) { e.preventDefault(); }
 
-        toDetailRoute(e, { id: id, route: 'core', name: 'update-topic' })
-        // toDetailRoute(e, { id: id, route: 'core', name: 'topic-details' })
-
-    }
-
-    const toEdit = (e: any, id: string) => {
-
-        if (e) { e.preventDefault(); }
-
         toDetailRoute(e, { id: id, route: 'core', name: 'edit-topic' })
+        // toDetailRoute(e, { id: id, route: 'core', name: 'topic-details' })
 
     }
 

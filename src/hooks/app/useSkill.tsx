@@ -7,40 +7,39 @@ import { URL_SKILL } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
 import useToast from '../useToast'
 import helper from '../../utils/helper.util'
+import { ResourceType } from '../../utils/types.util'
 
-interface ISkillData {
+interface ICreateSkill {
     name: string,
     label: string,
     description: string,
     isEnabled: any,
     careerId: string,
-    fields: string[]
+    fields: Array<string>
+}
+
+interface IUpdateSkill extends ICreateSkill {
+    id: string
+}
+
+interface IChangeResource {
+    id: string,
+    resource: ResourceType,
+    type: 'attach' | 'detach',
+    careerId?: string,
+    fields?: Array<string>
 }
 
 const useSkill = () => {
 
-    const fieldRef = useRef<any>(null)
-    const careerRef = useRef<any>(null)
     const { appContext } = useContextType()
     const { popNetwork } = useNetwork(false)
-    const [career, setCareer] = useState({ _id: '', name: '' })
-    const [fieldList, setFieldList] = useState<Array<{ id: string, name: string, ex: boolean }>>([])
-
-    const [skillData, setSkillData] = useState<ISkillData>({
-        name: '',
-        label: '',
-        description: '',
-        isEnabled: null,
-        careerId: '',
-        fields: []
-    })
-
-    const { toast, setToast } = useToast()
 
     const {
         skills,
         skill,
         loading,
+        loader,
         setCollection,
         setResource,
         setLoading,
@@ -50,85 +49,6 @@ const useSkill = () => {
     useEffect(() => {
 
     }, [])
-
-    const handleAddFieldsChange = (val: string) => {
-
-        setSkillData((prev) => ({
-            ...prev,
-            fields: [...prev.fields, val]
-        }))
-    }
-
-    const addField = (val: any) => {
-
-        let fieldIds = fieldList.map((x) => x.id);
-
-        if (!fieldIds.includes(val.id)) {
-            handleAddFieldsChange(val.id)
-            setFieldList(prev => [...prev, val])
-        }
-
-    }
-
-    const removeField = (id: string) => {
-
-        setSkillData(prev => ({
-            ...prev,
-            fields: prev.fields.filter((x) => x !== id)
-        }))
-        setFieldList(prev => prev.filter((x) => x.id !== id))
-
-    }
-
-    const handleChange = <K extends keyof ISkillData>(field: K, value: ISkillData[K]) => {
-        setSkillData((prev) => ({
-            ...prev,
-            [field]: value
-        }))
-    };
-
-    const validateSkill = () => {
-
-        let isValid: boolean = true;
-
-        if (!skillData.name) {
-            setToast({ ...toast, show: true, error: 'skill', type: 'error', message: 'Skill name is required' })
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 2500)
-            isValid = false;
-
-        } else if (!skillData.label) {
-            setToast({ ...toast, show: true, error: 'skill', type: 'error', message: 'Skill display name is required' })
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 2500)
-            isValid = false;
-        }
-        else if (!skillData.careerId) {
-            setToast({ ...toast, show: true, error: 'skill', type: 'error', message: 'Career is required' })
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 2500)
-            isValid = false;
-        }
-        else if (skillData.fields.length === 0) {
-            setToast({ ...toast, show: true, error: 'skill', type: 'error', message: 'At least one field is required' })
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 2500)
-            isValid = false;
-        } else if (skillData.description.length < 10) {
-            setToast({ ...toast, show: true, error: 'skill', type: 'error', message: 'Description must be at least 10 characters long' })
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 2500)
-            isValid = false;
-        }
-
-        return isValid
-
-    }
 
     /**
      * @name getSkills
@@ -186,6 +106,9 @@ const useSkill = () => {
 
     }, [setLoading, unsetLoading, setCollection])
 
+    /**
+     * @name getResourceSkills
+     */
     const getResourceSkills = useCallback(async (data: IListQuery) => {
 
         const { limit, page, select, order, resource, resourceId } = data;
@@ -306,114 +229,22 @@ const useSkill = () => {
     /**
      * @name createSkill
      */
-    const createSkill = useCallback(async () => {
+    const createSkill = useCallback(async (data: ICreateSkill) => {
 
-        const isValidated = validateSkill()
-
-        if (isValidated === true) {
-            const payload = { ...skillData }
-
-            console.log('payload', payload)
-
-            setLoading({ option: 'default' })
-
-            const response = await AxiosService.call({
-                type: 'default',
-                method: 'POST',
-                isAuth: true,
-                path: `${URL_SKILL}`,
-                payload: payload
-            })
-
-            if (response.error === false) {
-
-                
-                if (response.status === 200) {
-                    setToast({ ...toast, show: true, type: 'success', message: 'Skill created successfully' })
-                }
-
-                setTimeout(() => {
-                    setToast({ ...toast, show: false })
-                }, 3000)
-
-                unsetLoading({
-                    option: 'default',
-                    message: 'data saved successfully'
-                })
-
-            }
-
-            if (response.error === true) {
-
-                unsetLoading({
-                    option: 'default',
-                    message: response.message ? response.message : response.data
-                })
-
-                if (response.status === 401) {
-                    AxiosService.logout()
-                } else if (response.message && response.message === 'Error: Network Error') {
-                    popNetwork();
-                }
-                else if (!helper.isEmpty(response.data, 'object')) {
-                    console.log(`Error! Could not create skill ${response.data}`)
-                }
-                else if (response.errors && response.errors.length > 0) {
-                    console.log(`Error! Could not create skill ${response.errors[0]}`)
-                }
-                else if (response.status === 500) {
-                    console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
-                }
-
-            }
-        }
-
-    }, [skillData, setLoading, unsetLoading, setResource])
-
-    /**
-     * @name updateSkill
-     */
-    const updateSkill = useCallback(async (e: MouseEvent<HTMLAnchorElement>) => {
-
-        const payload: any = { ...skillData }
-
-        Object.keys(payload).forEach((key) => {
-            const k = key as keyof typeof payload;
-            const value = payload[k];
-
-            if (
-                value === '' ||
-                value === null ||
-                value === undefined ||
-                (Array.isArray(value) && value.length === 0)
-            ) {
-                delete payload[k];
-            }
-        });
-
-        setLoading({ option: 'default' })
+        setLoading({ option: 'loader' })
 
         const response = await AxiosService.call({
             type: 'default',
-            method: 'PUT',
+            method: 'POST',
             isAuth: true,
-            path: `${URL_SKILL}/${skill._id}`,
-            payload: payload
+            path: `${URL_SKILL}`,
+            payload: data
         })
 
         if (response.error === false) {
 
-            if (response.status === 200) {
-                setToast({ ...toast, show: true, error: 'skill', type: 'success', message: `Skill updated successfully` })
-                setResource(GET_SKILL, response.data)
-            }
-
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 3000)
-
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: 'data saved successfully'
             })
 
@@ -422,7 +253,7 @@ const useSkill = () => {
         if (response.error === true) {
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: response.message ? response.message : response.data
             })
 
@@ -431,46 +262,116 @@ const useSkill = () => {
             } else if (response.message && response.message === 'Error: Network Error') {
                 popNetwork();
             }
-            else if (!helper.isEmpty(response.data, 'object')) {
-                setToast({ ...toast, show: true, error: 'skill', type: 'error', message: `Error! Could not update skill ${response?.data}` })
-            }
-            else if (response.errors && response.errors.length > 0) {
-                setToast({ ...toast, show: true, error: 'skill', type: 'error', message: `Error! Could not update skill ${response?.errors[0]}` })
-            }
-            else if (response.status === 500) {
-                setToast({ ...toast, show: true, error: 'skill', type: 'error', message: `Sorry, there was an error processing your request. Please try again later.` })
-            }
-            setTimeout(() => {
-                setToast({ ...toast, show: false })
-            }, 3000)
 
         }
 
+        return response;
 
-    }, [skillData, setLoading, unsetLoading, setResource])
+    }, [setLoading, unsetLoading, setResource])
+
+    /**
+     * @name updateSkill
+     */
+    const updateSkill = useCallback(async (data: IUpdateSkill) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_SKILL}/${data.id}`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'data saved successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+
+    }, [setLoading, unsetLoading, setResource])
+
+    /**
+     * @name changeResource
+     */
+    const changeResource = useCallback(async (data: IChangeResource) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_SKILL}/${data.type}/${data.id}`,
+            payload: {
+                type: data.resource,
+                careerId: data.careerId,
+                fields: data.fields
+            }
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'changes saved successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading, setResource])
 
     return {
-        fieldRef,
-        careerRef,
-        career,
-        fieldList,
-        skillData,
         skills,
         skill,
         loading,
+        loader,
 
-        setCareer,
-        setFieldList,
-        setSkillData,
-        addField,
-        removeField,
-        handleChange,
-        handleAddFieldsChange,
         createSkill,
         updateSkill,
         getSkills,
         getResourceSkills,
-        getSkill
+        getSkill,
+        changeResource
     }
 }
 
