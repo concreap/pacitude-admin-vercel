@@ -2,7 +2,7 @@ import React, { Fragment, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 
-// Functionalities && Context States
+// Something to push
 import UserState from './context/user/userState'
 import AppState from './context/app/appState'
 
