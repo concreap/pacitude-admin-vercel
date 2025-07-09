@@ -16,7 +16,9 @@ import {
     SET_RESPONSE,
     GET_ADMINS,
     GET_AUDITS,
-    SET_TOAST
+    SET_TOAST,
+    SET_ITEMS,
+    SET_LOADER
 } from '../types';
 
 
@@ -52,6 +54,11 @@ const reducer = (state: any, action: any) => {
             return {
                 ...state,
                 userDetails: action.payload,
+            }
+        case SET_ITEMS:
+            return {
+                ...state,
+                items: action.payload
             }
         case SET_USER:
             return {
@@ -105,12 +112,18 @@ const reducer = (state: any, action: any) => {
                 response: action.payload
             }
 
+        case SET_LOADER:
+            return {
+                ...state,
+                loader: action.payload
+            }
+
         case SET_LOADING:
             return {
                 ...state,
                 loading: true
             }
-            
+
         case UNSET_LOADING:
             return {
                 ...state,

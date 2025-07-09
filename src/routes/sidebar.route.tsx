@@ -467,14 +467,53 @@ const sidebarRoutes: Array<IRoute> = [
         content: { collapsed: false, backButton: true }
     },
     {
-        name: 'feedbacks',
-        title: 'Feedbacks',
+        name: 'support',
+        title: 'Support',
         iconName: 'layout-left',
-        url: '/feedbacks',
-        action: 'navigate',
+        url: '/support',
+        action: 'open-secondary',
         isAuth: true,
         params: [],
-        content: { collapsed: false, backButton: true }
+        content: { collapsed: false },
+        subroutes: [
+            {
+                name: 'feedback',
+                title: 'Feedback',
+                iconName: 'user',
+                url: '/feedback',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                name: 'updates',
+                title: 'Updates',
+                iconName: 'user',
+                url: '/updates',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                name: 'divider',
+                url: '/',
+                isAuth: true,
+                params: [],
+                content: {}
+            },
+            {
+                name: 'help',
+                title: 'Help',
+                iconName: 'user',
+                url: '/help',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
+                content: { collapsed: false, backButton: true }
+            }
+        ]
     },
     {
         name: 'referrals',

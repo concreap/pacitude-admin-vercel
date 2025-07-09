@@ -32,6 +32,11 @@ const Questions = lazy(() => import('../../../pages/dashboard/core/questions/Que
 const CreateQuestion = lazy(() => import('../../../pages/dashboard/core/questions/CreateQuestion'))
 const QuestionDetails = lazy(() => import('../../../pages/dashboard/core/questions/QuestionDetails'))
 
+// support/updates/announcement pages
+const UpdatesPage = lazy(() => import('../../../pages/dashboard/support/updates/Updates'));
+const FeedbackPage = lazy(() => import('../../../pages/dashboard/support/feedback/Feedback'))
+const HelpPage = lazy(() => import('../../../pages/dashboard/support/help/Help'))
+
 const DynamicRoutes = () => {
 
     const getAppPages = (name: string) => {
@@ -81,6 +86,12 @@ const DynamicRoutes = () => {
                 return <CreateQuestion />
             case 'question-details':
                 return <QuestionDetails />
+            case 'updates':
+                return <UpdatesPage />
+            case 'feedback':
+                return <FeedbackPage />
+            case 'help':
+                return <HelpPage />
             default:
                 return <NotFound />
         }
