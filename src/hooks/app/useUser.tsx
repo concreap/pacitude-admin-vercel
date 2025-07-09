@@ -3,40 +3,74 @@ import useContextType from '../useContextType'
 import storage from '../../utils/storage.util'
 import AxiosService from '../../services/axios.service'
 import { URL_LOGGEDIN_USER, URL_USERS } from '../../utils/path.util'
-import { GET_LOGGEDIN_USER, GET_USER, GET_USERS } from '../../context/types'
+import { GET_LOGGEDIN_USER, GET_USER, GET_USERS, SET_ITEMS } from '../../context/types'
 import { ICollection, IListQuery } from '../../utils/interfaces.util'
 import useNetwork from '../useNetwork'
+import useAuth from './useAuth'
+
+interface ISendUsersUpdate{
+    title: string,
+    content: string,
+    users: Array<string>
+}
 
 const useUser = () => {
 
-    const { userContext } = useContextType()
-    const { popNetwork } = useNetwork()
+    const { userContext } = useContextType();
+    const { logout } = useAuth()
+    const { popNetwork } = useNetwork();
     const {
         users,
         user,
+        items,
         loading,
+        loader,
         setLoading,
         unsetLoading,
         setCollection,
         setResource
-    } = userContext
+    } = userContext;
 
     useEffect(() => {
 
     }, [])
 
-    const getUsers = useCallback(async (data: IListQuery) => {
+    const setItems = (data: Array<any>) => {
+        setResource(SET_ITEMS, data);
+    }
+
+    /**
+     * @name getFullname
+     * @param data 
+     * @returns 
+     */
+    const getFullname = (data: any) => {
+        let result: string = '--'
+
+        if (data && "firstName" in data && "lastName" in data) {
+            result = `${data.firstName} ${data.lastName}`
+        }
+
+        return result;
+    }
+
+    const getUsers = useCallback(async (data: IListQuery, all: boolean = false) => {
 
         const { limit, page, select, order } = data;
         const q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
 
-        setLoading({ option: 'resource', type: GET_USERS })
+        setLoading({ option: 'resource', type: GET_USERS });
+
+        let path = `${URL_USERS}?${q}`;
+        if(all){
+            path = `${URL_USERS}/all?${q}`
+        }
 
         const response = await AxiosService.call({
             type: 'backend',
             method: 'GET',
             isAuth: true,
-            path: `${URL_USERS}?${q}`
+            path: path
         });
 
         if (!response.error) {
@@ -95,13 +129,52 @@ const useUser = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    /**
+     * @name sendUsersUpdate
+     */
+    const sendUsersUpdate = useCallback(async (data: ISendUsersUpdate) => {
+
+        setLoading({ option: 'loader' });
+
+        const response = await AxiosService.call({
+            type: 'backend',
+            method: 'POST',
+            isAuth: true,
+            path: `${URL_USERS}/send-update`,
+            payload: { ...data }
+        });
+
+        if (!response.error) {
+            unsetLoading({ option: 'loader', message: 'successful' })
+        } else {
+            unsetLoading({ option: 'loader', message: response.message })
+
+            if (response.status === 401) {
+                logout
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            } else if (response.data) {
+                console.log(`Error! Could not send verification code ${response.data}`)
+            }
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading])
+
     return {
         users,
         user,
         loading,
+        loader,
+        items,
 
+        getFullname,
+        setItems,
+        
         getUsers,
-        getUser
+        getUser,
+        sendUsersUpdate
     }
 }
 
