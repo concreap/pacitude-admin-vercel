@@ -49,7 +49,7 @@ const UserAvatar = (props: IUserAvatar) => {
         <>
             <div className={cc()} style={{ backgroundImage: `url("${avatar}")`, ...style }}>
                 {
-                    (!avatar || avatar === 'no-avatar.png' || avatar === '' || avatar.length === 2) &&
+                    (!avatar || avatar === 'no-avatar.png' || avatar === 'no-image.png' || avatar === '' || avatar.length === 2) &&
                     <span className="text-[13px] font-inter-medium gog-900">{ name.includes('+') ? name : helper.getInitials(name) }</span>
                 }
             </div>

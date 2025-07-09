@@ -20,16 +20,19 @@ import {
     SET_USER,
     SET_RESPONSE,
     SET_TOAST,
-    UNSET_LOADING
+    UNSET_LOADING,
+    SET_LOADER
 } from '../types'
 
 const UserState = (props: any) => {
 
     const initialState = {
-        users: {},
+        users: collection,
         user: {},
         userType: '',
+        items: [],
         loading: false,
+        loader: false,
         toast: toast,
         sidebar: sidebar
     }
@@ -45,6 +48,13 @@ const UserState = (props: any) => {
         if (data.option === 'default') {
             dispatch({
                 type: SET_LOADING
+            })
+        }
+
+        if (data.option === 'loader') {
+            dispatch({
+                type: SET_LOADER,
+                payload: true
             })
         }
 
@@ -74,6 +84,13 @@ const UserState = (props: any) => {
             dispatch({
                 type: UNSET_LOADING,
                 payload: data.message
+            })
+        }
+
+        if (data.option === 'loader') {
+            dispatch({
+                type: SET_LOADER,
+                payload: false
             })
         }
 
@@ -193,7 +210,9 @@ const UserState = (props: any) => {
         users: state.users,
         user: state.user,
         userType: state.userType,
+        items: state.items,
         loading: state.loading,
+        loader: state.loader,
         toast: state.toast,
         sidebar: state.sidebar,
         setToast: setToast,
@@ -210,7 +229,9 @@ const UserState = (props: any) => {
         state.user,
         state.userType,
         state.loading,
+        state.loader,
         state.toast,
+        state.items,
         state.sidebar,
         setToast,
         clearToast,
