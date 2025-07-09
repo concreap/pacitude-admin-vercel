@@ -9,7 +9,7 @@ import useSidebar from "../../../../hooks/useSidebar";
 
 const TalentsPage = ({ }) => {
 
-    const [isInvite, setIsInvite] = useState<boolean>(true)
+    const [isInvite, setIsInvite] = useState<boolean>(false)
     useSidebar({ type: 'page', init: true });
 
     useEffect(() => {
