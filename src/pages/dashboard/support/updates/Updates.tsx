@@ -345,7 +345,7 @@ const UpdatesPage = ({ }) => {
                                     placeholder="Ex. Update On New Feature"
                                     defaultValue={''}
                                     isError={false}
-                                    clear={loading}
+                                    clear={loading ? false : true}
                                     label={{
                                         required: true,
                                         fontSize: 13,

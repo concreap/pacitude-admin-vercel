@@ -5,6 +5,7 @@ import { CurrencyType } from './enums.util';
 import countries from '../_data/countries.json'
 import { FormatDateType, SemanticType } from './types.util';
 import { avatars } from '../_data/seed';
+import { format } from 'date-fns'
 
 const init = (type: string) => {
 
@@ -284,34 +285,40 @@ const random = (size: number = 6, isAlpha?: boolean) => {
 
 const formatDate = (date: any, type: FormatDateType) => {
 
-    let result: string = '';
+    let result: string = '--';
+    let conv: Date | null = null;
+    const fm = new Date(date);
 
-    if (type === 'basic') {
-        result = moment(date).format('MMM Do, YYYY')
+    if (fm && fm.toString().toLowerCase() !== 'invalid date') {
+        conv = fm;
     }
 
-    if (type === 'datetime') {
-        result = moment(date).format('MMM Do, YYYY HH:mm:ss A')
+    if (type === 'basic' && conv) {
+        result = format(conv, 'MMMM do, yyyy')
     }
 
-    if (type === 'datetime-slash') {
-        result = moment(date).format('YYYY/MM/DD HH:mm:ss')
+    if (type === 'datetime' && conv) {
+        result = format(conv, 'MMMM do, yyyy h:mmaca')
     }
 
-    if (type === 'datetime-separated') {
-        result = moment(date).format('YYYY-MM-DD HH:mm:ss')
+    if (type === 'datetime-slash' && conv) {
+        result = moment(conv).format('YYYY/MM/DD HH:mm:ss')
     }
 
-    if (type === 'localtime') {
-        result = moment(date).format('h:mm A')
+    if (type === 'datetime-separated' && conv) {
+        result = moment(conv).format('YYYY-MM-DD HH:mm:ss')
     }
 
-    if (type === 'separated') {
-        result = moment(date).format('YYYY-MM-DD')
+    if (type === 'localtime' && conv) {
+        result = moment(conv).format('h:mm A')
     }
 
-    if (type === 'slashed') {
-        result = moment(date).format('YYYY/MM/DD')
+    if (type === 'separated' && conv) {
+        result = moment(conv).format('YYYY-MM-DD')
+    }
+
+    if (type === 'slashed' && conv) {
+        result = moment(conv).format('YYYY/MM/DD')
     }
 
     return result;
@@ -573,7 +580,7 @@ const listCountries = () => {
         result = countries.map((x) => {
 
             let phone = x.phoneCode ? x.phoneCode : '';
-            if(x.phoneCode && x.phoneCode.includes('-')){
+            if (x.phoneCode && x.phoneCode.includes('-')) {
                 phone = '+' + x.phoneCode.substring(3)
             }
 
@@ -939,9 +946,9 @@ const extractor = (data: any) => {
 
     let result: any = null;
 
-    if(typeof(data) === 'object'){
-        for(const x in data){
-            if(data[x] !== null && data[x] !== ''){
+    if (typeof (data) === 'object') {
+        for (const x in data) {
+            if (data[x] !== null && data[x] !== '') {
                 result[x] = data[x]
             }
         }
