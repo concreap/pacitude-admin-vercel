@@ -2,16 +2,25 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import useContextType from '../useContextType'
 import storage from '../../utils/storage.util'
 import AxiosService from '../../services/axios.service'
-import { URL_LOGGEDIN_USER, URL_USERS } from '../../utils/path.util'
-import { GET_LOGGEDIN_USER, GET_USER, GET_USERS, SET_ITEMS } from '../../context/types'
+import { URL_LOGGEDIN_USER, URL_TALENTS, URL_USERS } from '../../utils/path.util'
+import { GET_LOGGEDIN_USER, GET_TALENT, GET_TALENTS, GET_USER, GET_USERS, SET_ITEMS } from '../../context/types'
 import { ICollection, IListQuery } from '../../utils/interfaces.util'
 import useNetwork from '../useNetwork'
 import useAuth from './useAuth'
 
-interface ISendUsersUpdate{
+interface ISendUsersUpdate {
     title: string,
     content: string,
     users: Array<string>
+}
+
+interface IInviteTalent {
+    title: string,
+    content: string,
+    email: string,
+    firstName: string,
+    lastName: string,
+    callbackUrl: string
 }
 
 const useUser = () => {
@@ -22,6 +31,8 @@ const useUser = () => {
     const {
         users,
         user,
+        talents,
+        talent,
         items,
         loading,
         loader,
@@ -62,7 +73,7 @@ const useUser = () => {
         setLoading({ option: 'resource', type: GET_USERS });
 
         let path = `${URL_USERS}?${q}`;
-        if(all){
+        if (all) {
             path = `${URL_USERS}/all?${q}`
         }
 
@@ -117,13 +128,83 @@ const useUser = () => {
         } else {
             setResource(GET_LOGGEDIN_USER, {})
             unsetLoading({ option: 'default', message: response.message })
-            
+
             if (response.status === 401) {
                 AxiosService.logout()
             } else if (response.message && response.message === 'Error: Network Error') {
                 popNetwork();
             } else if (response.data) {
                 console.log(`Error! Could not get careers ${response.data}`)
+            }
+        }
+
+    }, [setLoading, unsetLoading, setResource])
+
+    /**
+     * @name getTalents
+     */
+    const getTalents = useCallback(async (data: IListQuery) => {
+
+        const { limit, page, select, order } = data;
+        const q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
+
+        setLoading({ option: 'resource', type: GET_TALENTS });
+
+        const response = await AxiosService.call({
+            type: 'backend',
+            method: 'GET',
+            isAuth: true,
+            path: `${URL_TALENTS}?${q}`
+        });
+
+        if (!response.error) {
+
+            if (response.status === 200) {
+
+                const result: ICollection = {
+                    count: response.count!,
+                    total: response.total!,
+                    data: response.data,
+                    pagination: response.pagination!,
+                    loading: false,
+                    message: response.data.length > 0 ? `displaying ${response.count!} talents` : 'There are no talents currently'
+                }
+                setCollection(GET_TALENTS, result)
+
+            }
+
+        } else {
+            unsetLoading({ option: 'default', message: response.message })
+        }
+
+    }, [setLoading, unsetLoading, setResource])
+
+    const getTalent = useCallback(async (id?: string) => {
+
+        const userId = id ? id : storage.getUserID();
+
+        setLoading({ option: 'default' });
+
+        const response = await AxiosService.call({
+            type: 'backend',
+            method: 'GET',
+            isAuth: true,
+            path: `${URL_TALENTS}/${userId}`
+        });
+
+        if (!response.error) {
+            setResource(GET_TALENT, response.data)
+            unsetLoading({ option: 'default', message: 'data fetched successfully' })
+        } else {
+            setResource(GET_TALENT, {})
+            unsetLoading({ option: 'default', message: response.message })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            } else if (response.data) {
+                console.log(`Error! Could not get talents ${response.data}`)
             }
         }
 
@@ -162,19 +243,60 @@ const useUser = () => {
 
     }, [setLoading, unsetLoading])
 
+    /**
+     * @name inviteTalent
+     */
+    const inviteTalent = useCallback(async (data: IInviteTalent) => {
+
+        setLoading({ option: 'loader' });
+
+        const response = await AxiosService.call({
+            type: 'backend',
+            method: 'POST',
+            isAuth: true,
+            path: `${URL_USERS}/invite-talent`,
+            payload: { ...data }
+        });
+
+        if (!response.error) {
+            unsetLoading({ option: 'loader', message: 'successful' })
+        } else {
+            unsetLoading({ option: 'loader', message: response.message })
+
+            if (response.status === 401) {
+                logout
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            } else if (response.data) {
+                console.log(`Error! Could not send invite talent ${response.data}`)
+            }
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading]);
+
+
+
     return {
         users,
         user,
+        talents,
+        talent,
         loading,
         loader,
         items,
 
         getFullname,
         setItems,
-        
+
         getUsers,
         getUser,
-        sendUsersUpdate
+        getTalents,
+        getTalent,
+
+        sendUsersUpdate,
+        inviteTalent
     }
 }
 
