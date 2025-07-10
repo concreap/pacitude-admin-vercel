@@ -29,6 +29,8 @@ const UserState = (props: any) => {
     const initialState = {
         users: collection,
         user: {},
+        talents: collection,
+        talent: {},
         userType: '',
         items: [],
         loading: false,
@@ -209,6 +211,8 @@ const UserState = (props: any) => {
     const contextValues = useMemo(() => ({
         users: state.users,
         user: state.user,
+        talents: state.talents,
+        talent: state.talent,
         userType: state.userType,
         items: state.items,
         loading: state.loading,
@@ -227,6 +231,8 @@ const UserState = (props: any) => {
     }), [
         state.users,
         state.user,
+        state.talents,
+        state.talent,
         state.userType,
         state.loading,
         state.loader,

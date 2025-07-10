@@ -7,6 +7,7 @@ import Career from "../models/Career.model";
 import Field from "../models/Field.model";
 import Skill from "../models/Skill.model";
 import Topic from "../models/Topic.model";
+import Talent from "../models/Talent.model";
 
 export interface ISetCookie {
     key: string,
@@ -195,6 +196,17 @@ export interface ITimezone {
     dstOffset: string,
     dstOffsetStr: string,
     aliasOf: string
+}
+
+export interface IUserCountry {
+    name: string;
+    code2: string;
+    code3: string;
+    capital: string;
+    region: string;
+    currencyCode: string;
+    phoneCode: string;
+    timezones: Array<ITimezone>;
 }
 
 export interface ICountry {
@@ -1195,6 +1207,7 @@ export interface ICellHead {
 export interface ICellData {
     fontSize?: number,
     className?: string,
+    large?: boolean,
     style?: CSSProperties,
     children: ReactNode,
     onClick?(e: MouseEvent<any>): void
@@ -1369,6 +1382,8 @@ export interface ICoreResource {
 export interface IUserContext {
     users: ICollection,
     user: User,
+    talents: ICollection,
+    talent: Talent,
     userType: string,
     items: Array<any>,
     loading: boolean,

@@ -6,6 +6,7 @@ const CellData = (props: ICellData) => {
     const {
         fontSize = 13,
         className = '',
+        large = false,
         style = {},
         children,
         onClick
@@ -16,7 +17,7 @@ const CellData = (props: ICellData) => {
     }, [])
 
     const cc = () => {
-        let result = `cell-data px-[0.5rem] py-[0.5rem] h-[55px] align-middle border-b bdr-pag-100 pag-700`
+        let result = `cell-data ${large ? 'px-[0.5rem] py-[1rem]' : 'px-[0.5rem] py-[0.5rem]'} h-[55px] align-middle border-b bdr-pag-100 pag-700`
 
         if (onClick) {
             result = result + ` cursor-pointer`

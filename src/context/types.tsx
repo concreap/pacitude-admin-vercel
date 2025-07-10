@@ -4,6 +4,8 @@ export const GET_COUNTRIES = 'GET_COUNTRIES';
 export const GET_LOCATIONS = 'GET_LOCATIONS';
 export const GET_COUNTRY = 'GET_COUNTRY';
 export const GET_IP_ADDRESS = 'GET_IP_ADDRESS';
+export const GET_TALENTS = 'GET_TALENTS';
+export const GET_TALENT = 'GET_TALENT';
 
 export const GET_AUDITS = 'GET_AUDITS';
 export const GET_AUDIT = 'GET_AUDIT';

@@ -18,7 +18,9 @@ import {
     GET_AUDITS,
     SET_TOAST,
     SET_ITEMS,
-    SET_LOADER
+    SET_LOADER,
+    GET_TALENTS,
+    GET_TALENT
 } from '../types';
 
 
@@ -34,6 +36,16 @@ const reducer = (state: any, action: any) => {
             return {
                 ...state,
                 users: action.payload
+            }
+        case GET_TALENTS:
+            return {
+                ...state,
+                talents: action.payload
+            }
+        case GET_TALENT:
+            return {
+                ...state,
+                talent: action.payload
             }
         case SET_TOAST:
             return {
