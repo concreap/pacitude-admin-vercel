@@ -74,7 +74,7 @@ const useUser = () => {
 
         let path = `${URL_USERS}?${q}`;
         if (all) {
-            path = `${URL_USERS}/all?${q}`
+            path = `${URL_USERS}/all?cache=false&${q}`
         }
 
         const response = await AxiosService.call({
