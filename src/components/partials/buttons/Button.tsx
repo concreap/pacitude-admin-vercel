@@ -99,7 +99,7 @@ const Button = (props: IButton) => {
                     result = result + ` bg-pas-950 bgh-pas-900 color-white`
                     break;
                 default:
-                    result = result + ` bg-pas-950 bgh-pas-900 color-white`
+                    result = result + ` bg-pag-200 bgh-pag-200 pag-900`
             }
 
         }
@@ -129,7 +129,7 @@ const Button = (props: IButton) => {
                     result = result + ` bg-pacb-600 bgh-pcb-800 color-white`
                     break;
                 default:
-                    result = result + ` bg-pacb-600 bgh-pacb-800 color-white`
+                    result = result + ` bg-pag-200 bgh-pag-200 pag-900`
             }
 
         }

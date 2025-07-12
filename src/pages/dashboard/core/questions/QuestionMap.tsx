@@ -131,6 +131,7 @@ const QuestionMapPage = ({ }) => {
                 <div className="flex items-center">
                     <Button
                         type="primary"
+                        semantic="default"
                         size="sm"
                         className="form-button"
                         text={{
@@ -139,10 +140,10 @@ const QuestionMapPage = ({ }) => {
                         }}
                         icon={{
                             enable: true,
-                            child: <Icon name="plus" type="feather" size={16} className="color-white" />
+                            child: <Icon name="plus" type="feather" size={16} className="pag-900" />
                         }}
                         reverse="row"
-                        onClick={(e) => toDetailRoute(e, { route: 'core', name: 'create-question', subroute: 'questions' })}
+                        onClick={(e) => {}}
                     />
                 </div>
 
