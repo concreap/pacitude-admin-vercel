@@ -25,6 +25,26 @@ export interface IQuestionTime {
     handle: string
 }
 
+export interface IQuestionCount {
+    career: {
+        _id: string,
+        name: string
+    },
+    field: {
+        _id: string,
+        name: string
+    },
+    skill?: {
+        _id: string,
+        name: string
+    }
+    topic?: {
+        _id: string,
+        name: string
+    }
+    levels: Array<any>
+}
+
 interface Question {
     code: string,
     body: string,

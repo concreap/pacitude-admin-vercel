@@ -122,11 +122,14 @@ const sidebarRoutes: Array<IRoute> = [
                 content: { collapsed: false, backButton: true }
             },
             {
-                name: 'divider',
-                url: '/',
+                name: 'topics',
+                title: 'Topics',
+                iconName: 'flash',
+                url: '/topics',
+                action: 'navigate',
                 isAuth: true,
                 params: [],
-                content: {}
+                content: { collapsed: false, backButton: true }
             },
             {
                 name: 'questions',
@@ -139,15 +142,22 @@ const sidebarRoutes: Array<IRoute> = [
                 content: { collapsed: false, backButton: true }
             },
             {
-                name: 'topics',
-                title: 'Topics',
-                iconName: 'flash',
-                url: '/topics',
+                name: 'divider',
+                url: '/',
+                isAuth: true,
+                params: [],
+                content: {}
+            },
+            {
+                name: 'question-map',
+                title: 'Question Map',
+                iconName: 'chat-remove',
+                url: '/question-map',
                 action: 'navigate',
                 isAuth: true,
                 params: [],
                 content: { collapsed: false, backButton: true }
-            }
+            },
         ],
         inroutes: [
             {

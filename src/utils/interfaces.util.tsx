@@ -2,7 +2,7 @@ import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, React
 import { AudioAcceptType, ButtonType, CSVAcceptType, DisabledType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, ListUIType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, RefineType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
-import Question, { IQuestionTime } from "../models/Question.model";
+import Question, { IQuestionCount, IQuestionTime } from "../models/Question.model";
 import Career from "../models/Career.model";
 import Field from "../models/Field.model";
 import Skill from "../models/Skill.model";
@@ -1354,6 +1354,8 @@ export interface IAppMetrics {
     }
 }
 
+
+
 export interface IClearResource {
     type: string,
     resource: 'multiple' | 'single'
@@ -1412,6 +1414,7 @@ export interface IAppContext {
     skill: Skill,
     questions: ICollection,
     question: Question,
+    questionCount: Array<IQuestionCount>
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
     topic: Topic,
