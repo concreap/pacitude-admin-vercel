@@ -143,7 +143,7 @@ const QuestionMapPage = ({ }) => {
                             child: <Icon name="plus" type="feather" size={16} className="pag-900" />
                         }}
                         reverse="row"
-                        onClick={(e) => {}}
+                        onClick={(e) => { }}
                     />
                 </div>
 
@@ -259,7 +259,12 @@ const QuestionMapPage = ({ }) => {
                                                 let list = form.fields;
                                                 let fieldIds = list.map((x) => x.id);
                                                 if (!fieldIds.includes(data.value)) {
-                                                    list.push({ id: data.value, name: data.label })
+                                                    if (form.skills.length > 0 || form.topics.length > 0) {
+                                                        list = [{ id: data.value, name: data.label }]
+                                                    } else {
+                                                        list.push({ id: data.value, name: data.label })
+                                                    }
+
                                                 }
                                                 setForm({ ...form, fields: list })
                                                 fiRef.current.clear()
@@ -327,11 +332,15 @@ const QuestionMapPage = ({ }) => {
                                             noFilter={false}
                                             onChange={(data) => {
                                                 let list = form.skills;
+                                                let fields = form.fields;
                                                 let skillIds = list.map((x) => x.id);
                                                 if (!skillIds.includes(data.value)) {
-                                                    list.push({ id: data.value, name: data.label })
+                                                    list.push({ id: data.value, name: data.label });
+                                                    if (fields.length > 1) {
+                                                        fields = [fields[0]]
+                                                    }
                                                 }
-                                                setForm({ ...form, skills: list })
+                                                setForm({ ...form, skills: list, fields, topics: [] })
                                                 skiRef.current.clear()
                                             }}
                                         />
@@ -397,11 +406,15 @@ const QuestionMapPage = ({ }) => {
                                             noFilter={false}
                                             onChange={(data) => {
                                                 let list = form.topics;
+                                                let fields = form.fields;
                                                 let topicIds = list.map((x) => x.id);
                                                 if (!topicIds.includes(data.value)) {
                                                     list.push({ id: data.value, name: data.label })
+                                                    if (fields.length > 1) {
+                                                        fields = [fields[0]]
+                                                    }
                                                 }
-                                                setForm({ ...form, topics: list })
+                                                setForm({ ...form, topics: list, fields, skills: [] })
                                                 toRef.current.clear()
                                             }}
                                         />
@@ -504,18 +517,44 @@ const QuestionMapPage = ({ }) => {
                                         {
                                             counters[0] &&
                                             counters[0].career &&
-                                            <div className="space-x-[0.35rem] flex items-center mb-[1.6rem]">
-                                                <h3 className="font-mona text-[13px] pag-800">Career: </h3>
-                                                <Badge
-                                                    type={'default'}
-                                                    size="xsm"
-                                                    close={false}
-                                                    label={helper.capitalize(counters[0].career.name)}
-                                                    upper={true}
-                                                    onClose={(e) => { }}
+                                            <div className="flex items-center">
+
+                                                <div className="space-x-[0.35rem] flex items-center">
+                                                    <h3 className="font-mona text-[13px] pag-800">Career: </h3>
+                                                    <Badge
+                                                        type={'default'}
+                                                        size="xsm"
+                                                        close={false}
+                                                        label={helper.capitalize(counters[0].career.name)}
+                                                        upper={true}
+                                                        onClose={(e) => { }}
+                                                    />
+                                                </div>
+
+                                                <IconButton
+                                                    size="min-w-[1.3rem] min-h-[1.3rem]"
+                                                    className="bg-par-50 bgh-par-100 ml-auto"
+                                                    icon={{
+                                                        type: 'polio',
+                                                        name: 'cancel',
+                                                        size: 16,
+                                                        className: 'par-600'
+                                                    }}
+                                                    label={{
+                                                        text: 'Clear Results',
+                                                        weight: 'medium',
+                                                        className: 'par-700'
+                                                    }}
+                                                    onClick={(e) => {
+                                                        handleClear()
+                                                        clearCounters()
+                                                    }}
                                                 />
+
                                             </div>
                                         }
+
+                                        <Divider />
 
                                         {
                                             counters.map((counter, index) =>
