@@ -342,6 +342,46 @@ const useTopic = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    const deleteTopic = useCallback(async (id: string) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'DELETE',
+            isAuth: true,
+            path: `${URL_TOPIC}/${id}`,
+            payload: {}
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'topic deleted successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading])
+
     return {
         topics,
         topic,
@@ -353,7 +393,8 @@ const useTopic = () => {
         getTopics,
         getResourceTopics,
         getTopic,
-        changeResource
+        changeResource,
+        deleteTopic
     }
 }
 

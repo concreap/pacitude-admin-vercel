@@ -811,7 +811,8 @@ export interface ILinkButton {
     text: {
         label: string,
         className?: string,
-        weight?: FontWeightType
+        weight?: FontWeightType,
+        color?: string
     },
     url?: string,
     icon?: {
@@ -942,28 +943,33 @@ export interface IToast {
 
 export interface ICustomModal {
     show: boolean,
-    slim: string,
     title: string,
-    stretch?: boolean,
+    header?: boolean,
     flattened?: boolean,
     className?: string,
     size?: SizeType,
-    children: {
-        child?: ReactElement
-        main: ReactElement
+    child?: ReactNode,
+    children: ReactNode,
+    hideOnClose?: boolean,
+    backdrop?: {
+        bgColor?: ''
     }
     closeModal(e?: any): void
 }
 
 export interface IModalProps {
     show: boolean,
-    slim: string,
+    header?: boolean,
     title: string,
-    stretch?: boolean,
     flattened?: boolean,
     className?: string,
     size?: SizeType,
     closeModal(e?: any): void
+}
+
+export interface IDeleteModal extends IModalProps {
+    resource: ResourceType,
+    resourceId: string
 }
 
 

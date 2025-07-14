@@ -27,6 +27,7 @@ import Field from "../../../../models/Field.model";
 import useSkill from "../../../../hooks/app/useSkill";
 import Skill from "../../../../models/Skill.model";
 import Badge from "../../../../components/partials/badges/Badge";
+import DeleteModal from "../../../../components/app/DeleteModal";
 
 const SkillList = (props: IListUI) => {
 
@@ -54,6 +55,9 @@ const SkillList = (props: IListUI) => {
         searchResource,
         filterResource
     } = useSearch({})
+
+    const [showDelete, setShowDelete] = useState<boolean>(false);
+    const [skillId, setSkillId] = useState<string>('');
 
     useEffect(() => {
         initList(25)
@@ -367,7 +371,7 @@ const SkillList = (props: IListUI) => {
                                                     search.data.map((skill: Skill, index) =>
                                                         <Fragment key={skill._id}>
                                                             <TableRow>
-                                                            <CellData onClick={(e) => toDetails(e, skill._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, skill._id)}>{index + 1}</CellData>
                                                                 <CellData onClick={(e) => toDetails(e, skill._id)}>{helper.formatDate(skill.createdAt, 'basic')}</CellData>
                                                                 <CellData onClick={(e) => toDetails(e, skill._id)}>{helper.capitalizeWord(skill.name)}</CellData>
                                                                 <CellData onClick={(e) => toDetails(e, skill._id)}>{skill.code}</CellData>
@@ -393,7 +397,10 @@ const SkillList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Remove', value: 'remove', onClick: () => {
+                                                                                setShowDelete(true);
+                                                                                setSkillId(skill._id) 
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -434,7 +441,10 @@ const SkillList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Remove', value: 'remove', onClick: () => {
+                                                                                setShowDelete(true);
+                                                                                setSkillId(skill._id) 
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -475,6 +485,19 @@ const SkillList = (props: IListUI) => {
 
 
             </ListBox>
+
+            <DeleteModal
+                show={showDelete}
+                flattened={true}
+                title="Delete Skill"
+                closeModal={(e) => {
+                    setShowDelete(false);
+                    initList(25)
+                }}
+                size="lg"
+                resource="skill"
+                resourceId={skillId}
+            />
 
         </>
     )

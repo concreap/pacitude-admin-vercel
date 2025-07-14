@@ -260,7 +260,7 @@ const useField = () => {
     /**
     * @name updateField
     */
-    const updateField = useCallback( async (data: IUPdateField) => {
+    const updateField = useCallback(async (data: IUPdateField) => {
 
 
         setLoading({ option: 'loader' })
@@ -304,7 +304,7 @@ const useField = () => {
     /**
      * @name changeFieldResource
      */
-    const changeFieldResource = useCallback( async (data: IChangeResource) => {
+    const changeFieldResource = useCallback(async (data: IChangeResource) => {
 
         setLoading({ option: 'loader' })
 
@@ -348,6 +348,46 @@ const useField = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    const deleteField = useCallback(async (id: string) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'DELETE',
+            isAuth: true,
+            path: `${URL_FIELD}/${id}?type=permanent`,
+            payload: {}
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'field deleted successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading])
+
     return {
         fields,
         field,
@@ -359,7 +399,8 @@ const useField = () => {
         getField,
         createField,
         updateField,
-        changeFieldResource
+        changeFieldResource,
+        deleteField
     }
 }
 
