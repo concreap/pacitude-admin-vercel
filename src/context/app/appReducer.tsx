@@ -18,7 +18,8 @@ import {
     GET_METRICS,
     SET_ITEMS,
     GET_CORE,
-    SET_LOADER
+    SET_LOADER,
+    GET_QUESTION_COUNT
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -78,6 +79,11 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 question: action.payload
+            }
+        case GET_QUESTION_COUNT:
+            return {
+                ...state,
+                questionCount: action.payload
             }
         case GET_TOPICS:
             return {

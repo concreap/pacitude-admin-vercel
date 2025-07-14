@@ -1,5 +1,5 @@
 import sidebarRoutes from "../routes/sidebar.route";
-import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource } from "../utils/interfaces.util";
+import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource, IAPIResponse } from "../utils/interfaces.util";
 
 const avatars = [
     { name: 'sandra', avatar: 'https://storage.googleapis.com/pacitude-buckets/sandra.png' },
@@ -153,6 +153,24 @@ const coreResource: ICoreResource = {
     topics: []
 }
 
+const apiresponse: IAPIResponse = {
+    error: false,
+    errors: [],
+    report: {
+        format: '',
+        csv: '',
+        pdf: '',
+        xml: ''
+    },
+    count: 0,
+    total: 0,
+    pagination: pagination,
+    data: null,
+    message: '',
+    token: '',
+    status: 200
+}
+
 export {
     sidebar,
     avatars,
@@ -168,6 +186,7 @@ export {
     timeHandles,
     allocatedTimes,
     coreResource,
+    apiresponse,
 
     // special to project
     aiquestion,

@@ -31,6 +31,7 @@ const EditTopic = lazy(() => import('../../../pages/dashboard/core/topics/EditTo
 const Questions = lazy(() => import('../../../pages/dashboard/core/questions/Questions'))
 const CreateQuestion = lazy(() => import('../../../pages/dashboard/core/questions/CreateQuestion'))
 const QuestionDetails = lazy(() => import('../../../pages/dashboard/core/questions/QuestionDetails'))
+const QuestionMapPage = lazy(() => import('../../../pages/dashboard/core/questions/QuestionMap'))
 
 // users/talents/admins/businesses
 const TalentsPage = lazy(() => import('../../../pages/dashboard/users/talents/Talents'))
@@ -89,6 +90,8 @@ const DynamicRoutes = () => {
                 return <CreateQuestion />
             case 'question-details':
                 return <QuestionDetails />
+            case 'question-map':
+                return <QuestionMapPage />
             case 'updates':
                 return <UpdatesPage />
             case 'feedback':

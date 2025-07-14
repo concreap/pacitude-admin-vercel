@@ -29,6 +29,7 @@ import Skill from "../../../../models/Skill.model";
 import useTopic from "../../../../hooks/app/useTopic";
 import Topic from "../../../../models/Topic.model";
 import Badge from "../../../../components/partials/badges/Badge";
+import DeleteModal from "../../../../components/app/DeleteModal";
 
 const TopicList = (props: IListUI) => {
 
@@ -56,6 +57,9 @@ const TopicList = (props: IListUI) => {
         searchResource,
         filterResource
     } = useSearch({})
+
+    const [showDelete, setShowDelete] = useState<boolean>(false);
+    const [topicId, setTopicId] = useState<string>('');
 
     useEffect(() => {
         initList(25)
@@ -192,7 +196,7 @@ const TopicList = (props: IListUI) => {
                                     })
 
                                     setFilters(prev => ({
-                                        ...filters, 
+                                        ...filters,
                                         fields: [data.value]
                                     }))
                                 }}
@@ -235,7 +239,7 @@ const TopicList = (props: IListUI) => {
                                     })
 
                                     setFilters(prev => ({
-                                        ...filters, 
+                                        ...filters,
                                         skills: [data.value]
                                     }))
                                 }}
@@ -376,7 +380,7 @@ const TopicList = (props: IListUI) => {
                                                     search.data.map((topic: Topic, index) =>
                                                         <Fragment key={topic._id}>
                                                             <TableRow>
-                                                            <CellData onClick={(e) => toDetails(e, topic._id)}>{index + 1}</CellData>
+                                                                <CellData onClick={(e) => toDetails(e, topic._id)}>{index + 1}</CellData>
                                                                 <CellData onClick={(e) => toDetails(e, topic._id)}>{helper.formatDate(topic.createdAt, 'basic')}</CellData>
                                                                 <CellData onClick={(e) => toDetails(e, topic._id)}>{helper.capitalizeWord(topic.name)}</CellData>
                                                                 <CellData onClick={(e) => toDetails(e, topic._id)}>{topic.code}</CellData>
@@ -404,7 +408,10 @@ const TopicList = (props: IListUI) => {
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
                                                                             { label: 'Edit', value: 'details', onClick: (e) => toDetails(e, topic._id) },
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Remove', value: 'remove', onClick: () => {
+                                                                                setShowDelete(true);
+                                                                                setTopicId(topic._id)
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -446,8 +453,11 @@ const TopicList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
-                                                                            { label: 'Edit', value: 'details', onClick: (e) => toDetails(e, topic._id)},
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Edit', value: 'details', onClick: (e) => toDetails(e, topic._id) },
+                                                                            { label: 'Remove', value: 'remove', onClick: () => {
+                                                                                setShowDelete(true);
+                                                                                setTopicId(topic._id)
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -488,6 +498,19 @@ const TopicList = (props: IListUI) => {
 
 
             </ListBox>
+
+            <DeleteModal
+                show={showDelete}
+                flattened={true}
+                title="Delete Topic"
+                closeModal={(e) => {
+                    setShowDelete(false);
+                    initList(25)
+                }}
+                size="lg"
+                resource="topic"
+                resourceId={topicId}
+            />
 
         </>
     )

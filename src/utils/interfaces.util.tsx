@@ -2,7 +2,7 @@ import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, React
 import { AudioAcceptType, ButtonType, CSVAcceptType, DisabledType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, ListUIType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, RefineType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
-import Question, { IQuestionTime } from "../models/Question.model";
+import Question, { IQuestionCount, IQuestionTime } from "../models/Question.model";
 import Career from "../models/Career.model";
 import Field from "../models/Field.model";
 import Skill from "../models/Skill.model";
@@ -811,7 +811,8 @@ export interface ILinkButton {
     text: {
         label: string,
         className?: string,
-        weight?: FontWeightType
+        weight?: FontWeightType,
+        color?: string
     },
     url?: string,
     icon?: {
@@ -942,28 +943,33 @@ export interface IToast {
 
 export interface ICustomModal {
     show: boolean,
-    slim: string,
     title: string,
-    stretch?: boolean,
+    header?: boolean,
     flattened?: boolean,
     className?: string,
     size?: SizeType,
-    children: {
-        child?: ReactElement
-        main: ReactElement
+    child?: ReactNode,
+    children: ReactNode,
+    hideOnClose?: boolean,
+    backdrop?: {
+        bgColor?: ''
     }
     closeModal(e?: any): void
 }
 
 export interface IModalProps {
     show: boolean,
-    slim: string,
+    header?: boolean,
     title: string,
-    stretch?: boolean,
     flattened?: boolean,
     className?: string,
     size?: SizeType,
     closeModal(e?: any): void
+}
+
+export interface IDeleteModal extends IModalProps {
+    resource: ResourceType,
+    resourceId: string
 }
 
 
@@ -1354,6 +1360,8 @@ export interface IAppMetrics {
     }
 }
 
+
+
 export interface IClearResource {
     type: string,
     resource: 'multiple' | 'single'
@@ -1412,6 +1420,7 @@ export interface IAppContext {
     skill: Skill,
     questions: ICollection,
     question: Question,
+    questionCount: Array<IQuestionCount>
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
     topic: Topic,
