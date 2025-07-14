@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 
 const LinkButton = (props: ILinkButton) => {
 
-    const {
+   const {
         text = {
             label: 'Click Link',
             className: 'text-[13px]',
-            weight: 'semibold'
+            weight: 'semibold',
+            color: 'pacb-900'
         },
         url = '',
         className = '',
@@ -42,8 +43,8 @@ const LinkButton = (props: ILinkButton) => {
 
     return (
         <>
-            <Link onClick={(e) => handleClick(e)} to={''} className={`inline-flex transition-all duration-[0.25s] items-center ${className}`}>
-                <span className={`font-mona-${text.weight} pacb-900 pr-[0.5rem] ${text.className}`}>{text.label}</span>
+            <Link onClick={(e) => handleClick(e)} to={''} className={`inline-flex transition-all duration-[0.25s] items-center ${className} ${disabled ? 'disabled-light' : ''}`}>
+                <span className={`font-mona${text.weight === 'regular' ? '' : '-'+text.weight} ${text.color} pr-[0.2rem] ${text.className}`}>{text.label}</span>
                 {
                     icon.enable &&
                     <span className="ml-auto">

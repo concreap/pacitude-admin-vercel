@@ -112,7 +112,7 @@ const UpdatesPage = ({ }) => {
             setToast({ ...toast, show: true, type: 'error', message: 'title is required' })
         } else if (!editorRef.current.content) {
             setToast({ ...toast, show: true, type: 'error', message: 'message content is required' })
-        } else if (!form.users) {
+        } else if (form.users.length === 0) {
             setToast({ ...toast, show: true, type: 'error', message: 'select at least one user' })
         } else {
 

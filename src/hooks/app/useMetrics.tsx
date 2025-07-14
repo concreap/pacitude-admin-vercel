@@ -1,14 +1,16 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ICoreMetrics, IMetricQuery } from '../../utils/interfaces.util'
 import useContextType from '../useContextType'
-import { GET_METRICS } from '../../context/types'
+import { GET_METRICS, GET_QUESTION_COUNT } from '../../context/types'
 import AxiosService from '../../services/axios.service'
 import { URL_METRICS } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
-interface IGenerate {
-    model: string,
-    prompt: string,
-    total: number
+
+interface IGetQuestionCount {
+    careerId: string,
+    fields: Array<string>,
+    skills?: Array<string>,
+    topics?: Array<string>
 }
 
 const useMetrics = () => {
@@ -18,6 +20,8 @@ const useMetrics = () => {
     const {
         metrics,
         loading,
+        loader,
+        questionCount,
         setCollection,
         setResource,
         setLoading,
@@ -29,6 +33,10 @@ const useMetrics = () => {
     useEffect(() => {
 
     }, [])
+
+    const clearCounters = () => {
+        setResource(GET_QUESTION_COUNT, [])
+    }
 
     const handleSetMetric = () => {
 
@@ -55,6 +63,9 @@ const useMetrics = () => {
 
     }
 
+    /**
+     * @name getResourceMetrics
+     */
     const getResourceMetrics = useCallback(async (data: IMetricQuery) => {
 
         const { metric, type, difficulties, endDate, levels, questionTypes, resource, resourceId, startDate } = data;
@@ -129,14 +140,75 @@ const useMetrics = () => {
 
     }, [setLoading, unsetLoading, setCollection])
 
+    /**
+     * @name getQuestionCount
+     */
+    const getQuestionCount = useCallback(async (data: IGetQuestionCount) => {
+
+        setLoading({ option: 'loader' })
+
+        let payload: any = {
+            careerId: data.careerId,
+            fields: data.fields
+        }
+
+        if(data.skills && data.skills.length > 0){
+            payload.skills = data.skills;
+        }
+
+        if(data.topics && data.topics.length > 0){
+            payload.topics = data.topics;
+        }
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'POST',
+            isAuth: true,
+            path: `${URL_METRICS}/question-count`,
+            payload: payload
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({ option: 'loader', message: 'data fetch successful' })
+            setResource(GET_QUESTION_COUNT, response.data)
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            } else if (response.data) {
+                console.log(`Error! Could not get question count metrics ${response.data}`)
+            }
+
+        }
+
+        return response;
+
+
+    }, [setLoading, unsetLoading, setResource])
+
     return {
         metrics,
         metric,
         loading,
+        loader,
+        questionCount,
 
         handleSetMetric,
+        clearCounters,
 
-        getResourceMetrics
+        getResourceMetrics,
+        getQuestionCount
     }
 }
 

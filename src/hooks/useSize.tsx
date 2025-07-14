@@ -4,7 +4,7 @@ import { SizeType } from '../utils/types.util'
 
 interface IUseSize{
     size: SizeType,
-    type?: 'input' | 'button' | 'checkbox' | 'input-icon'
+    type?: 'input' | 'button' | 'checkbox' | 'input-icon' | 'modal'
 }
 
 const useSize = (props: IUseSize) => {
@@ -35,6 +35,10 @@ const useSize = (props: IUseSize) => {
 
         if(type === 'input-icon'){
             setPos(setIconPosition())
+        }
+
+        if(type === 'modal'){
+            setW(setModalWidth())
         }
 
     }, [size, type])
@@ -208,6 +212,44 @@ const useSize = (props: IUseSize) => {
                 break;
             default:
                 result = ' top-[28%]'
+                break;
+        }
+
+        return result;
+
+    }
+
+    const setModalWidth = () => {
+
+        let result: string = 'w-[350px]';
+
+        switch (size) {
+            case 'xsm':
+                result = 'w-[200px]'
+                break;
+            case 'sm':
+                result = 'w-[300px]'
+                break;
+            case 'rg':
+                result = 'w-[350px]'
+                break;
+            case 'default':
+                result = 'w-[350px]'
+                break;
+            case 'md':
+                result = 'w-[450px]'
+                break;
+            case 'lg':
+                result = 'w-[550px]'
+                break;
+            case 'xlg':
+                result = 'w-[650px]'
+                break;
+            case 'xxlg':
+                result = 'w-[750px]'
+                break;
+            default:
+                result = 'w-[350px]'
                 break;
         }
 

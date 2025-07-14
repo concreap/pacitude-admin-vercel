@@ -320,6 +320,46 @@ const useCareer = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    const deleteCareer = useCallback(async (id: string) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'DELETE',
+            isAuth: true,
+            path: `${URL_CAREER}/${id}?type=permanent`,
+            payload: {}
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'career deleted successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading])
+
     return {
         careers,
         career,
@@ -333,7 +373,8 @@ const useCareer = () => {
         getResourceCareers,
         getCareer,
         createCareer,
-        updateCareer
+        updateCareer,
+        deleteCareer
     }
 }
 

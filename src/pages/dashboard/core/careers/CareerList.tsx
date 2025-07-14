@@ -23,6 +23,7 @@ import TableFooter from "../../../../components/partials/table/TableFooter";
 import useCareer from "../../../../hooks/app/useCareer";
 import Career from "../../../../models/Career.model";
 import Badge from "../../../../components/partials/badges/Badge";
+import DeleteModal from "../../../../components/app/DeleteModal";
 
 const CareerList = (props: IListUI) => {
 
@@ -48,6 +49,10 @@ const CareerList = (props: IListUI) => {
         searchResource, 
         filterResource 
     } = useSearch({})
+
+
+    const [showDelete, setShowDelete] = useState<boolean>(false);
+    const [careerId, setCareerId] = useState<string>('');
 
     useEffect(() => {
         initList(25)
@@ -343,7 +348,10 @@ const CareerList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Remove', value: 'remove', onClick: () => {
+                                                                                setShowDelete(true);
+                                                                                setCareerId(career._id) 
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -385,7 +393,10 @@ const CareerList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Remove', value: 'remove', onClick: () => { 
+                                                                                setShowDelete(true);
+                                                                                setCareerId(career._id) 
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -426,6 +437,19 @@ const CareerList = (props: IListUI) => {
 
 
             </ListBox>
+
+            <DeleteModal
+                show={showDelete}
+                flattened={true}
+                title="Delete Career"
+                closeModal={(e) => {
+                    setShowDelete(false);
+                    initList(25)
+                }}
+                size="lg"
+                resource="career"
+                resourceId={careerId}
+            />
 
         </>
     )

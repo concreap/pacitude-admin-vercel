@@ -25,6 +25,7 @@ import Career from "../../../../models/Career.model";
 import useField from "../../../../hooks/app/useField";
 import Field from "../../../../models/Field.model";
 import Badge from "../../../../components/partials/badges/Badge";
+import DeleteModal from "../../../../components/app/DeleteModal";
 
 const FieldList = (props: IListUI) => {
 
@@ -50,6 +51,9 @@ const FieldList = (props: IListUI) => {
         searchResource,
         filterResource
     } = useSearch({})
+
+    const [showDelete, setShowDelete] = useState<boolean>(false);
+    const [fieldId, setFieldId] = useState<string>('');
 
     useEffect(() => {
         initList(25)
@@ -342,7 +346,10 @@ const FieldList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Remove', value: 'remove', onClick: () => {
+                                                                                setShowDelete(true);
+                                                                                setFieldId(field._id) 
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -383,7 +390,10 @@ const FieldList = (props: IListUI) => {
                                                                         }}
                                                                         items={[
                                                                             { label: 'View Details', value: 'details', onClick: () => { } },
-                                                                            { label: 'Remove', value: 'remove', onClick: () => { } }
+                                                                            { label: 'Remove', value: 'remove', onClick: () => {
+                                                                                setShowDelete(true);
+                                                                                setFieldId(field._id) 
+                                                                            } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />
@@ -424,6 +434,20 @@ const FieldList = (props: IListUI) => {
 
 
             </ListBox>
+
+
+            <DeleteModal
+                show={showDelete}
+                flattened={true}
+                title="Delete Field"
+                closeModal={(e) => {
+                    setShowDelete(false);
+                    initList(25)
+                }}
+                size="lg"
+                resource="field"
+                resourceId={fieldId}
+            />
 
         </>
     )
