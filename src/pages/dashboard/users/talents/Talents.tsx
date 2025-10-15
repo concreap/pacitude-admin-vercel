@@ -6,6 +6,7 @@ import TalentList from "./TalentList";
 import Divider from "../../../../components/partials/Divider";
 import InviteTalent from "./InviteTalent";
 import useSidebar from "../../../../hooks/useSidebar";
+import useUser from "../../../../hooks/app/useUser";
 
 const TalentsPage = ({ }) => {
 

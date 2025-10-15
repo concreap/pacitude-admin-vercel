@@ -10,6 +10,11 @@ import QHelper from '../../utils/question.util'
 import { ResourceType } from '../../utils/types.util'
 
 interface IGenerate {
+    careerId: string,
+    fieldId: string,
+    skillId: string,
+    topicId: string,
+    level: string
     model: string,
     prompt: string,
     total: number
@@ -51,7 +56,7 @@ interface IUpdateQuestion {
     topics?: Array<string>
 }
 
-interface IAddGenerated{
+interface IAddGenerated {
     careerId: string
 }
 
@@ -346,7 +351,16 @@ const useQuestion = () => {
             method: 'POST',
             isAuth: true,
             path: `${URL_QUESTION}/generate`,
-            payload: data
+            payload: {
+                careerId: data.careerId,
+                fieldId: data.fieldId,
+                skillId: data.skillId,
+                topics: [data.topicId],
+                level: data.level,
+                model: data.model,
+                prompt: data.prompt,
+                total: data.total
+            }
         })
 
         if (response.error === false) {

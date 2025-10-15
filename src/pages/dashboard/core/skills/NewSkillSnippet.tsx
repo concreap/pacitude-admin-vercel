@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, Fragment } from "react"
+import { useEffect, useState, useRef } from "react"
 import Button from "../../../../components/partials/buttons/Button";
 import Icon from "../../../../components/partials/icons/Icon";
 import CardUI from "../../../../components/partials/ui/CardUI";
@@ -19,26 +19,23 @@ import storage from "../../../../utils/storage.util";
 import Skill from "../../../../models/Skill.model";
 import Topic from "../../../../models/Topic.model";
 import Divider from "../../../../components/partials/Divider";
-import { ActionEnum } from "../../../../utils/enums.util";
-import EmptyState from "../../../../components/partials/dialogs/EmptyState";
-import IconButton from "../../../../components/partials/buttons/IconButton";
 
 const NewSkillPage = () => {
 
     const fiRef = useRef<any>(null)
     const carRef = useRef<any>(null)
     const skiRef = useRef<any>(null)
-    const sizeRef = useRef<any>(null)
+    const toRef = useRef<any>(null)
 
     const { core, getCoreResources } = useApp();
-    const { loading, loader, createSkill, generateSkills } = useSkill()
+    const { loading, loader, createSkill } = useSkill()
     const { goBack } = useGoBack()
     const { toast, setToast } = useToast()
 
-    const [isOpen, setIsOpen] = useState<string | null>(null);
     const [fields, setFields] = useState<Array<Field>>([])
-    const [skills, setSkills] = useState<Array<{ name: string, description: string }>>([])
-    const [topics, setTopics] = useState<Array<{ name: string, skill: string, description: string }>>([])
+    const [skills, setSkills] = useState<Array<Skill>>([])
+    const [topics, setTopics] = useState<Array<Topic>>([])
+
     const [form, setForm] = useState({
         name: '',
         label: '',
@@ -47,10 +44,12 @@ const NewSkillPage = () => {
         careerId: '',
         fields: [] as Array<{ id: string, name: string }>
     })
+
     const [aiform, setAIForm] = useState({
         career: { id: '', name: '' },
         field: { id: '', name: '' },
-        size: 15
+        skill: { id: '', name: '' },
+        topics: [] as Array<{ id: string, name: string }>
     })
 
     useEffect(() => {
@@ -60,10 +59,6 @@ const NewSkillPage = () => {
     const configTab = (e: any, val: any) => {
         if (e) { e.preventDefault(); }
         storage.keep('new-skill-tab', val.toString())
-    }
-
-    const toggleOpen = (name: string) => {
-        setIsOpen((prev) => (prev === name ? null : name));
     }
 
     const handleCreate = async (e: any) => {
@@ -99,7 +94,9 @@ const NewSkillPage = () => {
                     type: 'success',
                     message: `Skill created successfully`
                 })
-                handleClear()
+                fiRef?.current.clear()
+                carRef?.current.clear()
+                setForm({ ...form, fields: [] })
             }
 
             if (response.error) {
@@ -111,75 +108,6 @@ const NewSkillPage = () => {
                 })
             }
 
-        }
-
-        setTimeout(() => {
-            setToast({ ...toast, show: false })
-        }, 3000)
-
-    }
-
-    const handleClear = () => {
-
-        fiRef?.current.clear()
-        carRef?.current.clear()
-        sizeRef?.current.clear()
-        setAIForm({
-            ...aiform,
-            career: { id: '', name: '' },
-            field: { id: '', name: '' },
-            size: 15
-        })
-        setForm({ ...form, fields: [], careerId: '' })
-        setSkills([])
-        setTopics([])
-
-    }
-
-    const handleGenerate = async (e: any, action: string) => {
-
-        if (e) { e.preventDefault() }
-
-        const response = await generateSkills({
-            careerId: aiform.career.id,
-            fieldId: aiform.field.id,
-            size: aiform.size,
-            action: action,
-            skills: skills,
-            topics: topics
-        })
-
-        if (!response.error) {
-
-            setToast({
-                ...toast,
-                show: true,
-                type: 'success',
-                message: `Skill ${action === ActionEnum.GENERATE ? 'generated' : 'created'} successfully`
-            })
-
-            if (action === ActionEnum.GENERATE) {
-                if (response.data.skills) {
-                    setSkills(response.data.skills)
-                }
-
-                if (response.data.topics) {
-                    setTopics(response.data.topics)
-                }
-            }
-
-            if (action === ActionEnum.CREATE) {
-                handleClear()
-            }
-        }
-
-        if (response.error) {
-            setToast({
-                ...toast,
-                show: true,
-                type: 'error',
-                message: response.errors.length > 0 ? response.errors[0] : response.message
-            })
         }
 
         setTimeout(() => {
@@ -414,11 +342,11 @@ const NewSkillPage = () => {
 
                                 <CardUI className={""}>
 
-                                    <div className={`space-y-[0.4rem] pb-[1.5rem]`}>
+                                    <div className={`space-y-[0.4rem]`}>
 
                                         <FormField className="space-y-[0.5rem]">
 
-                                            <h3 className="font-mona text-[13px] pag-800">Select a Career</h3>
+                                            <h3 className="font-mona text-[13px] pag-800">Choose a Career</h3>
 
                                             <div className="flex items-center gap-x-[1.5rem]">
 
@@ -479,11 +407,11 @@ const NewSkillPage = () => {
 
                                         <FormField className={`space-y-[0.5rem] ${fields.length === 0 ? 'disabled-light' : ''}`}>
 
-                                            <h3 className="font-mona text-[13px] pag-800">Select a Field</h3>
+                                            <h3 className="font-mona text-[13px] pag-800">Choose Field</h3>
 
-                                            <div className="flex items-center gap-x-[1.5rem]">
+                                            <div className="space-y-[0.8rem]">
 
-                                                <div className="w-1/2">
+                                                <div className="max-w-[50%]">
                                                     <Filter
                                                         ref={fiRef}
                                                         size='xxsm'
@@ -505,6 +433,10 @@ const NewSkillPage = () => {
                                                         }
                                                         noFilter={false}
                                                         onChange={(data) => {
+                                                            // extract skills
+                                                            const skills = core.skills.filter((x) => x.fields.includes(data.value));
+                                                            setSkills(skills);
+
                                                             // capture field
                                                             setAIForm({ ...aiform, field: { id: data.value, name: data.label } });
                                                             fiRef.current.clear();
@@ -514,7 +446,7 @@ const NewSkillPage = () => {
 
                                                 {
                                                     aiform.field.name &&
-                                                    <div className="grow">
+                                                    <div className="w-full flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
                                                         <Badge
                                                             type={'default'}
                                                             size="xsm"
@@ -533,44 +465,113 @@ const NewSkillPage = () => {
 
                                         <Divider />
 
-                                        <FormField className={`space-y-[0.5rem] ${aiform.field.name === '' ? 'disabled-light' : ''}`}>
+                                        <FormField className={`space-y-[0.5rem] ${(skills.length === 0 || fields.length === 0) ? 'disabled-light' : ''}`}>
 
-                                            <h3 className="font-mona text-[13px] pag-800">Select Size (Number)</h3>
+                                            <h3 className="font-mona text-[13px] pag-800">Choose Skills</h3>
 
-                                            <div className="flex items-center gap-x-[1.5rem]">
+                                            <div className="space-y-[0.8rem]">
 
-                                                <div className="w-1/2">
+                                                <div className="max-w-[50%]">
                                                     <Filter
-                                                        ref={sizeRef}
-                                                        size='xsm'
-                                                        className='la-filter'
-                                                        placeholder="Size"
+                                                        ref={skiRef}
+                                                        size='xxsm'
+                                                        className='la-filter bg-white'
+                                                        placeholder="Select Skill"
                                                         position="bottom"
-                                                        defaultValue={'15'}
                                                         menu={{
-                                                            style: {},
-                                                            search: false,
+                                                            search: true,
                                                             fullWidth: true,
                                                             limitHeight: 'md'
                                                         }}
-                                                        items={[
-                                                            { label: '10 Skills', value: "10" },
-                                                            { label: '15 Skills', value: "15" },
-                                                            { label: '20 Skills', value: "20" }
-                                                        ]}
+                                                        items={
+                                                            skills.map((x: Skill) => {
+                                                                return {
+                                                                    label: helper.capitalizeWord(x.name),
+                                                                    value: x._id
+                                                                }
+                                                            })
+                                                        }
                                                         noFilter={false}
-                                                        onChange={(item) => setAIForm({ ...aiform, size: parseInt(item.value) })}
+                                                        onChange={(data) => {
+                                                            // extract skills
+                                                            const topics = core.topics.filter((x) => x.skills.includes(data.value));
+                                                            setTopics(topics);
+
+                                                            // capture field
+                                                            setAIForm({ ...aiform, skill: { id: data.value, name: data.label } });
+                                                            fiRef.current.clear();
+                                                        }}
                                                     />
                                                 </div>
 
                                                 {
-                                                    aiform.size > 0 &&
-                                                    <div className="grow">
+                                                    aiform.skill.name &&
+                                                    <div className="w-full flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
                                                         <Badge
                                                             type={'default'}
                                                             size="xsm"
                                                             close={false}
-                                                            label={`${aiform.size} Skills & Topics`}
+                                                            label={helper.capitalize(aiform.skill.name)}
+                                                            upper={true}
+                                                            onClose={(e) => { }}
+                                                        />
+                                                    </div>
+                                                }
+
+                                            </div>
+
+
+                                        </FormField>
+
+                                        <Divider />
+
+                                        <FormField className={`space-y-[0.5rem] ${(skills.length === 0 || fields.length === 0) ? 'disabled-light' : ''}`}>
+
+                                            <h3 className="font-mona text-[13px] pag-800">Choose Topic(s)</h3>
+
+                                            <div className="space-y-[0.8rem]">
+
+                                                <div className="max-w-[50%]">
+                                                    <Filter
+                                                        ref={skiRef}
+                                                        size='xxsm'
+                                                        className='la-filter bg-white'
+                                                        placeholder="Select Skill"
+                                                        position="bottom"
+                                                        menu={{
+                                                            search: true,
+                                                            fullWidth: true,
+                                                            limitHeight: 'md'
+                                                        }}
+                                                        items={
+                                                            skills.map((x: Skill) => {
+                                                                return {
+                                                                    label: helper.capitalizeWord(x.name),
+                                                                    value: x._id
+                                                                }
+                                                            })
+                                                        }
+                                                        noFilter={false}
+                                                        onChange={(data) => {
+                                                            // extract skills
+                                                            const topics = core.topics.filter((x) => x.skills.includes(data.value));
+                                                            setTopics(topics);
+
+                                                            // capture field
+                                                            setAIForm({ ...aiform, skill: { id: data.value, name: data.label } });
+                                                            fiRef.current.clear();
+                                                        }}
+                                                    />
+                                                </div>
+
+                                                {
+                                                    aiform.skill.name &&
+                                                    <div className="w-full flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
+                                                        <Badge
+                                                            type={'default'}
+                                                            size="xsm"
+                                                            close={false}
+                                                            label={helper.capitalize(aiform.skill.name)}
                                                             upper={true}
                                                             onClose={(e) => { }}
                                                         />
@@ -584,176 +585,6 @@ const NewSkillPage = () => {
 
                                     </div>
 
-                                    <div className={`flex items-center mt-[1.8rem]`}>
-
-                                        {
-                                            skills.length > 0 &&
-                                            <IconButton
-                                                size="min-w-[1.3rem] min-h-[1.3rem]"
-                                                className="bg-par-50 bgh-par-100"
-                                                icon={{
-                                                    type: 'polio',
-                                                    name: 'cancel',
-                                                    size: 16,
-                                                    className: 'par-600'
-                                                }}
-                                                label={{
-                                                    text: 'Clear Results',
-                                                    weight: 'medium',
-                                                    className: 'par-700'
-                                                }}
-                                                onClick={(e) => handleClear()}
-                                            />
-                                        }
-
-                                        <Button
-                                            type="primary"
-                                            size="sm"
-                                            disabled={(aiform.field.name === '' || skills.length > 0)}
-                                            loading={loader}
-                                            className="form-button ml-auto"
-                                            text={{
-                                                label: "Generate Skills",
-                                                size: 13,
-                                            }}
-                                            reverse="row"
-                                            onClick={(e) => handleGenerate(e, ActionEnum.GENERATE)}
-                                        />
-
-                                    </div>
-
-                                </CardUI>
-
-                                <CardUI className="space-y-[0.4rem]">
-                                    {
-                                        loading &&
-                                        <EmptyState className="min-h-[50vh]" noBound={true}>
-                                            <span className="loader lg primary"></span>
-                                        </EmptyState>
-                                    }
-                                    {
-                                        !loading &&
-                                        <>
-                                            {
-                                                skills.length === 0 &&
-                                                <>
-                                                    <EmptyState className="min-h-[50vh]" noBound={true}>
-                                                        <span className="font-mona pag-800 text-[13px]">Skills will appear here</span>
-                                                    </EmptyState>
-                                                </>
-                                            }
-                                            {
-                                                skills.length > 0 &&
-                                                <>
-                                                    <div className="w-full">
-
-                                                        <div className="flex items-center mb-[1.6rem]">
-                                                            <h3 className="font-mona text-[13px] pag-800">List of skills generated</h3>
-
-                                                            <IconButton
-                                                                size="min-w-[1.3rem] min-h-[1.3rem]"
-                                                                className="bg-par-50 bgh-par-100 ml-auto"
-                                                                icon={{
-                                                                    type: 'polio',
-                                                                    name: 'cancel',
-                                                                    size: 16,
-                                                                    className: 'par-600'
-                                                                }}
-                                                                label={{
-                                                                    text: 'Clear Results',
-                                                                    weight: 'medium',
-                                                                    className: 'par-700'
-                                                                }}
-                                                                onClick={(e) => handleClear()}
-                                                            />
-                                                        </div>
-
-                                                        <div className="max-h-[460px] overflow-y-scroll scrollbar-hide">
-
-                                                            {skills.map((skill) => {
-
-                                                                const relatedTopics = topics.filter((t) => t.skill === skill.name);
-
-                                                                return <Fragment key={skill.name}>
-
-                                                                    <div className="px-[1rem] py-[0.5rem] border bdr-pag-100 rounded-[6px]">
-
-                                                                        <div className="flex items-center py-[0.5rem] transition" >
-
-                                                                            <div>
-                                                                                <h3 className={`font-mona-semibold text-[14px] ${isOpen === skill.name ? 'pacb-800' : 'pag-600'}`}>{skill.name}</h3>
-                                                                                <p className={`font-mona text-[12px] ${isOpen === skill.name ? 'pacb-700' : 'pag-400'}`}>{skill.description}</p>
-                                                                            </div>
-
-                                                                            <IconButton
-                                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                                                className="ml-auto bg-pag-100 bgh-pab-200 pabh-700"
-                                                                                icon={{
-                                                                                    type: 'feather',
-                                                                                    name: isOpen === skill.name ? 'chevron-up' : 'chevron-down',
-                                                                                    size: 16,
-                                                                                }}
-                                                                                onClick={(e) => toggleOpen(skill.name)}
-                                                                            />
-
-                                                                        </div>
-
-                                                                        <div className="w-full">
-
-                                                                            {
-                                                                                isOpen === skill.name &&
-                                                                                <div className="px-[0.5rem] border-t bdr-pag-100">
-                                                                                    <h3 className="font-mona text-[13px] pag-500 pt-[1rem] pb-[0.5rem]">Related topics</h3>
-                                                                                    {relatedTopics.map((topic, index) => (
-                                                                                        <Fragment key={topic.name}>
-                                                                                            <div className="flex items-center py-[0.5rem] transition">
-                                                                                                <div>
-                                                                                                    <h3 className="font-mona-medium text-[13px] pag-800">{topic.name}</h3>
-                                                                                                    <p className="font-mona text-[12px] pag-400">{topic.description}</p>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                            {
-                                                                                                (index + 1) !== relatedTopics.length && <Divider padding={{ enable: true, top: 'pt-[0.8rem]', bottom: 'pb-[0rem]' }} />
-                                                                                            }
-                                                                                        </Fragment>
-                                                                                    ))}
-                                                                                </div>
-                                                                            }
-
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <Divider show={false} padding={{ enable: true, top: 'pt-[0.5rem]', bottom: 'pb-[0.5rem]' }} />
-
-                                                                </Fragment>
-                                                            })}
-
-                                                        </div>
-
-                                                        <div className={`flex items-center mt-[1.8rem]`}>
-
-                                                            <Button
-                                                                type="primary"
-                                                                semantic="success"
-                                                                size="sm"
-                                                                disabled={aiform.field.name === ''}
-                                                                loading={loader}
-                                                                className="form-button ml-auto"
-                                                                text={{
-                                                                    label: "Save Skills & Topics",
-                                                                    size: 13,
-                                                                }}
-                                                                reverse="row"
-                                                                onClick={(e) => handleGenerate(e, ActionEnum.CREATE)}
-                                                            />
-
-                                                        </div>
-
-                                                    </div>
-                                                </>
-                                            }
-                                        </>
-                                    }
                                 </CardUI>
 
                             </div>
