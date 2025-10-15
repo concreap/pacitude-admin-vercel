@@ -501,6 +501,11 @@ const CreateQuestionPage = ({ }) => {
 
     }
 
+    /**
+     * @name handleAddQuestions
+     * @description Add questions 
+     * @param e 
+     */
     const handleAddQuestions = async (e: any) => {
 
         if (e) { e.preventDefault() }
