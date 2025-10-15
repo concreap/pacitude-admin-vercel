@@ -66,7 +66,11 @@ const TalentList = (props: IListUI) => {
 
     const initList = (limit: number) => {
         if (type === 'self') {
-            getTalents({ limit: limit, page: 1, order: 'desc' })
+
+            if(talents.data.length === 0){
+                getTalents({ limit: limit, page: 1, order: 'desc' })
+            }
+            
         }
         getCoreResources({ limit: 9999, page: 1, order: 'desc' })
     }

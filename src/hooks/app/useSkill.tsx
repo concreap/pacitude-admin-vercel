@@ -18,6 +18,15 @@ interface ICreateSkill {
     fields: Array<string>
 }
 
+interface IGenerateSkills {
+    careerId: string, 
+    fieldId: string, 
+    action: string, 
+    size: number,
+    skills: Array<{ name: string, description: string }>
+    topics: Array<{ name: string, skill: string, description: string }>
+}
+
 interface IUpdateSkill extends ICreateSkill {
     id: string
 }
@@ -270,6 +279,49 @@ const useSkill = () => {
     }, [setLoading, unsetLoading, setResource])
 
     /**
+     * @name generateSkills
+     */
+    const generateSkills = useCallback(async (data: IGenerateSkills) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'POST',
+            isAuth: true,
+            path: `${URL_SKILL}/generate`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'data saved successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response;
+
+    }, [setLoading, unsetLoading, setResource])
+
+    /**
      * @name updateSkill
      */
     const updateSkill = useCallback(async (data: IUpdateSkill) => {
@@ -367,6 +419,7 @@ const useSkill = () => {
         loader,
 
         createSkill,
+        generateSkills,
         updateSkill,
         getSkills,
         getResourceSkills,
