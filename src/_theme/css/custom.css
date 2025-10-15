@@ -653,3 +653,55 @@ th,
 td {
     background-color: unset;
 }
+
+/* react-tabs */
+.react-tabs__tab-list {
+    border-bottom: 1px solid var(--pag-100) !important;
+}
+
+.react-tabs__tab-list {
+    display: flex;
+    column-gap: 1.5rem;
+    padding-inline: 0 !important;
+}
+
+.react-tabs__tab {
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding: 3px 12px !important;
+    padding-bottom: 12px;
+    background: transparent !important;
+    line-height: 23px;
+    font-size: 13px;
+    list-style: none;
+    cursor: pointer;
+    color: var(--pag-400) !important;
+    font-family: 'MonaSans-Regular';
+}
+
+.react-tabs__tab--selected {
+    border-radius: 0 !important;
+    background: transparent;
+    border-bottom: 3px solid var(--pacb-500) !important;
+    color: var(--pacb-600) !important;
+    font-weight: 600;
+}
+
+.react-tabs__tab--selected:focus-visible {
+    outline: none !important;
+}
+
+.tab.hide-border .react-tabs__tab-list {
+    border-bottom: none !important;
+}
+
+.new-skill-tab .react-tabs__tab{
+    width: 50%;
+    text-align: center;
+    padding: 0.7rem 0 !important;
+}
+
+.new-skill-tab .react-tabs__tab--selected {
+    border-bottom: 4px solid var(--pacb-500) !important;
+}

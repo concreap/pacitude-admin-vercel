@@ -87,7 +87,7 @@ const Button = (props: IButton) => {
                     result = result + ` bg-pap-600 bgh-pap-800 color-white`
                     break;
                 case 'success':
-                    result = result + ` bg-pae-600 bgh-pae-800 color-white`
+                    result = result + ` bg-pagr-600 bgh-pagr-800 color-white`
                     break;
                 case 'warning':
                     result = result + ` bg-pay-400 bgh-pay-700 pay-900`
@@ -117,7 +117,7 @@ const Button = (props: IButton) => {
                     result = result + ` bg-pav-100 bgh-pav-600 pap-900`
                     break;
                 case 'success':
-                    result = result + ` bg-pae-100 bgh-pae-600 pae-900`
+                    result = result + ` bg-pagr-100 bgh-pagr-600 pagr-900`
                     break;
                 case 'warning':
                     result = result + ` bg-pay-200 bgh-pay-600 pay-900`
@@ -147,7 +147,7 @@ const Button = (props: IButton) => {
                     result = result + ` border-[1px] bdr-pap-500 bdrh-pap-700 pap-600 ${fill ? 'bg-pap-50' : ''}`
                     break;
                 case 'success':
-                    result = result + ` border-[1px] bdr-pae-500 bdrh-pae-700 goe-600 ${fill ? 'bg-pae-50' : ''}`
+                    result = result + ` border-[1px] bdr-pagr-500 bdrh-pagr-700 goe-600 ${fill ? 'bg-pagr-50' : ''}`
                     break;
                 case 'warning':
                     result = result + ` border-[1px] bdr-pay-500 bdrh-pay-700 pay-600 ${fill ? 'bg-pay-50' : ''}`

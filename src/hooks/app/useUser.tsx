@@ -179,6 +179,9 @@ const useUser = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    /**
+     * @name getTalent
+     */
     const getTalent = useCallback(async (id?: string) => {
 
         const userId = id ? id : storage.getUserID();
