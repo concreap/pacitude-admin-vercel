@@ -51,7 +51,12 @@ const LoginPage = ({ }) => {
             })
 
             if (!response.error) {
-                goTo('/dashboard')
+                const { isAdmin, isSuper } = response.data;
+                if (isAdmin || isSuper) {
+                    goTo('/dashboard')
+                } else {
+                    setAlert({ ...alert, type: 'error', show: true, name: 'Login Error', message: 'Invalid login credentials' });
+                }
             }
 
             if (response.error) {

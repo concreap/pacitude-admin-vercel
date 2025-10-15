@@ -69,3 +69,8 @@ export enum coreTypeEnum {
     TOPIC = 'topic',
     INDUSTRY = 'industry'
 }
+
+export enum ActionEnum {
+    GENERATE = 'generate',
+    CREATE = 'create',
+}
