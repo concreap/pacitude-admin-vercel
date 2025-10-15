@@ -54,9 +54,22 @@ const CreateQuestionPage = ({ }) => {
     const [aiData, setAiData] = useState({
         prompt: '',
         model: 'openai',
-        total: 3,
+        total: 10,
         error: '',
+        level: '',
         career: {
+            id: '',
+            name: ''
+        },
+        field: {
+            id: '',
+            name: ''
+        },
+        skill: {
+            id: '',
+            name: ''
+        },
+        topic: {
             id: '',
             name: ''
         }
@@ -67,9 +80,6 @@ const CreateQuestionPage = ({ }) => {
     }, [])
 
     useEffect(() => {
-        setFields(core.fields)
-        setSkills(core.skills)
-        setTopics(core.topics)
         setCareers(core.careers)
     }, [core])
 
@@ -334,20 +344,106 @@ const CreateQuestionPage = ({ }) => {
 
     }
 
-    const clearOnSelect = () => {
-        setAiData({ ...aiData, career: { id: '', name: '' } })
+    const clearOnSelect = (rubric: string) => {
+
+        if (rubric === 'all') {
+            leRef?.current.clear()
+            carRef?.current.clear()
+            fiRef?.current.clear()
+            skiRef?.current.clear()
+            toRef?.current.clear()
+            qtRef?.current.clear()
+            modelref?.current.clear()
+            setAiData({
+                ...aiData,
+                career: { id: '', name: '' },
+                field: { id: '', name: '' },
+                skill: { id: '', name: '' },
+                topic: { id: '', name: '' },
+                level: '',
+                model: 'openai',
+                prompt: '',
+                total: 10
+            })
+        }
+
+        if (rubric === 'career') {
+            fiRef?.current.clear()
+            skiRef?.current.clear()
+            toRef?.current.clear()
+            setAiData({
+                ...aiData,
+                field: { id: '', name: '' },
+                skill: { id: '', name: '' },
+                topic: { id: '', name: '' }
+            })
+        }
+
+        if (rubric === 'field') {
+            skiRef?.current.clear()
+            toRef?.current.clear()
+            setAiData({
+                ...aiData,
+                skill: { id: '', name: '' },
+                topic: { id: '', name: '' }
+            })
+        }
+
+        if (rubric === 'skill') {
+            toRef?.current.clear()
+            setAiData({
+                ...aiData,
+                topic: { id: '', name: '' }
+            })
+        }
+
     }
 
     const handleGenerate = async (e: any) => {
 
         if (e) { e.preventDefault() }
 
-        if (!aiData.prompt) {
+        if (!aiData.level) {
             setToast({
                 ...toast,
                 show: true,
                 type: 'error',
-                message: 'Enter a prompt or instruction'
+                message: 'Select skill level'
+            })
+        } else if (!aiData.career.id) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: 'Select a Career'
+            })
+        } else if (!aiData.field.id) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: 'Select a Field'
+            })
+        } else if (!aiData.skill.id) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: 'Select a Skill'
+            })
+        } else if (!aiData.topic.id) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: 'Select a Topic'
+            })
+        } else if (!aiData.total) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                message: 'Select number of questions'
             })
         } else if (!aiData.model) {
             setToast({
@@ -356,16 +452,26 @@ const CreateQuestionPage = ({ }) => {
                 type: 'error',
                 message: 'Choose an ai model'
             })
-        } else if (!aiData.total) {
+        } else if (!aiData.prompt) {
             setToast({
                 ...toast,
                 show: true,
                 type: 'error',
-                message: 'Choose number of questions'
+                message: 'Select prompt type'
             })
         } else {
 
-            const response = await generateQuestions(aiData);
+            const response = await generateQuestions({
+                level: aiData.level,
+                careerId: aiData.career.id,
+                fieldId: aiData.field.id,
+                skillId: aiData.skill.id,
+                topicId: aiData.topic.id,
+                model: aiData.model,
+                total: aiData.total,
+                prompt: aiData.prompt
+
+            });
 
             if (!response.error) {
                 setToast({
@@ -399,18 +505,22 @@ const CreateQuestionPage = ({ }) => {
 
         if (e) { e.preventDefault() }
 
+        // add rubrics 
+        let questions: Array<IAIQuestion> = [];
+        aiQuestions.forEach((q) => {
+            q.levels.push(aiData.level);
+            q.fields.push(aiData.field);
+            q.skills.push(aiData.skill);
+            q.topics.push(aiData.topic);
+            questions.push(q)
+        });
+
+        // set to state;
+        setAIQuestions(questions);
+
         const validate = await validateAIQuestions(e)
 
-        if (!aiData.career.id) {
-            setToast({
-                ...toast,
-                show: true,
-                type: 'error',
-                title: 'Error',
-                message: 'Select a career'
-            })
-        }
-        else if (validate.error) {
+        if (validate.error) {
             setToast({
                 ...toast,
                 show: true,
@@ -460,117 +570,315 @@ const CreateQuestionPage = ({ }) => {
 
                 <CardUI>
 
-                    <div className="w-full flex items-center">
+                    <div className="space-y-[1rem]">
 
-                        <div className="grow flex items-center gap-x-[1rem]">
+                        <h3 className="font-mona-medium text-[14px] pag-800">Select Question Rubrics</h3>
 
-                            <TextInput
-                                ref={pmRef}
-                                type="text"
-                                size="sm"
-                                showFocus={true}
-                                autoComplete={false}
-                                placeholder="Enter instruction for a concept"
-                                readonly={aiQuestions.length > 0 ? true : false}
-                                isError={toast.error === 'prompt' ? true : false}
-                                onChange={(e) => setAiData({ ...aiData, prompt: e.target.value })}
-                            />
+                        <div className="w-full flex items-center gap-x-[1.2rem]">
 
+                            {/* LEVEL RUBRIC */}
                             <div className="w-[18%]">
 
                                 <Filter
-                                    ref={qtRef}
-                                    size='xsm'
+                                    ref={leRef}
+                                    size='xxsm'
                                     className='la-filter'
-                                    placeholder="Questions"
+                                    placeholder="Skill Level"
                                     position="bottom"
-                                    defaultValue={'3'}
                                     menu={{
-                                        style: {},
-                                        search: false,
-                                        fullWidth: true,
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: false,
                                         limitHeight: 'md'
                                     }}
-                                    items={[
-                                        { label: '3 Questions', value: "3" },
-                                        { label: '5 Questions', value: "5" },
-                                        { label: '10 Questions', value: "10" }
-                                    ]}
-                                    noFilter={false}
-                                    onChange={(item) => setAiData({ ...aiData, total: parseInt(item.value) })}
-                                />
-
-                            </div>
-
-                            <div className="w-[18%]">
-
-                                <Filter
-                                    ref={modelref}
-                                    size='xsm'
-                                    className='la-filter'
-                                    placeholder="Questions"
-                                    position="bottom"
-                                    defaultValue={aiData.model}
-                                    menu={{
-                                        style: {},
-                                        search: false,
-                                        fullWidth: true,
-                                        limitHeight: 'md'
-                                    }}
-                                    items={[
-                                        { label: 'OpenAI', value: 'openai' },
-                                        { label: 'Anthropic', value: 'anthropic' }
-                                    ]}
-                                    noFilter={false}
-                                    onChange={(item) => setAiData({ ...aiData, model: item.value })}
-                                />
-
-                            </div>
-
-                        </div>
-
-                        <div className="ml-auto w-[30%] gap-x-[0.65rem] flex items-center justify-end">
-                            {
-                                aiQuestions.length > 0 &&
-                                <Button
-                                    type={"ghost"}
-                                    size="sm"
-                                    semantic="error"
-                                    className="form-button"
-                                    loading={loading}
-                                    text={{
-                                        label: "Clear",
-                                        size: 13,
-                                    }}
-                                    onClick={(e) => {
-                                        setAIQuestions([])
-                                        setCode('')
-                                        pmRef.current.clear()
-                                        setAiData({ ...aiData, error: '', model: 'openai', prompt: '', total: 3 })
-                                    }}
-                                />
-                            }
-                            <Button
-                                type={"ghost"}
-                                semantic={aiQuestions.length > 0 ? "ongoing" : "info"}
-                                size="sm"
-                                className="form-button"
-                                loading={loading}
-                                text={{
-                                    label: aiQuestions.length > 0 ? "Save Questions" : "Generate",
-                                    size: 13,
-                                }}
-                                onClick={(e) => {
-                                    if (aiQuestions.length > 0) {
-                                        handleAddQuestions(e)
-                                    } else {
-                                        handleGenerate(e)
+                                    items={
+                                        levels.map((x) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x.value
+                                            }
+                                        })
                                     }
-                                }}
-                            />
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        setAiData({ ...aiData, level: data.value })
+                                    }}
+                                />
+
+                            </div>
+
+                            {/* CAREER RUBRIC */}
+                            <div className={`w-[18%] ${!aiData.level ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={carRef}
+                                    size='xxsm'
+                                    className='la-filter bg-white'
+                                    placeholder="Select Career"
+                                    position="bottom"
+                                    menu={{
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: false,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        careers.map((x: Career) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        clearOnSelect('career')
+                                        setAiData({ ...aiData, career: { id: data.value, name: data.label } })
+                                        const fd = core.fields.filter((x) => x.career === data.value)
+                                        setFields(fd);
+                                    }}
+                                />
+
+                            </div>
+
+                            {/* FIELD RUBRIC */}
+                            <div className={`w-[18%] ${fields.length === 0 ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={fiRef}
+                                    size='xxsm'
+                                    className='la-filter'
+                                    placeholder="Select Field"
+                                    position="bottom"
+                                    menu={{
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: false,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        fields.map((x: Field) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        clearOnSelect('field')
+                                        setAiData({ ...aiData, field: { id: data.value, name: data.label } })
+                                        const sk = core.skills.filter((x) => x.fields.includes(data.value))
+                                        setSkills(sk);
+                                    }}
+                                />
+
+                            </div>
+
+                            {/* SKILL RUBRIC */}
+                            <div className={`w-[18%] ${skills.length === 0 ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={skiRef}
+                                    size='xxsm'
+                                    className='la-filter'
+                                    placeholder="Select Skill"
+                                    position="bottom"
+                                    menu={{
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: false,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        skills.map((x: Skill) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        clearOnSelect('skill')
+                                        setAiData({ ...aiData, skill: { id: data.value, name: data.label } })
+                                        const tp = core.topics.filter((x) => x.skills.includes(data.value))
+                                        setTopics(tp);
+                                    }}
+                                />
+
+                            </div>
+
+                            {/* TOPIC RUBRIC */}
+                            <div className={`w-[36%] ${topics.length === 0 ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={toRef}
+                                    size='xxsm'
+                                    className='la-filter'
+                                    placeholder="Select Topic"
+                                    position="bottom"
+                                    menu={{
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: true,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        topics.map((x: Topic) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        setAiData({ ...aiData, topic: { id: data.value, name: data.label } })
+                                    }}
+                                />
+
+                            </div>
+
                         </div>
 
                     </div>
+
+                    <Divider />
+
+                    <div className="space-y-[1rem]">
+
+                        <h3 className="font-mona-medium text-[14px] pag-800">Select how questions should be generated</h3>
+
+                        <div className="w-full flex items-center">
+
+                            <div className="grow flex items-center gap-x-[1rem]">
+
+                                <div className="w-[18%]">
+
+                                    <Filter
+                                        ref={qtRef}
+                                        size='xsm'
+                                        className='la-filter'
+                                        placeholder="No Of Questions"
+                                        position="bottom"
+                                        defaultValue={'10'}
+                                        menu={{
+                                            style: {},
+                                            search: false,
+                                            fullWidth: true,
+                                            limitHeight: 'md'
+                                        }}
+                                        items={[
+                                            { label: '10 Questions', value: "10" },
+                                            { label: '15 Questions', value: "15" },
+                                            { label: '20 Questions', value: "20" },
+                                            { label: '25 Questions', value: "25" }
+                                        ]}
+                                        noFilter={false}
+                                        onChange={(item) => setAiData({ ...aiData, total: parseInt(item.value) })}
+                                    />
+
+                                </div>
+
+                                <div className="w-[18%]">
+
+                                    <Filter
+                                        ref={modelref}
+                                        size='xsm'
+                                        className='la-filter'
+                                        placeholder="LLM"
+                                        position="bottom"
+                                        defaultValue={aiData.model}
+                                        menu={{
+                                            style: {},
+                                            search: false,
+                                            fullWidth: true,
+                                            limitHeight: 'md'
+                                        }}
+                                        items={[
+                                            { label: 'Use OpenAI', value: 'openai' },
+                                            { label: 'Use Anthropic', value: 'anthropic' }
+                                        ]}
+                                        noFilter={false}
+                                        onChange={(item) => setAiData({ ...aiData, model: item.value })}
+                                    />
+
+                                </div>
+
+                                <div className="w-[25%]">
+
+                                    <Filter
+                                        ref={qtRef}
+                                        size='xsm'
+                                        className='la-filter'
+                                        placeholder="Prompt Type"
+                                        position="bottom"
+                                        defaultValue={'10'}
+                                        menu={{
+                                            style: {},
+                                            search: false,
+                                            fullWidth: true,
+                                            limitHeight: 'md'
+                                        }}
+                                        items={[
+                                            { label: 'General Propmpt', value: "generic" },
+                                            { label: 'Story Based Prompt', value: "story-based" },
+                                            { label: 'Topic Only Prompt', value: "topic-only" }
+                                        ]}
+                                        noFilter={false}
+                                        onChange={(data) => setAiData({ ...aiData, prompt: data.value })}
+                                    />
+
+                                </div>
+
+                            </div>
+
+                            <div className="ml-auto w-[30%] gap-x-[0.65rem] flex items-center justify-end">
+                                {
+                                    aiQuestions.length > 0 &&
+                                    <Button
+                                        type={"ghost"}
+                                        size="sm"
+                                        semantic="error"
+                                        className="form-button"
+                                        loading={loading}
+                                        text={{
+                                            label: "Clear",
+                                            size: 13,
+                                        }}
+                                        onClick={(e) => {
+                                            setAIQuestions([])
+                                            setCode('')
+                                            pmRef.current.clear()
+                                            setAiData({ ...aiData, error: '', model: 'openai', prompt: '', total: 3 })
+                                        }}
+                                    />
+                                }
+                                <Button
+                                    type={"ghost"}
+                                    semantic={aiQuestions.length > 0 ? "ongoing" : "info"}
+                                    size="sm"
+                                    className="form-button"
+                                    loading={loading}
+                                    text={{
+                                        label: aiQuestions.length > 0 ? "Save Questions" : "Generate",
+                                        size: 13,
+                                    }}
+                                    onClick={(e) => {
+                                        if (aiQuestions.length > 0) {
+                                            handleAddQuestions(e)
+                                        } else {
+                                            handleGenerate(e)
+                                        }
+                                    }}
+                                />
+                            </div>
+
+                        </div>
+
+                    </div>
+
 
                 </CardUI>
 
@@ -617,61 +925,6 @@ const CreateQuestionPage = ({ }) => {
 
                                             <div className="space-y-[1.5rem]">
 
-                                                <CardUI className="bg-pag-25">
-                                                    <div className="w-full flex items-center gap-x-[1.5rem]">
-
-                                                        <div className="min-w-[30%]">
-                                                            <Filter
-                                                                ref={carRef}
-                                                                size='xxsm'
-                                                                className='la-filter bg-white'
-                                                                placeholder="Select Career"
-                                                                position="bottom"
-                                                                menu={{
-                                                                    style: { minWidth: '250px' },
-                                                                    search: true,
-                                                                    fullWidth: false,
-                                                                    limitHeight: 'md'
-                                                                }}
-                                                                items={
-                                                                    careers.map((x: Career) => {
-                                                                        return {
-                                                                            label: helper.capitalizeWord(x.name),
-                                                                            value: x._id
-                                                                        }
-                                                                    })
-                                                                }
-                                                                noFilter={false}
-                                                                onChange={(data) => {
-                                                                    setAiData({ ...aiData, career: { id: data.value, name: data.label } })
-                                                                    const fd = core.fields.filter((x) => x.career === data.value)
-                                                                    const sd = core.skills.filter((x) => x.career === data.value)
-                                                                    const td = core.topics.filter((x) => x.career === data.value)
-                                                                    setFields(fd);
-                                                                    // setSkills(sd.length > 0 ? sd : core.skills)
-                                                                    // setTopics(td.length > 0 ? td : core.topics)
-                                                                    carRef.current.clear()
-                                                                }}
-                                                            />
-                                                        </div>
-
-                                                        {
-                                                            aiData.career.id &&
-                                                            <FormField className="grow">
-                                                                <Badge
-                                                                    type={'info'}
-                                                                    size="xsm"
-                                                                    close={false}
-                                                                    label={helper.capitalize(aiData.career.name)}
-                                                                    upper={true}
-                                                                    onClose={(e) => { }}
-                                                                />
-                                                            </FormField>
-                                                        }
-
-                                                    </div>
-                                                </CardUI>
-
                                                 <CardUI>
 
                                                     <div className="">
@@ -694,63 +947,6 @@ const CreateQuestionPage = ({ }) => {
                                                                             {
                                                                                 question.code === code &&
                                                                                 <>
-
-                                                                                    <div className={`w-full space-y-[0.75rem] ${!aiData.career.id ? 'disabled-light' : ''}`}>
-
-                                                                                        <div className="flex items-center">
-                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                            <div className="min-w-[20%]">
-                                                                                                <Filter
-                                                                                                    ref={fiRef}
-                                                                                                    size='xxsm'
-                                                                                                    className='la-filter'
-                                                                                                    placeholder="Select Fields"
-                                                                                                    position="bottom"
-                                                                                                    menu={{
-                                                                                                        style: { minWidth: '250px' },
-                                                                                                        search: true,
-                                                                                                        fullWidth: false,
-                                                                                                        limitHeight: 'md'
-                                                                                                    }}
-                                                                                                    items={
-                                                                                                        fields.map((x: Field) => {
-                                                                                                            return {
-                                                                                                                label: helper.capitalizeWord(x.name),
-                                                                                                                value: x._id
-                                                                                                            }
-                                                                                                        })
-                                                                                                    }
-                                                                                                    noFilter={false}
-                                                                                                    onChange={(data) => {
-                                                                                                        addRubric('field', { name: data.label, id: data.value })
-                                                                                                    }}
-                                                                                                />
-                                                                                            </div>
-
-                                                                                        </div>
-
-                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                            {
-                                                                                                question.fields.map((field) =>
-                                                                                                    <Badge
-                                                                                                        key={field.id}
-                                                                                                        type={'default'}
-                                                                                                        size="xsm"
-                                                                                                        close={true}
-                                                                                                        label={helper.capitalize(field.name)}
-                                                                                                        upper={true}
-                                                                                                        onClose={(e) => {
-                                                                                                            removeRubric('field', field.id)
-                                                                                                            fiRef.current.clear()
-                                                                                                        }}
-                                                                                                    />
-                                                                                                )
-                                                                                            }
-                                                                                        </FormField>
-
-                                                                                    </div>
-
-                                                                                    <Divider />
 
                                                                                     <div className="w-full space-y-[0.75rem]">
 
@@ -804,63 +1000,6 @@ const CreateQuestionPage = ({ }) => {
                                                                                                 )
                                                                                             }
 
-                                                                                        </FormField>
-
-                                                                                    </div>
-
-                                                                                    <Divider />
-
-                                                                                    <div className="w-full space-y-[0.75rem]">
-
-                                                                                        <div className="flex items-center">
-                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                            <div className="min-w-[20%]">
-                                                                                                <Filter
-                                                                                                    ref={leRef}
-                                                                                                    size='xxsm'
-                                                                                                    className='la-filter'
-                                                                                                    placeholder="Skill Levels"
-                                                                                                    position="bottom"
-                                                                                                    menu={{
-                                                                                                        style: { minWidth: '250px' },
-                                                                                                        search: true,
-                                                                                                        fullWidth: false,
-                                                                                                        limitHeight: 'md'
-                                                                                                    }}
-                                                                                                    items={
-                                                                                                        levels.map((x) => {
-                                                                                                            return {
-                                                                                                                label: helper.capitalizeWord(x.name),
-                                                                                                                value: x.value
-                                                                                                            }
-                                                                                                        })
-                                                                                                    }
-                                                                                                    noFilter={false}
-                                                                                                    onChange={(data) => {
-                                                                                                        addRubric('level', data.value)
-                                                                                                    }}
-                                                                                                />
-                                                                                            </div>
-
-                                                                                        </div>
-
-                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                            {
-                                                                                                question.levels.map((level) =>
-                                                                                                    <Badge
-                                                                                                        key={level}
-                                                                                                        type={'default'}
-                                                                                                        size="xsm"
-                                                                                                        close={true}
-                                                                                                        label={helper.capitalize(level)}
-                                                                                                        upper={true}
-                                                                                                        onClose={(e) => {
-                                                                                                            removeRubric('level', level)
-                                                                                                            leRef.current.clear()
-                                                                                                        }}
-                                                                                                    />
-                                                                                                )
-                                                                                            }
                                                                                         </FormField>
 
                                                                                     </div>
@@ -971,120 +1110,6 @@ const CreateQuestionPage = ({ }) => {
                                                                                                         onClose={(e) => {
                                                                                                             removeRubric('type', type)
                                                                                                             tyRef.current.clear()
-                                                                                                        }}
-                                                                                                    />
-                                                                                                )
-                                                                                            }
-                                                                                        </FormField>
-
-                                                                                    </div>
-
-                                                                                    <Divider />
-
-                                                                                    <div className="w-full space-y-[0.75rem]">
-
-                                                                                        <div className="flex items-center">
-                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                            <div className="min-w-[20%]">
-                                                                                                <Filter
-                                                                                                    ref={toRef}
-                                                                                                    size='xxsm'
-                                                                                                    className='la-filter'
-                                                                                                    placeholder="Select Topic"
-                                                                                                    position="bottom"
-                                                                                                    menu={{
-                                                                                                        style: { minWidth: '250px' },
-                                                                                                        search: true,
-                                                                                                        fullWidth: false,
-                                                                                                        limitHeight: 'md'
-                                                                                                    }}
-                                                                                                    items={
-                                                                                                        topics.map((x: Topic) => {
-                                                                                                            return {
-                                                                                                                label: helper.capitalizeWord(x.name),
-                                                                                                                value: x._id
-                                                                                                            }
-                                                                                                        })
-                                                                                                    }
-                                                                                                    noFilter={false}
-                                                                                                    onChange={(data) => {
-                                                                                                        addRubric('topic', { name: data.label, id: data.value })
-                                                                                                    }}
-                                                                                                />
-                                                                                            </div>
-
-                                                                                        </div>
-
-                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                            {
-                                                                                                question.topics.map((topic) =>
-                                                                                                    <Badge
-                                                                                                        key={topic.id}
-                                                                                                        type={'default'}
-                                                                                                        size="xsm"
-                                                                                                        close={true}
-                                                                                                        label={helper.capitalize(topic.name)}
-                                                                                                        upper={true}
-                                                                                                        onClose={(e) => {
-                                                                                                            removeRubric('topic', topic.id)
-                                                                                                            toRef.current.clear()
-                                                                                                        }}
-                                                                                                    />
-                                                                                                )
-                                                                                            }
-                                                                                        </FormField>
-
-                                                                                    </div>
-
-                                                                                    <Divider />
-
-                                                                                    <div className="w-full space-y-[0.75rem]">
-
-                                                                                        <div className="flex items-center">
-                                                                                            {/* <h3 className="font-mona text-[13px]">Attach qestion to fields</h3> */}
-                                                                                            <div className="min-w-[20%]">
-                                                                                                <Filter
-                                                                                                    ref={skiRef}
-                                                                                                    size='xxsm'
-                                                                                                    className='la-filter'
-                                                                                                    placeholder="Select Skill"
-                                                                                                    position="bottom"
-                                                                                                    menu={{
-                                                                                                        style: { minWidth: '250px' },
-                                                                                                        search: true,
-                                                                                                        fullWidth: false,
-                                                                                                        limitHeight: 'md'
-                                                                                                    }}
-                                                                                                    items={
-                                                                                                        skills.map((x: Skill) => {
-                                                                                                            return {
-                                                                                                                label: helper.capitalizeWord(x.name),
-                                                                                                                value: x._id
-                                                                                                            }
-                                                                                                        })
-                                                                                                    }
-                                                                                                    noFilter={false}
-                                                                                                    onChange={(data) => {
-                                                                                                        addRubric('skill', { name: data.label, id: data.value })
-                                                                                                    }}
-                                                                                                />
-                                                                                            </div>
-
-                                                                                        </div>
-
-                                                                                        <FormField className="mb-[0.5rem] flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                                                                                            {
-                                                                                                question.skills.map((skill) =>
-                                                                                                    <Badge
-                                                                                                        key={skill.id}
-                                                                                                        type={'default'}
-                                                                                                        size="xsm"
-                                                                                                        close={true}
-                                                                                                        label={helper.capitalize(skill.name)}
-                                                                                                        upper={true}
-                                                                                                        onClose={(e) => {
-                                                                                                            removeRubric('skill', skill.id)
-                                                                                                            skiRef.current.clear()
                                                                                                         }}
                                                                                                     />
                                                                                                 )
