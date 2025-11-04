@@ -168,7 +168,7 @@ const DeleteModal = (props: IDeleteModal) => {
                                 </div>
 
                                 <div className="w-full text-center mt-[1rem]">
-                                    <h2 className="font-uncut-bold text-[25px] pas-950">Successful!</h2>
+                                    <h2 className="font-mona-bold text-[25px] pas-950">Successful!</h2>
 
                                     <p className="font-mona-light text-[14px] pas-950 text-center max-w-[70%] mx-auto">
                                         Resource successfully removed from the system
