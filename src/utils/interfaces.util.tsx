@@ -1324,6 +1324,7 @@ export interface IPlaceholder {
     radius: string | number,
     marginTop: string
     marginBottom: string,
+    block: boolean,
     top: string
     left: string
     right: string,

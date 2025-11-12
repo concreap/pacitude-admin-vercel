@@ -1,4 +1,5 @@
 import sidebarRoutes from "../routes/sidebar.route";
+import { StatusEnum } from "../utils/enums.util";
 import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource, IAPIResponse } from "../utils/interfaces.util";
 
 const avatars = [
@@ -153,6 +154,30 @@ const coreResource: ICoreResource = {
     topics: []
 }
 
+const tasks = [
+    { id: 'task_01', title: 'Beginner Figma Animation', status: StatusEnum.DRAFT, progress: 20, dueDate: new Date('2023-10-15'), createdAt: new Date('2023-10-01'), description: 'Finish the React project by implementing all required features and ensuring responsiveness.', level: 'beginner', field: 'product design', taskID: 'T345690123', avatar: '', assigned: [{ name: 'Bimpe Tunde' }, { name: 'Badru Kennny' }, { name: 'Isaac Joseph' },{ name: 'Jacob Joseph' }, { name: 'Abraham Joseph' }] },
+    { id: 'task_02', title: 'Intermediate Figma Animation', status: StatusEnum.ABANDONED, progress: 50, dueDate: new Date('2023-10-20'), createdAt: new Date('2023-10-05'), description: 'Create a modern and appealing logo for the new product line.', level: 'intermediate', field: 'graphic design', taskID: 'T345690124', avatar: '', assigned: [{ name: 'Bimpe Tunde' }] },
+    { id: 'task_03', title: 'Beginner Figma Design Systems', status: StatusEnum.COMPLETED, progress: 100, dueDate: new Date('2023-10-10'), createdAt: new Date('2023-09-25'), description: 'Research and write a comprehensive blog post about the latest trends in UI/UX design.', level: 'advanced', field: 'content writing', taskID: 'T345690125', avatar: '', assigned: [{ name: 'Bimpe Tunde' }] },
+    { id: 'task_04', title: 'Intermediate Figma Design Systems', status: StatusEnum.DEFAULTED, progress: 0, dueDate: new Date('2023-11-01'), createdAt: new Date('2023-10-01'), description: 'Revamp the portfolio website to showcase recent projects and improve user experience.', level: 'professional', field: 'web development', taskID: 'T345690126', avatar: '', assigned: [{ name: 'Bimpe Tunde' }] },
+    { id: 'task_05', title: 'Intermediate Node Js Codes', status: StatusEnum.ONGOING, progress: 0, dueDate: new Date('2023-11-01'), createdAt: new Date('2023-10-01'), description: 'Revamp the portfolio website to showcase recent projects and improve user experience.', level: 'professional', field: 'web development', taskID: 'T345690126', avatar: '', assigned: [{ name: 'Bimpe Tunde' }] },
+]
+
+
+const templates = [
+    { id: 'rs_01', title: "Figma Animation: A Beginner's Guide", description: 'Standardized template for how figma animation works and looks ' },
+    { id: 'rs_02', title: "Figma Animation: A Beginner's Guide", description: 'Standardized template for how figma animation works and looks ' },
+]
+
+const pinterests = [
+    { id: 'pn_01', title: 'Pinterest: Figma Animation Image', description: 'Pinterest image of how  figma animation looks like' },
+    { id: 'pn_02', title: 'Pinterest: Figma Animation Image ', description: 'Pinterest image of how  figma animation looks like' },
+]
+
+const dribbles = [
+    { id: 'db_01', title: 'Dribble: Figma Animation link', description: 'Dribble image of how  figma animation looks like' },
+    { id: 'db_02', title: 'Dribble: Figma Animation link', description: 'Dribble image of how  figma animation looks like' },
+]
+
 const apiresponse: IAPIResponse = {
     error: false,
     errors: [],
@@ -175,20 +200,16 @@ export {
     sidebar,
     avatars,
     toast,
-    collection,
-    pagination,
+    collection, pagination,
     talents,
     statusOptions,
     limits,
-    levels,
-    difficulties,
-    questionTypes,
-    timeHandles,
-    allocatedTimes,
+    levels, difficulties, questionTypes,
+    timeHandles, allocatedTimes,
     coreResource,
     apiresponse,
 
     // special to project
-    aiquestion,
-    metrics
+    aiquestion, metrics,
+    tasks, templates, pinterests, dribbles
 };

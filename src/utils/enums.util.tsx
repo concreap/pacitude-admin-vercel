@@ -74,3 +74,22 @@ export enum ActionEnum {
     GENERATE = 'generate',
     CREATE = 'create',
 }
+
+
+export enum StatusEnum{
+    PENDING = 'pending',
+    DRAFT = 'draft',
+    PUBLISHED = 'published',
+    TEMPLATE = 'draft',
+    ONGOING = 'ongoing',
+    INPROGRESS = 'in progress',
+    ABANDONED = 'abandoned',
+    DEFAULTED = 'defaulted',
+    COMPLETED = 'completed',
+    SUBMITTED = 'submitted',
+    REVIEWED = 'reviewed',
+    SUCCESSFUL = 'successful',
+    FAILED = 'failed',
+    ACTIVE = 'active',
+    INACTIVE = 'inactive',
+}
