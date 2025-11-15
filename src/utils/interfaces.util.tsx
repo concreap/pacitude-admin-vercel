@@ -1045,6 +1045,7 @@ export interface IListQuery {
     resourceId?: string,
     key?: string,
     payload?: any,
+    cache?: boolean,
     report?: boolean
 }
 
