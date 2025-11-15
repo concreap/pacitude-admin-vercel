@@ -15,7 +15,7 @@ const Badge = (props: IBadge) => {
         style = {},
         size = 'sm',
         close = false,
-        padding = { y: 3, x: 12  },
+        padding = { y: 3, x: 12 },
         font = {
             weight: 'medium',
             size: 11,
@@ -44,6 +44,12 @@ const Badge = (props: IBadge) => {
                 result = result + ` bg-pab-25 bdr-pab-200`;
                 label = label + ` pab-700`
                 // style = { borderColor: '#A4C8FF' }
+                break;
+            case 'info-light':
+            case 'lightblue':
+                result = result + ` bg-pab-5 bdr-pab-300`;
+                label = label + ` pab-500`
+                // style = { borderColor: '#C1D6EF' }
                 break;
             case 'success':
             case 'green':
@@ -112,6 +118,12 @@ const Badge = (props: IBadge) => {
             case 'blue':
                 result = result + ` bg-pab-25 bdr-pab-200`;
                 label = label + ` pab-900`
+                // style = { borderColor: '#C1D6EF' }
+                break;
+            case 'info-light':
+            case 'lightblue':
+                result = result + ` bg-pab-5 bdr-pab-400`;
+                label = label + ` pab-500`
                 // style = { borderColor: '#C1D6EF' }
                 break;
             case 'success':

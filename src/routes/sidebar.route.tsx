@@ -372,6 +372,42 @@ const sidebarRoutes: Array<IRoute> = [
         content: { collapsed: false, backButton: true }
     },
     {
+        name: 'tasks',
+        title: 'Tasks',
+        url: '/tasks',
+        iconName: 'book-stack',
+        action: 'navigate',
+        isAuth: true,
+        params: [],
+        content: { collapsed: false, backButton: true },
+        inroutes: [
+            {
+                route: 'tasks',
+                parent: 'tasks',
+                name: 'task-details',
+                title: 'Task Details',
+                iconName: 'flash',
+                url: '',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'roadmaps',
+                parent: 'roadmaps',
+                name: 'roadmap-details',
+                title: 'Roadmap Details',
+                iconName: 'flash',
+                url: '',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
+        ]
+    },
+    {
         name: 'payments',
         title: 'Payments',
         iconName: 'credit-card',

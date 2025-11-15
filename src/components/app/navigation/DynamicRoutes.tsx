@@ -33,6 +33,10 @@ const CreateQuestion = lazy(() => import('../../../pages/dashboard/core/question
 const QuestionDetails = lazy(() => import('../../../pages/dashboard/core/questions/QuestionDetails'))
 const QuestionMapPage = lazy(() => import('../../../pages/dashboard/core/questions/QuestionMap'))
 
+// Tasks
+const TaskPage = lazy(() => import('../../../pages/dashboard/tasks/Tasks'))
+const TaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/TaskDetails'))
+
 // users/talents/admins/businesses
 const TalentsPage = lazy(() => import('../../../pages/dashboard/users/talents/Talents'))
 
@@ -56,6 +60,10 @@ const DynamicRoutes = () => {
                 return <Dashboard />
             case 'industries':
                 return <Industries />
+            case 'tasks':
+                return <TaskPage />
+            case 'task-details':
+                return <TaskDetailsPage />
             case 'create-industry':
                 return <CreateIndustry />
             case 'edit-industry':
