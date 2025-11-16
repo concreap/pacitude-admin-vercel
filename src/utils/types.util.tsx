@@ -1,7 +1,7 @@
 export type IconName = '';
 export type IconFamilyType = 'polio' | 'fa' | 'feather';
 export type SizeType = 'xmini' | 'mini' | 'xxsm' | 'xsm' | 'sm' | 'rg' | 'default' | 'md' | 'lg' | 'xlg' | 'xxlg' | 'lgr';
-export type SemanticType = 'normal' | 'default' | 'blue' | 'info' | 'yellow' | 'warning' | 'orange' | 'warning-2' | 'green' | 'success' | 'red' | 'error' | 'purple' | 'ongoing' | 'pink';
+export type SemanticType = 'normal' | 'default' | 'blue' | 'info' | 'lightblue' | 'info-light' | 'yellow' | 'warning' | 'orange' | 'warning-2' | 'green' | 'success' | 'red' | 'error' | 'purple' | 'ongoing' | 'pink';
 export type ButtonType = 'primary' | 'secondary' | 'ghost' | 'icon' | 'link'
 export type RouteParamType = 'url' | 'query' | 'path';
 export type RouteActionType = 'navigate' | 'open-secondary' | 'logout';
