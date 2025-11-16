@@ -19,7 +19,11 @@ import {
     SET_ITEMS,
     GET_CORE,
     SET_LOADER,
-    GET_QUESTION_COUNT
+    GET_QUESTION_COUNT,
+    GET_TASKS,
+    GET_TASK,
+    GET_COMMENTS,
+    GET_COMMENT
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -84,6 +88,26 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 questionCount: action.payload
+            }
+        case GET_TASKS:
+            return {
+                ...state,
+                tasks: action.payload
+            }
+        case GET_TASK:
+            return {
+                ...state,
+                task: action.payload
+            }
+        case GET_COMMENTS:
+            return {
+                ...state,
+                comments: action.payload
+            }
+        case GET_COMMENT:
+            return {
+                ...state,
+                comment: action.payload
             }
         case GET_TOPICS:
             return {

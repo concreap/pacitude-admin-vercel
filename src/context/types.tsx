@@ -6,6 +6,10 @@ export const GET_COUNTRY = 'GET_COUNTRY';
 export const GET_IP_ADDRESS = 'GET_IP_ADDRESS';
 export const GET_TALENTS = 'GET_TALENTS';
 export const GET_TALENT = 'GET_TALENT';
+export const GET_TASKS = 'GET_TASKS';
+export const GET_TASK = 'GET_TASK';
+export const GET_COMMENTS = 'GET_COMMENTS';
+export const GET_COMMENT = 'GET_COMMENT';
 
 export const GET_AUDITS = 'GET_AUDITS';
 export const GET_AUDIT = 'GET_AUDIT';

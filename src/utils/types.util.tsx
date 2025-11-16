@@ -1,3 +1,6 @@
+import { ACTION_TYPES, RESOURCE_TYPES } from "./constants.util";
+import { ActionEnum, TaskTypeEnum } from "./enums.util";
+
 export type IconName = '';
 export type IconFamilyType = 'polio' | 'fa' | 'feather';
 export type SizeType = 'xmini' | 'mini' | 'xxsm' | 'xsm' | 'sm' | 'rg' | 'default' | 'md' | 'lg' | 'xlg' | 'xxlg' | 'lgr';
@@ -29,9 +32,13 @@ export type VideoAcceptType = 'video/*'
 export type AudioAcceptType = 'audio/*'
 export type PDFAcceptType = '.pdf' | 'application/pdf'
 export type ImageAcceptType = 'image/x-png' | 'image/jpg' | 'image/jpeg' | 'image/png' | 'image/svg' | 'image/gif' | 'image/*' | 'image/x-eps'
-export type ResourceType = 'default' | 'user' | 'users' | 'talent' | 'talents' | 'business' | 'businesses' | 'industry' | 'industries' | 'career' | 'careers' | 'field' | 'fields' | 'skill' | 'skills' | 'topic' | 'topics' | 'question' | 'questions'
+export type ResourceType = (typeof RESOURCE_TYPES)[number]
 export type ListUIType = 'self' | 'resource' | 'details';
 export type FilterType = 'default' | 'user' | 'industry' | 'career' | 'field' | 'skill' | 'topic' | 'question'
 export type PagesearchType = 'search' | 'filter'
 export type FormatDateType = 'basic' | 'datetime' | 'datetime-slash' | 'datetime-separated' | 'separated' | 'localtime' | 'slashed'
 export type RefineType = 'default' | 'search' | 'filter';
+export type ActionType = typeof ActionEnum[keyof typeof ActionEnum]
+export type ActionAddRemove =  'add' | 'remove'
+export type ActionModify = 'add' | 'remove' | 'update'
+export type TaskType = typeof TaskTypeEnum[keyof typeof TaskTypeEnum]

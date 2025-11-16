@@ -958,6 +958,13 @@ const extractor = (data: any) => {
 
 }
 
+const pickFrom = <T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[] ): Pick<T, K> => {
+    const out = {} as Pick<T, K>;
+    for (const key of keys) out[key] = obj[key];
+    return out;
+}
+
+
 
 const helper: IHelper = {
     init: init,
@@ -1008,7 +1015,8 @@ const helper: IHelper = {
     getCountry: getCountry,
     getAvatar: getAvatar,
     enumToArray: enumToArray,
-    extractor: extractor
+    extractor: extractor,
+    pickFrom: pickFrom
 }
 
 export default helper;

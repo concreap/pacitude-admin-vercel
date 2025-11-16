@@ -15,11 +15,9 @@ import TableFooter from "../../../components/partials/table/TableFooter";
 import Field from "../../../models/Field.model";
 import useUser from "../../../hooks/app/useUser";
 import Talent, { ITalentCareer } from "../../../models/Talent.model";
-// import useAssessment from "../../../hooks/app/useAssessment";
 import Task from "../../../models/Task.model";
 import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
 import storage from "../../../utils/storage.util";
-import { tasks } from "../../../_data/seed";
 import Table from "../../../components/partials/table/Table";
 import TableHeader from "../../../components/partials/table/Tableheader";
 import TableBody from "../../../components/partials/table/TableBody";
@@ -29,7 +27,11 @@ import UserAvatar from "../../../components/partials/ui/UserAvatar";
 import Popout from "../../../components/partials/drops/Popout";
 import AvatarUI from "../../../components/partials/ui/AvatarUI";
 import Badge from "../../../components/partials/badges/Badge";
-import { StatusEnum } from "../../../utils/enums.util";
+import { StatusEnum, TaskTypeEnum } from "../../../utils/enums.util";
+import useTask from "../../../hooks/app/useTask";
+import useApp from "../../../hooks/app/useApp";
+import Career from "../../../models/Career.model";
+import { TaskType } from "../../../utils/types.util";
 
 const TaskList = (props: IListUI) => {
 
@@ -42,11 +44,14 @@ const TaskList = (props: IListUI) => {
     const carRef = useRef<any>(null)
     const srhRef = useRef<any>(null)
 
-    const { goTo, toDetailRoute } = useGoTo()
-    const [loading, setLoading] = useState<boolean>(false)
-    const { talent, getTalent, loading: userLoading } = useUser()
+    const { toDetailRoute } = useGoTo()
+    const { tasks, getTasks, TaskStatus } = useTask()
+    const { core, loading: coreLoading, getCoreResources } = useApp()
+
+    const [taskType, setTaskType] = useState<TaskType>(TaskTypeEnum.TEMPLATE)
     const [fields, setFields] = useState<Array<Field>>([])
     const { exportToCSV } = useReport()
+
     const {
         search,
         pageSearch,
@@ -59,25 +64,25 @@ const TaskList = (props: IListUI) => {
     } = useSearch({})
 
     useEffect(() => {
-        // initList(9)
+        initList(25)
     }, [])
 
-    useEffect(() => {
 
-        if (talent.careers && talent.careers.length > 0) {
-            setFields(talent.careers[0].fields)
+    const initList = (limit: number) => {
+        if (type === 'self') {
+
+            if (tasks.data.length === 0) {
+                handleGetTasks(limit, TaskTypeEnum.TEMPLATE)
+            }
+
         }
 
-    }, [talent])
+        getCoreResources({ limit: 9999, page: 1, order: 'desc' })
+    }
 
-    // const initList = (limit: number) => {
-    //     if (type === 'self') {
-    //         getAssessments({ limit: limit, page: 1, order: 'desc' })
-    //     }
-    //     if ((type === 'resource' || type === 'details') && resource && resourceId) {
-    //         getResourceAssessments({ limit: limit, page: 1, order: 'desc', resource, resourceId })
-    //     }
-    // }
+    const handleGetTasks = (limit: number, type: TaskType) => {
+        getTasks({ limit: limit, page: 1, order: 'desc', type: type })
+    }
 
 
     const configTab = (e: any, val: any) => {
@@ -118,7 +123,36 @@ const TaskList = (props: IListUI) => {
 
                     <div className={`grow flex items-center gap-x-[0.5rem] ${search.refineType === 'search' && pageSearch.hasResult ? 'disabled-light' : ''}`}>
 
-                        <div className={`min-w-[14%] ${userLoading ? 'disabled-light' : ''}`}>
+                        <div className={`min-w-[14%] ${coreLoading ? 'disabled-light' : ''}`}>
+
+                            <Filter
+                                ref={poRef}
+                                size='xsm'
+                                className='la-filter'
+                                placeholder="Task Type"
+                                position="bottom"
+                                defaultValue={TaskTypeEnum.TEMPLATE}
+                                menu={{
+                                    style: {},
+                                    search: false,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    helper.enumToArray(TaskTypeEnum, 'values-only').map((t) => ({
+                                        label: helper.capitalize(t),
+                                        value: t
+                                    }))
+                                }
+                                noFilter={false}
+                                onChange={async (data) => {
+                                    setTaskType(data.value as TaskType)
+                                    handleGetTasks(25, data.value as TaskType)
+                                }}
+                            />
+                        </div>
+
+                        <div className={`min-w-[12%] max-w-[14%] ${coreLoading ? 'disabled-light' : ''}`}>
 
                             <Filter
                                 ref={carRef}
@@ -134,17 +168,25 @@ const TaskList = (props: IListUI) => {
                                     limitHeight: 'md'
                                 }}
                                 items={
-                                    talent.careers &&
-                                        talent.careers.length > 0 ?
-                                        talent.careers.map((x: ITalentCareer) => {
+                                    core.careers.length > 0 ?
+                                        core.careers.map((x: Career) => {
                                             return {
-                                                label: helper.capitalizeWord(x.career.name),
-                                                value: x.career._id
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
                                             }
                                         }) : []
                                 }
                                 noFilter={false}
-                                onChange={async (data: any) => {
+                                onChange={async (data) => {
+
+                                    const fields = core.fields.filter((f: Field) => f.career === data.value);
+                                    if (fields.length > 0) {
+                                        if (fieRef.current) {
+                                            fieRef.current.clear()
+                                        }
+                                        setFields(fields)
+                                    }
+
 
                                     // const { careerId, ...rest } = filters;
                                     // await filterResource({
@@ -162,7 +204,7 @@ const TaskList = (props: IListUI) => {
 
                         </div>
 
-                        <div className={`min-w-[14%] ${userLoading ? 'disabled-light' : ''}`}>
+                        <div className={`min-w-[12%] max-w-[14%] ${coreLoading ? 'disabled-light' : ''}`}>
 
                             <Filter
                                 ref={fieRef}
@@ -207,54 +249,36 @@ const TaskList = (props: IListUI) => {
                             />
                         </div>
 
-                        <div className={`min-w-[14%] ${userLoading ? 'disabled-light' : ''}`}>
+                        {
+                            taskType === TaskTypeEnum.ASSIGNED &&
+                            <div className={`min-w-[14%] ${coreLoading ? 'disabled-light' : ''}`}>
 
-                            <Filter
-                                ref={poRef}
-                                size='xsm'
-                                className='la-filter'
-                                placeholder="Topic"
-                                position="bottom"
-                                defaultValue={''}
-                                menu={{
-                                    style: {},
-                                    search: false,
-                                    fullWidth: true,
-                                    limitHeight: 'md'
-                                }}
-                                items={[]}
-                                noFilter={false}
-                                onChange={async (data: any) => {
-                                }}
-                            />
-                        </div>
+                                <Filter
+                                    ref={poRef}
+                                    size='xsm'
+                                    className='la-filter'
+                                    placeholder="Status"
+                                    position="bottom"
+                                    defaultValue={''}
+                                    menu={{
+                                        style: {},
+                                        search: false,
+                                        fullWidth: true,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        helper.enumToArray(TaskStatus, 'values-only').filter((s) => s !== TaskStatus.DRAFT).map((st) => ({
+                                            label: helper.capitalizeWord(st),
+                                            value: st
+                                        }))
+                                    }
+                                    noFilter={false}
+                                    onChange={async (data: any) => {
+                                    }}
+                                />
+                            </div>
+                        }
 
-                        <div className={`min-w-[14%] ${userLoading ? 'disabled-light' : ''}`}>
-
-                            <Filter
-                                ref={poRef}
-                                size='xsm'
-                                className='la-filter'
-                                placeholder="Status"
-                                position="bottom"
-                                defaultValue={''}
-                                menu={{
-                                    style: {},
-                                    search: false,
-                                    fullWidth: true,
-                                    limitHeight: 'md'
-                                }}
-                                items={[
-                                    { label: 'Pending', value: 'pending' },
-                                    { label: 'Ongoing', value: 'ongoing' },
-                                    { label: 'Completed', value: 'completed' },
-                                    { label: 'Abandoned', value: 'abandoned' }
-                                ]}
-                                noFilter={false}
-                                onChange={async (data: any) => {
-                                }}
-                            />
-                        </div>
 
                     </div>
 
@@ -318,173 +342,190 @@ const TaskList = (props: IListUI) => {
 
                 <Divider show={false} />
 
-                <div>
+                <div className="w-full">
 
-                    <Divider show={false} />
-                    <div className="w-full">
+                    {
+                        (tasks.loading || search.loading) &&
+                        <>
 
-                        {
-                            loading &&
-                            <>
+                            <EmptyState className="min-h-[50vh]" noBound={true}>
+                                <span className="loader lg primary"></span>
+                            </EmptyState>
+                        </>
+                    }
 
-                                <EmptyState className="min-h-[50vh]" noBound={true}>
-                                    <span className="loader lg primary"></span>
-                                </EmptyState>
-                            </>
-                        }
+                    {
+                        !tasks.loading && !search.loading &&
+                        <>
+                            <TableBox>
 
-                        {
-                            !loading &&
-                            <>
-                                <TableBox>
+                                {
+                                    tasks.data.length === 0 &&
+                                    <EmptyState className="min-h-[50vh]" noBound={true}>
+                                        <span className="font-mona pag-600 text-[13px]">Tasks will appear here</span>
+                                    </EmptyState>
+                                }
 
-                                    {
-                                        tasks.length === 0 &&
-                                        <EmptyState className="min-h-[50vh]" noBound={true}>
-                                            <span className="font-mona pag-600 text-[13px]">Talents will appear here</span>
-                                        </EmptyState>
-                                    }
+                                {
+                                    tasks.data.length > 0 &&
+                                    <>
+                                        {
+                                            search.count < 0 &&
+                                            <>
+                                                <EmptyState className="min-h-[30vh]" noBound={true} style={{ backgroundColor: '#fffafa' }}>
+                                                    <div className="font-mona par-700 text-[14px] mb-[0.35rem]">No results found for {pageSearch.key}</div>
+                                                    <Button
+                                                        type="ghost"
+                                                        semantic="error"
+                                                        size="xxsm"
+                                                        className="form-button"
+                                                        text={{
+                                                            label: "Clear",
+                                                            size: 13,
+                                                            weight: 'regular'
+                                                        }}
+                                                        reverse="row"
+                                                        onClick={(e) => {
+                                                            clearFilters()
+                                                        }}
+                                                    />
+                                                </EmptyState>
+                                            </>
+                                        }
 
-                                    {
-                                        tasks.length > 0 &&
-                                        <>
-                                            {
-                                                search.count < 0 &&
-                                                <>
-                                                    <EmptyState className="min-h-[30vh]" noBound={true} style={{ backgroundColor: '#fffafa' }}>
-                                                        <div className="font-mona par-700 text-[14px] mb-[0.35rem]">No results found for {pageSearch.key}</div>
-                                                        <Button
-                                                            type="ghost"
-                                                            semantic="error"
-                                                            size="xxsm"
-                                                            className="form-button"
-                                                            text={{
-                                                                label: "Clear",
-                                                                size: 13,
-                                                                weight: 'regular'
-                                                            }}
-                                                            reverse="row"
-                                                            onClick={(e) => {
-                                                                clearFilters()
-                                                            }}
-                                                        />
-                                                    </EmptyState>
-                                                </>
-                                            }
+                                        <Table className={`${search.count < 0 ? 'disabled' : ''}`}>
 
-                                            <Table className={`${search.count < 0 ? 'disabled' : ''}`}>
+                                            <TableHeader
+                                                items={[
+                                                    { label: '#' },
+                                                    { label: 'Created On', className: 'w-[12%]' },
+                                                    { label: 'Title' },
+                                                    { label: taskType === TaskTypeEnum.TEMPLATE ? 'Level' : 'Assigned To' },
+                                                    { label: 'Difficulty' },
+                                                    { label: taskType === TaskTypeEnum.TEMPLATE ? 'Duration' : 'Due Date' },
+                                                    { label: 'Status' },
+                                                    { label: 'Action', className: 'text-center w-[8%]' }
+                                                ]}
+                                            />
 
-                                                <TableHeader
-                                                    items={[
-                                                        { label: '#' },
-                                                        { label: 'Date Created', className: 'w-[12%]' },
-                                                        { label: 'Image', className: 'w-[8%]' },
-                                                        { label: 'Title' },
-                                                        { label: 'Assigned To' },
-                                                        { label: 'Due Date' },
-                                                        { label: 'Status' },
-                                                        { label: 'Action', className: 'text-center w-[8%]' }
-                                                    ]}
-                                                />
+                                            <TableBody>
 
-                                                <TableBody>
+                                                {
 
-                                                    {
+                                                    tasks.data.map((task: Task, index) =>
+                                                        <Fragment key={task.id}>
+                                                            <TableRow>
+                                                                <CellData large={true} onClick={(e) => toDetails(e, task.id)} className="w-[40px]">{index + 1}</CellData>
+                                                                <CellData large={true} onClick={(e) => toDetails(e, task.id)} className="min-w-[170px]">{helper.formatDate(task.createdAt, 'basic')}</CellData>
+                                                                <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{task.title}</CellData>
 
-                                                        tasks.map((task: any, index) =>
-                                                            <Fragment key={task.id}>
-                                                                <TableRow>
-                                                                    <CellData large={true} onClick={(e) => toDetails(e, task.id)} className="w-[40px]">{index + 1}</CellData>
-                                                                    <CellData large={true} onClick={(e) => toDetails(e, task.id)} className="min-w-[170px]">{helper.formatDate(task.createdAt, 'basic')}</CellData>
-                                                                    <CellData large={true} onClick={(e) => toDetails(e, task.id)} className="w-[60px]">
-                                                                        <AvatarUI
-                                                                            height="h-[36px]"
-                                                                            width="w-[50px]"
-                                                                            radius="rounded-md"
-                                                                            url="../../../images/assets/task-avatar.png"
-                                                                        />
-                                                                    </CellData>
-                                                                    <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{task.title}</CellData>
-                                                                    <CellData large={true} onClick={(e) => toDetails(e, task.id)}>
-                                                                        <div className="flex items-center">
-                                                                            {
+                                                                {
+                                                                    taskType === TaskTypeEnum.TEMPLATE &&
+                                                                    <>
+                                                                        {/* <CellData large={true} onClick={(e) => toDetails(e, task.id)}>
+                                                                            <div className="flex items-center">
+                                                                                {
 
-                                                                                task.assigned.slice(0, 4).map((assignee: any, index: number) => (
-                                                                                    <Fragment key={index}>
-                                                                                        <UserAvatar
-                                                                                            size="w-[33px] h-[33px]"
-                                                                                            className="leader-avatar -mr-[0.8rem] border border-white"
-                                                                                            avatar={task.avatar ? task.avatar : '../../../images/assets/avatar.png'}
-                                                                                            name={'sdvdfdsf'}
-                                                                                        />
-                                                                                    </Fragment>
-                                                                                ))
-                                                                            }
-                                                                            {
+                                                                                    task.talents.slice(0, 4).map((talent: Talent, index: number) => (
+                                                                                        <Fragment key={index}>
+                                                                                            <UserAvatar
+                                                                                                size="w-[33px] h-[33px]"
+                                                                                                className="leader-avatar -mr-[0.8rem] border border-white"
+                                                                                                avatar={talent.avatar ? talent.avatar : '../../../images/assets/avatar.png'}
+                                                                                                name={'sdvdfdsf'}
+                                                                                            />
+                                                                                        </Fragment>
+                                                                                    ))
+                                                                                }
+                                                                            </div>
+                                                                        </CellData> */}
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalize(task.level)}</CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalize(task.difficulty)}</CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalizeWord(task.duration.label)}</CellData>
+                                                                        <CellData onClick={(e) => toDetails(e, task.id)}>
+                                                                            <Badge
+                                                                                type={task.isEnabled ? 'success' : 'error'}
+                                                                                display="status"
+                                                                                size="xsm"
+                                                                                label={task.isEnabled ? 'Enabled' : 'Disabled'}
+                                                                                upper={true}
+                                                                            />
+                                                                        </CellData>
+                                                                    </>
+                                                                }
+                                                                {
+                                                                    taskType === TaskTypeEnum.ASSIGNED &&
+                                                                    <>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>
+                                                                            <UserAvatar
+                                                                                size="w-[33px] h-[33px]"
+                                                                                className="leader-avatar -mr-[0.8rem] border border-white"
+                                                                                avatar={task?.assignedTo?.avatar || '../../../images/assets/avatar.png'}
+                                                                                name={''}
+                                                                            />
+                                                                        </CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalize(task.difficulty)}</CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.formatDate(task.dueDate.ISO, 'basic')}</CellData>
+                                                                        <CellData onClick={(e) => toDetails(e, task.id)}>
+                                                                            <Badge
+                                                                                type={task.status === StatusEnum.DRAFT ? 'info' : 'default'}
+                                                                                size="xsm"
+                                                                                label={task.status}
+                                                                                upper={true}
+                                                                            />
+                                                                        </CellData>
+                                                                    </>
+                                                                }
 
-                                                                                task.assigned.length > 4 &&
-                                                                                <Fragment key={index}>
-                                                                                    <UserAvatar
-                                                                                        size="w-[30px] h-[30px]"
-                                                                                        className="leader-avatar -mr-[0.8rem] bg-gray-500/70 text-white text-[12px]"
-                                                                                        avatar={task.avatar ? task.avatar : ''}
-                                                                                        name={'+'}
-                                                                                    />
-                                                                                </Fragment>
+                                                                <CellData className="text-center">
+                                                                    <Popout
+                                                                        ref={null}
+                                                                        className='la-filter'
+                                                                        position={(index + 1) === tasks.data.length ? "top-right" : "bottom-right"}
+                                                                        menu={{
+                                                                            style: {},
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'Details', value: 'details', onClick: (e) => toDetails(e, task.id) },
+                                                                            { label: 'Disable', value: 'remove', onClick: () => { } }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                    />
+                                                                </CellData>
+                                                            </TableRow>
+                                                        </Fragment>
+                                                    )
+                                                }
 
-                                                                            }
-                                                                        </div>
-                                                                    </CellData>
-                                                                    <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.formatDate(task.dueDate, 'basic')}</CellData>
-                                                                    <CellData onClick={(e) => toDetails(e, task.id)}>
-                                                                        <Badge
-                                                                            type={
-                                                                                task.status === StatusEnum.DRAFT ? 'info' :
-                                                                                    task.status === StatusEnum.COMPLETED ? 'green' :
-                                                                                        task.status === StatusEnum.ONGOING ? 'warning-2' :
-                                                                                            task.status === StatusEnum.ABANDONED ? 'error' :
-                                                                                                task.status === StatusEnum.DEFAULTED ? 'purple' : 'default'
-                                                                            }
-                                                                            size="xsm"
-                                                                            label={task.status}
-                                                                            upper={true}
-                                                                        />
-                                                                    </CellData>                                                                    <CellData className="text-center">
-                                                                        <Popout
-                                                                            ref={null}
-                                                                            className='la-filter'
-                                                                            position={index + 1 === tasks.length ? "top-right" : "bottom-right"}
-                                                                            menu={{
-                                                                                style: {},
-                                                                                search: false,
-                                                                                fullWidth: true,
-                                                                                limitHeight: 'sm'
-                                                                            }}
-                                                                            items={[
-                                                                                { label: 'Details', value: 'details', onClick: (e) => toDetails(e, task.id) },
-                                                                                { label: 'Disable', value: 'remove', onClick: () => { } }
-                                                                            ]}
-                                                                            noFilter={false}
-                                                                        />
-                                                                    </CellData>
-                                                                </TableRow>
-                                                            </Fragment>
-                                                        )
-                                                    }
+                                            </TableBody>
 
-                                                </TableBody>
+                                        </Table>
+                                    </>
+                                }
 
-                                            </Table>
-                                        </>
-                                    }
+                            </TableBox>
+                        </>
+                    }
 
-
-                                </TableBox>
-                            </>
-                        }
-
-                    </div>
                 </div>
+
+                <Divider show={false} />
+
+                <TableFooter
+                    title="Tasks"
+                    type={type}
+                    resource={resource || 'tasks'}
+                    resourceId={resourceId}
+                    source={tasks}
+                    limit={25}
+                    onChange={
+                        type === 'self' ? getTasks : async () => { }
+                    }
+                />
+
 
             </ListBox>
 

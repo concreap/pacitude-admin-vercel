@@ -70,26 +70,43 @@ export enum coreTypeEnum {
     INDUSTRY = 'industry'
 }
 
-export enum ActionEnum {
-    GENERATE = 'generate',
-    CREATE = 'create',
-}
+export const StatusEnum = {
+    PENDING: 'pending',
+    INPROGRESS: 'in-progress',
+    OVERDUE: 'overdue',
+    PROCESSING: 'processing',
+    ONGOING: 'ongoing',
+    SUCCESSFUL: 'successful',
+    COMPLETED: 'completed',
+    FAILED: 'failed',
+    REFUNDED: 'refunded',
+    PAID: 'paid',
+    CANCELLED: 'cancelled',
+    SUBMITTED: 'submitted',
+    REVIEWED: 'reviewed',
+    ABANDONED: 'abandoned',
+    ACCEPTED: 'accepted',
+    DECLINED: 'declined',
+    DEFAULTED: 'defaulted',
+    APPROVED: 'approved',
+    REJECTED: 'rejected',
+    DRAFT: 'draft',
+} as const
 
+export const ActionEnum = {
+    GENERATE: 'generate',
+    CREATE: 'create',
+    DELETE: 'delete',
+    UPDATE: 'update',
+    ENABLE: 'enable',
+    DISABLE: 'disable',
+    ATTACH: 'attach',
+    DETACH: 'detach',
+    ADD: 'add',
+    REMOVE: 'remove',
+} as const
 
-export enum StatusEnum{
-    PENDING = 'pending',
-    DRAFT = 'draft',
-    PUBLISHED = 'published',
-    TEMPLATE = 'draft',
-    ONGOING = 'ongoing',
-    INPROGRESS = 'in progress',
-    ABANDONED = 'abandoned',
-    DEFAULTED = 'defaulted',
-    COMPLETED = 'completed',
-    SUBMITTED = 'submitted',
-    REVIEWED = 'reviewed',
-    SUCCESSFUL = 'successful',
-    FAILED = 'failed',
-    ACTIVE = 'active',
-    INACTIVE = 'inactive',
-}
+export const TaskTypeEnum = {
+    TEMPLATE: 'template',
+    ASSIGNED: 'assigned'
+} as const

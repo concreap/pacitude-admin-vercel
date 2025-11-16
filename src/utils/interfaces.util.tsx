@@ -8,6 +8,8 @@ import Field from "../models/Field.model";
 import Skill from "../models/Skill.model";
 import Topic from "../models/Topic.model";
 import Talent from "../models/Talent.model";
+import Task from "../models/Task.model";
+import Comment from "../models/Comment.model";
 
 export interface ISetCookie {
     key: string,
@@ -276,7 +278,8 @@ export interface IHelper {
     getCountry(code: string): ICountry | null,
     getAvatar(select: string | number): string,
     enumToArray(data: Object, type: 'all' | 'values-only' | 'keys-only'): Array<any>,
-    extractor(data: any): any
+    extractor(data: any): any,
+    pickFrom<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[] ): Pick<T, K>
 
 }
 
@@ -1422,6 +1425,10 @@ export interface IAppContext {
     skill: Skill,
     questions: ICollection,
     question: Question,
+    tasks: ICollection,
+    task: Task,
+    comments: ICollection,
+    comment: Comment,
     questionCount: Array<IQuestionCount>
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
