@@ -192,6 +192,41 @@ const useTask = () => {
 
     }
 
+    const formatTaskStatus = (status: string) => {
+        let result = { label: '', type: 'default' }
+        switch (status) {
+            case StatusEnum.COMPLETED:
+                result = { label: 'completed', type: 'green' }
+                break;
+            case StatusEnum.ABANDONED:
+                result = { label: 'abandoned', type: 'error' }
+                break;
+            case StatusEnum.PENDING:
+                result = { label: 'pending', type: 'warning' }
+                break;
+            case StatusEnum.REVIEWED:
+                result = { label: 'reviewed', type: 'pink' }
+                break;
+            case StatusEnum.SUBMITTED:
+                result = { label: 'submitted', type: 'ongoing' }
+                break;
+            case StatusEnum.INPROGRESS:
+                result = { label: 'in-progress', type: 'info' }
+                break;
+            case StatusEnum.DEFAULTED:
+                result = { label: 'defaulted', type: 'blue' }
+                break;
+            case StatusEnum.DRAFT:
+                result = { label: 'draft', type: 'lightblue' }
+                break;
+            default:
+                result = { label: 'pending', type: 'warning' }
+                break;
+        }
+
+        return result
+    }
+
     /**
      * @name getTasks
      */
@@ -550,6 +585,7 @@ const useTask = () => {
         updateUITask,
         countTaskFields,
         groupTaskResources,
+        formatTaskStatus,
 
         getTasks,
         getTask,

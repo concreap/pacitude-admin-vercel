@@ -298,7 +298,11 @@ const formatDate = (date: any, type: FormatDateType) => {
     }
 
     if (type === 'datetime' && conv) {
-        result = format(conv, 'MMMM do, yyyy h:mmaca')
+        result = format(conv, 'MMMM do, yyyy HH:mm a')
+    }
+
+    if (type === 'dt-noyear' && conv) {
+        result = format(conv, 'MMM do, HH:mm a')
     }
 
     if (type === 'datetime-slash' && conv) {

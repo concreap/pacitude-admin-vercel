@@ -20,7 +20,7 @@ import storage from "../../../utils/storage.util";
 import ListBox from "../../../components/partials/ui/ListBox";
 import { dribbles, pinterests, templates } from "../../../_data/seed";
 import { IFileUpload } from "../../../utils/interfaces.util";
-import Feedback from "./FeedBack";
+import Feedback from "./Feedback";
 import TaskMCE from "../../../components/app/editor/TaskMCE";
 import EmptyState from "../../../components/partials/dialogs/EmptyState";
 
@@ -118,10 +118,10 @@ const TaskDetailsPage = ({ }) => {
                                 <div className="flex items-center gap-x-[1rem] grow">
                                     <div className="avatar rg ui-full-bg" style={{ backgroundImage: `url("../../../../images/assets/bg@core_01.webp")` }}>
                                         {!file &&
-                                            <span className="font-hostgro-semibold text-[#224C68] text-xl ui-upcase">{helper.getInitials(`Michael Immanuel`)}</span>
+                                            <span className="font-mona-semibold text-[#224C68] text-xl ui-upcase">{helper.getInitials(`Michael Immanuel`)}</span>
                                         }</div>
                                     <div className="space-y-[0.3rem]">
-                                        <h3 className="font-hostgro-bold pas-950 text-xl">Beginner Figma Animation</h3>
+                                        <h3 className="font-mona-bold pas-950 text-xl">Beginner Figma Animation</h3>
                                         <p className="font-mona-light pag-500 text-[13px]">Your assignment is to design and animate a to-do list task item in Figma. </p>
                                     </div>
                                 </div>
@@ -197,23 +197,23 @@ const TaskDetailsPage = ({ }) => {
                             <div className="flex items-start min-h-[70px]">
                                 <div className="grow space-y-[0.9rem]">
                                     <div className="flex gap-3 items-center">
-                                        <h3 className="font-hostgro pag-800 text-sm">Date Created: </h3>
-                                        <p className="font-hostgro-light pag-400 text-sm">2nd Sept, 2025</p>
+                                        <h3 className="font-mona pag-800 text-sm">Date Created: </h3>
+                                        <p className="font-mona-light pag-400 text-sm">2nd Sept, 2025</p>
                                     </div>
                                     <div className="flex gap-3 items-center">
-                                        <h3 className="font-hostgro pag-800 text-sm">Field: </h3>
-                                        <p className="font-hostgro-light pag-400 text-sm">UI/UX Design</p>
+                                        <h3 className="font-mona pag-800 text-sm">Field: </h3>
+                                        <p className="font-mona-light pag-400 text-sm">UI/UX Design</p>
                                     </div>
                                 </div>
                                 <div className="h-[60px] w-[1px] mx-[4%] bg-pag-200"></div>
                                 <div className="grow space-y-[0.9rem]">
                                     <div className="flex gap-3 items-center">
-                                        <h3 className="font-hostgro pag-800 text-sm">Skill Level: </h3>
-                                        <p className="font-hostgro-light pag-400 text-sm">Beginner</p>
+                                        <h3 className="font-mona pag-800 text-sm">Skill Level: </h3>
+                                        <p className="font-mona-light pag-400 text-sm">Beginner</p>
                                     </div>
                                     <div className="flex gap-3 items-center">
-                                        <h3 className="font-hostgro pag-800 text-sm">Assigner: </h3>
-                                        <p className="font-hostgro-light pag-400 text-sm">Admin</p>
+                                        <h3 className="font-mona pag-800 text-sm">Assigner: </h3>
+                                        <p className="font-mona-light pag-400 text-sm">Admin</p>
                                     </div>
                                 </div>
                                 <div className="h-[60px] w-[1px] mx-[4%] bg-pag-200"></div>
@@ -222,12 +222,12 @@ const TaskDetailsPage = ({ }) => {
                                         task !== StatusEnum.DRAFT &&
                                         <>
                                             <div className="flex gap-3 items-center">
-                                                <h3 className="font-hostgro pag-800 text-sm">Due Date: </h3>
-                                                <p className="font-hostgro-light pag-400 text-sm">10th Sept, 2025</p>
+                                                <h3 className="font-mona pag-800 text-sm">Due Date: </h3>
+                                                <p className="font-mona-light pag-400 text-sm">10th Sept, 2025</p>
                                             </div>
                                             <div className="flex gap-3 items-center">
-                                                <h3 className="font-hostgro pag-800 text-sm">Duration: </h3>
-                                                <p className="font-hostgro-light pag-400 text-sm">7 Days</p>
+                                                <h3 className="font-mona pag-800 text-sm">Duration: </h3>
+                                                <p className="font-mona-light pag-400 text-sm">7 Days</p>
                                             </div>
                                         </>
                                     }
@@ -235,11 +235,11 @@ const TaskDetailsPage = ({ }) => {
                                         task === StatusEnum.DRAFT &&
                                         <>
                                             <div className="flex gap-3 items-center">
-                                                <h3 className="font-hostgro pag-800 text-sm">Duration: </h3>
-                                                <p className="font-hostgro-light pag-400 text-sm">7 Days</p>
+                                                <h3 className="font-mona pag-800 text-sm">Duration: </h3>
+                                                <p className="font-mona-light pag-400 text-sm">7 Days</p>
                                             </div>
                                             <div className="flex gap-3 items-center">
-                                                <h3 className="font-hostgro pag-800 text-sm">Status: </h3>
+                                                <h3 className="font-mona pag-800 text-sm">Status: </h3>
                                                 <Badge
                                                     type={formatStatus(task).type as any}
                                                     size="sm"
@@ -261,7 +261,7 @@ const TaskDetailsPage = ({ }) => {
                                 <div className="h-[60px] w-[1px] mx-[4%] bg-pag-200"></div>
                                 <div className="grow space-y-[0.9rem]">
                                     <div className="flex gap-3 items-center">
-                                        <h3 className="font-hostgro pag-800 text-sm">{task === StatusEnum.DRAFT ? 'Type' : 'Status'} </h3>
+                                        <h3 className="font-mona pag-800 text-sm">{task === StatusEnum.DRAFT ? 'Type' : 'Status'} </h3>
                                         {
                                             task !== StatusEnum.DRAFT ? <Badge
                                                 type={formatStatus(task).type as any}
@@ -275,12 +275,13 @@ const TaskDetailsPage = ({ }) => {
                                                 }}
                                                 upper={true}
                                                 close={false}
-                                            /> : <p className="font-hostgro-light pag-400 text-sm">Template</p>
+                                            /> : <p className="font-mona-light pag-400 text-sm">Template</p>
                                         }
 
                                     </div>
                                 </div>
                             </div>
+
                         </CardUI>
 
                         <Divider show={false} />
@@ -303,7 +304,7 @@ const TaskDetailsPage = ({ }) => {
                                     <TabPanel tabIndex={0}>
 
                                         <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
-                                            <h3 className="font-hostgro-medium pag-800 text-base">Objective</h3>
+                                            <h3 className="font-mona-medium pag-800 text-base">Objective</h3>
                                             <p className="font-rethink pag-800 text-sm leading-loose">You are required to design and prototype the Uber App user experience in Figma, showcasing smooth animations, transitions, and realistic interactions that mirror the actual ride-hailing flow. This task is meant to demonstrate strong UI/UX interaction design skills and the ability to use Figma’s prototyping and animation tools to create an engaging, user-centered digital experience.</p>
                                             <p className="font-rethink pag-800 text-sm leading-loose">You are required to design and prototype the Uber App user experience in Figma, showcasing smooth animations, transitions, and realistic interactions that mirror the actual ride-hailing flow. This task is meant to demonstrate strong UI/UX interaction design skills and the ability to use Figma’s prototyping and animation tools to create an engaging, user-centered digital experience.</p>
 
@@ -348,7 +349,7 @@ const TaskDetailsPage = ({ }) => {
                                     <TabPanel tabIndex={1}>
 
                                         <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
-                                            <h3 className="font-hostgro-medium pag-800 text-base leading-loose mb-4">Instructions</h3>
+                                            <h3 className="font-mona-medium pag-800 text-base leading-loose mb-4">Instructions</h3>
 
                                             <ol className="grid grid-cols-2 gap-8 list-inside leading-loose">
                                                 <li className="font-rethink-medium pag-800 text-sm leading-loose">
@@ -393,7 +394,7 @@ const TaskDetailsPage = ({ }) => {
                                         <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
                                             <div className="grid grid-cols-[43%_43%] justify-between gap-x-12">
                                                 <div className="flex flex-col gap-4">
-                                                    <h3 className="font-hostgro-medium pag-800 text-sm">Templates</h3>
+                                                    <h3 className="font-mona-medium pag-800 text-sm">Templates</h3>
                                                     {
                                                         templates.map((template) => (
                                                             <div key={template.id} className="ts-resource-card">
@@ -401,7 +402,7 @@ const TaskDetailsPage = ({ }) => {
                                                                     <Icon name="multiple-pages-empty" type="polio" className="text-[#D35B5C]" size={16} />
                                                                 </div>
                                                                 <div>
-                                                                    <h3 className="font-hostgro-semibold pag-800 text-[13px] mb-1">{template.title}</h3>
+                                                                    <h3 className="font-mona-semibold pag-800 text-[13px] mb-1">{template.title}</h3>
                                                                     <p className="font-rethink pag-500 text-[12px]">{template.description}</p>
                                                                 </div>
                                                             </div>
@@ -410,7 +411,7 @@ const TaskDetailsPage = ({ }) => {
                                                     }
                                                 </div>
                                                 <div className="flex flex-col gap-4">
-                                                    <h3 className="font-hostgro-medium pag-800 text-sm">Pinterest Image</h3>
+                                                    <h3 className="font-mona-medium pag-800 text-sm">Pinterest Image</h3>
 
                                                     {
                                                         pinterests.map((pinterest) => (
@@ -419,7 +420,7 @@ const TaskDetailsPage = ({ }) => {
                                                                     <Icon name="media-image" type="polio" className="text-[#4A71C6]" size={16} />
                                                                 </div>
                                                                 <div>
-                                                                    <h3 className="font-hostgro-semibold pag-800 text-[13px] mb-1">{pinterest.title}</h3>
+                                                                    <h3 className="font-mona-semibold pag-800 text-[13px] mb-1">{pinterest.title}</h3>
                                                                     <p className="font-rethink pag-500 text-[12px]">{pinterest.description}</p>
                                                                 </div>
                                                             </div>
@@ -431,7 +432,7 @@ const TaskDetailsPage = ({ }) => {
                                             <Divider padding={{ enable: true, top: 'pt-[1.5rem]', bottom: 'pb-[1.5rem]' }} />
                                             <div className="grid grid-cols-[43%_43%] justify-between gap-x-12">
                                                 <div className="flex flex-col gap-4">
-                                                    <h3 className="font-hostgro-medium pag-800 text-sm">Dribble Link Samples</h3>
+                                                    <h3 className="font-mona-medium pag-800 text-sm">Dribble Link Samples</h3>
                                                     {
                                                         dribbles.map((dribble) => (
                                                             <div key={dribble.id} className="ts-resource-card">
@@ -439,7 +440,7 @@ const TaskDetailsPage = ({ }) => {
                                                                     <Icon name="link" type="polio" className="text-[#4A71C6]" size={16} />
                                                                 </div>
                                                                 <div>
-                                                                    <h3 className="font-hostgro-semibold pag-800 text-[13px] mb-1">{dribble.title}</h3>
+                                                                    <h3 className="font-mona-semibold pag-800 text-[13px] mb-1">{dribble.title}</h3>
                                                                     <p className="font-rethink pag-500 text-[12px]">{dribble.description}</p>
                                                                 </div>
                                                             </div>
@@ -456,7 +457,7 @@ const TaskDetailsPage = ({ }) => {
                                     <TabPanel tabIndex={3}>
 
                                         <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
-                                            <h3 className="font-hostgro-medium pag-800 text-base leading-loose mb-4">Submission Format</h3>
+                                            <h3 className="font-mona-medium pag-800 text-base leading-loose mb-4">Submission Format</h3>
 
                                             <div className="font-rethink-medium pag-800 text-sm leading-loose">
                                                 <h3 className="font-rethink pag-800 text-sm leading-loose mb-1">Please submit your task in the following format.</h3>
@@ -485,7 +486,7 @@ const TaskDetailsPage = ({ }) => {
 
                                         <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
 
-                                            <h3 className="font-hostgro-semibold pag-800 text-sm mb-1">Task Title: Create a Simple Task-Completion Animation in Figma</h3>
+                                            <h3 className="font-mona-semibold pag-800 text-sm mb-1">Task Title: Create a Simple Task-Completion Animation in Figma</h3>
 
                                             <Divider show={false} />
 
@@ -510,12 +511,12 @@ const TaskDetailsPage = ({ }) => {
                                                 <div className="flex items-center gap-5 mb-5">
                                                     <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
                                                         <Icon name="message-text" type="polio" size={16} className="color-black" />
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-xs">Reply</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
                                                     </Link>
                                                     <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
                                                         {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
                                                         😀
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-xs">React</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
                                                     </Link>
 
                                                 </div>
@@ -523,7 +524,7 @@ const TaskDetailsPage = ({ }) => {
                                                     inputText &&
                                                     <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
                                                         <p>{inputText}</p>
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-[11px]">+1</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
                                                     </div>
                                                 }
 
@@ -571,12 +572,12 @@ const TaskDetailsPage = ({ }) => {
                                                 <div className="flex items-center gap-5 mb-5">
                                                     <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
                                                         <Icon name="message-text" type="polio" size={16} className="color-black" />
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-xs">Reply</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
                                                     </Link>
                                                     <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
                                                         {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
                                                         😀
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-xs">React</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
                                                     </Link>
 
                                                 </div>
@@ -584,7 +585,7 @@ const TaskDetailsPage = ({ }) => {
                                                     inputText &&
                                                     <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
                                                         <p>{inputText}</p>
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-[11px]">+1</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
                                                     </div>
                                                 }
                                                 {/* 
@@ -637,12 +638,12 @@ const TaskDetailsPage = ({ }) => {
                                                 <div className="flex items-center gap-5 mb-5">
                                                     <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
                                                         <Icon name="message-text" type="polio" size={16} className="color-black" />
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-xs">Reply</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
                                                     </Link>
                                                     <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
                                                         {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
                                                         😀
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-xs">React</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
                                                     </Link>
 
                                                 </div>
@@ -650,7 +651,7 @@ const TaskDetailsPage = ({ }) => {
                                                     inputText &&
                                                     <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
                                                         <p>{inputText}</p>
-                                                        <p className="font-hostgro-medium text-[#3A3E4F] text-[11px]">+1</p>
+                                                        <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
                                                     </div>
                                                 }
 
