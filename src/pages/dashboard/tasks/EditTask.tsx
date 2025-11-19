@@ -853,7 +853,7 @@ const EditTaskPage = () => {
                                                                 resources.length > 0 &&
                                                                 resources.map((ov: IGroupedResource, index) =>
                                                                     <Fragment key={ov.name}>
-                                                                        <UIResource resource={ov} index={index} />
+                                                                        <UIResource edit={true} resource={ov} index={index} />
                                                                     </Fragment>
                                                                 )
                                                             }
@@ -866,7 +866,7 @@ const EditTaskPage = () => {
                                                     taskField === TaskFieldEnum.RUBRICS &&
                                                     <>
                                                         <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.rubrics.length})</h3>
-                                                        <UITaskRubric rubrics={task.rubrics} />
+                                                        <UITaskRubric edit={true} rubrics={task.rubrics} />
                                                     </>
                                                 }
 

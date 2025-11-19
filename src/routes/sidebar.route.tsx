@@ -407,18 +407,6 @@ const sidebarRoutes: Array<IRoute> = [
             {
                 route: 'tasks',
                 parent: 'tasks',
-                name: 'task-metails',
-                title: 'Task Metails',
-                iconName: 'flash',
-                url: '/me',
-                action: 'navigate',
-                isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
-                content: { collapsed: false, backButton: true }
-            },
-            {
-                route: 'tasks',
-                parent: 'tasks',
                 name: 'edit-task',
                 title: 'Edit Task',
                 iconName: 'flash',

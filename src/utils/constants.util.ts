@@ -41,5 +41,5 @@ export const DIFFICULTIES: Array<typeof DifficultyEnum[keyof typeof DifficultyEn
     'difficult', 'easy', 'hard', "normal", 'random'
 ]
 export const TASK_FIELDS: Array<typeof TaskFieldEnum[keyof typeof TaskFieldEnum]> = [
-    'objectives', 'outcomes', 'requirements', 'instructions', 'deliverables', 'skills', 'resources', 'rubrics'
+    'objectives', 'outcomes', 'requirements', 'instructions', 'deliverables', 'guidelines', 'skills', 'resources', 'rubrics',
 ]

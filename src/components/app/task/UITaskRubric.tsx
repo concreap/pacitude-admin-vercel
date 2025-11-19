@@ -10,12 +10,14 @@ import IconButton from "../../partials/buttons/IconButton";
 
 interface IUITaskRubric {
     rubrics: Array<ITaskRubric>
+    edit: boolean,
 }
 
 const UITaskRubric = (props: IUITaskRubric) => {
 
     const {
-        rubrics
+        rubrics,
+        edit,
     } = props;
 
     useEffect(() => {
@@ -32,7 +34,7 @@ const UITaskRubric = (props: IUITaskRubric) => {
                                 { label: 'Criteria', },
                                 { label: 'Description' },
                                 { label: 'Points' },
-                                { label: 'Action' },
+                                { label: 'Action', isEnabled: edit },
                             ]}
                         />
                         <TableBody>
@@ -44,18 +46,21 @@ const UITaskRubric = (props: IUITaskRubric) => {
                                             <CellData large={true} className="font-mona-medium">{rubric.criteria}</CellData>
                                             <CellData large={true} className="font-mona">{rubric.description}</CellData>
                                             <CellData large={true} className="font-mona text-center">{rubric.point}</CellData>
-                                            <CellData large={true} className="text-center">
-                                                <IconButton
-                                                    size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                    className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700"
-                                                    icon={{
-                                                        type: 'feather',
-                                                        name: 'edit-2',
-                                                        size: 14,
-                                                    }}
-                                                    onClick={(e) => { }}
-                                                />
-                                            </CellData>
+                                            {
+                                                edit &&
+                                                <CellData large={true} className="text-center">
+                                                    <IconButton
+                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                        className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700"
+                                                        icon={{
+                                                            type: 'feather',
+                                                            name: 'edit-2',
+                                                            size: 14,
+                                                        }}
+                                                        onClick={(e) => { }}
+                                                    />
+                                                </CellData>
+                                            }
                                         </TableRow>
                                     </Fragment>
                                 )

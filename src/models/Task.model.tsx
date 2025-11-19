@@ -40,7 +40,7 @@ interface Task {
         ISO: string
     },
     submission: {
-        notes: string,
+        notes: any,
         guidelines: Array<string>
         essay: string,
         items: Array<ITaskSubmissionItem>,

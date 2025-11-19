@@ -20,17 +20,24 @@ const TableHeader = (props: ITableHead) => {
                 <TableRow isHeader={true} className="head-row w-[100%]">
                     {
                         items.length > 0 &&
-                        items.map((cell, index) =>
-                            <Fragment key={`${cell.label}-${index + 1}`}>
-                                <CellHead
-                                    key={`${cell.label}-${index + 1}`}
-                                    label={cell.label}
-                                    className={cell.className}
-                                    fontSize={cell.fontSize}
-                                    style={cell.style}
-                                />
+                        items.map((cell, index) => {
+
+                            let canRender = cell.isEnabled !== undefined ? cell.isEnabled : true;
+
+                            return <Fragment key={`${cell.label}-${index + 1}`}>
+                                {
+                                    canRender &&
+                                    <CellHead
+                                        key={`${cell.label}-${index + 1}`}
+                                        label={cell.label}
+                                        className={cell.className}
+                                        fontSize={cell.fontSize}
+                                        style={cell.style}
+                                    />
+                                }
                             </Fragment>
-                        )
+
+                        })
                     }
                 </TableRow>
             </thead>

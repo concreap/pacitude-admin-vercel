@@ -6,14 +6,16 @@ import Dot from "../partials/ui/Dot";
 
 interface IUIResource {
     index: number
-    resource: IGroupedResource
+    resource: IGroupedResource,
+    edit: boolean
 }
 
 const UIResource = (props: IUIResource) => {
 
     const {
         index,
-        resource
+        resource,
+        edit
     } = props;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +32,7 @@ const UIResource = (props: IUIResource) => {
                     <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {helper.capitalize(resource.name)} Resources ({ resource.links.length })</h3>
                     <div className="flex items-center gap-x-[1rem] ml-auto">
                         {
-                            isOpen &&
+                            isOpen && edit &&
                             <IconButton
                                 size="min-w-[1.8rem] min-h-[1.8rem]"
                                 className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700"

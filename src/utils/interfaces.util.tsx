@@ -1232,6 +1232,7 @@ export interface ICellHead {
     fontSize?: number,
     className?: string,
     label: string,
+    isEnabled?: boolean,
     style?: CSSProperties
 }
 export interface ICellData {
