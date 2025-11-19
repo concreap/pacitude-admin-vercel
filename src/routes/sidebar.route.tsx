@@ -384,6 +384,17 @@ const sidebarRoutes: Array<IRoute> = [
             {
                 route: 'tasks',
                 parent: 'tasks',
+                name: 'create-task',
+                title: 'Create Task',
+                iconName: 'flash',
+                url: '/new',
+                action: 'navigate',
+                isAuth: true,
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'tasks',
+                parent: 'tasks',
                 name: 'task-details',
                 title: 'Task Details',
                 iconName: 'flash',
@@ -394,12 +405,12 @@ const sidebarRoutes: Array<IRoute> = [
                 content: { collapsed: false, backButton: true }
             },
             {
-                route: 'roadmaps',
-                parent: 'roadmaps',
-                name: 'roadmap-details',
-                title: 'Roadmap Details',
+                route: 'tasks',
+                parent: 'tasks',
+                name: 'edit-task',
+                title: 'Edit Task',
                 iconName: 'flash',
-                url: '',
+                url: '/edit',
                 action: 'navigate',
                 isAuth: true,
                 params: [{ type: 'url', name: 'id' }],

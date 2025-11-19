@@ -4,7 +4,7 @@ import Button from "../../partials/buttons/Button";
 import Icon from "../../partials/icons/Icon";
 import Divider from "../../partials/Divider";
 import CardUI from "../../partials/ui/CardUI";
-import QuestionRubric from "./QuestionRubric";
+import RubricBadge from "./RubricBadge";
 import QuestionAnswer from "./QuestionAnswer";
 import Question from "../../../models/Question.model";
 import helper from "../../../utils/helper.util";
@@ -33,7 +33,8 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
                         <div className="flex items-center">
                             <h3 className="font-mona text-[16px] pas-900">Question</h3>
                             <div className="flex items-center ml-auto gap-x-[0.3rem]">
-                                <QuestionRubric
+                                <RubricBadge
+                                    className="ml-auto"
                                     items={question.types}
                                     limit={2}
                                     type="type"
@@ -88,7 +89,8 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
                                 <div className="flex items-center">
                                     <span className="font-mona text-[13px] pag-500">Fields</span>
                                     {/* <span className="font-mona text-[13px] pag-500 ml-auto">Product Management</span> */}
-                                    <QuestionRubric
+                                    <RubricBadge
+                                        className="ml-auto"
                                         items={question.fields.map((x) => helper.capitalizeWord(x.name))}
                                         limit={1}
                                         type="type"
@@ -97,7 +99,7 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
 
                                 <div className="flex items-center">
                                     <span className="font-mona text-[13px] pag-500">Difficulty</span>
-                                    <QuestionRubric
+                                    <RubricBadge
                                         className="ml-auto"
                                         items={question.difficulties}
                                         limit={2}
@@ -113,22 +115,23 @@ const QuestionBox = ({ question, onEdit }: IQuestionBox) => {
 
                                 <div className="flex items-center">
                                     <span className="font-mona text-[13px] pacb-800">Question Score</span>
-                                    <span className="font-mona text-[13px] pacb-800 ml-auto">{ question.score.default }</span>
+                                    <span className="font-mona text-[13px] pacb-800 ml-auto">{question.score.default}</span>
                                 </div>
 
                                 <div className="flex items-center">
                                     <span className="font-mona text-[13px] pacb-800">Skill Level</span>
                                     {/* <span className="font-mona text-[13px] pacb-800 ml-auto">Beginner</span> */}
-                                    <QuestionRubric
+                                    <RubricBadge
+                                        className="ml-auto"
                                         items={question.levels.map((x) => helper.capitalizeWord(x))}
                                         limit={1}
-                                        type="type"
+                                        type="level"
                                     />
                                 </div>
 
                                 <div className="flex items-center">
                                     <span className="font-mona text-[13px] pacb-800">Time</span>
-                                    <span className="font-mona text-[13px] pacb-800 ml-auto">{ question.time.duration } { helper.capitalize(question.time.handle) }</span>
+                                    <span className="font-mona text-[13px] pacb-800 ml-auto">{question.time.duration} {helper.capitalize(question.time.handle)}</span>
                                 </div>
 
                             </div>

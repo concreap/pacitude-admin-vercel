@@ -20,9 +20,28 @@ const TasksPage = ({ }) => {
     return (
         <>
             <PageHeader
-                title="See all tasks created"
-                description="Manage your tasks and see the task  created"
-            />
+                title="All Tasks Created"
+                description="Manage tasks created on the system"
+            >
+                <div className="flex items-center">
+                    <Button
+                        type="primary"
+                        size="sm"
+                        className="form-button"
+                        text={{
+                            label: "New Task",
+                            size: 13,
+                            weight: 'regular'
+                        }}
+                        icon={{
+                            enable: true,
+                            child: <Icon name="plus" type="feather" size={16} className="color-white" />
+                        }}
+                        reverse="row"
+                        onClick={(e) => toDetailRoute(e, { route: 'tasks', name: `create-task` })}
+                    />
+                </div>
+            </PageHeader>
 
 
             <Divider show={false} />

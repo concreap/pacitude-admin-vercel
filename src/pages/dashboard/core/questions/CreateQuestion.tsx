@@ -6,11 +6,7 @@ import TextInput from "../../../../components/partials/inputs/TextInput";
 import useToast from "../../../../hooks/useToast";
 import Filter from "../../../../components/partials/drops/Filter";
 import Button from "../../../../components/partials/buttons/Button";
-import Icon from "../../../../components/partials/icons/Icon";
 import useQuestion from "../../../../hooks/app/useQuestion";
-import useField from "../../../../hooks/app/useField";
-import useTopic from "../../../../hooks/app/useTopic";
-import useSkill from "../../../../hooks/app/useSkill";
 import helper from "../../../../utils/helper.util";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
 import GeneratedQuestion from "./GeneratedQuestion";
@@ -347,13 +343,13 @@ const CreateQuestionPage = ({ }) => {
     const clearOnSelect = (rubric: string) => {
 
         if (rubric === 'all') {
-            leRef?.current.clear()
-            carRef?.current.clear()
-            fiRef?.current.clear()
-            skiRef?.current.clear()
-            toRef?.current.clear()
-            qtRef?.current.clear()
-            modelref?.current.clear()
+            leRef?.current?.clear()
+            carRef?.current?.clear()
+            fiRef?.current?.clear()
+            skiRef?.current?.clear()
+            toRef?.current?.clear()
+            qtRef?.current?.clear()
+            modelref?.current?.clear()
             setAiData({
                 ...aiData,
                 career: { id: '', name: '' },
@@ -368,9 +364,9 @@ const CreateQuestionPage = ({ }) => {
         }
 
         if (rubric === 'career') {
-            fiRef?.current.clear()
-            skiRef?.current.clear()
-            toRef?.current.clear()
+            fiRef?.current?.clear()
+            skiRef?.current?.clear()
+            toRef?.current?.clear()
             setAiData({
                 ...aiData,
                 field: { id: '', name: '' },
@@ -380,8 +376,8 @@ const CreateQuestionPage = ({ }) => {
         }
 
         if (rubric === 'field') {
-            skiRef?.current.clear()
-            toRef?.current.clear()
+            skiRef?.current?.clear()
+            toRef?.current?.clear()
             setAiData({
                 ...aiData,
                 skill: { id: '', name: '' },
@@ -390,7 +386,7 @@ const CreateQuestionPage = ({ }) => {
         }
 
         if (rubric === 'skill') {
-            toRef?.current.clear()
+            toRef?.current?.clear()
             setAiData({
                 ...aiData,
                 topic: { id: '', name: '' }
@@ -546,7 +542,7 @@ const CreateQuestionPage = ({ }) => {
                 setAIQuestions([])
                 setCode('')
                 setAiData({ ...aiData, error: '', model: 'openai', prompt: '', total: 3 })
-                pmRef.current.clear()
+                pmRef.current?.clear()
             }
 
             if (response.error) {
@@ -855,7 +851,7 @@ const CreateQuestionPage = ({ }) => {
                                         onClick={(e) => {
                                             setAIQuestions([])
                                             setCode('')
-                                            pmRef.current.clear()
+                                            pmRef.current?.clear()
                                             setAiData({ ...aiData, error: '', model: 'openai', prompt: '', total: 3 })
                                         }}
                                     />
@@ -1057,7 +1053,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                                         upper={true}
                                                                                                         onClose={(e) => {
                                                                                                             removeRubric('difficulty', diff)
-                                                                                                            diRef.current.clear()
+                                                                                                            diRef.current?.clear()
                                                                                                         }}
                                                                                                     />
                                                                                                 )
@@ -1114,7 +1110,7 @@ const CreateQuestionPage = ({ }) => {
                                                                                                         upper={true}
                                                                                                         onClose={(e) => {
                                                                                                             removeRubric('type', type)
-                                                                                                            tyRef.current.clear()
+                                                                                                            tyRef.current?.clear()
                                                                                                         }}
                                                                                                     />
                                                                                                 )

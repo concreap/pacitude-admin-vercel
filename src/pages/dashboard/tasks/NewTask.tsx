@@ -1,304 +1,424 @@
 import { useEffect, useRef, useState } from "react"
 import Divider from "../../../components/partials/Divider";
 import CardUI from "../../../components/partials/ui/CardUI";
-import useField from "../../../hooks/app/useField";
-import useQuestion from "../../../hooks/app/useQuestion";
 import helper from "../../../utils/helper.util";
 import Filter from "../../../components/partials/drops/Filter";
-import FormField from "../../../components/partials/inputs/FormField";
-import Badge from "../../../components/partials/badges/Badge";
 import useApp from "../../../hooks/app/useApp";
-import TextAreaInput from "../../../components/partials/inputs/TextAreaInput";
-import TextInput from "../../../components/partials/inputs/TextInput";
-import { statusOptions } from "../../../_data/seed";
 import Career from "../../../models/Career.model";
 import Button from "../../../components/partials/buttons/Button";
-import Icon from "../../../components/partials/icons/Icon";
 import useToast from "../../../hooks/useToast";
-import useGoBack from "../../../hooks/useGoBack";
+import Field from "../../../models/Field.model";
+import Topic from "../../../models/Topic.model";
+import { LevelEnum } from "../../../utils/enums.util";
+import useTask from "../../../hooks/app/useTask";
+import EmptyState from "../../../components/partials/dialogs/EmptyState";
+import Badge from "../../../components/partials/badges/Badge";
+import useGoTo from "../../../hooks/useGoTo";
 
 const NewTaskPage = () => {
 
-  const skiRef = useRef<any>(null)
-  const carRef = useRef<any>(null)
+    const fiRef = useRef<any>(null)
+    const toRef = useRef<any>(null)
+    const carRef = useRef<any>(null)
+    const leRef = useRef<any>(null)
 
-  const { toast, setToast } = useToast()
-  const { loading, core, getCoreResources } = useApp()
-  const { loader, createField } = useField()
-  const { goBack } = useGoBack()
+    const { toDetailRoute } = useGoTo()
+    const { toast, setToast } = useToast()
+    const { loading: coreLoading, core, getCoreResources } = useApp()
+    const { task, loading, createTask, poller } = useTask()
 
-  const [form, setForm] = useState({
-    name: '',
-    label: '',
-    description: '',
-    isEnabled: true,
-    careerId: '',
-    skills: [] as Array<{ id: string, name: string }>
-  })
+    const [fields, setFields] = useState<Array<Field>>([])
+    const [topics, setTopics] = useState<Array<Topic>>([])
+    const [careers, setCareers] = useState<Array<Career>>([])
+    const [form, setForm] = useState({
+        careerId: '',
+        level: '',
+        fieldId: '',
+        topicId: '',
+    })
 
-  useEffect(() => {
-    getCoreResources({ limit: 9999, page: 1, order: 'desc' })
-  }, [])
+    const LEVELS: Array<typeof LevelEnum[keyof typeof LevelEnum]> = ['novice', 'beginner', 'intermediate', 'advanced', 'professional']
 
-  const handleCreate = async (e: any) => {
+    useEffect(() => {
+        getCoreResources({ limit: 9999, page: 1, order: 'desc' })
+    }, [])
 
-    if (e) { e.preventDefault() }
+    useEffect(() => {
+        setCareers(core.careers)
+    }, [core])
 
-    if (!form.careerId) {
-      setToast({ ...toast, show: true, error: 'career', type: 'error', message: 'Select a career' })
-    }
-    else if (!form.name) {
-      setToast({ ...toast, show: true, error: 'name', type: 'error', message: 'Field name is required' })
-    } else if (!form.label) {
-      setToast({ ...toast, show: true, error: 'label', type: 'error', message: 'Display name is required' })
-    } else if (form.skills.length === 0) {
-      setToast({ ...toast, show: true, error: 'skill', type: 'error', message: 'Select at least one skill' })
-    } else if (form.description && form.description.length < 10) {
-      setToast({ ...toast, show: true, error: 'description', type: 'error', message: 'Description must be at least 10 characters long' })
-    } else {
+    const clearOnSelect = (rubric: string) => {
 
-      const response = await createField({
-        careerId: form.careerId,
-        description: form.description,
-        isEnabled: form.isEnabled,
-        label: form.label,
-        name: form.name,
-        skills: form.skills.map((x) => x.id)
-      });
+        if (rubric === 'all') {
+            leRef?.current?.clear()
+            carRef?.current?.clear()
+            fiRef?.current?.clear()
+            toRef?.current?.clear()
+            setForm({
+                ...form,
+                fieldId: '',
+                topicId: '',
+                careerId: '',
+                level: ''
+            })
+        }
 
-      if (!response.error) {
-        setToast({
-          ...toast,
-          show: true,
-          type: 'success',
-          message: `Field created successfully`
-        })
-        skiRef?.current.clear()
-        carRef?.current.clear()
-      }
+        if (rubric === 'career') {
+            fiRef?.current?.clear()
+            toRef?.current?.clear()
+            setForm({
+                ...form,
+                fieldId: '',
+                topicId: '',
+            })
+        }
 
-      if (response.error) {
-        setToast({
-          ...toast,
-          show: true,
-          type: 'error',
-          message: response.errors.length > 0 ? response.errors[0] : response.message
-        })
-      }
+        if (rubric === 'field') {
+            toRef?.current?.clear()
+            setForm({
+                ...form,
+                topicId: '',
+            })
+        }
 
     }
 
-    setTimeout(() => {
-      setToast({ ...toast, show: false })
-    }, 3000)
+    const handleCreateTask = async (e: any) => {
 
-  }
+        if (!form.level) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error', title: 'Error',
+                message: 'select a skill level',
+                error: 'all', position: 'top-right'
+            })
+        } else if (!form.careerId) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error', title: 'Error',
+                message: 'select a career',
+                error: 'all', position: 'top-right'
+            })
+        } else if (!form.fieldId) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error', title: 'Error',
+                message: 'select a field',
+                error: 'all', position: 'top-right'
+            })
+        } else if (!form.topicId) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error', title: 'Error',
+                message: 'select a topic',
+                error: 'all', position: 'top-right'
+            })
+        } else {
 
-  return (
-    <>
+            const response = await createTask({
+                fieldId: form.fieldId,
+                level: form.level,
+                topicId: form.topicId,
+                poll: true
+            })
 
-      <CardUI>
-
-        <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.5rem] py-[1.5rem]">
-
-          <FormField
-            className={`${loading ? 'disabled-light' : ''}`}
-            label={{
-              title: 'Select Career',
-              required: true,
-              fontSize: 13
-            }}
-          >
-            <div className="">
-              <TextInput
-                type="text"
-                size="sm"
-                showFocus={true}
-                autoComplete={false}
-                placeholder="Type here"
-                defaultValue={''}
-                clear={loader ? false : true}
-                label={{
-                  title: 'Task Title',
-                  required: true,
-                  fontSize: 13
-                }}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
-              />
-            </div>
-
-          </FormField>
-
-          <FormField>
-
-            <div className="grid grid-cols-[48%_48%] gap-x-[4%]">
-
-              <div className="">
-                <TextInput
-                  type="text"
-                  size="sm"
-                  showFocus={true}
-                  autoComplete={false}
-                  placeholder="Type here"
-                  defaultValue={''}
-                  clear={loader ? false : true}
-                  label={{
-                    title: 'Field Name',
-                    required: true,
-                    fontSize: 13
-                  }}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-              </div>
-
-              <div className="">
-                <TextInput
-                  type="text"
-                  size="sm"
-                  showFocus={true}
-                  autoComplete={false}
-                  placeholder="Type here"
-                  defaultValue={''}
-                  clear={loader ? false : true}
-                  label={{
-                    title: 'Display Name',
-                    required: true,
-                    fontSize: 13
-                  }}
-                  onChange={(e) => setForm({ ...form, label: e.target.value })}
-                />
-              </div>
-
-            </div>
-
-          </FormField>
-
-          <FormField
-            className={`${loading ? 'disabled-light' : ''} space-y-[0.6rem]`}
-            label={{
-              title: 'Select Skills',
-              required: true,
-              fontSize: 13
-            }}
-          >
-            <Filter
-              ref={skiRef}
-              size='sm'
-              className='la-filter'
-              placeholder={"Choose"}
-              position="bottom"
-              menu={{
-                search: true,
-                fullWidth: true,
-                limitHeight: 'md'
-              }}
-              items={
-                core.skills.map((x: any) => {
-                  return {
-                    label: helper.capitalizeWord(x.name),
-                    value: x._id
-                  }
+            if (!response.error) {
+                setToast({
+                    ...toast,
+                    show: true,
+                    type: 'info',
+                    title: 'Ongoing',
+                    message: 'Task is currently being created',
+                    error: 'all',
+                    position: 'top-right'
                 })
-              }
-              noFilter={false}
-              onChange={(data) => {
-
-                let list = form.skills;
-                let idList = form.skills.map((x) => x.id);
-
-                if (!idList.includes(data.value)) {
-                  list.push({ id: data.value, name: data.label })
-                }
-
-                setForm({ ...form, skills: list })
-                skiRef.current.clear()
-
-              }}
-            />
-
-            {
-              form.skills.length > 0 &&
-              <div className="flex flex-wrap items-center gap-x-[0.5rem] gap-y-[0.5rem]">
-                {
-                  form.skills.map((skill) =>
-                    <Badge
-                      key={skill.id}
-                      type={'default'}
-                      size="xsm"
-                      close={true}
-                      label={skill.name}
-                      upper={true}
-                      onClose={(e) => {
-                        let list = form.skills;
-                        list = list.filter((x) => x.id !== skill.id);
-                        setForm({ ...form, skills: list })
-                      }}
-                    />
-                  )
-                }
-              </div>
             }
 
+            else {
+                let message = response.message;
+                if (response.errors.length > 0) {
+                    message = response.errors.join(',')
+                }
 
-          </FormField>
+                setToast({
+                    ...toast,
+                    show: true,
+                    type: 'error',
+                    title: 'Error',
+                    message: message,
+                    error: 'all',
+                    position: 'top-right'
+                })
+            }
 
-          <FormField>
+        }
 
-            <TextAreaInput
-              showFocus={true}
-              autoComplete={false}
-              placeholder="Type here"
-              defaultValue={''}
-              clear={loader ? false : true}
-              label={{
-                title: 'Description',
-                className: 'text-[13px]',
-                required: true
-              }}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
+        setTimeout(() => {
+            setToast({ ...toast, show: false })
+        }, 1800)
+    }
 
-          </FormField>
 
-          <div className="flex items-center gap-x-[0.65rem] mt-10">
-            <Button
-              type="ghost"
-              semantic={'default'}
-              size="sm"
-              className="form-button"
-              text={{
-                label: "Cancel",
-                size: 13,
-              }}
-              icon={{
-                enable: true,
-                child: <Icon name="x" type="feather" size={16} className="par-600" />
-              }}
-              reverse="row"
-              onClick={(e) => { goBack() }}
-            />
+    return (
+        <>
 
-            <Button
-              type="primary"
-              semantic="normal"
-              size="sm"
-              className="form-button ml-auto"
-              text={{
-                label: "Create Field",
-                size: 13,
-              }}
-              loading={loader}
-              onClick={async (e) => handleCreate(e)}
-            />
+            <section className="space-y-[2.5rem]">
 
-          </div>
+                <CardUI>
 
-        </form>
+                    <div className="space-y-[1rem]">
 
-      </CardUI>
+                        <h3 className="font-mona-medium text-[14px] pag-800">Select Task Parameters</h3>
 
-    </>
-  )
+                        <div className="w-full flex items-center gap-x-[1.2rem]">
+
+                            {/* LEVEL RUBRIC */}
+                            <div className={`w-[14%] ${(coreLoading || poller.loading) ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={leRef}
+                                    size='xxsm'
+                                    className='la-filter'
+                                    placeholder="Skill Level"
+                                    position="bottom"
+                                    menu={{
+                                        search: false,
+                                        fullWidth: true,
+                                        limitHeight: 'sm'
+                                    }}
+                                    items={
+                                        LEVELS.map((x) => {
+                                            return {
+                                                label: helper.capitalizeWord(x),
+                                                value: x
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        setForm({ ...form, level: data.value })
+                                    }}
+                                />
+
+                            </div>
+
+                            {/* CAREER RUBRIC */}
+                            <div className={`w-[18%] ${(coreLoading || poller.loading) ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={carRef}
+                                    size='xxsm'
+                                    className='la-filter bg-white'
+                                    placeholder="Select Career"
+                                    position="bottom"
+                                    menu={{
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: true,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        careers.map((x: Career) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        clearOnSelect('career')
+                                        const fd = core.fields.filter((x) => x.career === data.value)
+                                        setFields(fd);
+                                        setForm({ ...form, careerId: data.value })
+                                    }}
+                                />
+
+                            </div>
+
+                            {/* FIELD RUBRIC */}
+                            <div className={`w-[18%] ${(fields.length === 0 || coreLoading || poller.loading) ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={fiRef}
+                                    size='xxsm'
+                                    className='la-filter'
+                                    placeholder="Select Field"
+                                    position="bottom"
+                                    menu={{
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: false,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        fields.map((x: Field) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        clearOnSelect('field')
+                                        const topics = core.topics.filter((x) => x.fields.includes(data.value))
+                                        setTopics(topics);
+                                        setForm({ ...form, fieldId: data.value })
+                                    }}
+                                />
+
+                            </div>
+
+                            {/* TOPIC RUBRIC */}
+                            <div className={`w-[36%] ${(topics.length === 0 || coreLoading || poller.loading) ? 'disabled-light' : ''}`}>
+
+                                <Filter
+                                    ref={toRef}
+                                    size='xxsm'
+                                    className='la-filter'
+                                    placeholder="Select Topic"
+                                    position="bottom"
+                                    menu={{
+                                        style: { minWidth: '250px' },
+                                        search: true,
+                                        fullWidth: true,
+                                        limitHeight: 'md'
+                                    }}
+                                    items={
+                                        topics.map((x: Topic) => {
+                                            return {
+                                                label: helper.capitalizeWord(x.name),
+                                                value: x._id
+                                            }
+                                        })
+                                    }
+                                    noFilter={false}
+                                    onChange={(data) => {
+                                        setForm({ ...form, topicId: data.value })
+                                    }}
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <Divider />
+
+                    <div className="space-y-[1rem] flex items-center">
+                        <Button
+                            type={"ghost"}
+                            semantic={"info"}
+                            size="sm"
+                            className="form-button"
+                            loading={(coreLoading || loading || poller.loading) ? true : false}
+                            text={{
+                                label: "Create Task",
+                                size: 13,
+                            }}
+                            onClick={(e) => handleCreateTask(e)}
+                        />
+                    </div>
+
+                </CardUI>
+
+                <CardUI>
+                    {
+                        (loading || poller.loading) &&
+                        <EmptyState className="min-h-[50vh]" noBound={true}>
+                            <span className="loader lg primary"></span>
+                            <span className="font-mona text-[16px] pas-950">AI is thinking</span>
+                        </EmptyState>
+                    }
+                    {
+                        !loading && !poller.loading &&
+                        <>
+                            {
+                                helper.isEmpty(task, 'object') &&
+                                <EmptyState className="min-h-[50vh]" noBound={true} >
+                                    <span className="font-mona text-[14px] pas-950">Task created will appear here</span>
+                                </EmptyState>
+                            }
+                            {
+                                !helper.isEmpty(task, 'object') &&
+                                <>
+                                    <div className="grid grid-cols-[35%_60%] gap-x-[5%]">
+
+                                        <div>
+                                            <div className="min-h-[250px] rounded-[14px] full-bg" style={{ backgroundImage: `url("${task.image ? task.image : '../../../images/assets/bg@core_03.webp'}")` }}></div>
+                                        </div>
+                                        <div>
+
+                                            <div className="space-y-[1rem]">
+
+                                                <h3 className="font-mona-medium pas-950 text-[18px]">{task.title}</h3>
+                                                <div className="flex items-center gap-x-[1rem]">
+
+                                                    {
+                                                        task.field &&
+                                                        <Badge
+                                                            type={'normal'}
+                                                            size="sm"
+                                                            display="badge"
+                                                            label={task.field.name}
+                                                            padding={{ y: 3, x: 12 }}
+                                                            font={{
+                                                                weight: 'regular',
+                                                                size: 12
+                                                            }}
+                                                            upper={false}
+                                                            close={false}
+                                                        />
+                                                    }
+
+                                                    <h3 className="font-mona-light pag-500 text-[13px]">ID: {task.code}</h3>
+
+                                                </div>
+
+                                            </div>
+
+                                            <Divider />
+
+                                            <div className="font-mona-light text-[14px] pag-700 line-clamp-3">{task.description}</div>
+
+                                            <Divider />
+
+                                            <div className="flex items-center">
+                                                <h4 className="font-mona pag-800 text-[15px]">Topic - {task.topic.name}</h4>
+                                                <Button
+                                                    type={"secondary"}
+                                                    semantic={"info"}
+                                                    size="xsm"
+                                                    className="form-button ml-auto"
+                                                    loading={false}
+                                                    text={{
+                                                        label: "View Task",
+                                                        size: 13,
+                                                    }}
+                                                    onClick={(e) => toDetailRoute(e, { id: task._id, route: 'tasks', name: 'task-details' })}
+                                                />
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </>
+                            }
+                        </>
+                    }
+                </CardUI>
+
+            </section>
+
+
+        </>
+    )
 }
 
 export default NewTaskPage;

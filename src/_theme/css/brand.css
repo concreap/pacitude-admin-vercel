@@ -3746,7 +3746,8 @@
 }
 
 .color-white,
-.color-white span {
+.color-white span,
+.color-white-hover:hover {
     color: var(--color-white) !important;
 }
 

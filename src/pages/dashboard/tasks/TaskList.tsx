@@ -107,11 +107,13 @@ const TaskList = (props: IListUI) => {
     }
 
     const toDetails = (e: any, id: string) => {
-
         if (e) { e.preventDefault(); }
-
         toDetailRoute(e, { id: id, route: 'tasks', name: 'task-details' })
+    }
 
+    const toEdit = (e: any, id: string) => {
+        if (e) { e.preventDefault(); }
+        toDetailRoute(e, { id: id, route: 'tasks', name: 'edit-task' })
     }
 
     return (
@@ -413,16 +415,16 @@ const TaskList = (props: IListUI) => {
                                                 {
 
                                                     tasks.data.map((task: Task, index) =>
-                                                        <Fragment key={task.id}>
+                                                        <Fragment key={task._id}>
                                                             <TableRow>
-                                                                <CellData large={true} onClick={(e) => toDetails(e, task.id)} className="w-[40px]">{index + 1}</CellData>
-                                                                <CellData large={true} onClick={(e) => toDetails(e, task.id)} className="min-w-[170px]">{helper.formatDate(task.createdAt, 'basic')}</CellData>
-                                                                <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{task.title}</CellData>
+                                                                <CellData large={true} onClick={(e) => toDetails(e, task._id)} className="w-[40px]">{index + 1}</CellData>
+                                                                <CellData large={true} onClick={(e) => toDetails(e, task._id)} className="min-w-[170px]">{helper.formatDate(task.createdAt, 'basic')}</CellData>
+                                                                <CellData large={true} onClick={(e) => toDetails(e, task._id)}>{task.title}</CellData>
 
                                                                 {
                                                                     taskType === TaskTypeEnum.TEMPLATE &&
                                                                     <>
-                                                                        {/* <CellData large={true} onClick={(e) => toDetails(e, task.id)}>
+                                                                        {/* <CellData large={true} onClick={(e) => toDetails(e, task._id)}>
                                                                             <div className="flex items-center">
                                                                                 {
 
@@ -439,10 +441,10 @@ const TaskList = (props: IListUI) => {
                                                                                 }
                                                                             </div>
                                                                         </CellData> */}
-                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalize(task.level)}</CellData>
-                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalize(task.difficulty)}</CellData>
-                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalizeWord(task.duration.label)}</CellData>
-                                                                        <CellData onClick={(e) => toDetails(e, task.id)}>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task._id)}>{helper.capitalize(task.level)}</CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task._id)}>{helper.capitalize(task.difficulty)}</CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task._id)}>{helper.capitalizeWord(task.duration.label)}</CellData>
+                                                                        <CellData onClick={(e) => toDetails(e, task._id)}>
                                                                             <Badge
                                                                                 type={task.isEnabled ? 'success' : 'error'}
                                                                                 display="status"
@@ -456,7 +458,7 @@ const TaskList = (props: IListUI) => {
                                                                 {
                                                                     taskType === TaskTypeEnum.ASSIGNED &&
                                                                     <>
-                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task._id)}>
                                                                             <UserAvatar
                                                                                 size="w-[33px] h-[33px]"
                                                                                 className="leader-avatar -mr-[0.8rem] border border-white"
@@ -464,8 +466,8 @@ const TaskList = (props: IListUI) => {
                                                                                 name={''}
                                                                             />
                                                                         </CellData>
-                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.capitalize(task.difficulty)}</CellData>
-                                                                        <CellData large={true} onClick={(e) => toDetails(e, task.id)}>{helper.formatDate(task.dueDate.ISO, 'basic')}</CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task._id)}>{helper.capitalize(task.difficulty)}</CellData>
+                                                                        <CellData large={true} onClick={(e) => toDetails(e, task._id)}>{helper.formatDate(task.dueDate.ISO, 'basic')}</CellData>
                                                                         <CellData onClick={(e) => toDetails(e, task.id)}>
                                                                             <Badge
                                                                                 type={task.status === StatusEnum.DRAFT ? 'info' : 'default'}
@@ -489,8 +491,9 @@ const TaskList = (props: IListUI) => {
                                                                             limitHeight: 'sm'
                                                                         }}
                                                                         items={[
-                                                                            { label: 'Details', value: 'details', onClick: (e) => toDetails(e, task.id) },
-                                                                            { label: 'Disable', value: 'remove', onClick: () => { } }
+                                                                            { label: 'View Details', value: 'details', onClick: (e) => toDetails(e, task._id) },
+                                                                            { label: 'Edit Task', value: 'edit', onClick: (e) => toEdit(e, task._id) },
+                                                                            { label: 'Disable Task', value: 'disable', onClick: () => { } }
                                                                         ]}
                                                                         noFilter={false}
                                                                     />

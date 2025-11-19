@@ -11,6 +11,22 @@ import Talent from "../models/Talent.model";
 import Task from "../models/Task.model";
 import Comment from "../models/Comment.model";
 
+export interface IGroupedResource {
+    name: string;
+    links: Array<{
+        title: string;
+        snippet: string,
+        url: string;
+    }>;
+}
+
+export interface IPoller {
+    loading: boolean,
+    key: string,
+    status: string,
+    code: string
+}
+
 export interface ISetCookie {
     key: string,
     payload: any,
@@ -281,6 +297,10 @@ export interface IHelper {
     extractor(data: any): any,
     pickFrom<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[] ): Pick<T, K>
 
+}
+
+export interface IMarkdown {
+    taskToMarkdown(t: Task): string
 }
 
 export interface IRoutil {
@@ -1415,6 +1435,7 @@ export interface IUserContext {
 }
 
 export interface IAppContext {
+    poller: IPoller,
     industries: ICollection,
     industry: Industry,
     careers: ICollection,

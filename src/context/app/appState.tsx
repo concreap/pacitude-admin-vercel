@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import storage from '../../utils/storage.util'
 import loader from '../../utils/loader.util'
 import { LoadingType } from '../../utils/types.util'
-import { aiquestion, collection, coreResource, metrics } from '../../_data/seed'
+import { aiquestion, collection, coreResource, metrics, UIPoller } from '../../_data/seed'
 import helper from '../../utils/helper.util'
 import {
     SET_LOADER,
@@ -20,6 +20,7 @@ const AppState = (props: any) => {
     const navigate = useNavigate()
 
     const initialState = {
+        poller: UIPoller,
         industries: collection,
         industry: {},
         careers: collection,
@@ -156,6 +157,7 @@ const AppState = (props: any) => {
     }
 
     const contextValues = useMemo(() => ({
+        poller: state.poller,
         industries: state.industries,
         industry: state.industry,
         careers: state.careers,
@@ -187,6 +189,7 @@ const AppState = (props: any) => {
         setResource: setResource,
         setCollection: setCollection,
     }), [
+        state.poller,
         state.industries,
         state.industry,
         state.careers,

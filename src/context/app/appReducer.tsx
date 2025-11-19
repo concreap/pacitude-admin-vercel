@@ -23,7 +23,8 @@ import {
     GET_TASKS,
     GET_TASK,
     GET_COMMENTS,
-    GET_COMMENT
+    GET_COMMENT,
+    SET_POLLER
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -128,6 +129,11 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 items: action.payload
+            }
+        case SET_POLLER:
+            return {
+                ...state,
+                poller: action.payload
             }
         case SET_AIQUESTION:
             return {

@@ -965,7 +965,6 @@ const pickFrom = <T extends Record<string, any>, K extends keyof T>(obj: T, keys
 }
 
 
-
 const helper: IHelper = {
     init: init,
     scrollTo: scrollTo,

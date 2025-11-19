@@ -50,3 +50,4 @@ export const SET_USER = 'SET_USER';
 export const SET_AIQUESTION = 'SET_AIQUESTION';
 export const SET_ITEMS = 'SET_ITEMS';
 export const SET_PERMISSIONS = 'SET_PERMISSIONS';
+export const SET_POLLER = 'SET_POLLER';

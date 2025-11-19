@@ -31,16 +31,16 @@ export enum FileLinks {
     TOPIC_CSV = 'https://docs.google.com/spreadsheets/d/1kJxsETglcWDsRSlHyO7MQEcJHBn9tHiUWnNKW4p1myQ/edit?usp=sharing'
 }
 
-export enum LevelEnum{
-    DEFAULT = 'default',
-    NOVICE = 'novice',
-    BEGINNER = 'beginner',
-    INTERMEDIATE = 'intermediate',
-    ADVANCED = 'advanced',
-    PROFESSIONAL = 'professional',
-    LEADER = 'leader',
-    EXPERT = 'expert'
-}
+export const LevelEnum = {
+    DEFAULT: 'default',
+    NOVICE: 'novice',
+    BEGINNER: 'beginner',
+    INTERMEDIATE: 'intermediate',
+    ADVANCED: 'advanced',
+    PROFESSIONAL: 'professional',
+    LEADER: 'leader',
+    EXPERT: 'expert'
+} as const
 
 export enum TimeHandleEnum {
     SECONDS = 'second',
@@ -48,13 +48,13 @@ export enum TimeHandleEnum {
     HOUR = 'hour'
 }
 
-export enum DifficultyEnum {
-    RANDOM = 'random',
-    EASY = 'easy',
-    NORMAL = 'normal',
-    HARD = 'hard',
-    DIFFICULT = 'difficult'
-}
+export const DifficultyEnum = {
+    RANDOM: 'random',
+    EASY: 'easy',
+    NORMAL: 'normal',
+    HARD: 'hard',
+    DIFFICULT: 'difficult'
+} as const
 
 export enum QuestionTypeEnum {
     TRIVIAL = 'trivial',
@@ -109,4 +109,21 @@ export const ActionEnum = {
 export const TaskTypeEnum = {
     TEMPLATE: 'template',
     ASSIGNED: 'assigned'
+} as const
+
+export const TaskFieldEnum = {
+    OBJECTIVES: 'objectives',
+    INSTRUCTIONS: 'instructions',
+    DELIVERABLES: 'deliverables',
+    RESOURCES: 'resources',
+    OUTCOMES: 'outcomes',
+    REQUIREMENTS: 'requirements',
+    RUBRICS: 'rubrics',
+    SKILLS: 'skills',
+    GUIDELINES: 'guidelines',
+} as const
+
+export const UIEnum = {
+    NEW: 'new',
+    OLD: 'old',
 } as const

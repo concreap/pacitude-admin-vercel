@@ -4,14 +4,14 @@ import helper from "../../../utils/helper.util";
 import Badge from "../../partials/badges/Badge";
 
 
-interface IQuestionRubric {
+interface IRubricBadge {
     type: 'level' | 'difficulty' | 'type' | 'time' | 'score',
     limit?: number,
     className?: string,
     items: Array<string>
 }
 
-const QuestionRubric = ({ type, items, limit = 3, className = '' }: IQuestionRubric) => {
+const RubricBadge = ({ type, items, limit = 3, className = '' }: IRubricBadge) => {
 
     const { semantics, randomizeIndexes } = useRandom()
 
@@ -45,7 +45,7 @@ const QuestionRubric = ({ type, items, limit = 3, className = '' }: IQuestionRub
 
     return (
         <>
-            <div className={`flex items-center ml-auto gap-x-[0.3rem] ${className}`}>
+            <div className={`flex items-center gap-x-[0.3rem] ${className}`}>
 
                 {
                     badges.map((bd, index) =>
@@ -74,4 +74,4 @@ const QuestionRubric = ({ type, items, limit = 3, className = '' }: IQuestionRub
     )
 };
 
-export default QuestionRubric;
+export default RubricBadge;

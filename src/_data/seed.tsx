@@ -1,6 +1,6 @@
 import sidebarRoutes from "../routes/sidebar.route";
 import { StatusEnum } from "../utils/enums.util";
-import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource, IAPIResponse } from "../utils/interfaces.util";
+import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource, IAPIResponse, IPoller } from "../utils/interfaces.util";
 
 const avatars = [
     { name: 'sandra', avatar: 'https://storage.googleapis.com/pacitude-buckets/sandra.png' },
@@ -196,6 +196,13 @@ const apiresponse: IAPIResponse = {
     status: 200
 }
 
+const UIPoller: IPoller = {
+    loading: false,
+    code: '',
+    key: '',
+    status: 'pending'
+}
+
 export {
     sidebar,
     avatars,
@@ -208,6 +215,7 @@ export {
     timeHandles, allocatedTimes,
     coreResource,
     apiresponse,
+    UIPoller,
 
     // special to project
     aiquestion, metrics,

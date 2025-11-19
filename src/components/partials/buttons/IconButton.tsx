@@ -33,7 +33,7 @@ const IconButton = (props: IIconButton) => {
         if (active) {
             result = result + ` bg-pacb-100 bgh-pacb-200 pacb-800 pacbh-900`
         } else {
-            result = result + ` bgh-pag-50 pagh-800 pag-600`
+            result = result + ` pagh-800 pag-600`
         }
 
         if (className) {

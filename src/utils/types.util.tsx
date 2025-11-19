@@ -1,5 +1,5 @@
 import { ACTION_TYPES, RESOURCE_TYPES } from "./constants.util";
-import { ActionEnum, TaskTypeEnum } from "./enums.util";
+import { ActionEnum, TaskFieldEnum, TaskTypeEnum, UIEnum } from "./enums.util";
 
 export type IconName = '';
 export type IconFamilyType = 'polio' | 'fa' | 'feather';
@@ -42,3 +42,5 @@ export type ActionType = typeof ActionEnum[keyof typeof ActionEnum]
 export type ActionAddRemove =  'add' | 'remove'
 export type ActionModify = 'add' | 'remove' | 'update'
 export type TaskType = typeof TaskTypeEnum[keyof typeof TaskTypeEnum]
+export type TaskFieldType = typeof TaskFieldEnum[keyof typeof TaskFieldEnum]
+export type UIType = typeof UIEnum[keyof typeof UIEnum]

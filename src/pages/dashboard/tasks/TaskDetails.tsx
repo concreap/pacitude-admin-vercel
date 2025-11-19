@@ -9,7 +9,7 @@ import Badge from "../../../components/partials/badges/Badge";
 import helper from "../../../utils/helper.util";
 import { Link, useParams } from "react-router-dom";
 import CardLoading from "../../../components/app/loaders/CardLoading";
-import QuestionRubric from "../../../components/app/question/QuestionRubric";
+import QuestionRubric from "../../../components/app/question/RubricBadge";
 import Filter from "../../../components/partials/drops/Filter";
 import useGoTo from "../../../hooks/useGoTo";
 import { IAssessmentSummary } from "../../../models/Assessment.model";
