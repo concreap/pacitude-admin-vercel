@@ -9,11 +9,6 @@ export enum CookieKeyType {
     XHIT = 'x-hit'
 }
 
-export enum UIView {
-    FORM = 'form',
-    MESSAGE = 'message'
-}
-
 export enum UserEnumType{
     SUPER = 'superadmin',
     ADMIN = 'admin',
@@ -123,7 +118,33 @@ export const TaskFieldEnum = {
     GUIDELINES: 'guidelines',
 } as const
 
+export const UIViewEnum = {
+    FORM: 'form',
+    MESSAGE: 'message',
+    BROWSE: 'browse-file',
+    FILE_SELECTED: 'file-selected',
+    UPLOADED: 'uploaded',
+    UPLOAD_ERROR: 'upload-error'
+} as const
+
 export const UIEnum = {
     NEW: 'new',
     OLD: 'old',
+} as const
+
+export const EditTaskEnum = {
+    DETAILS: 'details',
+    ...TaskFieldEnum,
+} as const
+
+export const UploadFormatEnum = {
+    BASE64: 'base64',
+    RAW_FILE: 'rawfile'
+} as const
+
+export const DurationEnum = {
+    DAY: 'day',
+    DAYS: 'days',
+    WEEK: 'week',
+    WEEKS: 'weeks'
 } as const

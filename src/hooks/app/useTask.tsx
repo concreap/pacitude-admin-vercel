@@ -25,6 +25,19 @@ interface IUpdateUITask {
     field: TaskFieldType
 }
 
+interface IUpdateTask {
+    id: string,
+    title?: string,
+    image?: string,
+    level?:string,
+    difficulty?:string,
+    description?: string,
+    duration?: {
+        value: number,
+        handle: string
+    }
+}
+
 const useTask = () => {
 
     const { appContext } = useContextType()
@@ -531,7 +544,9 @@ const useTask = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
-
+    /**
+     * @name deleteTask
+     */
     const deleteTask = useCallback(async (id: string) => {
 
         setLoading({ option: 'loader' })
@@ -572,6 +587,49 @@ const useTask = () => {
 
     }, [setLoading, unsetLoading])
 
+    /**
+     * @name updateTask
+     */
+    const updateTask = useCallback(async (data: IUpdateTask) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_TASK}/${data.id}`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'task updated successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response
+
+    }, [setLoading, unsetLoading, setResource])
+
     return {
         tasks,
         task,
@@ -592,7 +650,8 @@ const useTask = () => {
         getTaskByCode,
         getTaskComments,
         createTask,
-        deleteTask
+        deleteTask,
+        updateTask,
     }
 }
 

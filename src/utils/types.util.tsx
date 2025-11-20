@@ -1,5 +1,5 @@
 import { ACTION_TYPES, RESOURCE_TYPES } from "./constants.util";
-import { ActionEnum, TaskFieldEnum, TaskTypeEnum, UIEnum } from "./enums.util";
+import { ActionEnum, TaskFieldEnum, TaskTypeEnum, UIEnum, UploadFormatEnum } from "./enums.util";
 
 export type IconName = '';
 export type IconFamilyType = 'polio' | 'fa' | 'feather';
@@ -44,3 +44,5 @@ export type ActionModify = 'add' | 'remove' | 'update'
 export type TaskType = typeof TaskTypeEnum[keyof typeof TaskTypeEnum]
 export type TaskFieldType = typeof TaskFieldEnum[keyof typeof TaskFieldEnum]
 export type UIType = typeof UIEnum[keyof typeof UIEnum]
+export type UploadAcceptType = Array<CSVAcceptType | ImageAcceptType | PDFAcceptType | VideoAcceptType | AudioAcceptType>;
+export type UploadFormat = typeof UploadFormatEnum[keyof typeof UploadFormatEnum]

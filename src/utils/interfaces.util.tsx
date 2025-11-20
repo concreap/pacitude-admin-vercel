@@ -1,5 +1,5 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
-import { AudioAcceptType, ButtonType, CSVAcceptType, DisabledType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, ListUIType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, RefineType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
+import { AudioAcceptType, ButtonType, CSVAcceptType, DisabledType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, ListUIType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, RefineType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UploadAcceptType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 import Question, { IQuestionCount, IQuestionTime } from "../models/Question.model";
@@ -10,6 +10,12 @@ import Topic from "../models/Topic.model";
 import Talent from "../models/Talent.model";
 import Task from "../models/Task.model";
 import Comment from "../models/Comment.model";
+
+export interface IResult {
+    error: boolean,
+    message: string,
+    data: any,
+}
 
 export interface IGroupedResource {
     name: string;
@@ -1048,7 +1054,7 @@ export interface IFileUpload {
 
 export interface IFileog {
     sizeLimit?: number,
-    accept: Array<CSVAcceptType> | Array<ImageAcceptType> | Array<PDFAcceptType> | Array<VideoAcceptType> | Array<AudioAcceptType>,
+    accept: UploadAcceptType
     type: FileAcceptType,
     onSelect(file: IFileUpload): void
 }

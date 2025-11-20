@@ -1,4 +1,4 @@
-import { DifficultyEnum, LevelEnum, TaskFieldEnum } from "./enums.util";
+import { DifficultyEnum, LevelEnum, TaskFieldEnum, UIEnum } from "./enums.util";
 
 export const RESOURCE_TYPES = [
     'default',
@@ -43,3 +43,6 @@ export const DIFFICULTIES: Array<typeof DifficultyEnum[keyof typeof DifficultyEn
 export const TASK_FIELDS: Array<typeof TaskFieldEnum[keyof typeof TaskFieldEnum]> = [
     'objectives', 'outcomes', 'requirements', 'instructions', 'deliverables', 'guidelines', 'skills', 'resources', 'rubrics',
 ]
+
+export const DURATION_DAYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14']
+export const DURATION_WEEKS = ['1', '2', '3']

@@ -138,6 +138,10 @@ input[type="number"]::-webkit-outer-spin-button {
     color: #FF6416;
 }
 
+.loader.blue {
+    color: var(--pacb-600)
+}
+
 .loader::before,
 .loader::after {
     width: 30px;

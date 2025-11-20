@@ -13,5 +13,6 @@ export const URL_METRICS = '/metrics'
 export const URL_QUESTION = '/questions'
 export const URL_ASSESSMENT = '/assessments'
 export const URL_CONFIG = '/config'
+export const URL_STORAGE = '/storage'
 
 export const URL_TALENTS = '/talents'

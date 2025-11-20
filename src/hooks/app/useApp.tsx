@@ -1,14 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { ICollection, IListQuery, IUserContext } from '../../utils/interfaces.util'
-import UserContext from '../../context/user/userContext'
+import { useCallback, useEffect } from 'react'
+import { IListQuery } from '../../utils/interfaces.util'
 import useContextType from '../useContextType'
-import { GET_CAREER, GET_CAREERS, GET_CORE, GET_FIELD, GET_FIELDS, GET_INDUSTRIES, GET_INDUSTRY, GET_SKILLS, GET_TOPICS } from '../../context/types'
+import { GET_CORE } from '../../context/types'
 import AxiosService from '../../services/axios.service'
-import { URL_CAREER, URL_CONFIG, URL_FIELD, URL_INDUSTRY } from '../../utils/path.util'
+import { URL_CONFIG } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
-import { collection, pagination } from '../../_data/seed'
 import useGoTo from '../useGoTo'
-import { coreTypeEnum } from '../../utils/enums.util'
 
 const useApp = () => {
 
@@ -30,11 +27,8 @@ const useApp = () => {
 
 
     const toggleAddResource = (e: any, type: string) => {
-
         if (e) { e.preventDefault(); }
-
         toDetailRoute(e, { route: 'core', name: `create-${type}` })
-    
     }
 
     /**
