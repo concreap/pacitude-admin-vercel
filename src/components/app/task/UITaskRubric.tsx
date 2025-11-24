@@ -11,6 +11,7 @@ import IconButton from "../../partials/buttons/IconButton";
 interface IUITaskRubric {
     rubrics: Array<ITaskRubric>
     edit: boolean,
+    onEdit?(data: ITaskRubric): void
 }
 
 const UITaskRubric = (props: IUITaskRubric) => {
@@ -18,6 +19,7 @@ const UITaskRubric = (props: IUITaskRubric) => {
     const {
         rubrics,
         edit,
+        onEdit,
     } = props;
 
     useEffect(() => {
@@ -57,7 +59,11 @@ const UITaskRubric = (props: IUITaskRubric) => {
                                                             name: 'edit-2',
                                                             size: 14,
                                                         }}
-                                                        onClick={(e) => { }}
+                                                        onClick={(e) => {
+                                                            if(onEdit){
+                                                                onEdit(rubric)
+                                                            }
+                                                        }}
                                                     />
                                                 </CellData>
                                             }

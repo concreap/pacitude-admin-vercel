@@ -1,7 +1,7 @@
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
-import { ICollection, IGroupedResource, IListQuery, IPoller } from '../../utils/interfaces.util'
+import { ICollection, IGroupedLink, IGroupedResource, IListQuery, IPoller } from '../../utils/interfaces.util'
 import useContextType from '../useContextType'
-import { GET_COMMENTS, GET_FIELD, GET_FIELDS, GET_TASK, GET_TASKS, SET_POLLER } from '../../context/types'
+import { GET_COMMENTS, GET_FIELD, GET_FIELDS, GET_TASK, GET_TASKS, SET_ITEM, SET_ITEMS, SET_POLLER } from '../../context/types'
 import AxiosService from '../../services/axios.service'
 import { URL_FIELD, URL_TASK } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
@@ -10,7 +10,7 @@ import helper from '../../utils/helper.util'
 import { ActionModify, FormActionType, ResourceType, TaskFieldType, UIType } from '../../utils/types.util'
 import { StatusEnum, TaskFieldEnum, UIEnum } from '../../utils/enums.util'
 import { UIPoller } from '../../_data/seed'
-import { ITaskResource } from '../../models/Task.model'
+import { ITaskDeliverable, ITaskInstruction, ITaskObjective, ITaskResource, ITaskRubric } from '../../models/Task.model'
 
 interface ICreateTask {
     fieldId: any,
@@ -19,23 +19,53 @@ interface ICreateTask {
     poll: boolean
 }
 
-interface IUpdateUITask {
+interface IUpdateTaskField {
     action: ActionModify
-    data: Array<any>,
-    field: TaskFieldType
+    data: Array<any>
+    field: TaskFieldType,
+    index?: number
+}
+
+interface IUpdateTaskItem {
+    data: any,
+    field: TaskFieldType,
+    index?: number
+    action: ActionModify,
+}
+
+interface IAppendTaskItem {
+    data: any,
+    field: TaskFieldType,
+    index?: number
 }
 
 interface IUpdateTask {
     id: string,
     title?: string,
     image?: string,
-    level?:string,
-    difficulty?:string,
+    level?: string,
+    difficulty?: string,
     description?: string,
     duration?: {
         value: number,
         handle: string
     }
+}
+
+interface IModifyTaskField {
+    id: any,
+    action: ActionModify,
+    fieldType: TaskFieldType
+    notes?: string,
+    objectives?: Array<ITaskObjective>,
+    instructions?: Array<ITaskInstruction>,
+    resources?: Array<ITaskResource>,
+    deliverables?: Array<ITaskDeliverable>,
+    requirements?: Array<string>,
+    rubrics?: Array<ITaskRubric>,
+    outcomes?: Array<string>,
+    skills?: Array<any>,
+    guidelines?: Array<string>,
 }
 
 const useTask = () => {
@@ -45,6 +75,8 @@ const useTask = () => {
     const {
         tasks,
         task,
+        items,
+        item,
         comments,
         comment,
         loading,
@@ -117,12 +149,184 @@ const useTask = () => {
         setIsPolling(true);
     };
 
-    const updateUITask = ({ data, action, field }: IUpdateUITask) => {
+    const updateTaskField = ({ data, action, field, index }: IUpdateTaskField) => {
 
         if (!helper.isEmpty(task, 'object') && data.length > 0) {
 
+            if (field === TaskFieldEnum.OBJECTIVES) {
+
+                let objectives = task.objectives;
+
+                data.forEach((item) => {
+
+                    let ex = objectives.find((ob) => ob.code === item.code);
+                    let exIndex = objectives.findIndex((ob) => ob.code === item.code);
+
+                    if (action === 'add' && !ex) {
+                        objectives.push(item)
+                    }
+
+                    if (action === 'remove' && ex) {
+                        objectives = objectives.filter((ob) => ob.code !== item.code)
+                    }
+
+                    if (action === 'update' && ex) {
+                        objectives.splice(exIndex, 1, item)
+                    }
+
+                })
+
+                setResource(GET_TASK, { ...task, objectives: objectives })
+
+            }
+
+            if (field === TaskFieldEnum.OUTCOMES) {
+
+                let outcomes = task.outcomes;
+
+                data.forEach((item) => {
+
+                    if (action === 'add') {
+
+                        let ex = outcomes.find((ot) => ot.toLowerCase() === item.toLowerCase());
+                        if (!ex) {
+                            outcomes.push(item)
+                        }
+
+                    }
+
+                    if (action === 'remove') {
+                        outcomes = outcomes.filter((ot) => ot.toLowerCase() !== item.toLowerCase())
+                    }
+
+                    if (action === 'update' && index !== undefined) {
+                        outcomes[index] = item;
+                    }
+
+                })
+
+                setResource(GET_TASK, { ...task, outcomes: outcomes })
+
+            }
+
+            if (field === TaskFieldEnum.REQUIREMENTS) {
+
+                let requirements = task.requirements;
+
+                data.forEach((item) => {
+
+                    if (action === 'add') {
+
+                        let ex = requirements.find((ot) => ot.toLowerCase() === item.toLowerCase());
+                        if (!ex) {
+                            requirements.push(item)
+                        }
+
+                    }
+
+                    if (action === 'remove') {
+                        requirements = requirements.filter((ot) => ot.toLowerCase() !== item.toLowerCase())
+                    }
+
+                    if (action === 'update' && index !== undefined) {
+                        requirements[index] = item;
+                    }
+
+                })
+
+                setResource(GET_TASK, { ...task, requirements: requirements })
+
+            }
+
+            if (field === TaskFieldEnum.INSTRUCTIONS) {
+
+                let instructions = task.instructions;
+
+                data.forEach((item) => {
+
+                    let ex = instructions.find((ob) => ob.code === item.code);
+                    let exIndex = instructions.findIndex((ob) => ob.code === item.code);
+
+                    if (action === 'add' && !ex) {
+                        instructions.push(item)
+                    }
+
+                    if (action === 'remove' && ex) {
+                        instructions = instructions.filter((ob) => ob.code !== item.code)
+                    }
+
+                    if (action === 'update' && ex) {
+                        instructions.splice(exIndex, 1, item)
+                    }
+
+                })
+
+                setResource(GET_TASK, { ...task, instructions: instructions })
+
+            }
+
+            if (field === TaskFieldEnum.DELIVERABLES) {
+
+                let deliverables = task.deliverables;
+
+                data.forEach((item) => {
+
+                    let ex = deliverables.find((ob) => ob.code === item.code);
+                    let exIndex = deliverables.findIndex((ob) => ob.code === item.code);
+
+                    if (action === 'add' && !ex) {
+                        deliverables.push(item)
+                    }
+
+                    if (action === 'remove' && ex) {
+                        deliverables = deliverables.filter((ob) => ob.code !== item.code);
+                    }
+
+                    if (action === 'update' && ex) {
+                        deliverables.splice(exIndex, 1, item)
+                    }
+
+                })
+
+                setResource(GET_TASK, { ...task, deliverables: deliverables })
+
+            }
+
+            if (field === TaskFieldEnum.GUIDELINES) {
+
+                let submission = task.submission;
+                let guidelines = submission.guidelines;
+
+                data.forEach((item) => {
+
+                    if (action === 'add') {
+
+                        let ex = guidelines.find((ot) => ot.toLowerCase() === item.toLowerCase());
+                        if (!ex) {
+                            guidelines.push(item)
+                        }
+
+                    }
+
+                    if (action === 'remove') {
+                        guidelines = guidelines.filter((ot) => ot.toLowerCase() !== item.toLowerCase())
+                    }
+
+                    if (action === 'update' && index !== undefined) {
+                        guidelines[index] = item;
+                    }
+
+                })
+
+                submission = { ...submission, guidelines: guidelines }
+                setResource(GET_TASK, { ...task, submission: submission })
+
+            }
+
             if (field === TaskFieldEnum.SKILLS) {
+
                 let currSkills = task.skills;
+
                 data.forEach((item) => {
 
                     if (action === 'add') {
@@ -139,7 +343,77 @@ const useTask = () => {
                     }
 
                 })
+
                 setResource(GET_TASK, { ...task, skills: currSkills })
+
+            }
+
+            if (field === TaskFieldEnum.RESOURCES) {
+
+                let resources = task.resources;
+                let group: IGroupedResource = data[0];
+
+                group.links.forEach((link: IGroupedLink) => {
+
+                    let ex = resources.find((r) => r.code === link.code);
+
+                    if (action === 'add' && !ex) {
+                        resources.push({
+                            name: group.name,
+                            description: link.snippet,
+                            title: link.title,
+                            url: link.url,
+                            code: link.code
+                        })
+                    }
+
+                    if (action === 'remove' && ex) {
+                        resources = resources.filter((r) => r.code !== link.code)
+                    }
+
+                    if (action === 'update' && ex) {
+
+                        let exI = resources.findIndex((r) => r.code === link.code);
+
+                        if (exI) {
+                            ex.title = link.title;
+                            ex.url = link.url
+                            resources.splice(exI, 1, ex)
+                        }
+
+                    }
+
+                });
+
+                setResource(GET_TASK, { ...task, resources: resources })
+
+            }
+
+            if (field === TaskFieldEnum.RUBRICS) {
+
+                let rubrics = task.rubrics;
+
+                data.forEach((item) => {
+
+                    let ex = rubrics.find((ob) => ob.code === item.code);
+                    let exIndex = rubrics.findIndex((ob) => ob.code === item.code);
+
+                    if (action === 'add' && !ex) {
+                        rubrics.push(item)
+                    }
+
+                    if (action === 'remove' && ex) {
+                        rubrics = rubrics.filter((ob) => ob.code !== item.code)
+                    }
+
+                    if (action === 'update' && ex) {
+                        rubrics.splice(exIndex, 1, item)
+                    }
+
+                })
+
+                setResource(GET_TASK, { ...task, rubrics: rubrics })
+
             }
 
         }
@@ -186,7 +460,8 @@ const useTask = () => {
                 name.links.push({
                     url: data[i].url,
                     snippet: data[i].description,
-                    title: data[i].title
+                    title: data[i].title,
+                    code: data[i].code
                 })
             } else {
                 group.push({
@@ -194,7 +469,8 @@ const useTask = () => {
                     links: [{
                         url: data[i].url,
                         snippet: data[i].description,
-                        title: data[i].title
+                        title: data[i].title,
+                        code: data[i].code
                     }]
                 })
             }
@@ -238,6 +514,227 @@ const useTask = () => {
         }
 
         return result
+    }
+
+    const updateTaskItem = ({ data, field, index, action }: IUpdateTaskItem) => {
+
+        if (!helper.isEmpty(item, 'object')) {
+
+            if (field === TaskFieldEnum.OBJECTIVES && item) {
+
+                let currItem = item as ITaskObjective;
+
+                currItem.title = data.title;
+                if (data.step && index !== undefined && index >= 0) {
+                    currItem.steps[index] = data.step;
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem],
+                    action: action,
+                    field: field
+                })
+
+            }
+
+            if (field === TaskFieldEnum.OUTCOMES && item) {
+
+                let currItem = item as { outcome: string };
+
+                if (data.outcome && index !== undefined && index >= 0) {
+                    if (!data.outcome.toLowerCase().includes(`new-out${index + 1}:`)) {
+                        currItem.outcome = `New-OUT${index + 1}: ` + data.outcome;
+                    } else {
+                        currItem.outcome = data.outcome;
+                    }
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem.outcome],
+                    action: action,
+                    field: field,
+                    index: index
+                })
+
+            }
+
+            if (field === TaskFieldEnum.REQUIREMENTS && item) {
+
+                let currItem = item as { requirement: string };
+
+                if (data.requirement && index !== undefined && index >= 0) {
+                    if (!data.requirement.toLowerCase().includes(`new-req${index + 1}:`)) {
+                        currItem.requirement = `New-REQ${index + 1}: ` + data.requirement;
+                    } else {
+                        currItem.requirement = data.requirement;
+                    }
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem.requirement],
+                    action: action,
+                    field: field,
+                    index: index
+                })
+
+            }
+
+            if (field === TaskFieldEnum.INSTRUCTIONS && item) {
+
+                let currItem = item as ITaskInstruction;
+
+                currItem.title = data.title;
+                if (data.action && index !== undefined && index >= 0) {
+                    currItem.actions[index] = data.action;
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem],
+                    action: action,
+                    field: field
+                })
+
+            }
+
+            if (field === TaskFieldEnum.DELIVERABLES && item) {
+
+                let currItem = item as ITaskDeliverable;
+
+                currItem.title = data.title;
+                if (data.outcome && index !== undefined && index >= 0) {
+                    currItem.outcomes[index] = data.outcome;
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem],
+                    action: action,
+                    field: field
+                })
+
+            }
+
+            if (field === TaskFieldEnum.GUIDELINES && item) {
+
+                let currItem = item as { guide: string };
+
+                if (data.guide && index !== undefined && index >= 0) {
+                    currItem.guide = data.guide;
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem.guide],
+                    action: action,
+                    field: field,
+                    index: index,
+                })
+
+            }
+
+            if (field === TaskFieldEnum.RESOURCES && item) {
+
+                let currItem = item as IGroupedResource;
+
+                const link = currItem.links.find((lk) => lk.code === data.code);
+                const linkI = currItem.links.findIndex((lk) => lk.code === data.code);
+
+                if (link && linkI >= 0) {
+
+                    if (data.title) {
+                        link.title = data.title;
+                    }
+
+                    if (data.url) {
+                        link.url = data.url;
+                    }
+
+                    if (data.description) {
+                        link.snippet = data.snippet;
+                    }
+
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem],
+                    action: action,
+                    field: field
+                })
+
+            }
+
+            if (field === TaskFieldEnum.RUBRICS && item) {
+
+                let currItem = item as ITaskRubric;
+
+                if(data.criteria){
+                    currItem.criteria = data.criteria;
+                }
+
+                if(data.description){
+                    currItem.description = data.description;
+                }
+
+                if(data.point){
+                    currItem.point = data.point;
+                }
+
+                // update the item in context
+                setResource(SET_ITEM, currItem);
+
+                // update the task resource
+                updateTaskField({
+                    data: [currItem],
+                    action: action,
+                    field: field
+                })
+
+            }
+
+        }
+
+    }
+
+    const appendTaskItem = ({ data, field, index }: IAppendTaskItem) => {
+
+        if (field === TaskFieldEnum.OUTCOMES && index !== undefined) {
+            setResource(SET_ITEM, { ...data, index })
+        } else if (field === TaskFieldEnum.REQUIREMENTS && index !== undefined) {
+            setResource(SET_ITEM, { ...data, index })
+        } else {
+            setResource(SET_ITEM, data)
+        }
+
+    }
+
+    const clearTaskItem = () => {
+        setResource(SET_ITEM, {})
     }
 
     /**
@@ -630,6 +1127,49 @@ const useTask = () => {
 
     }, [setLoading, unsetLoading, setResource])
 
+    /**
+     * @name modifyTaskField
+     */
+    const modifyTaskField = useCallback(async (data: IModifyTaskField) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_TASK}/modify-field/${data.id}`,
+            payload: { ...data }
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'task updated successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response
+
+    }, [setLoading, unsetLoading])
+
     return {
         tasks,
         task,
@@ -639,11 +1179,15 @@ const useTask = () => {
         loader,
         poller,
         TaskStatus,
+        fieldItem: item,
 
-        updateUITask,
+        updateTaskField,
         countTaskFields,
         groupTaskResources,
         formatTaskStatus,
+        appendTaskItem,
+        updateTaskItem,
+        clearTaskItem,
 
         getTasks,
         getTask,
@@ -652,6 +1196,7 @@ const useTask = () => {
         createTask,
         deleteTask,
         updateTask,
+        modifyTaskField,
     }
 }
 

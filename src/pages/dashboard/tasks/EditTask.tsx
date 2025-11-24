@@ -17,16 +17,19 @@ import { useParams } from "react-router-dom";
 import { DIFFICULTIES, DURATION_DAYS, DURATION_WEEKS, LEVELS, TASK_FIELDS } from "../../../utils/constants.util";
 import IconButton from "../../../components/partials/buttons/IconButton";
 import Icon from "../../../components/partials/icons/Icon";
-import { ITaskDeliverable, ITaskInstruction, ITaskObjective } from "../../../models/Task.model";
+import { ITaskDeliverable, ITaskInstruction, ITaskObjective, ITaskResource } from "../../../models/Task.model";
 import Dot from "../../../components/partials/ui/Dot";
 import Skill from "../../../models/Skill.model";
-import { IGroupedResource } from "../../../utils/interfaces.util";
+import { IGroupedLink, IGroupedResource } from "../../../utils/interfaces.util";
 import UIResource from "../../../components/app/UIResource";
 import UITaskRubric from "../../../components/app/task/UITaskRubric";
 import Uploader from "../../../components/partials/dialogs/Uploader";
 import ImageUI from "../../../components/app/ImageUI";
 import FormField from "../../../components/partials/inputs/FormField";
 import TextInput from "../../../components/partials/inputs/TextInput";
+import { apiresponse } from "../../../_data/seed";
+import NumberInput from "../../../components/partials/inputs/NumberInput";
+import TextAreaInput from "../../../components/partials/inputs/TextAreaInput";
 
 const EditTaskPage = () => {
 
@@ -41,7 +44,11 @@ const EditTaskPage = () => {
 
     const { toast, setToast } = useToast()
     const { loading: coreLoading, core, getCoreResources } = useApp()
-    const { task, loading, loader, getTask, updateUITask, countTaskFields, groupTaskResources, updateTask } = useTask()
+    const {
+        task, loading, loader, fieldItem,
+        getTask, updateTaskField, countTaskFields, updateTaskItem, clearTaskItem,
+        groupTaskResources, updateTask, appendTaskItem, modifyTaskField
+    } = useTask()
 
     const [taskField, setTaskField] = useState<typeof TaskFieldEnum[keyof typeof TaskFieldEnum]>(TaskFieldEnum.OBJECTIVES)
     const [resources, setResources] = useState<Array<IGroupedResource>>([]);
@@ -187,6 +194,272 @@ const EditTaskPage = () => {
                 error: 'all',
                 position: 'top-right'
             })
+            setForm({ ...form, level: '', difficulty: '' })
+            setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+            handleGetTask(task._id)
+        }
+
+        else {
+            let message = response.message;
+            if (response.errors.length > 0) {
+                message = response.errors.join(',')
+            }
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                title: 'Error',
+                message: message,
+                error: 'all',
+                position: 'top-right'
+            })
+        }
+
+        setTimeout(() => {
+            setToast({ ...toast, show: false })
+        }, 1800)
+    }
+
+    const handleModifyTask = async (e?: any) => {
+
+        if (e) { e.preventDefault() }
+
+        let response = apiresponse;
+
+        if (edit.type === EditTaskEnum.OBJECTIVES) {
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'update',
+                fieldType: TaskFieldEnum.OBJECTIVES,
+                objectives: [{
+                    code: fieldItem?.code || '',
+                    title: fieldItem?.title || '',
+                    steps: fieldItem?.steps || [],
+                }],
+            })
+
+        }
+
+        if (edit.type === EditTaskEnum.OUTCOMES) {
+
+            let outcome: string = fieldItem?.outcome || '';
+            if (outcome.toLowerCase().includes(`new-out${fieldItem?.index + 1}:`)) {
+                outcome = outcome.toLowerCase().replace(`new-out${fieldItem?.index + 1 || 0}:`, "")
+            }
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'add',
+                fieldType: TaskFieldEnum.OUTCOMES,
+                outcomes: [helper.capitalize(outcome)],
+            })
+
+        }
+
+        if (edit.type === EditTaskEnum.REQUIREMENTS) {
+
+            let requirement: string = fieldItem?.requirement || '';
+            if (requirement.toLowerCase().includes(`new-req${fieldItem?.index + 1}:`)) {
+                requirement = requirement.toLowerCase().replace(`new-req${fieldItem?.index + 1 || 0}:`, "")
+            }
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'add',
+                fieldType: TaskFieldEnum.REQUIREMENTS,
+                requirements: [helper.capitalize(requirement)],
+            })
+
+        }
+
+        if (edit.type === EditTaskEnum.INSTRUCTIONS) {
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'update',
+                fieldType: TaskFieldEnum.INSTRUCTIONS,
+                instructions: [{
+                    code: fieldItem?.code || '',
+                    title: fieldItem?.title || '',
+                    actions: fieldItem?.actions || [],
+                }],
+            })
+
+        }
+
+        if (edit.type === EditTaskEnum.DELIVERABLES) {
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'update',
+                fieldType: TaskFieldEnum.DELIVERABLES,
+                deliverables: [{
+                    code: fieldItem?.code || '',
+                    title: fieldItem?.title || '',
+                    outcomes: fieldItem?.outcomes || [],
+                }],
+            })
+
+        }
+
+        if (edit.type === EditTaskEnum.GUIDELINES) {
+
+            let guide: string = fieldItem?.guide || '';
+            if (guide.toLowerCase().includes(`new-guide${fieldItem?.index + 1}:`)) {
+                guide = guide.toLowerCase().replace(`new-guide${fieldItem?.index + 1 || 0}:`, "")
+            }
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'add',
+                fieldType: TaskFieldEnum.GUIDELINES,
+                guidelines: [helper.capitalize(guide)],
+            })
+
+        }
+
+        if (!edit.enabled && taskField === TaskFieldEnum.SKILLS) {
+
+            const skillIds = task.skills.map((sk) => sk._id)
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'add',
+                fieldType: TaskFieldEnum.SKILLS,
+                skills: skillIds,
+            })
+
+        }
+
+        if (edit.type === EditTaskEnum.RESOURCES) {
+
+            const resources: Array<ITaskResource> = fieldItem.links.map((lk: IGroupedLink) => ({
+                name: fieldItem?.name || '',
+                code: lk.code,
+                title: lk.title,
+                description: lk.snippet,
+                url: lk.url,
+            }))
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'update',
+                fieldType: TaskFieldEnum.RESOURCES,
+                resources: resources,
+            })
+
+        }
+
+        if (edit.type === EditTaskEnum.RUBRICS) {
+
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'update',
+                fieldType: TaskFieldEnum.RUBRICS,
+                rubrics: [{
+                    code: fieldItem?.code || '',
+                    criteria: fieldItem?.criteria || '',
+                    description: fieldItem?.description || '',
+                    point: fieldItem?.point || 0
+                }],
+            })
+
+        }
+
+        if (!response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                title: 'Successful',
+                message: 'Task updated successfully',
+                error: 'all',
+                position: 'top-right'
+            })
+            clearTaskItem()
+            setForm({ ...form, level: '', difficulty: '' })
+            setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+            handleGetTask(task._id)
+        }
+
+        else {
+            let message = response.message;
+            if (response.errors.length > 0) {
+                message = response.errors.join(',')
+            }
+
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error',
+                title: 'Error',
+                message: message,
+                error: 'all',
+                position: 'top-right'
+            })
+        }
+
+        setTimeout(() => {
+            setToast({ ...toast, show: false })
+        }, 1800)
+    }
+
+    const handleRemoveItem = async (e: any, data: any) => {
+
+        if (e) { e.preventDefault() }
+
+        let response = apiresponse;
+
+        if (taskField === TaskFieldEnum.OUTCOMES) {
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'remove',
+                fieldType: taskField,
+                outcomes: [data],
+            })
+        }
+
+        if (taskField === TaskFieldEnum.REQUIREMENTS) {
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'remove',
+                fieldType: taskField,
+                requirements: [data],
+            })
+        }
+
+        if (taskField === TaskFieldEnum.GUIDELINES) {
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'remove',
+                fieldType: taskField,
+                guidelines: [data],
+            })
+        }
+
+        if (taskField === TaskFieldEnum.SKILLS) {
+            response = await modifyTaskField({
+                id: task._id,
+                action: 'remove',
+                fieldType: taskField,
+                skills: [data],
+            })
+        }
+
+
+        if (!response.error) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'success',
+                title: 'Successful',
+                message: 'Task updated successfully',
+                error: 'all',
+                position: 'top-right'
+            })
+            clearTaskItem()
             setForm({ ...form, level: '', difficulty: '' })
             setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
             handleGetTask(task._id)
@@ -614,7 +887,10 @@ const EditTaskPage = () => {
                                                                                             name: 'edit-2',
                                                                                             size: 14,
                                                                                         }}
-                                                                                        onClick={(e) => { setEdit({ ...edit, enabled: true, type: EditTaskEnum.OBJECTIVES }) }}
+                                                                                        onClick={(e) => {
+                                                                                            setEdit({ enabled: true, type: EditTaskEnum.OBJECTIVES })
+                                                                                            appendTaskItem({ data: ov, field: TaskFieldEnum.OBJECTIVES })
+                                                                                        }}
                                                                                     />
 
                                                                                 </div>
@@ -632,7 +908,25 @@ const EditTaskPage = () => {
                                                         {
                                                             taskField === TaskFieldEnum.OUTCOMES &&
                                                             <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task Learning {helper.capitalize(taskField)} ({task.outcomes.length})</h3>
+                                                                <div className="flex items-center mb-[2rem]">
+                                                                    <h3 className="font-mona pag-900 text-[15px] ">Task Learning {helper.capitalize(taskField)} ({task.outcomes.length})</h3>
+                                                                    <IconButton
+                                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                        className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700 ml-auto"
+                                                                        icon={{
+                                                                            type: 'feather',
+                                                                            name: 'plus',
+                                                                            size: 14,
+                                                                        }}
+                                                                        onClick={(e) => {
+                                                                            updateTaskField({
+                                                                                data: [`New-OUT${task.outcomes.length + 1}:outcome for task - edit to update`],
+                                                                                action: 'add',
+                                                                                field: TaskFieldEnum.OUTCOMES
+                                                                            })
+                                                                        }}
+                                                                    />
+                                                                </div>
 
                                                                 <div className="space-y-[1rem]">
                                                                     {
@@ -646,16 +940,47 @@ const EditTaskPage = () => {
                                                                                         <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
                                                                                     </div>
 
-                                                                                    <IconButton
-                                                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                                                        className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700 ml-auto"
-                                                                                        icon={{
-                                                                                            type: 'feather',
-                                                                                            name: 'edit-2',
-                                                                                            size: 14,
-                                                                                        }}
-                                                                                        onClick={(e) => { setEdit({ ...edit, enabled: true, type: EditTaskEnum.OUTCOMES }) }}
-                                                                                    />
+                                                                                    <div className="flex items-center ml-auto gap-x-[1.2rem]">
+
+                                                                                        {
+                                                                                            ov.toLowerCase().includes(`new-out${index + 1}:`) &&
+                                                                                            <IconButton
+                                                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                                                className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700"
+                                                                                                icon={{
+                                                                                                    type: 'feather',
+                                                                                                    name: 'edit-2',
+                                                                                                    size: 14,
+                                                                                                }}
+                                                                                                onClick={(e) => {
+                                                                                                    setEdit({ enabled: true, type: EditTaskEnum.OUTCOMES })
+                                                                                                    appendTaskItem({ data: { outcome: ov, index }, field: TaskFieldEnum.OUTCOMES })
+                                                                                                }}
+                                                                                            />
+                                                                                        }
+
+                                                                                        <IconButton
+                                                                                            size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                                            className="bg-par-50 bgh-par-200 par-700 parh-700"
+                                                                                            icon={{
+                                                                                                type: 'feather',
+                                                                                                name: 'x',
+                                                                                                size: 14,
+                                                                                            }}
+                                                                                            onClick={(e) => {
+                                                                                                if (ov.toLowerCase().includes(`new-out${index + 1}:`)) {
+                                                                                                    updateTaskField({
+                                                                                                        data: [ov],
+                                                                                                        action: 'remove',
+                                                                                                        field: TaskFieldEnum.OUTCOMES
+                                                                                                    })
+                                                                                                } else {
+                                                                                                    handleRemoveItem(e, ov)
+                                                                                                }
+                                                                                            }}
+                                                                                        />
+
+                                                                                    </div>
 
                                                                                 </div>
 
@@ -670,7 +995,26 @@ const EditTaskPage = () => {
                                                         {
                                                             taskField === TaskFieldEnum.REQUIREMENTS &&
                                                             <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.requirements.length})</h3>
+                                                                <div className="flex items-center mb-[2rem]">
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.requirements.length})</h3>
+                                                                    <IconButton
+                                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                        className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700 ml-auto"
+                                                                        icon={{
+                                                                            type: 'feather',
+                                                                            name: 'plus',
+                                                                            size: 14,
+                                                                        }}
+                                                                        onClick={(e) => {
+                                                                            updateTaskField({
+                                                                                data: [`New-REQ${task.requirements.length + 1}:requirement for task - edit to update`],
+                                                                                action: 'add',
+                                                                                field: TaskFieldEnum.REQUIREMENTS
+                                                                            })
+                                                                        }}
+                                                                    />
+                                                                </div>
+
 
                                                                 <div className="space-y-[1rem]">
                                                                     {
@@ -684,16 +1028,48 @@ const EditTaskPage = () => {
                                                                                         <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
                                                                                     </div>
 
-                                                                                    <IconButton
-                                                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                                                        className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700 ml-auto"
-                                                                                        icon={{
-                                                                                            type: 'feather',
-                                                                                            name: 'edit-2',
-                                                                                            size: 14,
-                                                                                        }}
-                                                                                        onClick={(e) => { setEdit({ ...edit, enabled: true, type: EditTaskEnum.REQUIREMENTS }) }}
-                                                                                    />
+                                                                                    <div className="flex items-center ml-auto gap-x-[1.2rem]">
+
+                                                                                        {
+                                                                                            ov.toLowerCase().includes(`new-req${index + 1}:`) &&
+                                                                                            <IconButton
+                                                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                                                className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700"
+                                                                                                icon={{
+                                                                                                    type: 'feather',
+                                                                                                    name: 'edit-2',
+                                                                                                    size: 14,
+                                                                                                }}
+                                                                                                onClick={(e) => {
+                                                                                                    setEdit({ enabled: true, type: EditTaskEnum.REQUIREMENTS })
+                                                                                                    appendTaskItem({ data: { requirement: ov, index }, field: TaskFieldEnum.REQUIREMENTS })
+                                                                                                }}
+                                                                                            />
+                                                                                        }
+
+                                                                                        <IconButton
+                                                                                            size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                                            className="bg-par-50 bgh-par-200 par-700 parh-700"
+                                                                                            icon={{
+                                                                                                type: 'feather',
+                                                                                                name: 'x',
+                                                                                                size: 14,
+                                                                                            }}
+                                                                                            onClick={(e) => {
+                                                                                                if (ov.toLowerCase().includes(`new-req${index + 1}:`)) {
+                                                                                                    updateTaskField({
+                                                                                                        data: [ov],
+                                                                                                        action: 'remove',
+                                                                                                        field: TaskFieldEnum.REQUIREMENTS
+                                                                                                    })
+                                                                                                } else {
+                                                                                                    handleRemoveItem(e, ov)
+                                                                                                }
+                                                                                            }}
+                                                                                        />
+
+                                                                                    </div>
+
 
                                                                                 </div>
 
@@ -744,7 +1120,10 @@ const EditTaskPage = () => {
                                                                                             name: 'edit-2',
                                                                                             size: 14,
                                                                                         }}
-                                                                                        onClick={(e) => { setEdit({ ...edit, enabled: true, type: EditTaskEnum.INSTRUCTIONS }) }}
+                                                                                        onClick={(e) => {
+                                                                                            setEdit({ enabled: true, type: EditTaskEnum.INSTRUCTIONS })
+                                                                                            appendTaskItem({ data: ov, field: TaskFieldEnum.INSTRUCTIONS })
+                                                                                        }}
                                                                                     />
 
                                                                                 </div>
@@ -798,7 +1177,10 @@ const EditTaskPage = () => {
                                                                                             name: 'edit-2',
                                                                                             size: 14,
                                                                                         }}
-                                                                                        onClick={(e) => { setEdit({ ...edit, enabled: true, type: EditTaskEnum.DELIVERABLES }) }}
+                                                                                        onClick={(e) => {
+                                                                                            setEdit({ enabled: true, type: EditTaskEnum.DELIVERABLES })
+                                                                                            appendTaskItem({ data: ov, field: TaskFieldEnum.DELIVERABLES })
+                                                                                        }}
                                                                                     />
 
                                                                                 </div>
@@ -814,6 +1196,96 @@ const EditTaskPage = () => {
                                                         }
 
                                                         {
+                                                            taskField === TaskFieldEnum.GUIDELINES &&
+                                                            <>
+
+                                                                <div className="flex items-center mb-[1rem]">
+                                                                    <h3 className="font-mona pag-900 text-[15px]">Task Submission {helper.capitalize(taskField)} ({task.submission.guidelines.length})</h3>
+                                                                    <IconButton
+                                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                        className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700 ml-auto"
+                                                                        icon={{
+                                                                            type: 'feather',
+                                                                            name: 'plus',
+                                                                            size: 14,
+                                                                        }}
+                                                                        onClick={(e) => {
+                                                                            updateTaskField({
+                                                                                data: [`New-GUIDE${task.submission.guidelines.length + 1}:guideline for task submission - edit to update`],
+                                                                                action: 'add',
+                                                                                field: TaskFieldEnum.GUIDELINES
+                                                                            })
+                                                                        }}
+                                                                    />
+                                                                </div>
+
+                                                                <div className="font-mona-light text-[14px] pag-900 mb-[2rem]" dangerouslySetInnerHTML={{ __html: task.submission.notes }} />
+
+                                                                <div className="space-y-[1rem]">
+                                                                    {
+                                                                        task.submission.guidelines.length > 0 &&
+                                                                        task.submission.guidelines.map((ov: string, index) =>
+                                                                            <Fragment key={ov}>
+
+                                                                                <div className="flex items-center">
+
+                                                                                    <div className="space-y-[0.65rem]">
+                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
+                                                                                    </div>
+                                                                                    <div className="flex items-center ml-auto gap-x-[1.2rem]">
+
+                                                                                        {
+                                                                                            ov.toLowerCase().includes(`new-guide${index + 1}:`) &&
+                                                                                            <IconButton
+                                                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                                                className="bg-pag-50 bgh-pacb-200 pacb-700 pacbh-700"
+                                                                                                icon={{
+                                                                                                    type: 'feather',
+                                                                                                    name: 'edit-2',
+                                                                                                    size: 14,
+                                                                                                }}
+                                                                                                onClick={(e) => {
+                                                                                                    setEdit({ enabled: true, type: EditTaskEnum.GUIDELINES })
+                                                                                                    appendTaskItem({ data: { guide: ov, index }, field: TaskFieldEnum.GUIDELINES })
+                                                                                                }}
+                                                                                            />
+                                                                                        }
+
+                                                                                        <IconButton
+                                                                                            size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                                            className="bg-par-50 bgh-par-200 par-700 parh-700"
+                                                                                            icon={{
+                                                                                                type: 'feather',
+                                                                                                name: 'x',
+                                                                                                size: 14,
+                                                                                            }}
+                                                                                            onClick={(e) => {
+                                                                                                if (ov.toLowerCase().includes(`new-guide${index + 1}:`)) {
+                                                                                                    updateTaskField({
+                                                                                                        data: [ov],
+                                                                                                        action: 'remove',
+                                                                                                        field: TaskFieldEnum.GUIDELINES
+                                                                                                    })
+                                                                                                } else {
+                                                                                                    handleRemoveItem(e, ov)
+                                                                                                }
+                                                                                            }}
+                                                                                        />
+
+                                                                                    </div>
+
+
+                                                                                </div>
+
+                                                                                {(index + 1) < task.submission.guidelines.length && <Divider padding={{ enable: false }} />}
+                                                                            </Fragment>
+                                                                        )
+                                                                    }
+                                                                </div>
+                                                            </>
+                                                        }
+
+                                                        {
                                                             taskField === TaskFieldEnum.SKILLS &&
                                                             <>
                                                                 <div className="flex items-center">
@@ -823,13 +1295,13 @@ const EditTaskPage = () => {
                                                                         semantic={"info"}
                                                                         size="xsm"
                                                                         className="form-button ml-auto"
-                                                                        loading={false}
+                                                                        loading={loader}
                                                                         disabled={countTaskFields(TaskFieldEnum.SKILLS, UIEnum.NEW) > 0 ? false : true}
                                                                         text={{
                                                                             label: "Save",
                                                                             size: 13,
                                                                         }}
-                                                                        onClick={(e) => { }}
+                                                                        onClick={(e) => handleModifyTask(e)}
                                                                     />
                                                                 </div>
 
@@ -863,7 +1335,7 @@ const EditTaskPage = () => {
                                                                                 let skill = skills.find((sk) => sk._id === data.value)
 
                                                                                 if (skill) {
-                                                                                    updateUITask({
+                                                                                    updateTaskField({
                                                                                         action: 'add',
                                                                                         field: TaskFieldEnum.SKILLS,
                                                                                         data: [{ ...skill, ui: UIEnum.NEW }]
@@ -906,11 +1378,13 @@ const EditTaskPage = () => {
                                                                                         }}
                                                                                         onClick={(e) => {
                                                                                             if (ov.ui && ov.ui === UIEnum.NEW) {
-                                                                                                updateUITask({
+                                                                                                updateTaskField({
                                                                                                     action: 'remove',
                                                                                                     field: TaskFieldEnum.SKILLS,
                                                                                                     data: [ov]
                                                                                                 })
+                                                                                            } else {
+                                                                                                handleRemoveItem(e, ov._id)
                                                                                             }
                                                                                         }}
                                                                                     />
@@ -937,7 +1411,15 @@ const EditTaskPage = () => {
                                                                         resources.length > 0 &&
                                                                         resources.map((ov: IGroupedResource, index) =>
                                                                             <Fragment key={ov.name}>
-                                                                                <UIResource edit={true} resource={ov} index={index} />
+                                                                                <UIResource
+                                                                                    edit={true}
+                                                                                    resource={ov}
+                                                                                    index={index}
+                                                                                    onEdit={(data) => {
+                                                                                        setEdit({ enabled: true, type: EditTaskEnum.RESOURCES })
+                                                                                        appendTaskItem({ data, field: TaskFieldEnum.RESOURCES })
+                                                                                    }}
+                                                                                />
                                                                             </Fragment>
                                                                         )
                                                                     }
@@ -950,7 +1432,14 @@ const EditTaskPage = () => {
                                                             taskField === TaskFieldEnum.RUBRICS &&
                                                             <>
                                                                 <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.rubrics.length})</h3>
-                                                                <UITaskRubric edit={true} rubrics={task.rubrics} />
+                                                                <UITaskRubric
+                                                                    edit={true}
+                                                                    rubrics={task.rubrics}
+                                                                    onEdit={(data) => {
+                                                                        setEdit({ enabled: true, type: EditTaskEnum.RUBRICS })
+                                                                        appendTaskItem({ data, field: TaskFieldEnum.RUBRICS })
+                                                                    }}
+                                                                />
                                                             </>
                                                         }
 
@@ -965,569 +1454,934 @@ const EditTaskPage = () => {
                                     </>
                                 }
 
-                                {/* EDIT BASIC TASK DETAILS */}
+                                {/* EDIT TASK DETAILS */}
                                 {
-                                    edit.enabled && edit.type === EditTaskEnum.DETAILS &&
+                                    edit.enabled &&
                                     <>
-                                        <CardUI>
+                                        <CardUI className="relative">
 
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                <FormField
-                                                    className=""
-                                                >
-                                                    <ImageUI
-                                                        title={'Change task image'}
-                                                        url={file.url}
-                                                        onChange={(upload) => {
-                                                            if (!upload.error) {
-                                                                setFile(upload.data);
-                                                            }
+                                            <form
+                                                onSubmit={(e) => { e.preventDefault() }}
+                                                className={`${edit.type === EditTaskEnum.RESOURCES ? 'w-[60%]' : 'w-[40%]'} mx-auto space-y-[1.2rem] py-[1.5rem]`}>
+
+                                                <div className="mb-[2rem]">
+                                                    <IconButton
+                                                        size="min-w-[1.6rem] min-h-[1.6rem]"
+                                                        className="bg-par-50 bgh-par-200 par-700 parh-700"
+                                                        icon={{
+                                                            type: 'feather',
+                                                            name: 'x',
+                                                            size: 14,
                                                         }}
-                                                    />
-                                                </FormField>
-
-                                                <FormField>
-                                                    <TextInput
-                                                        type="text"
-                                                        size="sm"
-                                                        showFocus={true}
-                                                        autoComplete={false}
-                                                        placeholder="Type here"
-                                                        defaultValue={task.title}
                                                         label={{
-                                                            title: 'Change Task Title',
-                                                            required: false,
-                                                            fontSize: 13
+                                                            text: 'Cancel',
+                                                            weight: 'medium',
+                                                            className: 'par-600'
                                                         }}
-                                                        onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                                        onClick={(e) => {
+                                                            clearTaskItem()
+                                                            setEdit({ ...edit, enabled: false, type: EditTaskEnum.OBJECTIVES })
+                                                        }}
                                                     />
-                                                </FormField>
+                                                </div>
 
-                                                <FormField
-                                                    label={{
-                                                        title: 'Change Task Duration',
-                                                        required: false,
-                                                        fontSize: 13
-                                                    }}
-                                                >
-                                                    <div className="grid grid-cols-[48%_48%] gap-x-[4%] mt-[0.3rem]">
-                                                        <div>
-                                                            <Filter
-                                                                ref={leRef}
-                                                                size='sm'
-                                                                className='la-filter'
-                                                                placeholder="Duration Handle"
-                                                                defaultValue={task.duration.handle}
-                                                                position="bottom"
-                                                                menu={{
-                                                                    search: false,
-                                                                    fullWidth: true,
-                                                                    limitHeight: 'sm'
-                                                                }}
-                                                                items={[
-                                                                    { label: 'Days', value: 'days' },
-                                                                    { label: 'Weeks', value: 'weeks' }
-                                                                ]}
-                                                                noFilter={false}
-                                                                onChange={(data) => {
-                                                                    setForm({ ...form, handle: data.value })
+
+                                                {
+                                                    edit.type === EditTaskEnum.DETAILS &&
+                                                    <>
+
+                                                        <FormField
+                                                            className=""
+                                                        >
+                                                            <ImageUI
+                                                                title={'Change task image'}
+                                                                url={file.url}
+                                                                onChange={(upload) => {
+                                                                    if (!upload.error) {
+                                                                        setFile(upload.data);
+                                                                    }
                                                                 }}
                                                             />
-                                                        </div>
-                                                        <div>
-                                                            <Filter
-                                                                ref={leRef}
-                                                                size='sm'
-                                                                className={`la-filter ${!form.handle ? 'disabled-light' : ''}`}
-                                                                placeholder="Duration Value"
-                                                                defaultValue={task.duration.value.toString()}
-                                                                position="bottom"
-                                                                menu={{
-                                                                    search: false,
-                                                                    fullWidth: true,
-                                                                    limitHeight: 'sm'
+                                                        </FormField>
+
+                                                        <FormField>
+                                                            <TextInput
+                                                                type="text"
+                                                                size="sm"
+                                                                showFocus={true}
+                                                                autoComplete={false}
+                                                                placeholder="Type here"
+                                                                defaultValue={task.title}
+                                                                label={{
+                                                                    title: 'Change Task Title',
+                                                                    required: false,
+                                                                    fontSize: 13
                                                                 }}
-                                                                items={
-                                                                    form.handle === DurationEnum.DAYS ?
-                                                                        DURATION_DAYS.map((x) => ({ label: `${x} ${helper.capitalize(form.handle)}`, value: x })) :
-                                                                        DURATION_WEEKS.map((x) => ({ label: `${x} ${helper.capitalize(form.handle)}`, value: x }))
+                                                                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                                            />
+                                                        </FormField>
+
+                                                        <FormField
+                                                            label={{
+                                                                title: 'Change Task Duration',
+                                                                required: false,
+                                                                fontSize: 13
+                                                            }}
+                                                        >
+                                                            <div className="grid grid-cols-[48%_48%] gap-x-[4%] mt-[0.3rem]">
+                                                                <div>
+                                                                    <Filter
+                                                                        ref={leRef}
+                                                                        size='sm'
+                                                                        className='la-filter'
+                                                                        placeholder="Duration Handle"
+                                                                        defaultValue={task.duration.handle}
+                                                                        position="bottom"
+                                                                        menu={{
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={[
+                                                                            { label: 'Days', value: 'days' },
+                                                                            { label: 'Weeks', value: 'weeks' }
+                                                                        ]}
+                                                                        noFilter={false}
+                                                                        onChange={(data) => {
+                                                                            setForm({ ...form, handle: data.value })
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <div>
+                                                                    <Filter
+                                                                        ref={leRef}
+                                                                        size='sm'
+                                                                        className={`la-filter ${!form.handle ? 'disabled-light' : ''}`}
+                                                                        placeholder="Duration Value"
+                                                                        defaultValue={task.duration.value.toString()}
+                                                                        position="bottom"
+                                                                        menu={{
+                                                                            search: false,
+                                                                            fullWidth: true,
+                                                                            limitHeight: 'sm'
+                                                                        }}
+                                                                        items={
+                                                                            form.handle === DurationEnum.DAYS ?
+                                                                                DURATION_DAYS.map((x) => ({ label: `${x} ${helper.capitalize(form.handle)}`, value: x })) :
+                                                                                DURATION_WEEKS.map((x) => ({ label: `${x} ${helper.capitalize(form.handle)}`, value: x }))
+                                                                        }
+                                                                        noFilter={false}
+                                                                        onChange={(data) => {
+                                                                            setForm({ ...form, value: parseInt(data.value) })
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </FormField>
+
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => setEdit({ ...edit, enabled: false, type: EditTaskEnum.DETAILS })}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleUpdateTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.OBJECTIVES &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Task Objective</h3>
+                                                        </div>
+
+                                                        <div className="space-y-[1.5rem]">
+                                                            <FormField>
+                                                                <TextInput
+                                                                    type="text"
+                                                                    size="sm"
+                                                                    showFocus={true}
+                                                                    autoComplete={false}
+                                                                    placeholder="Type here"
+                                                                    defaultValue={fieldItem?.title || ''}
+                                                                    label={{
+                                                                        title: 'Objective Title',
+                                                                        required: false,
+                                                                        fontSize: 13
+                                                                    }}
+                                                                    onChange={(e) => updateTaskItem({
+                                                                        action: 'update',
+                                                                        data: {
+                                                                            code: fieldItem?.code || '',
+                                                                            title: e.target.value
+                                                                        },
+                                                                        field: TaskFieldEnum.OBJECTIVES
+                                                                    })}
+                                                                />
+                                                            </FormField>
+                                                            <FormField>
+                                                                <h3 className="font-mona-medium text-[14px] pag-950 mb-[0.5rem]">Resource links for {helper.capitalize(fieldItem?.name || '')}</h3>
+                                                                <>
+                                                                    {
+                                                                        fieldItem.steps && fieldItem.steps.length > 0 &&
+                                                                        <div className="space-y-[0.35rem]">
+                                                                            {
+                                                                                fieldItem.steps.map((step: any, index: number) =>
+                                                                                    <Fragment key={index + step.substring(0, 8)}>
+                                                                                        <TextInput
+                                                                                            type="text"
+                                                                                            size="sm"
+                                                                                            showFocus={true}
+                                                                                            autoComplete={false}
+                                                                                            placeholder="Type here"
+                                                                                            defaultValue={step}
+                                                                                            label={{
+                                                                                                title: `Step ${index + 1}`,
+                                                                                                required: false,
+                                                                                                fontSize: 13
+                                                                                            }}
+                                                                                            onChange={(e) => updateTaskItem({
+                                                                                                action: 'update',
+                                                                                                data: {
+                                                                                                    code: fieldItem?.code || '',
+                                                                                                    title: fieldItem?.name || '',
+                                                                                                    step: e.target.value,
+                                                                                                },
+                                                                                                index: index,
+                                                                                                field: TaskFieldEnum.OBJECTIVES
+                                                                                            })}
+                                                                                        />
+                                                                                    </Fragment>
+                                                                                )
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </>
+                                                            </FormField>
+                                                        </div>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.OUTCOMES &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Task Learning Outcome</h3>
+                                                        </div>
+
+                                                        <div className="space-y-[1.5rem]">
+                                                            <FormField>
+                                                                <TextInput
+                                                                    type="text"
+                                                                    size="sm"
+                                                                    showFocus={true}
+                                                                    autoComplete={false}
+                                                                    placeholder="Type here"
+                                                                    defaultValue={fieldItem?.outcome || ''}
+                                                                    label={{
+                                                                        title: 'Task Outcome',
+                                                                        required: false,
+                                                                        fontSize: 13
+                                                                    }}
+                                                                    onChange={(e) => updateTaskItem({
+                                                                        action: 'update',
+                                                                        data: {
+                                                                            outcome: e.target.value
+                                                                        },
+                                                                        field: TaskFieldEnum.OUTCOMES,
+                                                                        index: fieldItem?.index
+                                                                    })}
+                                                                />
+                                                            </FormField>
+                                                        </div>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.REQUIREMENTS &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Task Requirement</h3>
+                                                        </div>
+
+                                                        <div className="space-y-[1.5rem]">
+                                                            <FormField>
+                                                                <TextInput
+                                                                    type="text"
+                                                                    size="sm"
+                                                                    showFocus={true}
+                                                                    autoComplete={false}
+                                                                    placeholder="Type here"
+                                                                    defaultValue={fieldItem?.requirement || ''}
+                                                                    label={{
+                                                                        title: 'Task Requirement',
+                                                                        required: false,
+                                                                        fontSize: 13
+                                                                    }}
+                                                                    onChange={(e) => updateTaskItem({
+                                                                        action: 'update',
+                                                                        data: {
+                                                                            requirement: e.target.value
+                                                                        },
+                                                                        field: TaskFieldEnum.REQUIREMENTS,
+                                                                        index: fieldItem?.index
+                                                                    })}
+                                                                />
+                                                            </FormField>
+                                                        </div>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.INSTRUCTIONS &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Task Instruction</h3>
+                                                        </div>
+
+                                                        <div className="space-y-[1.5rem]">
+                                                            <FormField>
+                                                                <TextInput
+                                                                    type="text"
+                                                                    size="sm"
+                                                                    showFocus={true}
+                                                                    autoComplete={false}
+                                                                    placeholder="Type here"
+                                                                    defaultValue={fieldItem?.title || ''}
+                                                                    label={{
+                                                                        title: 'Title',
+                                                                        required: false,
+                                                                        fontSize: 13
+                                                                    }}
+                                                                    onChange={(e) => updateTaskItem({
+                                                                        action: 'update',
+                                                                        data: {
+                                                                            code: fieldItem?.code || '',
+                                                                            title: e.target.value
+                                                                        },
+                                                                        field: TaskFieldEnum.INSTRUCTIONS
+                                                                    })}
+                                                                />
+                                                            </FormField>
+                                                            <FormField>
+                                                                <h3 className="font-mona-medium text-[14px] pag-950 mb-[0.5rem]">Actions to carry out for instructions</h3>
+                                                                <>
+                                                                    {
+                                                                        fieldItem.actions && fieldItem.actions.length > 0 &&
+                                                                        <div className="space-y-[0.35rem]">
+                                                                            {
+                                                                                fieldItem.actions.map((action: string, index: number) =>
+                                                                                    <Fragment key={index + action.substring(0, 8)}>
+                                                                                        <TextInput
+                                                                                            type="text"
+                                                                                            size="sm"
+                                                                                            showFocus={true}
+                                                                                            autoComplete={false}
+                                                                                            placeholder="Type here"
+                                                                                            defaultValue={action}
+                                                                                            label={{
+                                                                                                title: `Step ${index + 1}`,
+                                                                                                required: false,
+                                                                                                fontSize: 13
+                                                                                            }}
+                                                                                            onChange={(e) => updateTaskItem({
+                                                                                                action: 'update',
+                                                                                                data: {
+                                                                                                    code: fieldItem?.code || '',
+                                                                                                    title: fieldItem?.title || '',
+                                                                                                    action: e.target.value,
+                                                                                                },
+                                                                                                index: index,
+                                                                                                field: TaskFieldEnum.INSTRUCTIONS
+                                                                                            })}
+                                                                                        />
+                                                                                    </Fragment>
+                                                                                )
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </>
+                                                            </FormField>
+                                                        </div>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.DELIVERABLES &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Task Deliverable</h3>
+                                                        </div>
+
+                                                        <div className="space-y-[1.5rem]">
+                                                            <FormField>
+                                                                <TextInput
+                                                                    type="text"
+                                                                    size="sm"
+                                                                    showFocus={true}
+                                                                    autoComplete={false}
+                                                                    placeholder="Type here"
+                                                                    defaultValue={fieldItem?.title || ''}
+                                                                    label={{
+                                                                        title: 'Title',
+                                                                        required: false,
+                                                                        fontSize: 13
+                                                                    }}
+                                                                    onChange={(e) => updateTaskItem({
+                                                                        action: 'update',
+                                                                        data: {
+                                                                            code: fieldItem?.code || '',
+                                                                            title: e.target.value
+                                                                        },
+                                                                        field: TaskFieldEnum.DELIVERABLES
+                                                                    })}
+                                                                />
+                                                            </FormField>
+                                                            <FormField>
+                                                                <h3 className="font-mona-medium text-[14px] pag-950 mb-[0.5rem]">Outcomes of task deliverable</h3>
+                                                                <>
+                                                                    {
+                                                                        fieldItem.outcomes && fieldItem.outcomes.length > 0 &&
+                                                                        <div className="space-y-[0.35rem]">
+                                                                            {
+                                                                                fieldItem.outcomes.map((outcome: string, index: number) =>
+                                                                                    <Fragment key={index + outcome.substring(0, 8)}>
+                                                                                        <TextInput
+                                                                                            type="text"
+                                                                                            size="sm"
+                                                                                            showFocus={true}
+                                                                                            autoComplete={false}
+                                                                                            placeholder="Type here"
+                                                                                            defaultValue={outcome}
+                                                                                            label={{
+                                                                                                title: `Step ${index + 1}`,
+                                                                                                required: false,
+                                                                                                fontSize: 13
+                                                                                            }}
+                                                                                            onChange={(e) => updateTaskItem({
+                                                                                                action: 'update',
+                                                                                                data: {
+                                                                                                    code: fieldItem?.code || '',
+                                                                                                    title: fieldItem?.title || '',
+                                                                                                    outcome: e.target.value,
+                                                                                                },
+                                                                                                index: index,
+                                                                                                field: TaskFieldEnum.DELIVERABLES
+                                                                                            })}
+                                                                                        />
+                                                                                    </Fragment>
+                                                                                )
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </>
+                                                            </FormField>
+                                                        </div>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.GUIDELINES &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Submission Guideline</h3>
+                                                        </div>
+
+                                                        <div className="space-y-[1.5rem]">
+                                                            <FormField>
+                                                                <TextInput
+                                                                    type="text"
+                                                                    size="sm"
+                                                                    showFocus={true}
+                                                                    autoComplete={false}
+                                                                    placeholder="Type here"
+                                                                    defaultValue={fieldItem?.guide || ''}
+                                                                    label={{
+                                                                        title: 'Task Outcome',
+                                                                        required: false,
+                                                                        fontSize: 13
+                                                                    }}
+                                                                    onChange={(e) => updateTaskItem({
+                                                                        action: 'update',
+                                                                        data: {
+                                                                            outcome: e.target.value
+                                                                        },
+                                                                        field: TaskFieldEnum.GUIDELINES,
+                                                                        index: fieldItem?.index
+                                                                    })}
+                                                                />
+                                                            </FormField>
+                                                        </div>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.RESOURCES &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Resources for {helper.capitalize(fieldItem?.name || '')}</h3>
+                                                        </div>
+
+                                                        <div className="w-full">
+                                                            <FormField>
+                                                                {
+                                                                    fieldItem.links && fieldItem.links.length > 0 &&
+                                                                    <div className="space-y-[1.5rem]">
+                                                                        {
+                                                                            fieldItem.links.map((link: IGroupedLink, index: number) =>
+                                                                                <Fragment key={index + link.url}>
+
+                                                                                    <div>
+                                                                                        <h3 className="font-mona text-[14px] pag-950">Resource {index + 1}</h3>
+                                                                                        <div className="w-full p-[1rem] border bdr-pag-100 rounded-[6px] space-y-[0.5rem]">
+
+                                                                                            <TextInput
+                                                                                                type="text"
+                                                                                                size="sm"
+                                                                                                showFocus={true}
+                                                                                                autoComplete={false}
+                                                                                                placeholder="Type here"
+                                                                                                defaultValue={link.title}
+                                                                                                label={{
+                                                                                                    title: `Resource Title`,
+                                                                                                    required: false,
+                                                                                                    fontSize: 13
+                                                                                                }}
+                                                                                                onChange={(e) => updateTaskItem({
+                                                                                                    action: 'update',
+                                                                                                    data: {
+                                                                                                        name: fieldItem?.name || '',
+                                                                                                        title: e.target.value,
+                                                                                                        code: link.code
+                                                                                                    },
+                                                                                                    index: index,
+                                                                                                    field: TaskFieldEnum.RESOURCES
+                                                                                                })}
+                                                                                            />
+                                                                                            <TextInput
+                                                                                                type="text"
+                                                                                                size="sm"
+                                                                                                showFocus={true}
+                                                                                                autoComplete={false}
+                                                                                                placeholder="Type here"
+                                                                                                defaultValue={link.url}
+                                                                                                label={{
+                                                                                                    title: `Resource URL`,
+                                                                                                    required: false,
+                                                                                                    fontSize: 13,
+                                                                                                }}
+                                                                                                onChange={(e) => updateTaskItem({
+                                                                                                    action: 'update',
+                                                                                                    data: {
+                                                                                                        name: fieldItem?.name || '',
+                                                                                                        url: e.target.value,
+                                                                                                        code: link.code
+                                                                                                    },
+                                                                                                    index: index,
+                                                                                                    field: TaskFieldEnum.RESOURCES
+                                                                                                })}
+                                                                                            />
+
+                                                                                        </div>
+                                                                                    </div>
+
+
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
                                                                 }
-                                                                noFilter={false}
-                                                                onChange={(data) => {
-                                                                    setForm({ ...form, value: parseInt(data.value) })
+                                                            </FormField>
+                                                        </div>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
                                                                 }}
                                                             />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
                                                         </div>
-                                                    </div>
-                                                </FormField>
+
+                                                    </>
+                                                }
+
+                                                {
+                                                    edit.type === EditTaskEnum.RUBRICS &&
+                                                    <>
+
+                                                        <div className="w-[100%]">
+                                                            <h3 className="font-mona-medium text-[15px] pag-950">Edit Task Rubric</h3>
+                                                        </div>
+
+                                                        <FormField className="space-y-[1rem]">
+                                                            <TextInput
+                                                                type="text"
+                                                                size="sm"
+                                                                showFocus={true}
+                                                                autoComplete={false}
+                                                                placeholder="Type here"
+                                                                defaultValue={fieldItem?.criteria}
+                                                                label={{
+                                                                    title: `Rubric Criteria`,
+                                                                    required: false,
+                                                                    fontSize: 13
+                                                                }}
+                                                                onChange={(e) => updateTaskItem({
+                                                                    action: 'update',
+                                                                    data: {
+                                                                        criteria: e.target.value,
+                                                                        code: fieldItem?.code || ''
+                                                                    },
+                                                                    field: TaskFieldEnum.RUBRICS
+                                                                })}
+                                                            />
+                                                            <TextAreaInput
+                                                                size="sm"
+                                                                showFocus={true}
+                                                                autoComplete={false}
+                                                                placeholder="Type here"
+                                                                defaultValue={fieldItem?.description}
+                                                                label={{
+                                                                    title: `Rubric Description`,
+                                                                    required: false,
+                                                                    fontSize: 13
+                                                                }}
+                                                                onChange={(e) => updateTaskItem({
+                                                                    action: 'update',
+                                                                    data: {
+                                                                        description: e.target.value,
+                                                                        code: fieldItem?.code || ''
+                                                                    },
+                                                                    field: TaskFieldEnum.RUBRICS
+                                                                })}
+                                                            />
+                                                            <NumberInput
+                                                                size="sm"
+                                                                showFocus={true}
+                                                                autoComplete={false}
+                                                                placeholder="Type here"
+                                                                defaultValue={fieldItem?.point}
+                                                                step="1"
+                                                                label={{
+                                                                    title: `Rubric Point`,
+                                                                    required: false,
+                                                                    fontSize: 13
+                                                                }}
+                                                                onChange={(e) => updateTaskItem({
+                                                                    action: 'update',
+                                                                    data: {
+                                                                        point: parseInt(e.target.value),
+                                                                        code: fieldItem?.code || ''
+                                                                    },
+                                                                    field: TaskFieldEnum.RUBRICS
+                                                                })}
+                                                            />
+                                                        </FormField>
+
+                                                        <div className="flex items-center pt-[1rem]">
+                                                            <IconButton
+                                                                size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                                className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
+                                                                label={{
+                                                                    text: 'Cancel',
+                                                                    weight: 'medium',
+                                                                    size: 14
+                                                                }}
+                                                                icon={{
+                                                                    type: 'feather',
+                                                                    name: 'arrow-left',
+                                                                    size: 16
+                                                                }}
+                                                                onClick={(e) => {
+                                                                    clearTaskItem()
+                                                                    setEdit({ enabled: false, type: EditTaskEnum.DETAILS })
+                                                                }}
+                                                            />
+                                                            <Button
+                                                                type="primary"
+                                                                semantic="normal"
+                                                                size="sm"
+                                                                className="form-button ml-auto"
+                                                                text={{
+                                                                    label: "Save Changes",
+                                                                    size: 13,
+                                                                }}
+                                                                loading={loader}
+                                                                onClick={async (e) => handleModifyTask(e)}
+                                                            />
+                                                        </div>
+
+                                                    </>
+                                                }
 
 
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
                                             </form>
 
                                         </CardUI>
                                     </>
                                 }
 
-                                {/* EDIT TASK OBJECTIVES */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.OBJECTIVES &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK OUTCOMES */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.OUTCOMES &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK REQUIREMENTS */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.REQUIREMENTS &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK INSTRUCTIONS */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.INSTRUCTIONS &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK DELIVERABLES */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.DELIVERABLES &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK GUIDELINES */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.GUIDELINES &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK SKILLS */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.SKILLS &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK RESOURCES */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.RESOURCES &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
-
-                                {/* EDIT TASK RUBRICS */}
-                                {
-                                    edit.enabled && edit.type === EditTaskEnum.RUBRICS &&
-                                    <>
-                                        <CardUI>
-
-                                            <form onSubmit={(e) => { e.preventDefault() }} className="w-[40%] mx-auto space-y-[1.2rem] py-[1.5rem]">
-                                                
-                                                <div className="w-[100%]">
-                                                    <h3 className="font-mona text-[15px] pag-800">Edit Task { helper.capitalize(edit.type) }</h3>
-                                                </div>
-
-                                                <div className="flex items-center pt-[1rem]">
-                                                    <IconButton
-                                                        size="min-w-[1.8rem] min-h-[1.8rem]"
-                                                        className={`bg-pag-100 bgh-pab-200 ${loader ? 'disabled-light' : ''}`}
-                                                        label={{
-                                                            text: 'Cancel',
-                                                            weight: 'medium',
-                                                            size: 14
-                                                        }}
-                                                        icon={{
-                                                            type: 'feather',
-                                                            name: 'arrow-left',
-                                                            size: 16
-                                                        }}
-                                                        onClick={(e) => setEdit({ enabled: false, type: EditTaskEnum.DETAILS })}
-                                                    />
-                                                    <Button
-                                                        type="primary"
-                                                        semantic="normal"
-                                                        size="sm"
-                                                        className="form-button ml-auto"
-                                                        text={{
-                                                            label: "Save Changes",
-                                                            size: 13,
-                                                        }}
-                                                        loading={loader}
-                                                        onClick={async (e) => handleUpdateTask(e)}
-                                                    />
-                                                </div>
-                                                
-                                            </form>
-
-                                        </CardUI>
-                                    </>
-                                }
                             </>
                         }
 

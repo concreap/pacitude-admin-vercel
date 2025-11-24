@@ -1,3 +1,4 @@
+import { ITaskDeliverable, ITaskFeedback, ITaskInstruction, ITaskObjective, ITaskResource, ITaskSubmissionItem } from "../models/Task.model";
 import { ACTION_TYPES, RESOURCE_TYPES } from "./constants.util";
 import { ActionEnum, TaskFieldEnum, TaskTypeEnum, UIEnum, UploadFormatEnum } from "./enums.util";
 

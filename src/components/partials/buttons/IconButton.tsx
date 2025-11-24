@@ -26,6 +26,54 @@ const IconButton = (props: IIconButton) => {
 
     }, [])
 
+    const sc = () => {
+
+        let result = { cc: '', cbc: '' }
+
+        if (className) {
+            let split = className.split(" ");
+            if (split.includes('ml-auto')) {
+                split = split.filter((x) => x !== "ml-auto");
+                result.cbc = result.cbc + " ml-auto"
+            }
+
+            if (split.includes('absolute')) {
+                split = split.filter((x) => x !== "absolute");
+                result.cbc = result.cbc + " absolute"
+            }
+
+            for (let i = 0; i < split.length; i++) {
+                let x = split[i]
+                if (x.startsWith('right')) {
+                    result.cbc = result.cbc + ` ${x}`
+                    split = split.filter((y) => y !== x);
+                }
+
+                if (x.startsWith('top')) {
+                    result.cbc = result.cbc + ` ${x}`
+                    split = split.filter((y) => y !== x);
+                }
+            }
+
+            result.cc = split.join(" ")
+        }
+
+        return result;
+
+    }
+
+    const cbc = () => {
+
+        let result = `inline-flex items-center gap-x-[0.5rem]`
+
+        if (className) {
+            result = result + ` ${sc().cbc}`
+        }
+
+        return result;
+
+    }
+
     const cc = () => {
 
         let result = `rounded-${radius} inline-flex items-center justify-center ${size} transition-colors duration-[0.25s]`
@@ -37,7 +85,7 @@ const IconButton = (props: IIconButton) => {
         }
 
         if (className) {
-            result = result + ` ${className}`
+            result = result + ` ${sc().cc}`
         }
 
         return result;
@@ -62,7 +110,7 @@ const IconButton = (props: IIconButton) => {
         <>
             <Link to={''}
                 onClick={(e) => handleClick(e)}
-                className={`flex items-center gap-x-[0.5rem] ${className && className.includes('ml-auto') ? 'ml-auto' : ''}`}>
+                className={cbc()}>
                 <div className={cc()}>
                     {
                         icon.child &&

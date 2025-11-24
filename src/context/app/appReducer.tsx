@@ -24,7 +24,8 @@ import {
     GET_TASK,
     GET_COMMENTS,
     GET_COMMENT,
-    SET_POLLER
+    SET_POLLER,
+    SET_ITEM
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -129,6 +130,11 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 items: action.payload
+            }
+        case SET_ITEM:
+            return {
+                ...state,
+                item: action.payload
             }
         case SET_POLLER:
             return {

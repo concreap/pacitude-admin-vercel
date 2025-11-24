@@ -97,6 +97,7 @@ export interface ITaskEval {
 }
 
 export interface ITaskRubric {
+    code: string,
     criteria: string,
     description: string,
     point: number
@@ -122,6 +123,7 @@ export interface ITaskDeliverable {
 
 export interface ITaskResource {
     name: string,
+    code: string,
     title: string,
     description: string,
     url: string,

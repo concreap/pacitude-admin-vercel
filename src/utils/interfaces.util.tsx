@@ -19,11 +19,14 @@ export interface IResult {
 
 export interface IGroupedResource {
     name: string;
-    links: Array<{
-        title: string;
-        snippet: string,
-        url: string;
-    }>;
+    links: Array<IGroupedLink>;
+}
+
+export interface IGroupedLink {
+    code: string,
+    title: string;
+    snippet: string,
+    url: string;
 }
 
 export interface IPoller {
@@ -301,7 +304,7 @@ export interface IHelper {
     getAvatar(select: string | number): string,
     enumToArray(data: Object, type: 'all' | 'values-only' | 'keys-only'): Array<any>,
     extractor(data: any): any,
-    pickFrom<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[] ): Pick<T, K>
+    pickFrom<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>
 
 }
 
@@ -1464,6 +1467,7 @@ export interface IAppContext {
     search: ICollection,
     metrics: IAppMetrics,
     items: Array<any>
+    item: any
     core: ICoreResource
     message: string,
     loading: boolean,
@@ -1474,3 +1478,4 @@ export interface IAppContext {
     setLoading(data: ISetLoading): void,
     unsetLoading(data: IUnsetLoading): void,
 }
+

@@ -3,11 +3,13 @@ import { IGroupedResource } from "../../utils/interfaces.util";
 import IconButton from "../partials/buttons/IconButton";
 import helper from "../../utils/helper.util";
 import Dot from "../partials/ui/Dot";
+import { ITaskResource } from "../../models/Task.model";
 
 interface IUIResource {
     index: number
     resource: IGroupedResource,
-    edit: boolean
+    edit: boolean,
+    onEdit?(data: IGroupedResource): void
 }
 
 const UIResource = (props: IUIResource) => {
@@ -15,7 +17,8 @@ const UIResource = (props: IUIResource) => {
     const {
         index,
         resource,
-        edit
+        edit,
+        onEdit
     } = props;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -41,7 +44,11 @@ const UIResource = (props: IUIResource) => {
                                     name: 'edit-2',
                                     size: 14,
                                 }}
-                                onClick={(e) => { }}
+                                onClick={(e) => { 
+                                    if(onEdit){
+                                        onEdit(resource)
+                                    }
+                                }}
                             />
                         }
                         <IconButton

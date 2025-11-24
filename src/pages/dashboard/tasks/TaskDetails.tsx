@@ -44,7 +44,7 @@ const TaskDetailsPage = () => {
     const { toDetailRoute } = useGoTo()
     const { getFullname } = useUser()
     const { loading: coreLoading, core, getCoreResources } = useApp()
-    const { task, loading, getTask, updateUITask, countTaskFields, groupTaskResources, formatTaskStatus } = useTask()
+    const { task, loading, getTask, countTaskFields, groupTaskResources, formatTaskStatus } = useTask()
 
     const [taskField, setTaskField] = useState<typeof TaskFieldEnum[keyof typeof TaskFieldEnum]>(TaskFieldEnum.OBJECTIVES)
     const [resources, setResources] = useState<Array<IGroupedResource>>([]);

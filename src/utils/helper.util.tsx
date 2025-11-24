@@ -224,7 +224,12 @@ const isEmpty = (data: any, type: 'object' | 'object-all' | 'array') => {
 }
 
 const capitalize = (val: string) => {
-    return val.charAt(0).toUpperCase() + val.slice(1)
+    if(val.charAt(0) === "" || val.charAt(0) === " "){
+        return val.charAt(1).toUpperCase() + val.slice(2)
+    } else {
+        return val.charAt(0).toUpperCase() + val.slice(1)
+    }
+    
 }
 
 const sort = (data: Array<any>) => {
