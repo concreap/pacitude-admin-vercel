@@ -36,6 +36,7 @@ const QuestionMapPage = lazy(() => import('../../../pages/dashboard/core/questio
 // Tasks
 const TaskPage = lazy(() => import('../../../pages/dashboard/tasks/Tasks'))
 const NewTaskPage = lazy(() => import('../../../pages/dashboard/tasks/NewTask'))
+const AssignTaskPage = lazy(() => import('../../../pages/dashboard/tasks/AssignTask'))
 const OldTaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/OldTaskDetails'))
 const TaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/TaskDetails'))
 const EditTaskPage = lazy(() => import('../../../pages/dashboard/tasks/EditTask'))
@@ -71,6 +72,8 @@ const DynamicRoutes = () => {
                 return <TaskDetailsPage />
             case 'edit-task':
                 return <EditTaskPage />
+            case 'assign-task':
+                return <AssignTaskPage />
             case 'create-industry':
                 return <CreateIndustry />
             case 'edit-industry':

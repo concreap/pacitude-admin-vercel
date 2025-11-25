@@ -416,6 +416,18 @@ const sidebarRoutes: Array<IRoute> = [
                 params: [{ type: 'url', name: 'id' }],
                 content: { collapsed: false, backButton: true }
             },
+            {
+                route: 'tasks',
+                parent: 'tasks',
+                name: 'assign-task',
+                title: 'Assign Task',
+                iconName: 'flash',
+                url: '/assign',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
         ]
     },
     {

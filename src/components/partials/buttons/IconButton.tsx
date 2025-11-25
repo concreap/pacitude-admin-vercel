@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState, useContext, useMemo, useCallback } from "react"
 import { IIconButton } from "../../../utils/interfaces.util";
 import { Link } from "react-router-dom";
 import Icon from "../icons/Icon";
@@ -19,55 +19,20 @@ const IconButton = (props: IIconButton) => {
         size = 'min-w-[2.2rem] min-h-[2.2rem]',
         radius = 'full',
         className = '',
+        container,
         onClick
     } = props;
 
     useEffect(() => {
-
+        
     }, [])
-
-    const sc = () => {
-
-        let result = { cc: '', cbc: '' }
-
-        if (className) {
-            let split = className.split(" ");
-            if (split.includes('ml-auto')) {
-                split = split.filter((x) => x !== "ml-auto");
-                result.cbc = result.cbc + " ml-auto"
-            }
-
-            if (split.includes('absolute')) {
-                split = split.filter((x) => x !== "absolute");
-                result.cbc = result.cbc + " absolute"
-            }
-
-            for (let i = 0; i < split.length; i++) {
-                let x = split[i]
-                if (x.startsWith('right')) {
-                    result.cbc = result.cbc + ` ${x}`
-                    split = split.filter((y) => y !== x);
-                }
-
-                if (x.startsWith('top')) {
-                    result.cbc = result.cbc + ` ${x}`
-                    split = split.filter((y) => y !== x);
-                }
-            }
-
-            result.cc = split.join(" ")
-        }
-
-        return result;
-
-    }
 
     const cbc = () => {
 
         let result = `inline-flex items-center gap-x-[0.5rem]`
 
-        if (className) {
-            result = result + ` ${sc().cbc}`
+        if (container && container.className) {
+            result = result + ` ${container.className}`
         }
 
         return result;
@@ -85,7 +50,7 @@ const IconButton = (props: IIconButton) => {
         }
 
         if (className) {
-            result = result + ` ${sc().cc}`
+            result = result + ` ${className}`
         }
 
         return result;

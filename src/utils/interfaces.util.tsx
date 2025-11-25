@@ -858,6 +858,9 @@ export interface ILinkButton {
 }
 
 export interface IIconButton {
+    container?: {
+        className?: string
+    },
     icon: {
         size?: number,
         className?: string,

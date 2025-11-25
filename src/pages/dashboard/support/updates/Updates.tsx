@@ -37,7 +37,7 @@ const UpdatesPage = ({ }) => {
     })
 
     useEffect(() => {
-        getUsers({ limit: 9999, page: 1, order: 'desc' }, true);
+        getUsers({ limit: 9999, page: 1, order: 'desc', cache: false }, true);
     }, [])
 
     const findUser = (id: string) => {

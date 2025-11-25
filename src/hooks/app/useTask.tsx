@@ -52,6 +52,20 @@ interface IUpdateTask {
     }
 }
 
+interface IAssignTask {
+    id: string,
+    talents: Array<any>
+}
+
+interface IReassignTask {
+    id: string,
+    talentId: any
+}
+
+interface IRevokeTask {
+    id: string
+}
+
 interface IModifyTaskField {
     id: any,
     action: ActionModify,
@@ -1170,6 +1184,126 @@ const useTask = () => {
 
     }, [setLoading, unsetLoading])
 
+    const assignTask = useCallback(async (data: IAssignTask) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_TASK}/assign/${data.id}`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'task updated successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response
+
+    }, [setLoading, unsetLoading])
+
+    const reassignTask = useCallback(async (data: IReassignTask) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_TASK}/reassign/${data.id}`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'task updated successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response
+
+    }, [setLoading, unsetLoading])
+
+    const revokeTask = useCallback(async (data: IRevokeTask) => {
+
+        setLoading({ option: 'loader' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'PUT',
+            isAuth: true,
+            path: `${URL_TASK}/revoke/${data.id}`,
+            payload: data
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'task updated successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            unsetLoading({
+                option: 'loader',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response
+
+    }, [setLoading, unsetLoading])
+
     return {
         tasks,
         task,
@@ -1197,6 +1331,9 @@ const useTask = () => {
         deleteTask,
         updateTask,
         modifyTaskField,
+        assignTask,
+        reassignTask,
+        revokeTask
     }
 }
 

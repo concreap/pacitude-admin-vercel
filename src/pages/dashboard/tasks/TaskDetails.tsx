@@ -181,6 +181,36 @@ const TaskDetailsPage = () => {
                         {
                             !helper.isEmpty(task, 'object') &&
                             <>
+                                <div className="flex items-center">
+                                    <div className="flex items-center ml-auto gap-x-[0.65rem]">
+                                        {
+                                            task.type === TaskTypeEnum.TEMPLATE &&
+                                            <Button
+                                                type={"primary"}
+                                                size="xsm"
+                                                className="form-button"
+                                                loading={false}
+                                                text={{
+                                                    label: "Assign Task",
+                                                    size: 13,
+                                                }}
+                                                onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'assign-task', id: id }) }}
+                                            />
+                                        }
+                                        <Button
+                                            type={"primary"}
+                                            semantic={"info"}
+                                            size="xsm"
+                                            className="form-button"
+                                            loading={false}
+                                            text={{
+                                                label: "Edit Task",
+                                                size: 13,
+                                            }}
+                                            onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'edit-task', id: id }) }}
+                                        />
+                                    </div>
+                                </div>
                                 <CardUI>
                                     <div className="grid grid-cols-[35%_60%] gap-x-[5%]">
 
@@ -198,19 +228,6 @@ const TaskDetailsPage = () => {
                                                         <h3 className="font-mona-light pag-600 text-[13px]">Duration: {task.duration.label}</h3>
                                                     </div>
                                                 </div>
-
-                                                <Button
-                                                    type={"primary"}
-                                                    semantic={"info"}
-                                                    size="xsm"
-                                                    className="form-button ml-auto"
-                                                    loading={false}
-                                                    text={{
-                                                        label: "Edit Task",
-                                                        size: 13,
-                                                    }}
-                                                    onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'edit-task', id: id }) }}
-                                                />
 
                                             </div>
 

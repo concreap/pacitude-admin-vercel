@@ -1,4 +1,5 @@
 import { IAPIKey, IUserPermission } from "../utils/interfaces.util";
+import Talent from "./Talent.model";
 
 interface User {
 
@@ -48,6 +49,7 @@ interface User {
     verification: any;
     notifications: Array<any>
     devices: Array<any>
+    talent: Talent | any;
 
     // time stamps
     createdAt: string;
