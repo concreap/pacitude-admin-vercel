@@ -66,7 +66,8 @@ interface Task {
     skills: Array<Skill | any>,
     comments: Array<Comment | any>,
     talents: Array<Talent | any>,
-    template: Task | any
+    template: Task | any,
+    children: Array<Task | any>,
 
     // time stamps
     startedAt: string | null

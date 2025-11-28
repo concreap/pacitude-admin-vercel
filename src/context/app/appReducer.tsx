@@ -25,7 +25,9 @@ import {
     GET_COMMENTS,
     GET_COMMENT,
     SET_POLLER,
-    SET_ITEM
+    SET_ITEM,
+    GET_GROUPS,
+    GET_GROUP
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -100,6 +102,16 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 task: action.payload
+            }
+        case GET_GROUPS:
+            return {
+                ...state,
+                groups: action.payload
+            }
+        case GET_GROUP:
+            return {
+                ...state,
+                group: action.payload
             }
         case GET_COMMENTS:
             return {

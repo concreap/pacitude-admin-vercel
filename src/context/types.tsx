@@ -30,6 +30,8 @@ export const GET_TOPIC = 'GET_TOPIC';
 export const GET_METRICS = 'GET_METRICS';
 export const GET_QUESTION_COUNT = 'GET_QUESTION_COUNT';
 export const GET_CORE = 'GET_CORE';
+export const GET_GROUPS = 'GET_GROUPS';
+export const GET_GROUP = 'GET_GROUP';
 
 // generics
 export const SET_PAGINATION = 'SET_PAGINATION';

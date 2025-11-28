@@ -14,6 +14,7 @@ import useTask from "../../../hooks/app/useTask";
 import EmptyState from "../../../components/partials/dialogs/EmptyState";
 import Badge from "../../../components/partials/badges/Badge";
 import useGoTo from "../../../hooks/useGoTo";
+import useSidebar from "../../../hooks/useSidebar";
 
 const NewTaskPage = () => {
 
@@ -22,6 +23,7 @@ const NewTaskPage = () => {
     const carRef = useRef<any>(null)
     const leRef = useRef<any>(null)
 
+    useSidebar({ type: 'page', init: true })
     const { toDetailRoute } = useGoTo()
     const { toast, setToast } = useToast()
     const { loading: coreLoading, core, getCoreResources } = useApp()
@@ -123,7 +125,8 @@ const NewTaskPage = () => {
                 fieldId: form.fieldId,
                 level: form.level,
                 topicId: form.topicId,
-                poll: true
+                poll: true,
+                job: true,
             })
 
             if (!response.error) {

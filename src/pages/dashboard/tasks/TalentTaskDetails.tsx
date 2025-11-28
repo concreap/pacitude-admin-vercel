@@ -31,7 +31,7 @@ import Feedback from "./Feedback";
 import useGoTo from "../../../hooks/useGoTo";
 import TalentCard from "../../../components/app/talents/TalentCard";
 
-const TaskDetailsPage = () => {
+const TalentTaskDetailsPage = () => {
 
     const { id } = useParams<{ id: string }>()
 
@@ -40,7 +40,7 @@ const TaskDetailsPage = () => {
         { id: 1, label: "Submission", value: 'submission' },
         { id: 2, label: "Comments", value: 'comments' },
         { id: 3, label: "Feedback", value: 'feedback' },
-        { id: 4, label: "Assignee", value: 'assignee' },
+        { id: 4, label: "Assignees", value: 'assignees' },
         { id: 5, label: "Reviewer", value: 'reviewer' }
     ]
 
@@ -53,15 +53,10 @@ const TaskDetailsPage = () => {
 
     const { toDetailRoute } = useGoTo()
     const { getFullname } = useUser()
-    const { loading: coreLoading, core, getCoreResources } = useApp()
-    const { task, loading, getTask, getChildByTalentId, groupTaskResources, formatTaskStatus } = useTask()
+    const { task, loading, getTask, groupTaskResources, formatTaskStatus } = useTask()
 
     const [taskField, setTaskField] = useState<typeof TaskFieldEnum[keyof typeof TaskFieldEnum]>(TaskFieldEnum.OBJECTIVES)
     const [resources, setResources] = useState<Array<IGroupedResource>>([]);
-    const [fields, setFields] = useState<Array<Field>>([])
-    const [topics, setTopics] = useState<Array<Topic>>([])
-    const [careers, setCareers] = useState<Array<Career>>([])
-    const [skills, setSkills] = useState<Array<Skill>>([])
     const [showPicker, setShowPicker] = useState(false);
     const [showReply, setShowReply] = useState(false);
     const [inputText, setInputText] = useState('');
@@ -76,22 +71,10 @@ const TaskDetailsPage = () => {
 
     useEffect(() => {
         handleGetTask(id)
-        getCoreResources({ limit: 9999, page: 1, order: 'desc' })
     }, [])
 
     useEffect(() => {
-        setCareers(core.careers)
-    }, [core])
-
-    useEffect(() => {
         if (task && task.career && task.field) {
-            const fd = core.fields.filter((x) => x.career === task.career._id)
-            const topics = core.topics.filter((x) => x.fields.includes(task.field._id))
-            const skills = core.skills.filter((x) => x.fields.includes(task.field._id))
-            setFields(fd);
-            setTopics(topics);
-            setSkills(skills)
-
             if (task.resources.length > 0) {
                 setResources(groupTaskResources(task.resources))
             }
@@ -191,42 +174,18 @@ const TaskDetailsPage = () => {
                         {
                             !helper.isEmpty(task, 'object') &&
                             <>
-                                <div className="flex items-center">
-                                    <div className="flex items-center ml-auto gap-x-[0.65rem]">
-                                        {
-                                            task.type === TaskTypeEnum.TEMPLATE &&
-                                            <Button
-                                                type={"primary"}
-                                                size="xsm"
-                                                className="form-button"
-                                                loading={false}
-                                                text={{
-                                                    label: "Assign Task",
-                                                    size: 13,
-                                                }}
-                                                onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'assign-task', id: id }) }}
-                                            />
-                                        }
-                                        <Button
-                                            type={"primary"}
-                                            semantic={"info"}
-                                            size="xsm"
-                                            className="form-button"
-                                            loading={false}
-                                            text={{
-                                                label: "Edit Task",
-                                                size: 13,
-                                            }}
-                                            onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'edit-task', id: id }) }}
-                                        />
-                                    </div>
-                                </div>
+
                                 <CardUI>
                                     <div className="grid grid-cols-[35%_60%] gap-x-[5%]">
 
-                                        <div>
-                                            <div className="min-h-[200px] rounded-[14px] full-bg" style={{ backgroundImage: `url("${task.image ? task.image : '../../../images/assets/bg@core_03.webp'}")` }}></div>
-                                        </div>
+                                        {
+                                            task.assignedTo &&
+                                            <div>
+                                                <TalentCard
+                                                    talent={task.assignedTo}
+                                                />
+                                            </div>
+                                        }
                                         <div>
 
                                             <div className="flex items-center">
@@ -237,6 +196,33 @@ const TaskDetailsPage = () => {
                                                         <h3 className="font-mona-light pag-600 text-[13px]">ID: {task.code}</h3>
                                                         <h3 className="font-mona-light pag-600 text-[13px]">Duration: {task.duration.label}</h3>
                                                     </div>
+                                                </div>
+
+                                                <div className="flex items-center ml-auto gap-x-[0.65rem]">
+                                                    <Button
+                                                        type={"ghost"}
+                                                        semantic="error"
+                                                        size="xsm"
+                                                        className="form-button"
+                                                        loading={false}
+                                                        text={{
+                                                            label: "Revoke",
+                                                            size: 13,
+                                                        }}
+                                                        onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'assign-task', id: id }) }}
+                                                    />
+                                                    <Button
+                                                        type={"primary"}
+                                                        semantic={"info"}
+                                                        size="xsm"
+                                                        className="form-button"
+                                                        loading={false}
+                                                        text={{
+                                                            label: "Edit Task",
+                                                            size: 13,
+                                                        }}
+                                                        onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'edit-task', id: id }) }}
+                                                    />
                                                 </div>
 
                                             </div>
@@ -253,50 +239,6 @@ const TaskDetailsPage = () => {
                                                     <span className="font-mona-light pag-500 text-[15px]">Topic - </span>
                                                     <span className="font-mona pag-800 text-[15px]">{task?.topic?.name || '---'}</span>
                                                 </h4>
-                                            </div>
-
-                                            <Divider />
-
-                                            <div className="flex items-center gap-x-[0.5rem]">
-                                                <Badge
-                                                    type={'purple'}
-                                                    size="sm"
-                                                    display="badge"
-                                                    label={helper.capitalize(task.level)}
-                                                    padding={{ y: 2, x: 12 }}
-                                                    font={{
-                                                        weight: 'regular',
-                                                        size: 12
-                                                    }}
-                                                    upper={false}
-                                                    close={false}
-                                                />
-                                                <Badge
-                                                    type={'info'}
-                                                    size="sm"
-                                                    display="badge"
-                                                    label={helper.capitalize(task.difficulty)}
-                                                    padding={{ y: 2, x: 12 }}
-                                                    font={{
-                                                        weight: 'regular',
-                                                        size: 12
-                                                    }}
-                                                    upper={false}
-                                                    close={false}
-                                                />
-                                                <Badge
-                                                    type={'orange'}
-                                                    size="sm"
-                                                    display="badge"
-                                                    label={helper.capitalize(task.type)}
-                                                    padding={{ y: 2, x: 12 }}
-                                                    font={{
-                                                        weight: 'regular',
-                                                        size: 12
-                                                    }}
-                                                    upper={false}
-                                                    close={false}
-                                                />
                                             </div>
 
                                         </div>
@@ -409,11 +351,14 @@ const TaskDetailsPage = () => {
 
                                 </CardUI>
 
-                                <CardUI>
+                                <CardUI className={`${task.type === TaskTypeEnum.ASSIGNED ? '' : 'hidden'}`}>
+
+
 
                                     <Tabs defaultIndex={parseInt(storage.fetch('task-details-tab'))}>
 
                                         <TabList>
+
                                             {
                                                 TABS.map((tab) => (
                                                     <Fragment key={"task-tab" + tab.value}>
@@ -421,15 +366,22 @@ const TaskDetailsPage = () => {
                                                     </Fragment>
                                                 ))
                                             }
+
                                         </TabList>
 
                                         <TabPanel tabIndex={0}>
+
+                                            <CardUI className="mt-[2rem]">
+                                                <div className="flex items-center mb-[1rem]">
+                                                    <h3 className="font-mona-medium text-[14px] pag-950">Task Description</h3>
+                                                </div>
+                                                <div className="font-mona text-[15px] leading-[2rem] pag-900">{ task.description }</div>
+                                            </CardUI>
 
                                             <div className="space-y-[1rem] py-[1.5rem]">
 
                                                 <div className="flex items-center">
                                                     <h3 className="font-mona-medium text-[14px] pag-800">Task {helper.capitalize(taskField)} Details</h3>
-
                                                 </div>
 
                                                 <div className="w-full grid grid-cols-[30%_68%] gap-x-[2%]">
@@ -999,6 +951,7 @@ const TaskDetailsPage = () => {
 
                                         </TabPanel>
 
+
                                         <TabPanel tabIndex={4}>
 
                                             <div className="py-[1.5rem]">
@@ -1014,22 +967,13 @@ const TaskDetailsPage = () => {
                                                     task.talents.length > 0 &&
                                                     <div className="grid grid-cols-4 gap-x-[1rem] gap-y-[1rem]">
                                                         {
-                                                            task.talents.map((talent, index) => {
-
-                                                                const taskChild = getChildByTalentId(talent._id)
-
-                                                                return <Fragment key={talent._id}>
-                                                                    {
-                                                                        taskChild &&
-                                                                        <TalentCard
-                                                                            talent={talent}
-                                                                            onClick={(e) => {
-                                                                                toDetailRoute(e, { route: 'tasks', name: 'task-talent-details', id: taskChild._id })
-                                                                            }}
-                                                                        />
-                                                                    }
+                                                            task.talents.map((talent, index) => (
+                                                                <Fragment key={talent._id}>
+                                                                    <TalentCard
+                                                                        talent={talent}
+                                                                    />
                                                                 </Fragment>
-                                                            })
+                                                            ))
                                                         }
                                                     </div>
                                                 }
@@ -1066,10 +1010,6 @@ const TaskDetailsPage = () => {
 
                                     </Tabs>
 
-
-
-
-
                                 </CardUI>
                             </>
                         }
@@ -1083,4 +1023,4 @@ const TaskDetailsPage = () => {
     )
 }
 
-export default TaskDetailsPage;
+export default TalentTaskDetailsPage;

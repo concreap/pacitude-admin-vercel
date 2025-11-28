@@ -39,6 +39,7 @@ const NewTaskPage = lazy(() => import('../../../pages/dashboard/tasks/NewTask'))
 const AssignTaskPage = lazy(() => import('../../../pages/dashboard/tasks/AssignTask'))
 const OldTaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/OldTaskDetails'))
 const TaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/TaskDetails'))
+const TalentTaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/TalentTaskDetails'))
 const EditTaskPage = lazy(() => import('../../../pages/dashboard/tasks/EditTask'))
 
 // users/talents/admins/businesses
@@ -70,6 +71,8 @@ const DynamicRoutes = () => {
                 return <NewTaskPage />
             case 'task-details':
                 return <TaskDetailsPage />
+            case 'task-talent-details':
+                return <TalentTaskDetailsPage />
             case 'edit-task':
                 return <EditTaskPage />
             case 'assign-task':

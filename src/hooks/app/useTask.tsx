@@ -1,22 +1,22 @@
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { ICollection, IGroupedLink, IGroupedResource, IListQuery, IPoller } from '../../utils/interfaces.util'
 import useContextType from '../useContextType'
-import { GET_COMMENTS, GET_FIELD, GET_FIELDS, GET_TASK, GET_TASKS, SET_ITEM, SET_ITEMS, SET_POLLER } from '../../context/types'
+import { GET_COMMENTS, GET_TASK, GET_TASKS, SET_ITEM, SET_POLLER } from '../../context/types'
 import AxiosService from '../../services/axios.service'
 import { URL_FIELD, URL_TASK } from '../../utils/path.util'
 import useNetwork from '../useNetwork'
 import useToast from '../useToast'
 import helper from '../../utils/helper.util'
-import { ActionModify, FormActionType, ResourceType, TaskFieldType, UIType } from '../../utils/types.util'
+import { ActionModify, TaskFieldType, UIType } from '../../utils/types.util'
 import { StatusEnum, TaskFieldEnum, UIEnum } from '../../utils/enums.util'
-import { UIPoller } from '../../_data/seed'
-import { ITaskDeliverable, ITaskInstruction, ITaskObjective, ITaskResource, ITaskRubric } from '../../models/Task.model'
+import Task, { ITaskDeliverable, ITaskInstruction, ITaskObjective, ITaskResource, ITaskRubric } from '../../models/Task.model'
 
 interface ICreateTask {
     fieldId: any,
     topicId: any,
     level: string,
     poll: boolean
+    job?: boolean
 }
 
 interface IUpdateTaskField {
@@ -107,6 +107,89 @@ const useTask = () => {
     ] as const)
 
     const [isPolling, setIsPolling] = useState<boolean>(false);
+    const pollKeyRef = useRef<string>(poller.key);
+
+    /**
+     * @name getTaskByCode
+     */
+    const getTaskByCode = useCallback(async (code: string, poll: boolean) => {
+
+        setLoading({ option: 'default' })
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'GET',
+            isAuth: true,
+            path: `${URL_TASK}/code?value=${code}`
+        })
+
+        if (response.error === false) {
+
+            if (response.status === 200) {
+
+                setResource(GET_TASK, response.data);
+
+                if (poll) {
+                    let poller: IPoller = {
+                        code: response.data.code,
+                        key: response.data._id,
+                        loading: false,
+                        status: StatusEnum.COMPLETED
+                    }
+
+                    setResource(SET_POLLER, poller);
+                }
+
+            }
+
+            unsetLoading({
+                option: 'default',
+                message: 'data fetched successfully'
+            })
+
+        }
+
+        if (response.error === true) {
+
+            if (poll && response.data && response.data.taskCode) {
+                let poller: IPoller = {
+                    code: response.data.taskCode,
+                    key: response.data.taskCode,
+                    loading: true,
+                    status: StatusEnum.PENDING
+                }
+                setResource(SET_POLLER, poller);
+            } else {
+                setIsPolling(false) // stop polling
+            }
+
+            unsetLoading({
+                option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+            else if (response.data) {
+                console.log(`Error! Could not get task ${response.data}`)
+            }
+            else if (response.status === 500) {
+                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
+            }
+
+        }
+
+        return response
+
+    }, [setLoading, unsetLoading, setResource])
+
+    // Keep the ref in sync with the latest poller key
+    useEffect(() => {
+        pollKeyRef.current = poller.key;
+    }, [poller.key]);
 
     useEffect(() => {
 
@@ -114,21 +197,26 @@ const useTask = () => {
             return;
         }
 
+        // define poller function
         const pollAPI = async () => {
 
+            // Use the ref value to avoid dependency cycle
+            const currentKey = pollKeyRef.current;
+
             // Call the API immediately when polling starts
-            const response = await getTaskByCode(poller.key, true);
+            const response = await getTaskByCode(currentKey, true);
 
             if (!response.error) {
-                // console.log('POLL', response.data);
-                setIsPolling(false)
+
+                setIsPolling(false) // stop polling
+                pollKeyRef.current = '' // empty poll-key
 
                 // set polling details
                 setResource(SET_POLLER, {
                     loading: false,
                     status: StatusEnum.COMPLETED,
                     key: response.data._id,
-                    code: response.data.code
+                    code: response.data.taskCode
                 });
 
             } else {
@@ -137,14 +225,15 @@ const useTask = () => {
                 setResource(SET_POLLER, {
                     loading: true,
                     status: StatusEnum.PENDING,
-                    key: response.data.code,
-                    code: response.data.code
+                    key: response.data.taskCode,
+                    code: response.data.taskCode
                 });
 
             }
 
         }
 
+        // call poller function
         pollAPI();
 
         // Set up the interval to poll the API repeatedly
@@ -157,7 +246,7 @@ const useTask = () => {
             console.log('Polling interval cleared.');
         };
 
-    }, [isPolling, poller])
+    }, [isPolling, pollKeyRef.current])
 
     const startPolling = () => {
         setIsPolling(true);
@@ -707,15 +796,15 @@ const useTask = () => {
 
                 let currItem = item as ITaskRubric;
 
-                if(data.criteria){
+                if (data.criteria) {
                     currItem.criteria = data.criteria;
                 }
 
-                if(data.description){
+                if (data.description) {
                     currItem.description = data.description;
                 }
 
-                if(data.point){
+                if (data.point) {
                     currItem.point = data.point;
                 }
 
@@ -749,6 +838,35 @@ const useTask = () => {
 
     const clearTaskItem = () => {
         setResource(SET_ITEM, {})
+    }
+
+    const getChildByTalentId = (id: string) => {
+
+        let taskChild: Task | null = null;
+        
+        if(!helper.isEmpty(task, 'object') && task){
+
+            if(task.children.length > 0){
+
+                for(let i = 0; i < task.children.length; i++){
+
+                    let child: Task = task.children[i];
+
+                    if(child.assignedTo === id){
+                        taskChild = child;
+                        break;
+                    } else {
+                        continue;
+                    }
+
+                }
+
+            }
+
+        }
+
+        return taskChild;
+
     }
 
     /**
@@ -918,85 +1036,11 @@ const useTask = () => {
     }, [setLoading, unsetLoading, setResource])
 
     /**
-     * @name getTaskByCode
-     */
-    const getTaskByCode = useCallback(async (code: string, poll: boolean) => {
-
-        setLoading({ option: 'default' })
-
-        const response = await AxiosService.call({
-            type: 'default',
-            method: 'GET',
-            isAuth: true,
-            path: `${URL_TASK}/code?value=${code}`
-        })
-
-        if (response.error === false) {
-
-            if (response.status === 200) {
-
-                setResource(GET_TASK, response.data);
-
-                if (poll) {
-                    let poller: IPoller = {
-                        code: response.data.code,
-                        key: response.data._id,
-                        loading: false,
-                        status: StatusEnum.COMPLETED
-                    }
-
-                    setResource(SET_POLLER, poller);
-                }
-
-            }
-
-            unsetLoading({
-                option: 'default',
-                message: 'data fetched successfully'
-            })
-
-        }
-
-        if (response.error === true) {
-
-            if (poll) {
-                let poller: IPoller = {
-                    code: response.data.taskCode,
-                    key: response.data.taskCode,
-                    loading: true,
-                    status: StatusEnum.PENDING
-                }
-                setResource(SET_POLLER, poller);
-            }
-
-            unsetLoading({
-                option: 'default',
-                message: response.message ? response.message : response.data
-            })
-
-            if (response.status === 401) {
-                AxiosService.logout()
-            } else if (response.message && response.message === 'Error: Network Error') {
-                popNetwork();
-            }
-            else if (response.data) {
-                console.log(`Error! Could not get task ${response.data}`)
-            }
-            else if (response.status === 500) {
-                console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
-            }
-
-        }
-
-        return response
-
-    }, [setLoading, unsetLoading, setResource])
-
-
-    /**
     * @name createTask
     */
     const createTask = useCallback(async (data: ICreateTask) => {
+
+        let job = data.job && data.job === true ? 'true' : 'false';
 
         setLoading({ option: 'default' })
 
@@ -1011,8 +1055,12 @@ const useTask = () => {
             type: 'default',
             method: 'POST',
             isAuth: true,
-            path: `${URL_TASK}`,
-            payload: data
+            path: `${URL_TASK}?job=${job}`,
+            payload: {
+                fieldId: data.fieldId,
+                topicId: data.topicId,
+                level: data.level
+            }
         })
 
         if (response.error === false) {
@@ -1037,6 +1085,10 @@ const useTask = () => {
         }
 
         if (response.error === true) {
+
+            if (data.poll) {
+                setIsPolling(false);
+            }
 
             unsetLoading({
                 option: 'default',
@@ -1322,6 +1374,7 @@ const useTask = () => {
         appendTaskItem,
         updateTaskItem,
         clearTaskItem,
+        getChildByTalentId,
 
         getTasks,
         getTask,

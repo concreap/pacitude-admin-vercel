@@ -10,6 +10,7 @@ import Topic from "../models/Topic.model";
 import Talent from "../models/Talent.model";
 import Task from "../models/Task.model";
 import Comment from "../models/Comment.model";
+import Group from "../models/Group.model";
 
 export interface IResult {
     error: boolean,
@@ -1453,6 +1454,8 @@ export interface IAppContext {
     industry: Industry,
     careers: ICollection,
     career: Career,
+    groups: ICollection,
+    group: Group,
     fields: ICollection,
     field: Field,
     skills: ICollection,
