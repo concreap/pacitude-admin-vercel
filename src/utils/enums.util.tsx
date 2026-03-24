@@ -9,13 +9,13 @@ export enum CookieKeyType {
     XHIT = 'x-hit'
 }
 
-export enum UserEnumType{
-    SUPER = 'superadmin',
-    ADMIN = 'admin',
-    BUSINESS = 'business',
-    TALENT = 'talent',
-    USER = 'user'
-}
+export const UserEnum = {
+    SUPER: 'superadmin',
+    ADMIN: 'admin',
+    BUSINESS: 'business',
+    TALENT: 'talent',
+    USER: 'user'
+} as const
 export enum PasswordType{
     SELF = 'self',
     GENERATED = 'generated',
@@ -86,6 +86,7 @@ export const StatusEnum = {
     APPROVED: 'approved',
     REJECTED: 'rejected',
     DRAFT: 'draft',
+    GENERATING: 'generating'
 } as const
 
 export const ActionEnum = {

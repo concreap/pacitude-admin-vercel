@@ -7,7 +7,7 @@ import CookieService from '../../services/cookie.service'
 import storage from '../../utils/storage.util'
 import routes from '../../routes/routes'
 import AxiosService from '../../services/axios.service'
-import { UserEnumType } from '../../utils/enums.util'
+import { UserEnum } from '../../utils/enums.util'
 import { URL_LOGIN, URL_USERS } from '../../utils/path.util'
 
 interface IRegister {
@@ -123,7 +123,7 @@ const useAuth = () => {
 
             if (response.status === 200) {
 
-                if (response.data.userType === UserEnumType.SUPER || response.data.userType === UserEnumType.ADMIN) {
+                if (response.data.userType === UserEnum.SUPER || response.data.userType === UserEnum.ADMIN) {
 
                     // store auth credentials
                     storage.storeAuth(response.token!, response.data._id);

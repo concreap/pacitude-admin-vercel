@@ -9,7 +9,7 @@ import Button from "../../../components/partials/buttons/Button";
 import useToast from "../../../hooks/useToast";
 import Field from "../../../models/Field.model";
 import Topic from "../../../models/Topic.model";
-import { DurationEnum, EditTaskEnum, TaskFieldEnum, UIEnum, UserEnumType } from "../../../utils/enums.util";
+import { DurationEnum, EditTaskEnum, TaskFieldEnum, UIEnum, UserEnum } from "../../../utils/enums.util";
 import useTask from "../../../hooks/app/useTask";
 import EmptyState from "../../../components/partials/dialogs/EmptyState";
 import Badge from "../../../components/partials/badges/Badge";
@@ -113,7 +113,7 @@ const AssignTaskPage = () => {
 
     const selectTalents = () => {
 
-        let allTalents = users.data.filter((x) => x.userType === UserEnumType.TALENT);
+        let allTalents = users.data.filter((x) => x.userType === UserEnum.TALENT);
 
         if (allTalents.length > 0) {
             const talentIds = allTalents.map((x) => x._id);

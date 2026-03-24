@@ -49,7 +49,7 @@ const CreateQuestionPage = ({ }) => {
     const [code, setCode] = useState<string>('')
     const [aiData, setAiData] = useState({
         prompt: '',
-        model: 'openai',
+        model: 'gemini',
         total: 10,
         error: '',
         level: '',
@@ -771,6 +771,8 @@ const CreateQuestionPage = ({ }) => {
                                             limitHeight: 'md'
                                         }}
                                         items={[
+                                            { label: '3 Questions', value: "3" },
+                                            { label: '5 Questions', value: "5" },
                                             { label: '10 Questions', value: "10" },
                                             { label: '15 Questions', value: "15" },
                                             { label: '20 Questions', value: "20" },
@@ -798,6 +800,7 @@ const CreateQuestionPage = ({ }) => {
                                             limitHeight: 'md'
                                         }}
                                         items={[
+                                            { label: 'Use Gemini', value: 'gemini' },
                                             { label: 'Use OpenAI', value: 'openai' },
                                             { label: 'Use Anthropic', value: 'anthropic' }
                                         ]}

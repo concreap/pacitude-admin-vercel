@@ -67,9 +67,17 @@ const useUser = () => {
 
     const getUsers = useCallback(async (data: IListQuery, all: boolean = false) => {
 
-        const { limit, page, select, order, cache } = data;
+        const { limit, page, select, order, cache, type } = data;
         let q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
-        q = cache && cache === true ? q + `&cache=true` : q + `&cache=false`
+
+        if(cache !== undefined){
+            q = cache === true ? q + `&cache=true` : q + `&cache=false`
+        }
+
+        if(type !== undefined && ['talent', 'business'].includes(type)){
+            q = q + `&type=${type}`
+        }
+        
 
         setLoading({ option: 'resource', type: GET_USERS });
 

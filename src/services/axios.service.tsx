@@ -1,5 +1,5 @@
 import { CallApiDTO } from "../dtos/axios.dto";
-import Axios from 'axios'
+import Axios, { AxiosError } from 'axios'
 import { ApiServiceType } from "../utils/types.util";
 import storage from "../utils/storage.util";
 import { IAPIResponse } from "../utils/interfaces.util";
@@ -41,42 +41,11 @@ class AxiosService {
 
             if (err.response) {
 
-                if (err.response.status === 404) {
-                    result.error = true;
-
-                    if (err.response.data.errors) {
-                        result.errors = err.response.data.errors
-                    } else if (err.response.data.message) {
-                        result.message = err.response.data.message
-                    } else {
-                        result.message = 'unable to get requested resource';
-                    }
-
-                    result.data = null;
-                } else if (err.response.status === 502) {
-                    result.error = true;
-
-                    if (err.response.data.errors) {
-                        result.errors = err.response.data.errors
-                    } else if (err.response.data.message) {
-                        result.message = err.response.data.message
-                    } else {
-                        result.message = 'unable to get requested resource';
-                    }
-
-                    result.data = null;
-                } else {
-
-                    if (err.response.data) {
-                        result = err.response.data;
-                    } else {
-                        result.error = true;
-                        result.errors = ['an error occured'];
-                        result.message = 'An error occured';
-                        result.data = null;
-                    }
-
-                }
+                result.error = true;
+                result.errors = [err.message ? err.message : 'An error occured'];
+                result.message = 'An error occured'
+                result.data = err.response?.data?.data || null
+                result.status = err.response.status
 
             } else if (typeof (err) === 'object') {
                 result.error = true;

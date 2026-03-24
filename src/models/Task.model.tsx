@@ -44,7 +44,8 @@ interface Task {
         guidelines: Array<string>
         essay: string,
         items: Array<ITaskSubmissionItem>,
-    }
+    },
+    error: ITaskError
     feedbacks: Array<ITaskFeedback>,
     review: ITaskReview,
     rubrics: Array<ITaskRubric>
@@ -80,6 +81,13 @@ interface Task {
     _id: string;
     id: string;
 
+}
+
+export interface ITaskError {
+    message: string,
+    provider: string,
+    code: string | number,
+    stack: any;
 }
 
 export interface ITaskReview {

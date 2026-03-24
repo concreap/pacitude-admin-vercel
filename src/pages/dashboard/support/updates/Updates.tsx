@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import IconButton from "../../../../components/partials/buttons/IconButton";
 import Icon from "../../../../components/partials/icons/Icon";
 import Checkbox from "../../../../components/partials/inputs/Checkbox";
-import { UserEnumType } from "../../../../utils/enums.util";
+import { UserEnum } from "../../../../utils/enums.util";
 import FormField from "../../../../components/partials/inputs/FormField";
 import TextInput from "../../../../components/partials/inputs/TextInput";
 import TinyMCE from "../../../../components/app/editor/TinyMCE";
@@ -69,7 +69,7 @@ const UpdatesPage = ({ }) => {
 
     const selectTalents = () => {
 
-        let allTalents = users.data.filter((x) => x.userType === UserEnumType.TALENT);
+        let allTalents = users.data.filter((x) => x.userType === UserEnum.TALENT);
 
         if (allTalents.length > 0) {
             const talentIds = allTalents.map((x) => x._id);

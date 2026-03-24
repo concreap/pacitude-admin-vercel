@@ -54,7 +54,10 @@ const TaskDetailsPage = () => {
     const { toDetailRoute } = useGoTo()
     const { getFullname } = useUser()
     const { loading: coreLoading, core, getCoreResources } = useApp()
-    const { task, loading, getTask, getChildByTalentId, groupTaskResources, formatTaskStatus } = useTask()
+    const {
+        task, loading, TaskStatus,
+        getTask, getChildByTalentId, groupTaskResources, formatTaskStatus
+    } = useTask()
 
     const [taskField, setTaskField] = useState<typeof TaskFieldEnum[keyof typeof TaskFieldEnum]>(TaskFieldEnum.OBJECTIVES)
     const [resources, setResources] = useState<Array<IGroupedResource>>([]);
@@ -192,35 +195,59 @@ const TaskDetailsPage = () => {
                             !helper.isEmpty(task, 'object') &&
                             <>
                                 <div className="flex items-center">
-                                    <div className="flex items-center ml-auto gap-x-[0.65rem]">
-                                        {
-                                            task.type === TaskTypeEnum.TEMPLATE &&
+                                    {
+                                        task.status === TaskStatus.FAILED &&
+                                        <div className="flex items-center ml-auto gap-x-[0.65rem]">
                                             <Button
                                                 type={"primary"}
+                                                semantic={"normal"}
                                                 size="xsm"
                                                 className="form-button"
                                                 loading={false}
                                                 text={{
-                                                    label: "Assign Task",
+                                                    label: "Regenerate Task",
                                                     size: 13,
                                                 }}
-                                                onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'assign-task', id: id }) }}
+                                                onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'regenerate-task', id: id }) }}
                                             />
-                                        }
-                                        <Button
-                                            type={"primary"}
-                                            semantic={"info"}
-                                            size="xsm"
-                                            className="form-button"
-                                            loading={false}
-                                            text={{
-                                                label: "Edit Task",
-                                                size: 13,
-                                            }}
-                                            onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'edit-task', id: id }) }}
-                                        />
-                                    </div>
+                                        </div>
+                                    }
+
+                                    {
+                                        task.status !== TaskStatus.FAILED &&
+                                        <div className="flex items-center ml-auto gap-x-[0.65rem]">
+                                            {
+                                                task.type === TaskTypeEnum.TEMPLATE &&
+                                                <Button
+                                                    type={"primary"}
+                                                    size="xsm"
+                                                    className="form-button"
+                                                    loading={false}
+                                                    text={{
+                                                        label: "Assign Task",
+                                                        size: 13,
+                                                    }}
+                                                    onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'assign-task', id: id }) }}
+                                                />
+                                            }
+                                            <Button
+                                                type={"primary"}
+                                                semantic={"info"}
+                                                size="xsm"
+                                                className="form-button"
+                                                loading={false}
+                                                text={{
+                                                    label: "Edit Task",
+                                                    size: 13,
+                                                }}
+                                                onClick={(e) => { toDetailRoute(e, { route: 'tasks', name: 'edit-task', id: id }) }}
+                                            />
+                                        </div>
+                                    }
+
+
                                 </div>
+
                                 <CardUI>
                                     <div className="grid grid-cols-[35%_60%] gap-x-[5%]">
 
@@ -409,668 +436,673 @@ const TaskDetailsPage = () => {
 
                                 </CardUI>
 
-                                <CardUI>
+                                {
+                                    task.status !== TaskStatus.FAILED &&
+                                    <CardUI>
 
-                                    <Tabs defaultIndex={parseInt(storage.fetch('task-details-tab'))}>
+                                        <Tabs defaultIndex={parseInt(storage.fetch('task-details-tab'))}>
 
-                                        <TabList>
-                                            {
-                                                TABS.map((tab) => (
-                                                    <Fragment key={"task-tab" + tab.value}>
-                                                        <Tab onClick={(e: any) => { configTab(e, tab.id); }}>{tab.label}</Tab>
-                                                    </Fragment>
-                                                ))
-                                            }
-                                        </TabList>
+                                            <TabList>
+                                                {
+                                                    TABS.map((tab) => (
+                                                        <Fragment key={"task-tab" + tab.value}>
+                                                            <Tab onClick={(e: any) => { configTab(e, tab.id); }}>{tab.label}</Tab>
+                                                        </Fragment>
+                                                    ))
+                                                }
+                                            </TabList>
 
-                                        <TabPanel tabIndex={0}>
+                                            <TabPanel tabIndex={0}>
 
-                                            <div className="space-y-[1rem] py-[1.5rem]">
+                                                <div className="space-y-[1rem] py-[1.5rem]">
 
-                                                <div className="flex items-center">
-                                                    <h3 className="font-mona-medium text-[14px] pag-800">Task {helper.capitalize(taskField)} Details</h3>
+                                                    <div className="flex items-center">
+                                                        <h3 className="font-mona-medium text-[14px] pag-800">Task {helper.capitalize(taskField)} Details</h3>
 
-                                                </div>
+                                                    </div>
 
-                                                <div className="w-full grid grid-cols-[30%_68%] gap-x-[2%]">
+                                                    <div className="w-full grid grid-cols-[30%_68%] gap-x-[2%]">
 
-                                                    <div className="space-y-[0.85rem]">
-                                                        {
-                                                            TASK_FIELDS.map((tskf, index) =>
-                                                                <Fragment key={tskf + index}>
+                                                        <div className="space-y-[0.85rem]">
+                                                            {
+                                                                TASK_FIELDS.map((tskf, index) =>
+                                                                    <Fragment key={tskf + index}>
 
-                                                                    <div onClick={(e) => setTaskField(tskf)} className={`cursor-pointer flex items-center px-[1rem] py-[0.6rem] rounded-[5px] border ${tskf === taskField ? 'bg-pagr-25 bdr-pagr-50' : 'bdr-pag-100'}`}>
-                                                                        <h3 className={`${tskf === taskField ? 'font-mona-medium pagr-800' : 'font-mona pag-800'} text-[14px]`}>{helper.capitalize(tskf)}</h3>
+                                                                        <div onClick={(e) => setTaskField(tskf)} className={`cursor-pointer flex items-center px-[1rem] py-[0.6rem] rounded-[5px] border ${tskf === taskField ? 'bg-pagr-25 bdr-pagr-50' : 'bdr-pag-100'}`}>
+                                                                            <h3 className={`${tskf === taskField ? 'font-mona-medium pagr-800' : 'font-mona pag-800'} text-[14px]`}>{helper.capitalize(tskf)}</h3>
+                                                                            {
+                                                                                tskf === taskField &&
+                                                                                <span className="flex items-center ml-auto justify-center w-[25px] h-[25px] bg-pagr-500 rounded-full">
+                                                                                    <Icon name="check" type="polio" className="color-white" size={15} />
+                                                                                </span>
+                                                                            }
+                                                                        </div>
+
+                                                                    </Fragment>
+                                                                )
+                                                            }
+                                                        </div>
+
+                                                        <CardUI>
+
+                                                            {
+                                                                taskField === TaskFieldEnum.OBJECTIVES &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.objectives.length})</h3>
+
+                                                                    <div className="space-y-[1rem]">
                                                                         {
-                                                                            tskf === taskField &&
-                                                                            <span className="flex items-center ml-auto justify-center w-[25px] h-[25px] bg-pagr-500 rounded-full">
-                                                                                <Icon name="check" type="polio" className="color-white" size={15} />
-                                                                            </span>
+                                                                            task.objectives.length > 0 &&
+                                                                            task.objectives.map((ov: ITaskObjective, index) =>
+                                                                                <Fragment key={ov.code}>
+
+                                                                                    <div className="flex items-center">
+
+                                                                                        <div className="space-y-[0.65rem]">
+                                                                                            <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.title}</h3>
+                                                                                            <ul className="pl-[1rem]">
+                                                                                                {
+                                                                                                    ov.steps.map((step, index) =>
+                                                                                                        <Fragment key={ov.code + index}>
+                                                                                                            <li>
+                                                                                                                <div className="flex items-center gap-x-[0.5rem]">
+                                                                                                                    <Dot />
+                                                                                                                    <p className="font-mona pag-900 text-[14px]">{step}</p>
+                                                                                                                </div>
+                                                                                                            </li>
+                                                                                                        </Fragment>
+                                                                                                    )
+                                                                                                }
+                                                                                            </ul>
+                                                                                        </div>
+
+                                                                                    </div>
+
+
+                                                                                    {(index + 1) < task.objectives.length && <Divider padding={{ enable: false }} />}
+                                                                                </Fragment>
+                                                                            )
                                                                         }
                                                                     </div>
 
-                                                                </Fragment>
-                                                            )
-                                                        }
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.OUTCOMES &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task Learning {helper.capitalize(taskField)} ({task.outcomes.length})</h3>
+
+                                                                    <div className="space-y-[1rem]">
+                                                                        {
+                                                                            task.outcomes.length > 0 &&
+                                                                            task.outcomes.map((ov: string, index) =>
+                                                                                <Fragment key={ov}>
+
+                                                                                    <div className="flex items-center">
+
+                                                                                        <div className="space-y-[0.65rem]">
+                                                                                            <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
+                                                                                        </div>
+
+                                                                                    </div>
+
+                                                                                    {(index + 1) < task.outcomes.length && <Divider padding={{ enable: false }} />}
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.REQUIREMENTS &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.requirements.length})</h3>
+
+                                                                    <div className="space-y-[1rem]">
+                                                                        {
+                                                                            task.requirements.length > 0 &&
+                                                                            task.requirements.map((ov: string, index) =>
+                                                                                <Fragment key={ov}>
+
+                                                                                    <div className="flex items-center">
+
+                                                                                        <div className="space-y-[0.65rem]">
+                                                                                            <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
+                                                                                        </div>
+
+                                                                                    </div>
+
+                                                                                    {(index + 1) < task.requirements.length && <Divider padding={{ enable: false }} />}
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.INSTRUCTIONS &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.instructions.length})</h3>
+
+                                                                    <div className="space-y-[1rem]">
+                                                                        {
+                                                                            task.instructions.length > 0 &&
+                                                                            task.instructions.map((ov: ITaskInstruction, index) =>
+                                                                                <Fragment key={ov.code}>
+
+                                                                                    <div className="flex items-center">
+
+                                                                                        <div className="space-y-[0.65rem]">
+                                                                                            <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.title}</h3>
+                                                                                            <ul className="pl-[1rem]">
+                                                                                                {
+                                                                                                    ov.actions.map((step, index) =>
+                                                                                                        <Fragment key={ov.code + index}>
+                                                                                                            <li>
+                                                                                                                <div className="flex items-center gap-x-[0.5rem]">
+                                                                                                                    <Dot />
+                                                                                                                    <p className="font-mona pag-900 text-[14px]">{step}</p>
+                                                                                                                </div>
+                                                                                                            </li>
+                                                                                                        </Fragment>
+                                                                                                    )
+                                                                                                }
+                                                                                            </ul>
+                                                                                        </div>
+
+                                                                                    </div>
+
+
+                                                                                    {(index + 1) < task.instructions.length && <Divider padding={{ enable: false }} />}
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
+
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.DELIVERABLES &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.deliverables.length})</h3>
+
+                                                                    <div className="space-y-[1rem]">
+                                                                        {
+                                                                            task.deliverables.length > 0 &&
+                                                                            task.deliverables.map((ov: ITaskDeliverable, index) =>
+                                                                                <Fragment key={ov.code}>
+
+                                                                                    <div className="flex items-center">
+
+                                                                                        <div className="space-y-[0.65rem]">
+                                                                                            <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.title}</h3>
+                                                                                            <ul className="pl-[1rem]">
+                                                                                                {
+                                                                                                    ov.outcomes.map((step, index) =>
+                                                                                                        <Fragment key={ov.code + index}>
+                                                                                                            <li>
+                                                                                                                <div className="flex items-center gap-x-[0.5rem]">
+                                                                                                                    <Dot />
+                                                                                                                    <p className="font-mona pag-900 text-[14px]">{step}</p>
+                                                                                                                </div>
+                                                                                                            </li>
+                                                                                                        </Fragment>
+                                                                                                    )
+                                                                                                }
+                                                                                            </ul>
+                                                                                        </div>
+
+                                                                                    </div>
+
+
+                                                                                    {(index + 1) < task.deliverables.length && <Divider padding={{ enable: false }} />}
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
+
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.GUIDELINES &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task Submission {helper.capitalize(taskField)} ({task.submission.guidelines.length})</h3>
+
+                                                                    <div className="font-mona-light text-[14px] pag-900 mb-[1rem]" dangerouslySetInnerHTML={{ __html: task.submission.notes }} />
+
+                                                                    <div className="space-y-[1rem]">
+                                                                        {
+                                                                            task.submission.guidelines.length > 0 &&
+                                                                            task.submission.guidelines.map((ov: string, index) =>
+                                                                                <Fragment key={ov}>
+
+                                                                                    <div className="flex items-center">
+
+                                                                                        <div className="space-y-[0.65rem]">
+                                                                                            <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
+                                                                                        </div>
+
+                                                                                    </div>
+
+                                                                                    {(index + 1) < task.submission.guidelines.length && <Divider padding={{ enable: false }} />}
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.SKILLS &&
+                                                                <>
+                                                                    <div className="flex items-center">
+                                                                        <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.skills.length})</h3>
+                                                                    </div>
+
+                                                                    <div className="space-y-[1rem]">
+                                                                        {
+                                                                            task.skills.length === 0 &&
+                                                                            <EmptyState className="min-h-[30vh]" noBound={true} >
+                                                                                <span className="font-mona text-[14px] pas-950">No task skills yet!</span>
+                                                                            </EmptyState>
+                                                                        }
+
+                                                                        {
+                                                                            task.skills.length > 0 &&
+                                                                            task.skills.map((ov: any, index) =>
+                                                                                <Fragment key={ov.code}>
+
+                                                                                    <div className="flex items-center">
+
+                                                                                        <div className="space-y-[0.65rem]">
+                                                                                            <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.name}</h3>
+                                                                                        </div>
+
+                                                                                    </div>
+
+
+                                                                                    {(index + 1) < task.skills.length && <Divider padding={{ enable: false }} />}
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
+
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.RESOURCES &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({resources.length})</h3>
+
+                                                                    <div className="space-y-[1rem]">
+                                                                        {
+                                                                            resources.length > 0 &&
+                                                                            resources.map((ov: IGroupedResource, index) =>
+                                                                                <Fragment key={ov.name}>
+                                                                                    <UIResource resource={ov} index={index} edit={false} />
+                                                                                </Fragment>
+                                                                            )
+                                                                        }
+                                                                    </div>
+
+                                                                </>
+                                                            }
+
+                                                            {
+                                                                taskField === TaskFieldEnum.RUBRICS &&
+                                                                <>
+                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.rubrics.length})</h3>
+                                                                    <UITaskRubric edit={false} rubrics={task.rubrics} />
+                                                                </>
+                                                            }
+
+
+                                                        </CardUI>
+
                                                     </div>
-
-                                                    <CardUI>
-
-                                                        {
-                                                            taskField === TaskFieldEnum.OBJECTIVES &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.objectives.length})</h3>
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        task.objectives.length > 0 &&
-                                                                        task.objectives.map((ov: ITaskObjective, index) =>
-                                                                            <Fragment key={ov.code}>
-
-                                                                                <div className="flex items-center">
-
-                                                                                    <div className="space-y-[0.65rem]">
-                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.title}</h3>
-                                                                                        <ul className="pl-[1rem]">
-                                                                                            {
-                                                                                                ov.steps.map((step, index) =>
-                                                                                                    <Fragment key={ov.code + index}>
-                                                                                                        <li>
-                                                                                                            <div className="flex items-center gap-x-[0.5rem]">
-                                                                                                                <Dot />
-                                                                                                                <p className="font-mona pag-900 text-[14px]">{step}</p>
-                                                                                                            </div>
-                                                                                                        </li>
-                                                                                                    </Fragment>
-                                                                                                )
-                                                                                            }
-                                                                                        </ul>
-                                                                                    </div>
-
-                                                                                </div>
-
-
-                                                                                {(index + 1) < task.objectives.length && <Divider padding={{ enable: false }} />}
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.OUTCOMES &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task Learning {helper.capitalize(taskField)} ({task.outcomes.length})</h3>
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        task.outcomes.length > 0 &&
-                                                                        task.outcomes.map((ov: string, index) =>
-                                                                            <Fragment key={ov}>
-
-                                                                                <div className="flex items-center">
-
-                                                                                    <div className="space-y-[0.65rem]">
-                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
-                                                                                    </div>
-
-                                                                                </div>
-
-                                                                                {(index + 1) < task.outcomes.length && <Divider padding={{ enable: false }} />}
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.REQUIREMENTS &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.requirements.length})</h3>
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        task.requirements.length > 0 &&
-                                                                        task.requirements.map((ov: string, index) =>
-                                                                            <Fragment key={ov}>
-
-                                                                                <div className="flex items-center">
-
-                                                                                    <div className="space-y-[0.65rem]">
-                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
-                                                                                    </div>
-
-                                                                                </div>
-
-                                                                                {(index + 1) < task.requirements.length && <Divider padding={{ enable: false }} />}
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.INSTRUCTIONS &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.instructions.length})</h3>
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        task.instructions.length > 0 &&
-                                                                        task.instructions.map((ov: ITaskInstruction, index) =>
-                                                                            <Fragment key={ov.code}>
-
-                                                                                <div className="flex items-center">
-
-                                                                                    <div className="space-y-[0.65rem]">
-                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.title}</h3>
-                                                                                        <ul className="pl-[1rem]">
-                                                                                            {
-                                                                                                ov.actions.map((step, index) =>
-                                                                                                    <Fragment key={ov.code + index}>
-                                                                                                        <li>
-                                                                                                            <div className="flex items-center gap-x-[0.5rem]">
-                                                                                                                <Dot />
-                                                                                                                <p className="font-mona pag-900 text-[14px]">{step}</p>
-                                                                                                            </div>
-                                                                                                        </li>
-                                                                                                    </Fragment>
-                                                                                                )
-                                                                                            }
-                                                                                        </ul>
-                                                                                    </div>
-
-                                                                                </div>
-
-
-                                                                                {(index + 1) < task.instructions.length && <Divider padding={{ enable: false }} />}
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.DELIVERABLES &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.deliverables.length})</h3>
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        task.deliverables.length > 0 &&
-                                                                        task.deliverables.map((ov: ITaskDeliverable, index) =>
-                                                                            <Fragment key={ov.code}>
-
-                                                                                <div className="flex items-center">
-
-                                                                                    <div className="space-y-[0.65rem]">
-                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.title}</h3>
-                                                                                        <ul className="pl-[1rem]">
-                                                                                            {
-                                                                                                ov.outcomes.map((step, index) =>
-                                                                                                    <Fragment key={ov.code + index}>
-                                                                                                        <li>
-                                                                                                            <div className="flex items-center gap-x-[0.5rem]">
-                                                                                                                <Dot />
-                                                                                                                <p className="font-mona pag-900 text-[14px]">{step}</p>
-                                                                                                            </div>
-                                                                                                        </li>
-                                                                                                    </Fragment>
-                                                                                                )
-                                                                                            }
-                                                                                        </ul>
-                                                                                    </div>
-
-                                                                                </div>
-
-
-                                                                                {(index + 1) < task.deliverables.length && <Divider padding={{ enable: false }} />}
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.GUIDELINES &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task Submission {helper.capitalize(taskField)} ({task.submission.guidelines.length})</h3>
-
-                                                                <div className="font-mona-light text-[14px] pag-900 mb-[1rem]" dangerouslySetInnerHTML={{ __html: task.submission.notes }} />
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        task.submission.guidelines.length > 0 &&
-                                                                        task.submission.guidelines.map((ov: string, index) =>
-                                                                            <Fragment key={ov}>
-
-                                                                                <div className="flex items-center">
-
-                                                                                    <div className="space-y-[0.65rem]">
-                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov}</h3>
-                                                                                    </div>
-
-                                                                                </div>
-
-                                                                                {(index + 1) < task.submission.guidelines.length && <Divider padding={{ enable: false }} />}
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.SKILLS &&
-                                                            <>
-                                                                <div className="flex items-center">
-                                                                    <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.skills.length})</h3>
-                                                                </div>
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        task.skills.length === 0 &&
-                                                                        <EmptyState className="min-h-[30vh]" noBound={true} >
-                                                                            <span className="font-mona text-[14px] pas-950">No task skills yet!</span>
-                                                                        </EmptyState>
-                                                                    }
-
-                                                                    {
-                                                                        task.skills.length > 0 &&
-                                                                        task.skills.map((ov: any, index) =>
-                                                                            <Fragment key={ov.code}>
-
-                                                                                <div className="flex items-center">
-
-                                                                                    <div className="space-y-[0.65rem]">
-                                                                                        <h3 className="font-mona-medium pag-900 text-[15px]">{index + 1}. {ov.name}</h3>
-                                                                                    </div>
-
-                                                                                </div>
-
-
-                                                                                {(index + 1) < task.skills.length && <Divider padding={{ enable: false }} />}
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.RESOURCES &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({resources.length})</h3>
-
-                                                                <div className="space-y-[1rem]">
-                                                                    {
-                                                                        resources.length > 0 &&
-                                                                        resources.map((ov: IGroupedResource, index) =>
-                                                                            <Fragment key={ov.name}>
-                                                                                <UIResource resource={ov} index={index} edit={false} />
-                                                                            </Fragment>
-                                                                        )
-                                                                    }
-                                                                </div>
-
-                                                            </>
-                                                        }
-
-                                                        {
-                                                            taskField === TaskFieldEnum.RUBRICS &&
-                                                            <>
-                                                                <h3 className="font-mona pag-900 text-[15px] mb-[1rem]">Task {helper.capitalize(taskField)} ({task.rubrics.length})</h3>
-                                                                <UITaskRubric edit={false} rubrics={task.rubrics} />
-                                                            </>
-                                                        }
-
-
-                                                    </CardUI>
 
                                                 </div>
 
-                                            </div>
+                                            </TabPanel>
 
-                                        </TabPanel>
+                                            <TabPanel tabIndex={1}>
 
-                                        <TabPanel tabIndex={1}>
+                                                <div className="py-[1.5rem]">
+                                                    {
+                                                        task.submission.items &&
+                                                        task.submission.items.length === 0 &&
+                                                        <EmptyState className="min-h-[50vh]" noBound={true} >
+                                                            <span className="font-mona text-[14px] pas-950">Submission items will appear here</span>
+                                                        </EmptyState>
+                                                    }
+                                                </div>
 
-                                            <div className="py-[1.5rem]">
-                                                {
-                                                    task.submission.items.length === 0 &&
-                                                    <EmptyState className="min-h-[50vh]" noBound={true} >
-                                                        <span className="font-mona text-[14px] pas-950">Submission items will appear here</span>
-                                                    </EmptyState>
-                                                }
-                                            </div>
+                                            </TabPanel>
 
-                                        </TabPanel>
+                                            <TabPanel tabIndex={2}>
 
-                                        <TabPanel tabIndex={2}>
+                                                <div className="py-[1.5rem]">
+                                                    {
+                                                        task.comments.length === 0 &&
+                                                        <EmptyState className="min-h-[50vh]" noBound={true} >
+                                                            <span className="font-mona text-[14px] pas-950">Comments will appear here</span>
+                                                        </EmptyState>
+                                                    }
+                                                    <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
 
-                                            <div className="py-[1.5rem]">
-                                                {
-                                                    task.comments.length === 0 &&
-                                                    <EmptyState className="min-h-[50vh]" noBound={true} >
-                                                        <span className="font-mona text-[14px] pas-950">Comments will appear here</span>
-                                                    </EmptyState>
-                                                }
-                                                <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
+                                                        <h3 className="font-mona-semibold pag-800 text-sm mb-1">Task Title: Create a Simple Task-Completion Animation in Figma</h3>
 
-                                                    <h3 className="font-mona-semibold pag-800 text-sm mb-1">Task Title: Create a Simple Task-Completion Animation in Figma</h3>
+                                                        <Divider show={false} />
 
-                                                    <Divider show={false} />
+                                                        <div className="">
 
-                                                    <div className="">
+                                                            <div className="flex items-center gap-4">
 
-                                                        <div className="flex items-center gap-4">
+                                                                <div className={`avatar round sm ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
+                                                                    style={{ backgroundImage: `url("")` }}>
+                                                                    <span className="font-mona-semibold pab-900 text-sm uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
+                                                                </div>
 
-                                                            <div className={`avatar round sm ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
-                                                                style={{ backgroundImage: `url("")` }}>
-                                                                <span className="font-mona-semibold pab-900 text-sm uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
+                                                                <div className="flex items-center gap-3">
+                                                                    <h3 className="font-mona-semibold pag-900 text-[13px]">Immanuel Oluwatobi</h3>
+                                                                    <p className="font-mona text-[#717689] text-[11px]">Yesterday at 9:50 AM</p>
+                                                                </div>
+
                                                             </div>
+                                                            <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
+                                                            <p className="font-mona-medium text-[#3A3E4F] text-xs leading-loose">Nice work on defining the goal of your animation early. I like that you tied it to positive reinforcement for the user. But you could improve the timing right now it feels a bit fast, which might overwhelm users. Try slowing it down slightly so the feedback feels smoother and more natural.</p>
+                                                            <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
+                                                            <div className="flex items-center gap-5 mb-5">
+                                                                <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
+                                                                    <Icon name="message-text" type="polio" size={16} className="color-black" />
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
+                                                                </Link>
+                                                                <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
+                                                                    {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
+                                                                    😀
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
+                                                                </Link>
 
-                                                            <div className="flex items-center gap-3">
-                                                                <h3 className="font-mona-semibold pag-900 text-[13px]">Immanuel Oluwatobi</h3>
-                                                                <p className="font-mona text-[#717689] text-[11px]">Yesterday at 9:50 AM</p>
                                                             </div>
+                                                            {
+                                                                inputText &&
+                                                                <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
+                                                                    <p>{inputText}</p>
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
+                                                                </div>
+                                                            }
+
+
+                                                            {showPicker && (
+                                                                <div className='absolute z-50 h-[300px] overflow-y-scroll'>
+                                                                    <EmojiPicker
+                                                                        onEmojiClick={onEmojiClick}
+                                                                        // Optional:you can customize the picker here
+                                                                        // theme="white"
+                                                                        lazyLoadEmojis={true}
+                                                                    />
+                                                                </div>
+                                                            )}
+
+                                                            {
+                                                                showReply &&
+                                                                <div className="task-mce">
+                                                                    <TaskMCE ref={editorRef} height={200} />
+                                                                </div>
+                                                            }
 
                                                         </div>
-                                                        <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
-                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs leading-loose">Nice work on defining the goal of your animation early. I like that you tied it to positive reinforcement for the user. But you could improve the timing right now it feels a bit fast, which might overwhelm users. Try slowing it down slightly so the feedback feels smoother and more natural.</p>
-                                                        <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
-                                                        <div className="flex items-center gap-5 mb-5">
-                                                            <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
-                                                                <Icon name="message-text" type="polio" size={16} className="color-black" />
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
-                                                            </Link>
-                                                            <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
-                                                                {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
-                                                                😀
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
-                                                            </Link>
+
+                                                        <Divider padding={{ top: 'pt-[1.3rem]', bottom: 'pb-[1.3rem]', enable: true, }} />
+
+                                                        <div className="ml-12">
+
+                                                            <div className="flex items-center gap-4">
+
+                                                                <div className={`avatar round sm ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
+                                                                    style={{ backgroundImage: `url("")` }}>
+                                                                    <span className="font-mona-semibold pab-900 text-sm uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
+                                                                </div>
+
+                                                                <div className="flex items-center gap-3">
+                                                                    <h3 className="font-mona-semibold pag-900 text-[13px]">Immanuel Oluwatobi</h3>
+                                                                    <p className="font-mona text-[#717689] text-[11px]">Yesterday at 9:50 AM</p>
+                                                                </div>
+
+                                                            </div>
+                                                            <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
+                                                            <p className="font-mona-medium text-[#3A3E4F] text-xs leading-loose">Nice work on defining the goal of your animation early. I like that you tied it to positive reinforcement for the user. But you could improve the timing right now it feels a bit fast, which might overwhelm users. Try slowing it down slightly so the feedback feels smoother and more natural.</p>
+                                                            <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
+                                                            <div className="flex items-center gap-5 mb-5">
+                                                                <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
+                                                                    <Icon name="message-text" type="polio" size={16} className="color-black" />
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
+                                                                </Link>
+                                                                <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
+                                                                    {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
+                                                                    😀
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
+                                                                </Link>
+
+                                                            </div>
+                                                            {
+                                                                inputText &&
+                                                                <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
+                                                                    <p>{inputText}</p>
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
+                                                                </div>
+                                                            }
+
+
+                                                            {showPicker && (
+                                                                <div className='absolute z-50 h-[300px] overflow-y-scroll'>
+                                                                    <EmojiPicker
+                                                                        onEmojiClick={onEmojiClick}
+                                                                        // Optional:you can customize the picker here
+                                                                        // theme="white"
+                                                                        lazyLoadEmojis={true}
+                                                                    />
+                                                                </div>
+                                                            )}
+
+                                                            {
+                                                                showReply &&
+                                                                <div className="task-mce">
+                                                                    <TaskMCE ref={editorRef} height={200} />
+                                                                </div>
+                                                            }
 
                                                         </div>
+                                                        <Divider padding={{ top: 'pt-[1.3rem]', bottom: 'pb-[1.3rem]', enable: true, }} />
+                                                        <div className="">
+
+                                                            <div className="flex items-center gap-4">
+
+                                                                <div className={`avatar round sm ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
+                                                                    style={{ backgroundImage: `url("")` }}>
+                                                                    <span className="font-mona-semibold pab-900 text-sm uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
+                                                                </div>
+
+                                                                <div className="flex items-center gap-3">
+                                                                    <h3 className="font-mona-semibold pag-900 text-[13px]">Immanuel Oluwatobi</h3>
+                                                                    <p className="font-mona text-[#717689] text-[11px]">Yesterday at 9:50 AM</p>
+                                                                </div>
+
+                                                            </div>
+                                                            <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
+                                                            <p className="font-mona-medium text-[#3A3E4F] text-xs leading-loose">Nice work on defining the goal of your animation early. I like that you tied it to positive reinforcement for the user. But you could improve the timing right now it feels a bit fast, which might overwhelm users. Try slowing it down slightly so the feedback feels smoother and more natural.</p>
+                                                            <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
+                                                            <div className="flex items-center gap-5 mb-5">
+                                                                <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
+                                                                    <Icon name="message-text" type="polio" size={16} className="color-black" />
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
+                                                                </Link>
+                                                                <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
+                                                                    {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
+                                                                    😀
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
+                                                                </Link>
+
+                                                            </div>
+                                                            {
+                                                                inputText &&
+                                                                <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
+                                                                    <p>{inputText}</p>
+                                                                    <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
+                                                                </div>
+                                                            }
+
+                                                            {showPicker && (
+                                                                <div className='absolute z-50 h-[300px] overflow-y-scroll'>
+                                                                    <EmojiPicker
+                                                                        onEmojiClick={onEmojiClick}
+                                                                        // Optional:you can customize the picker here
+                                                                        // theme="white"
+                                                                        lazyLoadEmojis={true}
+                                                                    />
+                                                                </div>
+                                                            )}
+
+                                                            {
+                                                                showReply &&
+                                                                <div className="task-mce">
+                                                                    <TaskMCE ref={editorRef} height={200} />
+                                                                </div>
+                                                            }
+
+                                                        </div>
+
                                                         {
-                                                            inputText &&
-                                                            <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
-                                                                <p>{inputText}</p>
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
-                                                            </div>
-                                                        }
 
+                                                            (showReply || inputText) &&
+                                                            <>
+                                                                <Divider show={false} padding={{ enable: true, top: 'pt-[1.4rem]', bottom: 'pb-[1.4rem]' }} />
+                                                                <div className="flex justify-end">
 
-                                                        {showPicker && (
-                                                            <div className='absolute z-50 h-[300px] overflow-y-scroll'>
-                                                                <EmojiPicker
-                                                                    onEmojiClick={onEmojiClick}
-                                                                    // Optional:you can customize the picker here
-                                                                    // theme="white"
-                                                                    lazyLoadEmojis={true}
-                                                                />
-                                                            </div>
-                                                        )}
+                                                                    <Button
+                                                                        type="primary"
+                                                                        semantic="normal"
+                                                                        size="rg"
+                                                                        loading={loading}
+                                                                        disabled={false}
+                                                                        block={false}
+                                                                        className="form-button min-w-[130px] ml-auto"
 
-                                                        {
-                                                            showReply &&
-                                                            <div className="task-mce">
-                                                                <TaskMCE ref={editorRef} height={200} />
-                                                            </div>
+                                                                        text={{
+                                                                            label: "Send",
+                                                                            size: 13,
+                                                                            weight: 'medium'
+                                                                        }}
+                                                                        onClick={(e) => { }}
+                                                                    />
+
+                                                                </div>
+                                                            </>
                                                         }
 
                                                     </div>
+                                                </div>
 
-                                                    <Divider padding={{ top: 'pt-[1.3rem]', bottom: 'pb-[1.3rem]', enable: true, }} />
+                                            </TabPanel>
 
-                                                    <div className="ml-12">
+                                            <TabPanel tabIndex={3}>
 
-                                                        <div className="flex items-center gap-4">
-
-                                                            <div className={`avatar round sm ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
-                                                                style={{ backgroundImage: `url("")` }}>
-                                                                <span className="font-mona-semibold pab-900 text-sm uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
-                                                            </div>
-
-                                                            <div className="flex items-center gap-3">
-                                                                <h3 className="font-mona-semibold pag-900 text-[13px]">Immanuel Oluwatobi</h3>
-                                                                <p className="font-mona text-[#717689] text-[11px]">Yesterday at 9:50 AM</p>
-                                                            </div>
-
-                                                        </div>
-                                                        <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
-                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs leading-loose">Nice work on defining the goal of your animation early. I like that you tied it to positive reinforcement for the user. But you could improve the timing right now it feels a bit fast, which might overwhelm users. Try slowing it down slightly so the feedback feels smoother and more natural.</p>
-                                                        <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
-                                                        <div className="flex items-center gap-5 mb-5">
-                                                            <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
-                                                                <Icon name="message-text" type="polio" size={16} className="color-black" />
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
-                                                            </Link>
-                                                            <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
-                                                                {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
-                                                                😀
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
-                                                            </Link>
-
-                                                        </div>
-                                                        {
-                                                            inputText &&
-                                                            <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
-                                                                <p>{inputText}</p>
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
-                                                            </div>
-                                                        }
-
-
-                                                        {showPicker && (
-                                                            <div className='absolute z-50 h-[300px] overflow-y-scroll'>
-                                                                <EmojiPicker
-                                                                    onEmojiClick={onEmojiClick}
-                                                                    // Optional:you can customize the picker here
-                                                                    // theme="white"
-                                                                    lazyLoadEmojis={true}
-                                                                />
-                                                            </div>
-                                                        )}
-
-                                                        {
-                                                            showReply &&
-                                                            <div className="task-mce">
-                                                                <TaskMCE ref={editorRef} height={200} />
-                                                            </div>
-                                                        }
-
+                                                <div className="py-[1.5rem]">
+                                                    {
+                                                        task.feedbacks.length === 0 &&
+                                                        <EmptyState className="min-h-[50vh]" noBound={true} >
+                                                            <span className="font-mona text-[14px] pas-950">Feedback will appear here</span>
+                                                        </EmptyState>
+                                                    }
+                                                    <div className="space-y-[0.7rem] pb-16">
+                                                        <Feedback />
+                                                        <Feedback />
+                                                        <Feedback />
                                                     </div>
-                                                    <Divider padding={{ top: 'pt-[1.3rem]', bottom: 'pb-[1.3rem]', enable: true, }} />
-                                                    <div className="">
+                                                </div>
 
-                                                        <div className="flex items-center gap-4">
+                                            </TabPanel>
 
-                                                            <div className={`avatar round sm ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
-                                                                style={{ backgroundImage: `url("")` }}>
-                                                                <span className="font-mona-semibold pab-900 text-sm uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
-                                                            </div>
+                                            <TabPanel tabIndex={4}>
 
-                                                            <div className="flex items-center gap-3">
-                                                                <h3 className="font-mona-semibold pag-900 text-[13px]">Immanuel Oluwatobi</h3>
-                                                                <p className="font-mona text-[#717689] text-[11px]">Yesterday at 9:50 AM</p>
-                                                            </div>
-
-                                                        </div>
-                                                        <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
-                                                        <p className="font-mona-medium text-[#3A3E4F] text-xs leading-loose">Nice work on defining the goal of your animation early. I like that you tied it to positive reinforcement for the user. But you could improve the timing right now it feels a bit fast, which might overwhelm users. Try slowing it down slightly so the feedback feels smoother and more natural.</p>
-                                                        <Divider show={false} padding={{ enable: true, top: 'pt-[0.4rem]', bottom: 'pb-[0.4rem]' }} />
-                                                        <div className="flex items-center gap-5 mb-5">
-                                                            <Link to='' onClick={(e) => onReplyClick(e)} className="flex items-center gap-2">
-                                                                <Icon name="message-text" type="polio" size={16} className="color-black" />
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-xs">Reply</p>
-                                                            </Link>
-                                                            <Link to='' onClick={() => setShowPicker(val => !val)} className="flex items-center gap-2">
-                                                                {/* <Icon name="smile" type="polio" size={16} className="color-black" /> */}
-                                                                😀
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-xs">React</p>
-                                                            </Link>
-
-                                                        </div>
-                                                        {
-                                                            inputText &&
-                                                            <div className="h-8 w-13 bg-pag-200 flex items-center justify-between rounded-2xl px-2 mb-4">
-                                                                <p>{inputText}</p>
-                                                                <p className="font-mona-medium text-[#3A3E4F] text-[11px]">+1</p>
-                                                            </div>
-                                                        }
-
-                                                        {showPicker && (
-                                                            <div className='absolute z-50 h-[300px] overflow-y-scroll'>
-                                                                <EmojiPicker
-                                                                    onEmojiClick={onEmojiClick}
-                                                                    // Optional:you can customize the picker here
-                                                                    // theme="white"
-                                                                    lazyLoadEmojis={true}
-                                                                />
-                                                            </div>
-                                                        )}
-
-                                                        {
-                                                            showReply &&
-                                                            <div className="task-mce">
-                                                                <TaskMCE ref={editorRef} height={200} />
-                                                            </div>
-                                                        }
-
-                                                    </div>
+                                                <div className="py-[1.5rem]">
 
                                                     {
+                                                        task.talents.length === 0 &&
+                                                        <EmptyState className="min-h-[50vh]" noBound={true} >
+                                                            <span className="font-mona text-[14px] pas-950">Assignees will appear here</span>
+                                                        </EmptyState>
+                                                    }
 
-                                                        (showReply || inputText) &&
-                                                        <>
-                                                            <Divider show={false} padding={{ enable: true, top: 'pt-[1.4rem]', bottom: 'pb-[1.4rem]' }} />
-                                                            <div className="flex justify-end">
+                                                    {
+                                                        task.talents.length > 0 &&
+                                                        <div className="grid grid-cols-4 gap-x-[1rem] gap-y-[1rem]">
+                                                            {
+                                                                task.talents.map((talent, index) => {
 
-                                                                <Button
-                                                                    type="primary"
-                                                                    semantic="normal"
-                                                                    size="rg"
-                                                                    loading={loading}
-                                                                    disabled={false}
-                                                                    block={false}
-                                                                    className="form-button min-w-[130px] ml-auto"
+                                                                    const taskChild = getChildByTalentId(talent._id)
 
-                                                                    text={{
-                                                                        label: "Send",
-                                                                        size: 13,
-                                                                        weight: 'medium'
-                                                                    }}
-                                                                    onClick={(e) => { }}
-                                                                />
-
-                                                            </div>
-                                                        </>
+                                                                    return <Fragment key={talent._id}>
+                                                                        {
+                                                                            taskChild &&
+                                                                            <TalentCard
+                                                                                talent={talent}
+                                                                                onClick={(e) => {
+                                                                                    toDetailRoute(e, { route: 'tasks', name: 'task-talent-details', id: taskChild._id })
+                                                                                }}
+                                                                            />
+                                                                        }
+                                                                    </Fragment>
+                                                                })
+                                                            }
+                                                        </div>
                                                     }
 
                                                 </div>
-                                            </div>
 
-                                        </TabPanel>
+                                            </TabPanel>
 
-                                        <TabPanel tabIndex={3}>
+                                            <TabPanel tabIndex={5}>
 
-                                            <div className="py-[1.5rem]">
-                                                {
-                                                    task.feedbacks.length === 0 &&
-                                                    <EmptyState className="min-h-[50vh]" noBound={true} >
-                                                        <span className="font-mona text-[14px] pas-950">Feedback will appear here</span>
-                                                    </EmptyState>
-                                                }
-                                                <div className="space-y-[0.7rem] pb-16">
-                                                    <Feedback />
-                                                    <Feedback />
-                                                    <Feedback />
-                                                </div>
-                                            </div>
+                                                <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
 
-                                        </TabPanel>
+                                                    <div className="ts-mentor-card">
 
-                                        <TabPanel tabIndex={4}>
+                                                        <div className="flex items-center gap-3">
 
-                                            <div className="py-[1.5rem]">
+                                                            <div className={`avatar round rg ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
+                                                                style={{ backgroundImage: `url("")` }}>
+                                                                <span className="font-mona-semibold pab-900 text-lg uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
+                                                            </div>
 
-                                                {
-                                                    task.talents.length === 0 &&
-                                                    <EmptyState className="min-h-[50vh]" noBound={true} >
-                                                        <span className="font-mona text-[14px] pas-950">Assignees will appear here</span>
-                                                    </EmptyState>
-                                                }
+                                                            <div>
+                                                                <h3 className="font-rethink-semibold pag-900 text-base">Immanuel Oluwatobi</h3>
+                                                                <p className="font-rethink text-[#717689] text-sm">Product Designer</p>
+                                                            </div>
 
-                                                {
-                                                    task.talents.length > 0 &&
-                                                    <div className="grid grid-cols-4 gap-x-[1rem] gap-y-[1rem]">
-                                                        {
-                                                            task.talents.map((talent, index) => {
-
-                                                                const taskChild = getChildByTalentId(talent._id)
-
-                                                                return <Fragment key={talent._id}>
-                                                                    {
-                                                                        taskChild &&
-                                                                        <TalentCard
-                                                                            talent={talent}
-                                                                            onClick={(e) => {
-                                                                                toDetailRoute(e, { route: 'tasks', name: 'task-talent-details', id: taskChild._id })
-                                                                            }}
-                                                                        />
-                                                                    }
-                                                                </Fragment>
-                                                            })
-                                                        }
-                                                    </div>
-                                                }
-
-                                            </div>
-
-                                        </TabPanel>
-
-                                        <TabPanel tabIndex={5}>
-
-                                            <div className="pt-[1.5rem] space-y-[0.6rem] pb-16">
-
-                                                <div className="ts-mentor-card">
-
-                                                    <div className="flex items-center gap-3">
-
-                                                        <div className={`avatar round rg ui-full-bg bg-center ${loading ? 'disabled-light' : ''}`}
-                                                            style={{ backgroundImage: `url("")` }}>
-                                                            <span className="font-mona-semibold pab-900 text-lg uppercase">{helper.getInitials(`Oluwatobi Immanuel`)}</span>
                                                         </div>
-
-                                                        <div>
-                                                            <h3 className="font-rethink-semibold pag-900 text-base">Immanuel Oluwatobi</h3>
-                                                            <p className="font-rethink text-[#717689] text-sm">Product Designer</p>
-                                                        </div>
-
+                                                        <p className="font-rethink text-[#4D657D] text-sm leading-loose">An experienced professional passionate about guiding and supporting others in their career journey. With 5+ years of experience in product design, I enjoy sharing practical tips, industry insights, and real-life lessons to help you grow faster. As a mentor, I provide personalized advice, share industry insights, and help you build the skills and confidence needed to achieve your goals.</p>
                                                     </div>
-                                                    <p className="font-rethink text-[#4D657D] text-sm leading-loose">An experienced professional passionate about guiding and supporting others in their career journey. With 5+ years of experience in product design, I enjoy sharing practical tips, industry insights, and real-life lessons to help you grow faster. As a mentor, I provide personalized advice, share industry insights, and help you build the skills and confidence needed to achieve your goals.</p>
+
                                                 </div>
 
-                                            </div>
+                                            </TabPanel>
 
-                                        </TabPanel>
-
-                                    </Tabs>
+                                        </Tabs>
 
 
 
 
 
-                                </CardUI>
+                                    </CardUI>
+
+                                }
                             </>
                         }
 

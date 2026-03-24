@@ -9,17 +9,20 @@ import Button from "../../../components/partials/buttons/Button";
 import useToast from "../../../hooks/useToast";
 import Field from "../../../models/Field.model";
 import Topic from "../../../models/Topic.model";
-import { LevelEnum } from "../../../utils/enums.util";
+import { LevelEnum, UserEnum } from "../../../utils/enums.util";
 import useTask from "../../../hooks/app/useTask";
 import EmptyState from "../../../components/partials/dialogs/EmptyState";
 import Badge from "../../../components/partials/badges/Badge";
 import useGoTo from "../../../hooks/useGoTo";
 import useSidebar from "../../../hooks/useSidebar";
+import useUser from "../../../hooks/app/useUser";
+import User from "../../../models/User.model";
 
 const NewTaskPage = () => {
 
     const fiRef = useRef<any>(null)
     const toRef = useRef<any>(null)
+    const buRef = useRef<any>(null)
     const carRef = useRef<any>(null)
     const leRef = useRef<any>(null)
 
@@ -28,6 +31,7 @@ const NewTaskPage = () => {
     const { toast, setToast } = useToast()
     const { loading: coreLoading, core, getCoreResources } = useApp()
     const { task, loading, createTask, poller } = useTask()
+    const { getUsers, users, getFullname, } = useUser()
 
     const [fields, setFields] = useState<Array<Field>>([])
     const [topics, setTopics] = useState<Array<Topic>>([])
@@ -37,12 +41,14 @@ const NewTaskPage = () => {
         level: '',
         fieldId: '',
         topicId: '',
+        businessId: ''
     })
 
     const LEVELS: Array<typeof LevelEnum[keyof typeof LevelEnum]> = ['novice', 'beginner', 'intermediate', 'advanced', 'professional']
 
     useEffect(() => {
         getCoreResources({ limit: 9999, page: 1, order: 'desc' })
+        getUsers({ limit: 9999, page: 1, order: 'desc', cache: false, type: UserEnum.BUSINESS }, true);
     }, [])
 
     useEffect(() => {
@@ -56,12 +62,14 @@ const NewTaskPage = () => {
             carRef?.current?.clear()
             fiRef?.current?.clear()
             toRef?.current?.clear()
+            buRef?.current?.clear()
             setForm({
                 ...form,
                 fieldId: '',
                 topicId: '',
                 careerId: '',
-                level: ''
+                level: '',
+                businessId: ''
             })
         }
 
@@ -119,12 +127,21 @@ const NewTaskPage = () => {
                 message: 'select a topic',
                 error: 'all', position: 'top-right'
             })
+        } else if (!form.businessId) {
+            setToast({
+                ...toast,
+                show: true,
+                type: 'error', title: 'Error',
+                message: 'select a business',
+                error: 'all', position: 'top-right'
+            })
         } else {
 
             const response = await createTask({
                 fieldId: form.fieldId,
                 level: form.level,
                 topicId: form.topicId,
+                businessId: form.businessId,
                 poll: true,
                 job: true,
             })
@@ -139,6 +156,7 @@ const NewTaskPage = () => {
                     error: 'all',
                     position: 'top-right'
                 })
+                // clearOnSelect('all')
             }
 
             else {
@@ -313,6 +331,38 @@ const NewTaskPage = () => {
                     </div>
 
                     <Divider />
+
+                    <div className="mb-[1.5rem]">
+                        <div className={`w-[25%] ${(users.loading || users.data.length === 0) ? 'disabled-light' : ''}`}>
+
+                            <Filter
+                                ref={toRef}
+                                size='xxsm'
+                                className='la-filter'
+                                placeholder="Select Business"
+                                position="bottom"
+                                menu={{
+                                    style: { minWidth: '250px' },
+                                    search: true,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    users.data.map((x: User) => {
+                                        return {
+                                            label: helper.capitalizeWord(x.business && x.business.name ? x.business.name : x.firstName + ' ' + x.lastName),
+                                            value: x.business && x.business._id ? x.business._id : x._id
+                                        }
+                                    })
+                                }
+                                noFilter={false}
+                                onChange={(data) => {
+                                    setForm({ ...form, businessId: data.value })
+                                }}
+                            />
+
+                        </div>
+                    </div>
 
                     <div className="space-y-[1rem] flex items-center">
                         <Button

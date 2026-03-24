@@ -431,6 +431,18 @@ const sidebarRoutes: Array<IRoute> = [
             {
                 route: 'tasks',
                 parent: 'tasks',
+                name: 'regenerate-task',
+                title: 'Regenerate Task',
+                iconName: 'flash',
+                url: '/regenrate',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'tasks',
+                parent: 'tasks',
                 name: 'assign-task',
                 title: 'Assign Task',
                 iconName: 'flash',

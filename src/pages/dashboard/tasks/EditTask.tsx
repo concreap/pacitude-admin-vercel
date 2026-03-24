@@ -45,7 +45,7 @@ const EditTaskPage = () => {
     const { toast, setToast } = useToast()
     const { loading: coreLoading, core, getCoreResources } = useApp()
     const {
-        task, loading, loader, fieldItem,
+        task, loading, loader, fieldItem, TaskStatus,
         getTask, updateTaskField, countTaskFields, updateTaskItem, clearTaskItem,
         groupTaskResources, updateTask, appendTaskItem, modifyTaskField
     } = useTask()
@@ -511,7 +511,14 @@ const EditTaskPage = () => {
                         }
 
                         {
-                            !helper.isEmpty(task, 'object') &&
+                            !helper.isEmpty(task, 'object') && task.status === TaskStatus.FAILED &&
+                            <EmptyState className="min-h-[50vh]" noBound={true} >
+                                <span className="font-mona text-[14px] pas-950">Task details not found!</span>
+                            </EmptyState>
+                        }
+
+                        {
+                            !helper.isEmpty(task, 'object') && task.status !== TaskStatus.FAILED &&
                             <>
                                 {
                                     !edit.enabled &&

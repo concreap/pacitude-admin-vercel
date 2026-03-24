@@ -14,6 +14,7 @@ import Task, { ITaskDeliverable, ITaskInstruction, ITaskObjective, ITaskResource
 interface ICreateTask {
     fieldId: any,
     topicId: any,
+    businessId: any,
     level: string,
     poll: boolean
     job?: boolean
@@ -103,18 +104,18 @@ const useTask = () => {
     } = appContext
 
     const TaskStatus = helper.pickFrom(StatusEnum, [
-        'DRAFT', 'PENDING', 'INPROGRESS', 'REVIEWED', 'DEFAULTED', 'ABANDONED', 'COMPLETED'
+        'DRAFT', 'GENERATING', 'FAILED', 'PENDING', 'INPROGRESS', 'SUBMITTED', 'REVIEWED', 'DEFAULTED', 'ABANDONED', 'COMPLETED'
     ] as const)
 
     const [isPolling, setIsPolling] = useState<boolean>(false);
     const pollKeyRef = useRef<string>(poller.key);
 
     /**
-     * @name getTaskByCode
+     * @name getPollerTask
      */
-    const getTaskByCode = useCallback(async (code: string, poll: boolean) => {
+    const getPollerTask = useCallback(async (code: string, poll: boolean) => {
 
-        setLoading({ option: 'default' })
+        setLoading({ option: 'loader' })
 
         const response = await AxiosService.call({
             type: 'default',
@@ -125,25 +126,23 @@ const useTask = () => {
 
         if (response.error === false) {
 
-            if (response.status === 200) {
+            const task: Task = response.data;
 
-                setResource(GET_TASK, response.data);
+            setResource(GET_TASK, task);
 
-                if (poll) {
-                    let poller: IPoller = {
-                        code: response.data.code,
-                        key: response.data._id,
-                        loading: false,
-                        status: StatusEnum.COMPLETED
-                    }
-
-                    setResource(SET_POLLER, poller);
+            if (poll) {
+                let poller: IPoller = {
+                    code: task.code,
+                    key: task._id,
+                    loading: false,
+                    status: StatusEnum.COMPLETED
                 }
 
+                setResource(SET_POLLER, poller);
             }
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: 'data fetched successfully'
             })
 
@@ -164,19 +163,15 @@ const useTask = () => {
             }
 
             unsetLoading({
-                option: 'default',
+                option: 'loader',
                 message: response.message ? response.message : response.data
             })
 
-            if (response.status === 401) {
-                AxiosService.logout()
-            } else if (response.message && response.message === 'Error: Network Error') {
+            if (response.message && response.message === 'Error: Network Error') {
                 popNetwork();
-            }
-            else if (response.data) {
+            } else if (response.data) {
                 console.log(`Error! Could not get task ${response.data}`)
-            }
-            else if (response.status === 500) {
+            } else if (response.status === 500) {
                 console.log(`Sorry, there was an error processing your request. Please try again later. ${response.data}`)
             }
 
@@ -204,9 +199,9 @@ const useTask = () => {
             const currentKey = pollKeyRef.current;
 
             // Call the API immediately when polling starts
-            const response = await getTaskByCode(currentKey, true);
+            const response = await getPollerTask(currentKey, true);
 
-            if (!response.error) {
+            if (response.error === false) {
 
                 setIsPolling(false) // stop polling
                 pollKeyRef.current = '' // empty poll-key
@@ -843,16 +838,16 @@ const useTask = () => {
     const getChildByTalentId = (id: string) => {
 
         let taskChild: Task | null = null;
-        
-        if(!helper.isEmpty(task, 'object') && task){
 
-            if(task.children.length > 0){
+        if (!helper.isEmpty(task, 'object') && task) {
 
-                for(let i = 0; i < task.children.length; i++){
+            if (task.children.length > 0) {
+
+                for (let i = 0; i < task.children.length; i++) {
 
                     let child: Task = task.children[i];
 
-                    if(child.assignedTo === id){
+                    if (child.assignedTo === id) {
                         taskChild = child;
                         break;
                     } else {
@@ -1059,6 +1054,7 @@ const useTask = () => {
             payload: {
                 fieldId: data.fieldId,
                 topicId: data.topicId,
+                businessId: data.businessId,
                 level: data.level
             }
         })
@@ -1092,6 +1088,68 @@ const useTask = () => {
 
             unsetLoading({
                 option: 'default',
+                message: response.message ? response.message : response.data
+            })
+
+            if (response.status === 401) {
+                AxiosService.logout()
+            } else if (response.message && response.message === 'Error: Network Error') {
+                popNetwork();
+            }
+
+        }
+
+        return response
+
+    }, [setLoading, unsetLoading, setResource])
+
+    const regenerateTask = useCallback(async (data: { id: string, poll: boolean }) => {
+
+        setLoading({ option: 'loader' })
+
+        if (data.poll) {
+            // start polling immediately before call is made
+            setTimeout(() => {
+                startPolling()
+            }, 3000)
+        }
+
+        const response = await AxiosService.call({
+            type: 'default',
+            method: 'POST',
+            isAuth: true,
+            path: `${URL_TASK}/regenerate/${data.id}`,
+        })
+
+        if (response.error === false) {
+
+            unsetLoading({
+                option: 'loader',
+                message: 'data saved successfully'
+            })
+
+            if (data.poll) {
+                // set poller with code
+                let poller: IPoller = {
+                    code: response.data.taskCode,
+                    key: response.data.taskCode,
+                    loading: true,
+                    status: StatusEnum.PENDING
+                }
+
+                setResource(SET_POLLER, poller);
+            }
+
+        }
+
+        if (response.error === true) {
+
+            if (data.poll) {
+                setIsPolling(false);
+            }
+
+            unsetLoading({
+                option: 'loader',
                 message: response.message ? response.message : response.data
             })
 
@@ -1378,9 +1436,10 @@ const useTask = () => {
 
         getTasks,
         getTask,
-        getTaskByCode,
+        getPollerTask,
         getTaskComments,
         createTask,
+        regenerateTask,
         deleteTask,
         updateTask,
         modifyTaskField,
