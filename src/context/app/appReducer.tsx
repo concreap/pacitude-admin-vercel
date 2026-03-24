@@ -19,7 +19,15 @@ import {
     SET_ITEMS,
     GET_CORE,
     SET_LOADER,
-    GET_QUESTION_COUNT
+    GET_QUESTION_COUNT,
+    GET_TASKS,
+    GET_TASK,
+    GET_COMMENTS,
+    GET_COMMENT,
+    SET_POLLER,
+    SET_ITEM,
+    GET_GROUPS,
+    GET_GROUP
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -85,6 +93,36 @@ const AppReducer = (state: any, action: any) => {
                 ...state,
                 questionCount: action.payload
             }
+        case GET_TASKS:
+            return {
+                ...state,
+                tasks: action.payload
+            }
+        case GET_TASK:
+            return {
+                ...state,
+                task: action.payload
+            }
+        case GET_GROUPS:
+            return {
+                ...state,
+                groups: action.payload
+            }
+        case GET_GROUP:
+            return {
+                ...state,
+                group: action.payload
+            }
+        case GET_COMMENTS:
+            return {
+                ...state,
+                comments: action.payload
+            }
+        case GET_COMMENT:
+            return {
+                ...state,
+                comment: action.payload
+            }
         case GET_TOPICS:
             return {
                 ...state,
@@ -104,6 +142,16 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 items: action.payload
+            }
+        case SET_ITEM:
+            return {
+                ...state,
+                item: action.payload
+            }
+        case SET_POLLER:
+            return {
+                ...state,
+                poller: action.payload
             }
         case SET_AIQUESTION:
             return {

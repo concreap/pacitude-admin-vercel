@@ -108,22 +108,22 @@ const Button = (props: IButton) => {
 
             switch (semantic) {
                 case 'info':
-                    result = result + ` bg-pab-100 bgh-pab-600 pab-900`
+                    result = result + ` bg-pab-100 bgh-pab-600 pab-900 color-white-hover`
                     break;
                 case 'error':
-                    result = result + ` bg-par-100 bgh-par-600 par-900`
+                    result = result + ` bg-par-100 bgh-par-600 par-900 color-white-hover`
                     break;
                 case 'ongoing':
-                    result = result + ` bg-pav-100 bgh-pav-600 pap-900`
+                    result = result + ` bg-pav-100 bgh-pav-600 pap-900 color-white-hover`
                     break;
                 case 'success':
-                    result = result + ` bg-pagr-100 bgh-pagr-600 pagr-900`
+                    result = result + ` bg-pagr-100 bgh-pagr-600 pagr-900 color-white-hover`
                     break;
                 case 'warning':
-                    result = result + ` bg-pay-200 bgh-pay-600 pay-900`
+                    result = result + ` bg-pay-200 bgh-pay-600 pay-900 color-white-hover`
                     break;
                 case 'warning-2':
-                    result = result + ` bg-pao-100 bgh-pao-600 pao-900`
+                    result = result + ` bg-pao-100 bgh-pao-600 pao-900 color-white-hover`
                     break;
                 case 'normal':
                     result = result + ` bg-pacb-600 bgh-pcb-800 color-white`

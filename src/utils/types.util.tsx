@@ -1,7 +1,11 @@
+import { ITaskDeliverable, ITaskFeedback, ITaskInstruction, ITaskObjective, ITaskResource, ITaskSubmissionItem } from "../models/Task.model";
+import { ACTION_TYPES, RESOURCE_TYPES } from "./constants.util";
+import { ActionEnum, TaskFieldEnum, TaskTypeEnum, UIEnum, UploadFormatEnum } from "./enums.util";
+
 export type IconName = '';
 export type IconFamilyType = 'polio' | 'fa' | 'feather';
 export type SizeType = 'xmini' | 'mini' | 'xxsm' | 'xsm' | 'sm' | 'rg' | 'default' | 'md' | 'lg' | 'xlg' | 'xxlg' | 'lgr';
-export type SemanticType = 'normal' | 'default' | 'blue' | 'info' | 'yellow' | 'warning' | 'orange' | 'warning-2' | 'green' | 'success' | 'red' | 'error' | 'purple' | 'ongoing' | 'pink';
+export type SemanticType = 'normal' | 'default' | 'blue' | 'info' | 'lightblue' | 'info-light' | 'yellow' | 'warning' | 'orange' | 'warning-2' | 'green' | 'success' | 'red' | 'error' | 'purple' | 'ongoing' | 'pink';
 export type ButtonType = 'primary' | 'secondary' | 'ghost' | 'icon' | 'link'
 export type RouteParamType = 'url' | 'query' | 'path';
 export type RouteActionType = 'navigate' | 'open-secondary' | 'logout';
@@ -29,9 +33,17 @@ export type VideoAcceptType = 'video/*'
 export type AudioAcceptType = 'audio/*'
 export type PDFAcceptType = '.pdf' | 'application/pdf'
 export type ImageAcceptType = 'image/x-png' | 'image/jpg' | 'image/jpeg' | 'image/png' | 'image/svg' | 'image/gif' | 'image/*' | 'image/x-eps'
-export type ResourceType = 'default' | 'user' | 'users' | 'talent' | 'talents' | 'business' | 'businesses' | 'industry' | 'industries' | 'career' | 'careers' | 'field' | 'fields' | 'skill' | 'skills' | 'topic' | 'topics' | 'question' | 'questions'
+export type ResourceType = (typeof RESOURCE_TYPES)[number]
 export type ListUIType = 'self' | 'resource' | 'details';
 export type FilterType = 'default' | 'user' | 'industry' | 'career' | 'field' | 'skill' | 'topic' | 'question'
 export type PagesearchType = 'search' | 'filter'
-export type FormatDateType = 'basic' | 'datetime' | 'datetime-slash' | 'datetime-separated' | 'separated' | 'localtime' | 'slashed'
+export type FormatDateType = 'basic' | 'datetime' | 'dt-noyear' | 'datetime-slash' | 'datetime-separated' | 'separated' | 'localtime' | 'slashed'
 export type RefineType = 'default' | 'search' | 'filter';
+export type ActionType = typeof ActionEnum[keyof typeof ActionEnum]
+export type ActionAddRemove =  'add' | 'remove'
+export type ActionModify = 'add' | 'remove' | 'update'
+export type TaskType = typeof TaskTypeEnum[keyof typeof TaskTypeEnum]
+export type TaskFieldType = typeof TaskFieldEnum[keyof typeof TaskFieldEnum]
+export type UIType = typeof UIEnum[keyof typeof UIEnum]
+export type UploadAcceptType = Array<CSVAcceptType | ImageAcceptType | PDFAcceptType | VideoAcceptType | AudioAcceptType>;
+export type UploadFormat = typeof UploadFormatEnum[keyof typeof UploadFormatEnum]

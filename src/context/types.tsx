@@ -6,6 +6,10 @@ export const GET_COUNTRY = 'GET_COUNTRY';
 export const GET_IP_ADDRESS = 'GET_IP_ADDRESS';
 export const GET_TALENTS = 'GET_TALENTS';
 export const GET_TALENT = 'GET_TALENT';
+export const GET_TASKS = 'GET_TASKS';
+export const GET_TASK = 'GET_TASK';
+export const GET_COMMENTS = 'GET_COMMENTS';
+export const GET_COMMENT = 'GET_COMMENT';
 
 export const GET_AUDITS = 'GET_AUDITS';
 export const GET_AUDIT = 'GET_AUDIT';
@@ -26,6 +30,8 @@ export const GET_TOPIC = 'GET_TOPIC';
 export const GET_METRICS = 'GET_METRICS';
 export const GET_QUESTION_COUNT = 'GET_QUESTION_COUNT';
 export const GET_CORE = 'GET_CORE';
+export const GET_GROUPS = 'GET_GROUPS';
+export const GET_GROUP = 'GET_GROUP';
 
 // generics
 export const SET_PAGINATION = 'SET_PAGINATION';
@@ -45,4 +51,6 @@ export const SET_SIDEBAR = 'SET_SIDEBAR';
 export const SET_USER = 'SET_USER';
 export const SET_AIQUESTION = 'SET_AIQUESTION';
 export const SET_ITEMS = 'SET_ITEMS';
+export const SET_ITEM = 'SET_ITEM';
 export const SET_PERMISSIONS = 'SET_PERMISSIONS';
+export const SET_POLLER = 'SET_POLLER';

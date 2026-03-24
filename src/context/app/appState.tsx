@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import storage from '../../utils/storage.util'
 import loader from '../../utils/loader.util'
 import { LoadingType } from '../../utils/types.util'
-import { aiquestion, collection, coreResource, metrics } from '../../_data/seed'
+import { aiquestion, collection, coreResource, metrics, UIPoller } from '../../_data/seed'
 import helper from '../../utils/helper.util'
 import {
     SET_LOADER,
@@ -20,14 +20,21 @@ const AppState = (props: any) => {
     const navigate = useNavigate()
 
     const initialState = {
+        poller: UIPoller,
         industries: collection,
         industry: {},
         careers: collection,
         career: {},
+        groups: collection,
+        group: {},
         fields: collection,
         field: {},
         skills: collection,
         skill: {},
+        tasks: collection,
+        task: {},
+        comments: collection,
+        comment: {},
         questions: collection,
         question: {},
         questionCount: [],
@@ -35,6 +42,7 @@ const AppState = (props: any) => {
         topics: collection,
         topic: {},
         items: [],
+        item: {},
         core: coreResource,
         metrics: metrics,
         search: collection,
@@ -152,21 +160,29 @@ const AppState = (props: any) => {
     }
 
     const contextValues = useMemo(() => ({
+        poller: state.poller,
         industries: state.industries,
         industry: state.industry,
         careers: state.careers,
         career: state.career,
+        groups: state.groups,
+        group: state.group,
         fields: state.fields,
         field: state.field,
         skills: state.skills,
         skill: state.skill,
         questions: state.questions,
         question: state.question,
+        tasks: state.tasks,
+        task: state.task,
+        comments: state.comments,
+        comment: state.comment,
         questionCount: state.questionCount,
         aiQuestions: state.aiQuestions,
         topics: state.topics,
         topic: state.topic,
         items: state.items,
+        item: state.item,
         core: state.core,
         metrics: state.metrics,
         search: state.search,
@@ -179,21 +195,29 @@ const AppState = (props: any) => {
         setResource: setResource,
         setCollection: setCollection,
     }), [
+        state.poller,
         state.industries,
         state.industry,
         state.careers,
         state.career,
+        state.groups,
+        state.group,
         state.fields,
         state.field,
         state.skills,
         state.skill,
         state.questions,
         state.question,
+        state.tasks,
+        state.task,
+        state.comments,
+        state.comment,
         state.questionCount,
         state.aiQuestions,
         state.topics,
         state.topic,
         state.items,
+        state.item,
         state.metrics,
         state.search,
         state.message,

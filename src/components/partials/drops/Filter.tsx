@@ -75,7 +75,7 @@ const Filter = forwardRef((props: IFilter, ref: ForwardedRef<any>) => {
 
     useEffect(() => {
         handleAutoSelect()
-    }, [])
+    }, [defaultValue])
 
     const cc = () => {
 

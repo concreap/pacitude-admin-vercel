@@ -59,6 +59,7 @@
 
 :root,
 [data-blue="blue"] {
+    --pab-5: #E5FFFF;
     --pab-25: #e8f3ff;
     --pab-50: #edfaff;
     --pab-100: #d6f2ff;
@@ -2092,6 +2093,9 @@
 }
 
 /* Background Colors (bg-pab) */
+.bg-pab-5 {
+    background-color: var(--pab-5);
+}
 .bg-pab-25 {
     background-color: var(--pab-25);
 }
@@ -2141,6 +2145,10 @@
 }
 
 /* Background Color Hovers (bgh-pab) */
+.bgh-pab-5:hover {
+    background-color: var(--pab-5);
+}
+
 .bgh-pab-25:hover {
     background-color: var(--pab-25);
 }
@@ -2190,6 +2198,9 @@
 }
 
 /* Border Colors (bdr-pab) */
+.bdr-pab-5 {
+    border-color: var(--pab-5);
+}
 .bdr-pab-25 {
     border-color: var(--pab-25);
 }
@@ -2239,6 +2250,10 @@
 }
 
 /* Border Color Hovers (bdrh-pab) */
+.bdrh-pab-5:hover {
+    border-color: var(--pab-5);
+}
+
 .bdrh-pab-25:hover {
     border-color: var(--pab-25);
 }
@@ -2288,6 +2303,10 @@
 }
 
 /* Border Color Focus (bdrf-pab) */
+.bdrf-pab-5:focus {
+    border-color: var(--pab-5);
+}
+
 .bdrf-pab-25:focus {
     border-color: var(--pab-25);
 }
@@ -3727,7 +3746,8 @@
 }
 
 .color-white,
-.color-white span {
+.color-white span,
+.color-white-hover:hover {
     color: var(--color-white) !important;
 }
 

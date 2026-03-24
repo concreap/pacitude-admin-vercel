@@ -136,6 +136,7 @@ const Fileog = forwardRef((props: IFileog, ref) => {
     useImperativeHandle(ref, () => ({
         open: openDialog,
         browse: browseFile,
+        getSize: getSize
     }))
 
     return (

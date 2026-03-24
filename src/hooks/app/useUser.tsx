@@ -67,21 +67,25 @@ const useUser = () => {
 
     const getUsers = useCallback(async (data: IListQuery, all: boolean = false) => {
 
-        const { limit, page, select, order } = data;
-        const q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
+        const { limit, page, select, order, cache, type } = data;
+        let q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
+
+        if(cache !== undefined){
+            q = cache === true ? q + `&cache=true` : q + `&cache=false`
+        }
+
+        if(type !== undefined && ['talent', 'business'].includes(type)){
+            q = q + `&type=${type}`
+        }
+        
 
         setLoading({ option: 'resource', type: GET_USERS });
-
-        let path = `${URL_USERS}?${q}`;
-        if (all) {
-            path = `${URL_USERS}/all?cache=false&${q}`
-        }
 
         const response = await AxiosService.call({
             type: 'backend',
             method: 'GET',
             isAuth: true,
-            path: path
+            path: all? `${URL_USERS}/all?${q}` : `${URL_USERS}?${q}`
         });
 
         if (!response.error) {

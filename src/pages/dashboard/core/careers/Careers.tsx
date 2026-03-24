@@ -8,10 +8,12 @@ import useSidebar from "../../../../hooks/useSidebar";
 import useCareer from "../../../../hooks/app/useCareer";
 import useApp from "../../../../hooks/app/useApp";
 import { coreTypeEnum } from "../../../../utils/enums.util";
+import useGoTo from "../../../../hooks/useGoTo";
 
 const CareersPage = ({ }) => {
 
     const { toggleAddResource } = useApp()
+    const { toDetailRoute } = useGoTo()
     useSidebar({ type: 'page', init: true })
 
     useEffect(() => {
@@ -39,7 +41,7 @@ const CareersPage = ({ }) => {
                             child: <Icon name="plus" type="feather" size={16} className="color-white" />
                         }}
                         reverse="row"
-                        onClick={(e) => {toggleAddResource(e, coreTypeEnum.CAREER)}}
+                        onClick={(e) => toDetailRoute(e, { route: 'core', name: `create-career` })}
                     />
                 </div>
 

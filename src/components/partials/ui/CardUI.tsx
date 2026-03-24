@@ -1,13 +1,33 @@
-import React, { useEffect, useState, useContext, ReactNode } from "react"
+import React, { useEffect, useState, useContext, ReactNode, CSSProperties } from "react"
 
 interface ICardUI {
     children: ReactNode,
     className?: string,
     flat?: boolean,
+    radius?: number,
+    style?: CSSProperties,
+    padding?: {
+        x: number,
+        y: number
+    }
     noBorder?: boolean
 }
 
-const CardUI = ({ children, className = '', flat = false, noBorder = false }: ICardUI) => {
+const CardUI = (props: ICardUI) => {
+
+    const {
+        children,
+        className = '',
+        style,
+        flat = false,
+        noBorder = false,
+        radius,
+        padding = {
+            x: 1,
+            y: 1
+        }
+    } = props;
+
 
     useEffect(() => {
 
@@ -36,7 +56,14 @@ const CardUI = ({ children, className = '', flat = false, noBorder = false }: IC
 
     return (
         <>
-            <div id="card" className={cc()}>
+            <div
+                id="card"
+                className={cc()}
+                style={{
+                    padding: !flat ? `${padding.y}rem ${padding.x}rem` : '0',
+                    borderRadius: `${radius ? radius + 'px' : ''}`,
+                    ...style
+                }}>
                 {children}
             </div>
         </>

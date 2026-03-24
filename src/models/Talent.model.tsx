@@ -1,7 +1,9 @@
 import { IAPIKey, IUserCountry, IUserPermission } from "../utils/interfaces.util";
 import Assessment from "./Assessment.model";
+import Business from "./Business.model";
 import Career from "./Career.model";
 import Field from "./Field.model";
+import Group from "./Group.model";
 import Skill from "./Skill.model";
 import Subscription from "./Subscription.model";
 import Task from "./Task.model";
@@ -38,6 +40,7 @@ interface Talent {
     pursuits: Array<Career | any>
 
     careers: Array<ITalentCareer>
+    groups: Array<ITalentGroup>
     tasks: Array<ITaskStatus>
     badges: Array<ITalentBadge>
 
@@ -63,6 +66,12 @@ export interface ITalentCareer {
     points: number,
     timeline: Array<ICareerTimeline>
     badges: Array<ITalentBadge>
+}
+
+export interface ITalentGroup {
+    talent: Talent | any,
+    business: Business | any,
+    group: Group | any
 }
 
 export interface ICareerTimeline {

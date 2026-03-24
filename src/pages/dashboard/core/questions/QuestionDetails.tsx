@@ -1,19 +1,9 @@
-import React, { useEffect, useState, useContext, useRef } from "react"
+import { useEffect, useState, useRef } from "react"
 import PageHeader from "../../../../components/partials/ui/PageHeader";
 import Button from "../../../../components/partials/buttons/Button";
 import Icon from "../../../../components/partials/icons/Icon";
 import Divider from "../../../../components/partials/Divider";
 import useSidebar from "../../../../hooks/useSidebar";
-import TopicList from "../topics/TopicList";
-import QuestionList from "./QuestionList";
-import useGoTo from "../../../../hooks/useGoTo";
-import CardUI from "../../../../components/partials/ui/CardUI";
-import useMetrics from "../../../../hooks/app/useMetrics";
-import MetricItem from "../../../../components/app/MetricItem";
-import Badge from "../../../../components/partials/badges/Badge";
-import QuestionRubric from "../../../../components/app/question/QuestionRubric";
-import QuestionOption from "../../../../components/app/question/QuestionOption";
-import QuestionAnswer from "../../../../components/app/question/QuestionAnswer";
 import useQuestion from "../../../../hooks/app/useQuestion";
 import { useParams } from "react-router-dom";
 import QuestionBox from "../../../../components/app/question/QuestionBox";
@@ -21,10 +11,6 @@ import QuestionEdit from "../../../../components/app/question/QuestionEdit";
 import helper from "../../../../utils/helper.util";
 import EmptyState from "../../../../components/partials/dialogs/EmptyState";
 import useApp from "../../../../hooks/app/useApp";
-import useCareer from "../../../../hooks/app/useCareer";
-import useField from "../../../../hooks/app/useField";
-import useSkill from "../../../../hooks/app/useSkill";
-import useTopic from "../../../../hooks/app/useTopic";
 
 const QuestionDetailsPage = ({ }) => {
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState, useContext, useMemo, useCallback } from "react"
 import { IIconButton } from "../../../utils/interfaces.util";
 import { Link } from "react-router-dom";
 import Icon from "../icons/Icon";
@@ -19,12 +19,25 @@ const IconButton = (props: IIconButton) => {
         size = 'min-w-[2.2rem] min-h-[2.2rem]',
         radius = 'full',
         className = '',
+        container,
         onClick
     } = props;
 
     useEffect(() => {
-
+        
     }, [])
+
+    const cbc = () => {
+
+        let result = `inline-flex items-center gap-x-[0.5rem]`
+
+        if (container && container.className) {
+            result = result + ` ${container.className}`
+        }
+
+        return result;
+
+    }
 
     const cc = () => {
 
@@ -33,7 +46,7 @@ const IconButton = (props: IIconButton) => {
         if (active) {
             result = result + ` bg-pacb-100 bgh-pacb-200 pacb-800 pacbh-900`
         } else {
-            result = result + ` bgh-pag-50 pagh-800 pag-600`
+            result = result + ` pagh-800 pag-600`
         }
 
         if (className) {
@@ -62,7 +75,7 @@ const IconButton = (props: IIconButton) => {
         <>
             <Link to={''}
                 onClick={(e) => handleClick(e)}
-                className={`flex items-center gap-x-[0.5rem] ${className && className.includes('ml-auto') ? 'ml-auto' : ''}`}>
+                className={cbc()}>
                 <div className={cc()}>
                     {
                         icon.child &&

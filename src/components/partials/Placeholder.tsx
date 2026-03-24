@@ -10,6 +10,7 @@ const Placeholder = (props: Partial<IPlaceholder>) => {
         bgColor = 'bg-pag-100', 
         animate = true,
         className,
+        block = false,
         radius = 'rounded-full'
     } = props
 

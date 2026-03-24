@@ -20,7 +20,8 @@ import {
     SET_ITEMS,
     SET_LOADER,
     GET_TALENTS,
-    GET_TALENT
+    GET_TALENT,
+    SET_ITEM
 } from '../types';
 
 
@@ -71,6 +72,11 @@ const reducer = (state: any, action: any) => {
             return {
                 ...state,
                 items: action.payload
+            }
+        case SET_ITEM:
+            return {
+                ...state,
+                item: action.payload
             }
         case SET_USER:
             return {

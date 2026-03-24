@@ -224,7 +224,12 @@ const isEmpty = (data: any, type: 'object' | 'object-all' | 'array') => {
 }
 
 const capitalize = (val: string) => {
-    return val.charAt(0).toUpperCase() + val.slice(1)
+    if(val.charAt(0) === "" || val.charAt(0) === " "){
+        return val.charAt(1).toUpperCase() + val.slice(2)
+    } else {
+        return val.charAt(0).toUpperCase() + val.slice(1)
+    }
+    
 }
 
 const sort = (data: Array<any>) => {
@@ -298,7 +303,11 @@ const formatDate = (date: any, type: FormatDateType) => {
     }
 
     if (type === 'datetime' && conv) {
-        result = format(conv, 'MMMM do, yyyy h:mmaca')
+        result = format(conv, 'MMMM do, yyyy HH:mm a')
+    }
+
+    if (type === 'dt-noyear' && conv) {
+        result = format(conv, 'MMM do, HH:mm a')
     }
 
     if (type === 'datetime-slash' && conv) {
@@ -958,6 +967,12 @@ const extractor = (data: any) => {
 
 }
 
+const pickFrom = <T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[] ): Pick<T, K> => {
+    const out = {} as Pick<T, K>;
+    for (const key of keys) out[key] = obj[key];
+    return out;
+}
+
 
 const helper: IHelper = {
     init: init,
@@ -1008,7 +1023,8 @@ const helper: IHelper = {
     getCountry: getCountry,
     getAvatar: getAvatar,
     enumToArray: enumToArray,
-    extractor: extractor
+    extractor: extractor,
+    pickFrom: pickFrom
 }
 
 export default helper;

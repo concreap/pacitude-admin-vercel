@@ -33,6 +33,16 @@ const CreateQuestion = lazy(() => import('../../../pages/dashboard/core/question
 const QuestionDetails = lazy(() => import('../../../pages/dashboard/core/questions/QuestionDetails'))
 const QuestionMapPage = lazy(() => import('../../../pages/dashboard/core/questions/QuestionMap'))
 
+// Tasks
+const TaskPage = lazy(() => import('../../../pages/dashboard/tasks/Tasks'))
+const NewTaskPage = lazy(() => import('../../../pages/dashboard/tasks/NewTask'))
+const AssignTaskPage = lazy(() => import('../../../pages/dashboard/tasks/AssignTask'))
+const OldTaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/OldTaskDetails'))
+const TaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/TaskDetails'))
+const TalentTaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/TalentTaskDetails'))
+const EditTaskPage = lazy(() => import('../../../pages/dashboard/tasks/EditTask'))
+const RegenerateTaskPage = lazy(() => import('../../../pages/dashboard/tasks/RegenerateTask'))
+
 // users/talents/admins/businesses
 const TalentsPage = lazy(() => import('../../../pages/dashboard/users/talents/Talents'))
 
@@ -56,6 +66,20 @@ const DynamicRoutes = () => {
                 return <Dashboard />
             case 'industries':
                 return <Industries />
+            case 'tasks':
+                return <TaskPage />
+            case 'create-task':
+                return <NewTaskPage />
+            case 'task-details':
+                return <TaskDetailsPage />
+            case 'task-talent-details':
+                return <TalentTaskDetailsPage />
+            case 'edit-task':
+                return <EditTaskPage />
+            case 'regenerate-task':
+                return <RegenerateTaskPage />
+            case 'assign-task':
+                return <AssignTaskPage />
             case 'create-industry':
                 return <CreateIndustry />
             case 'edit-industry':

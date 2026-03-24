@@ -4,7 +4,7 @@ import Button from "../../partials/buttons/Button";
 import Icon from "../../partials/icons/Icon";
 import Divider from "../../partials/Divider";
 import CardUI from "../../partials/ui/CardUI";
-import QuestionRubric from "./QuestionRubric";
+import QuestionRubric from "./RubricBadge";
 import QuestionAnswer from "./QuestionAnswer";
 import Question, { IQuestionAnswer } from "../../../models/Question.model";
 import useField from "../../../hooks/app/useField";

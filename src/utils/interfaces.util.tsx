@@ -1,5 +1,5 @@
 import { ChangeEvent, CSSProperties, KeyboardEvent, RefObject, MouseEvent, ReactElement, ReactNode, LazyExoticComponent, LegacyRef } from "react";
-import { AudioAcceptType, ButtonType, CSVAcceptType, DisabledType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, ListUIType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, RefineType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UserType, VideoAcceptType } from "./types.util";
+import { AudioAcceptType, ButtonType, CSVAcceptType, DisabledType, FileAcceptType, FilterType, FlexReverseType, FontWeightType, FormatDateType, IconFamilyType, IconName, ImageAcceptType, ListUIType, LoadingType, NavItemType, PagesearchType, PDFAcceptType, PositionType, QueryOrderType, QuestionType, RefineType, ResourceType, RouteActionType, RouteParamType, RubricType, SemanticType, SizeType, StatusType, UploadAcceptType, UserType, VideoAcceptType } from "./types.util";
 import User from "../models/User.model";
 import Industry from "../models/Industry.model";
 import Question, { IQuestionCount, IQuestionTime } from "../models/Question.model";
@@ -8,6 +8,34 @@ import Field from "../models/Field.model";
 import Skill from "../models/Skill.model";
 import Topic from "../models/Topic.model";
 import Talent from "../models/Talent.model";
+import Task from "../models/Task.model";
+import Comment from "../models/Comment.model";
+import Group from "../models/Group.model";
+
+export interface IResult {
+    error: boolean,
+    message: string,
+    data: any,
+}
+
+export interface IGroupedResource {
+    name: string;
+    links: Array<IGroupedLink>;
+}
+
+export interface IGroupedLink {
+    code: string,
+    title: string;
+    snippet: string,
+    url: string;
+}
+
+export interface IPoller {
+    loading: boolean,
+    key: string,
+    status: string,
+    code: string
+}
 
 export interface ISetCookie {
     key: string,
@@ -276,8 +304,13 @@ export interface IHelper {
     getCountry(code: string): ICountry | null,
     getAvatar(select: string | number): string,
     enumToArray(data: Object, type: 'all' | 'values-only' | 'keys-only'): Array<any>,
-    extractor(data: any): any
+    extractor(data: any): any,
+    pickFrom<T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[]): Pick<T, K>
 
+}
+
+export interface IMarkdown {
+    taskToMarkdown(t: Task): string
 }
 
 export interface IRoutil {
@@ -826,6 +859,9 @@ export interface ILinkButton {
 }
 
 export interface IIconButton {
+    container?: {
+        className?: string
+    },
     icon: {
         size?: number,
         className?: string,
@@ -1025,7 +1061,7 @@ export interface IFileUpload {
 
 export interface IFileog {
     sizeLimit?: number,
-    accept: Array<CSVAcceptType> | Array<ImageAcceptType> | Array<PDFAcceptType> | Array<VideoAcceptType> | Array<AudioAcceptType>,
+    accept: UploadAcceptType
     type: FileAcceptType,
     onSelect(file: IFileUpload): void
 }
@@ -1045,6 +1081,7 @@ export interface IListQuery {
     resourceId?: string,
     key?: string,
     payload?: any,
+    cache?: boolean,
     report?: boolean
 }
 
@@ -1208,6 +1245,7 @@ export interface ICellHead {
     fontSize?: number,
     className?: string,
     label: string,
+    isEnabled?: boolean,
     style?: CSSProperties
 }
 export interface ICellData {
@@ -1324,6 +1362,7 @@ export interface IPlaceholder {
     radius: string | number,
     marginTop: string
     marginBottom: string,
+    block: boolean,
     top: string
     left: string
     right: string,
@@ -1410,16 +1449,23 @@ export interface IUserContext {
 }
 
 export interface IAppContext {
+    poller: IPoller,
     industries: ICollection,
     industry: Industry,
     careers: ICollection,
     career: Career,
+    groups: ICollection,
+    group: Group,
     fields: ICollection,
     field: Field,
     skills: ICollection,
     skill: Skill,
     questions: ICollection,
     question: Question,
+    tasks: ICollection,
+    task: Task,
+    comments: ICollection,
+    comment: Comment,
     questionCount: Array<IQuestionCount>
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,
@@ -1427,6 +1473,7 @@ export interface IAppContext {
     search: ICollection,
     metrics: IAppMetrics,
     items: Array<any>
+    item: any
     core: ICoreResource
     message: string,
     loading: boolean,
@@ -1437,3 +1484,4 @@ export interface IAppContext {
     setLoading(data: ISetLoading): void,
     unsetLoading(data: IUnsetLoading): void,
 }
+
