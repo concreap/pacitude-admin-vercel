@@ -86,6 +86,10 @@ export const StatusEnum = {
     APPROVED: 'approved',
     REJECTED: 'rejected',
     DRAFT: 'draft',
+    REVOKED: 'revoked',
+    SUMMARIZED: 'summarized',
+    QUEUED: 'queued',
+    RUNNING: 'running',
     GENERATING: 'generating'
 } as const
 

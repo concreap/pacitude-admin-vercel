@@ -1,35 +1,14 @@
-import { Fragment, useEffect, useRef, useState } from "react"
+import { useEffect } from "react"
 import Divider from "../../../components/partials/Divider";
 import CardUI from "../../../components/partials/ui/CardUI";
 import helper from "../../../utils/helper.util";
-import Filter from "../../../components/partials/drops/Filter";
-import useApp from "../../../hooks/app/useApp";
-import Career from "../../../models/Career.model";
 import Button from "../../../components/partials/buttons/Button";
 import useToast from "../../../hooks/useToast";
-import Field from "../../../models/Field.model";
-import Topic from "../../../models/Topic.model";
-import { StatusEnum, TaskFieldEnum, TaskTypeEnum, UIEnum } from "../../../utils/enums.util";
 import useTask from "../../../hooks/app/useTask";
 import EmptyState from "../../../components/partials/dialogs/EmptyState";
 import Badge from "../../../components/partials/badges/Badge";
-import { Link, useParams } from "react-router-dom";
-import { TASK_FIELDS } from "../../../utils/constants.util";
-import EmojiPicker from 'emoji-picker-react';
-import Icon from "../../../components/partials/icons/Icon";
-import { ITaskDeliverable, ITaskInstruction, ITaskObjective } from "../../../models/Task.model";
-import Dot from "../../../components/partials/ui/Dot";
-import Skill from "../../../models/Skill.model";
-import { IGroupedResource } from "../../../utils/interfaces.util";
-import UIResource from "../../../components/app/UIResource";
-import UITaskRubric from "../../../components/app/task/UITaskRubric";
-import useUser from "../../../hooks/app/useUser";
-import { Tab, TabList, TabPanel, Tabs } from "react-tabs";
-import storage from "../../../utils/storage.util";
-import TaskMCE from "../../../components/app/editor/TaskMCE";
-import Feedback from "./Feedback";
+import { useParams } from "react-router-dom";
 import useGoTo from "../../../hooks/useGoTo";
-import TalentCard from "../../../components/app/talents/TalentCard";
 
 const RegenerateTaskPage = () => {
 
