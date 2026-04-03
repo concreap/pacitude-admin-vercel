@@ -3,7 +3,7 @@ import Icon from "../icons/Icon";
 import LinkButton from "../buttons/LinkButton";
 import Fileog from "./Fileog";
 import { UploadAcceptType, UploadFormat } from "../../../utils/types.util";
-import { UIViewEnum } from "../../../utils/enums.util";
+import { UIEnum } from "../../../utils/enums.util";
 import { IFileUpload, IResult } from "../../../utils/interfaces.util";
 import IconButton from "../buttons/IconButton";
 import useUploader from "../../../hooks/app/useUploader";
@@ -31,7 +31,7 @@ const Uploader = (props: IUploader) => {
     } = props;
 
     const { uploadFile, loading } = useUploader()
-    const [view, setView] = useState<string>(UIViewEnum.BROWSE)
+    const [view, setView] = useState<string>(UIEnum.BROWSE)
     const [isDragging, setIsDragging] = useState<boolean>(false);
     const [file, setFile] = useState<IFileUpload | null>(null);
     const [form, setForm] = useState({
@@ -59,7 +59,7 @@ const Uploader = (props: IUploader) => {
 
         let result = `flex flex-col items-center justify-center space-y-[0.5rem] w-[100%] rounded-[6px] bg-color-white text-center py-[1rem] relative`
 
-        if (view === UIViewEnum.UPLOADED || loading) {
+        if (view === UIEnum.UPLOADED || loading) {
             result = result + ` min-h-[190px]`
         } else {
             result = result + ` min-h-[190px]`
@@ -138,7 +138,7 @@ const Uploader = (props: IUploader) => {
             if (instant) {
                 handleUpload()
             } else {
-                setView(UIViewEnum.FILE_SELECTED)
+                setView(UIEnum.FILE_SELECTED)
             }
 
         }
@@ -157,7 +157,7 @@ const Uploader = (props: IUploader) => {
 
         if(!response.error && response.status === 200){
 
-            setView(UIViewEnum.UPLOADED);
+            setView(UIEnum.UPLOADED);
             onUpload({
                 error: response.error,
                 data: response.data,
@@ -168,7 +168,7 @@ const Uploader = (props: IUploader) => {
         
         else {
 
-            setView(UIViewEnum.UPLOAD_ERROR);
+            setView(UIEnum.UPLOAD_ERROR);
             setForm({ ...form, error: response.message })
             onUpload({
                 error: response.error,
@@ -213,7 +213,7 @@ const Uploader = (props: IUploader) => {
                         <>
 
                             {
-                                view === UIViewEnum.BROWSE &&
+                                view === UIEnum.BROWSE &&
                                 <>
 
                                     <span className="flex items-center justify-center bg-pacb-100 w-[50px] h-[50px] rounded-full">
@@ -244,7 +244,7 @@ const Uploader = (props: IUploader) => {
                             }
 
                             {
-                                view === UIViewEnum.FILE_SELECTED &&
+                                view === UIEnum.FILE_SELECTED &&
                                 <>
 
                                     <IconButton
@@ -257,7 +257,7 @@ const Uploader = (props: IUploader) => {
                                         }}
                                         onClick={(e) => {
                                             setFile(null)
-                                            setView(UIViewEnum.BROWSE)
+                                            setView(UIEnum.BROWSE)
                                         }}
                                     />
 
@@ -291,7 +291,7 @@ const Uploader = (props: IUploader) => {
                             }
 
                             {
-                                view === UIViewEnum.UPLOADED &&
+                                view === UIEnum.UPLOADED &&
                                 <>
 
                                     <span className="flex items-center justify-center bg-pagr-100 w-[50px] h-[50px] rounded-full">
@@ -313,7 +313,7 @@ const Uploader = (props: IUploader) => {
                                         onClick={(e) => { 
                                             setFile(null)
                                             setForm({ ...form, error: '' })
-                                            setView(UIViewEnum.BROWSE) 
+                                            setView(UIEnum.BROWSE) 
                                         }}
                                     />
 
@@ -321,7 +321,7 @@ const Uploader = (props: IUploader) => {
                             }
 
                             {
-                                view === UIViewEnum.UPLOAD_ERROR &&
+                                view === UIEnum.UPLOAD_ERROR &&
                                 <>
 
                                     <span className="flex items-center justify-center bg-par-100 w-[50px] h-[50px] rounded-full">
@@ -343,7 +343,7 @@ const Uploader = (props: IUploader) => {
                                         onClick={(e) => {
                                             setFile(null)
                                             setForm({ ...form, error: '' })
-                                            setView(UIViewEnum.BROWSE)
+                                            setView(UIEnum.BROWSE)
                                         }}
                                     />
 

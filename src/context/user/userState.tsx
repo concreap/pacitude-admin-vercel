@@ -4,10 +4,10 @@ import Cookies from 'universal-cookie';
 import Axios from 'axios';
 import storage from '../../utils/storage.util'
 import loader from '../../utils/loader.util'
-import { ICollection, IListQuery, ISetLoading, ISidebarProps, IToast, IUnsetLoading, IUserPermission } from '../../utils/interfaces.util';
+import { ICollection, IListQuery, ISetLoading, ISidebarProps, IToast, ITopbar, IUnsetLoading, IUserPermission } from '../../utils/interfaces.util';
 import AxiosService from '../../services/axios.service';
 import User from '../../models/User.model';
-import { collection, sidebar, toast } from '../../_data/seed';
+import { collection, sidebar, toast, topbar } from '../../_data/seed';
 import sidebarRoutes from '../../routes/sidebar.route';
 
 import UserContext from './userContext';
@@ -21,7 +21,8 @@ import {
     SET_RESPONSE,
     SET_TOAST,
     UNSET_LOADING,
-    SET_LOADER
+    SET_LOADER,
+    SET_TOPBAR
 } from '../types'
 
 const UserState = (props: any) => {
@@ -36,7 +37,8 @@ const UserState = (props: any) => {
         loading: false,
         loader: false,
         toast: toast,
-        sidebar: sidebar
+        sidebar: sidebar,
+        topbar: topbar
     }
 
     const [state, dispatch] = useReducer(UserReducer, initialState);
@@ -125,6 +127,13 @@ const UserState = (props: any) => {
     const setSidebar = (data: ISidebarProps) => {
         dispatch({
             type: SET_SIDEBAR,
+            payload: data
+        })
+    }
+
+     const setTopbar = (data: ITopbar) => {
+        dispatch({
+            type: SET_TOPBAR,
             payload: data
         })
     }
@@ -219,10 +228,12 @@ const UserState = (props: any) => {
         loader: state.loader,
         toast: state.toast,
         sidebar: state.sidebar,
+        topbar: state.topbar,
         setToast: setToast,
         clearToast: clearToast,
         setUserType,
         setSidebar,
+        setTopbar,
         currentSidebar,
         setCollection,
         setResource,
@@ -239,10 +250,12 @@ const UserState = (props: any) => {
         state.toast,
         state.items,
         state.sidebar,
+        state.topbar,
         setToast,
         clearToast,
         setUserType,
         setSidebar,
+        setTopbar,
         currentSidebar,
         setCollection,
         setResource,

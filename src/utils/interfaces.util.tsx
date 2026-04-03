@@ -11,6 +11,9 @@ import Talent from "../models/Talent.model";
 import Task from "../models/Task.model";
 import Comment from "../models/Comment.model";
 import Group from "../models/Group.model";
+import { Library } from "../models/Library.model";
+import { Module } from "../models/Module.model";
+import { Lesson } from "../models/Lesson.model";
 
 export interface IResult {
     error: boolean,
@@ -505,7 +508,8 @@ export interface ITextAreaInput {
         title: string,
         className?: string,
         required?: boolean,
-        fontSize?: number
+        fontSize?: number,
+        weight?: FontWeightType
     },
     onFocus?(e: any): void,
     onKeyUp?(e: KeyboardEvent<HTMLTextAreaElement>): void
@@ -1067,6 +1071,7 @@ export interface IFileog {
 }
 
 export interface IListQuery {
+    id?: string,
     limit?: number,
     paginate?: string,
     page?: number,
@@ -1436,10 +1441,12 @@ export interface IUserContext {
     loading: boolean,
     loader: boolean,
     sidebar: ISidebarProps,
+    topbar: ITopbar,
     toast: IToastState,
     setToast(data: IToastState): void,
     clearToast(): void,
     setSidebar(data: ISidebarProps): void,
+    setTopbar(data: ITopbar): void,
     currentSidebar(collapse: boolean): ISidebarProps | null,
     setUserType(type: string): void,
     setCollection(type: string, data: ICollection): void,
@@ -1454,6 +1461,12 @@ export interface IAppContext {
     industry: Industry,
     careers: ICollection,
     career: Career,
+    libraries: ICollection,
+    library: Library,
+    modules: ICollection,
+    module: Module,
+    lessons: ICollection,
+    lesson: Lesson,
     groups: ICollection,
     group: Group,
     fields: ICollection,
