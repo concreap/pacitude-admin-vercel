@@ -360,9 +360,26 @@ const LibraryDetailsPage = ({ }) => {
                                             {
                                                 moudle &&
                                                 <div className="space-y-[1rem]">
-                                                    <div className="space-y-[0.3rem]">
-                                                        <h2 className="font-mona-medium pacb-700 text-[16px]">{moudle.title} - Lessons</h2>
-                                                        <p className="font-mona pag-600 text-[14px]">{moudle.description}</p>
+                                                    <div className="flex items-center">
+
+                                                        <div className="space-y-[0.3rem]">
+                                                            <h2 className="font-mona-medium pacb-700 text-[16px]">{moudle.title} - Lessons</h2>
+                                                            <p className="font-mona pag-600 text-[14px]">{moudle.description}</p>
+                                                        </div>
+
+                                                        <IconButton
+                                                            size="min-w-[1.8rem] min-h-[1.8rem]"
+                                                            className="bg-pacb-200 pacb-600"
+                                                            container={{ className: 'ml-auto' }}
+
+                                                            icon={{
+                                                                type: 'feather',
+                                                                name: 'plus',
+                                                                size: 14,
+                                                            }}
+                                                            onClick={(e) => { goTo(`/dashboard/libraries/add-lesson/${moudle._id}`) }}
+                                                        />
+
                                                     </div>
 
                                                     <Divider padding={{ enable: true, top: 'pt-[0.25rem]', bottom: 'pb-[0.25rem]' }} />

@@ -82,7 +82,7 @@ const AppReducer = (state: any, action: any) => {
         case GET_MODULE:
             return {
                 ...state,
-                module: action.payload
+                moudle: action.payload
             }
         case GET_LESSONS:
             return {
