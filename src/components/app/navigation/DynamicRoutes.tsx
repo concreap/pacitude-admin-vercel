@@ -43,6 +43,13 @@ const TalentTaskDetailsPage = lazy(() => import('../../../pages/dashboard/tasks/
 const EditTaskPage = lazy(() => import('../../../pages/dashboard/tasks/EditTask'))
 const RegenerateTaskPage = lazy(() => import('../../../pages/dashboard/tasks/RegenerateTask'))
 
+const LibrariesPage = lazy(() => import('../../../pages/dashboard/libraries/Libraries'))
+const NewLibraryPage = lazy(() => import('../../../pages/dashboard/libraries/NewLibrary'))
+const AddModulePage = lazy(() => import('../../../pages/dashboard/libraries/AddModule'))
+const AddLessonPage = lazy(() => import('../../../pages/dashboard/libraries/AddLesson'))
+const LibraryDetailsPage = lazy(() => import('../../../pages/dashboard/libraries/LibraryDetails'))
+const EditLibraryPage = lazy(() => import('../../../pages/dashboard/libraries/EditLibrary'))
+
 // users/talents/admins/businesses
 const TalentsPage = lazy(() => import('../../../pages/dashboard/users/talents/Talents'))
 
@@ -124,6 +131,18 @@ const DynamicRoutes = () => {
                 return <HelpPage />
             case 'talents':
                 return <TalentsPage />
+            case 'libraries':
+                return <LibrariesPage />
+            case 'new-library':
+                return <NewLibraryPage />
+            case 'add-module':
+                return <AddModulePage />
+            case 'add-lesson':
+                return <AddLessonPage />
+            case 'library-details':
+                return <LibraryDetailsPage />
+            case 'edit-library':
+                return <EditLibraryPage />
             default:
                 return <NotFound />
         }

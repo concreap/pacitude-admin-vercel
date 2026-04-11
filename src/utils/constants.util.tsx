@@ -27,7 +27,9 @@ export const RESOURCE_TYPES = [
     'assessment',
     'assessments',
     'task',
-    'tasks'
+    'tasks',
+    'libraries',
+    'library'
 ] as const;
 
 export const ACTION_TYPES = [

@@ -17,3 +17,6 @@ export const URL_CONFIG = '/config'
 export const URL_STORAGE = '/storage'
 
 export const URL_TALENTS = '/talents'
+export const URL_LIBRARIES = '/libraries'
+export const URL_MODULES = '/modules'
+export const URL_LESSONS = '/lessons'

@@ -32,6 +32,12 @@ export const GET_QUESTION_COUNT = 'GET_QUESTION_COUNT';
 export const GET_CORE = 'GET_CORE';
 export const GET_GROUPS = 'GET_GROUPS';
 export const GET_GROUP = 'GET_GROUP';
+export const GET_LIBRARIES = 'GET_LIBRARIES';
+export const GET_LIBRARY = 'GET_LIBRARY';
+export const GET_MODULES = 'GET_MODULES';
+export const GET_MODULE = 'GET_MODULE';
+export const GET_LESSONS = 'GET_LESSONS';
+export const GET_LESSON = 'GET_LESSON';
 
 // generics
 export const SET_PAGINATION = 'SET_PAGINATION';
@@ -48,6 +54,7 @@ export const SET_RESPONSE = 'SET_RESPONSE';
 export const SET_IS_SUPER = 'SET_IS_SUPER';
 export const SET_IS_ADMIN = 'SET_IS_ADMIN';
 export const SET_SIDEBAR = 'SET_SIDEBAR';
+export const SET_TOPBAR = 'SET_TOPBAR';
 export const SET_USER = 'SET_USER';
 export const SET_AIQUESTION = 'SET_AIQUESTION';
 export const SET_ITEMS = 'SET_ITEMS';

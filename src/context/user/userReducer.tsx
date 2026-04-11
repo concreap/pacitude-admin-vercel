@@ -21,7 +21,8 @@ import {
     SET_LOADER,
     GET_TALENTS,
     GET_TALENT,
-    SET_ITEM
+    SET_ITEM,
+    SET_TOPBAR
 } from '../types';
 
 
@@ -93,7 +94,11 @@ const reducer = (state: any, action: any) => {
                 ...state,
                 sidebar: action.payload
             }
-
+        case SET_TOPBAR:
+            return {
+                ...state,
+                topbar: action.payload
+            }
         case SET_IS_SUPER:
             return {
                 ...state,
