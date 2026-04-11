@@ -27,7 +27,7 @@ const AddLessonPage = ({ }) => {
     const { goTo } = useGoTo()
     const { toast, setToast } = useToast()
     const {
-        LibraryStatus, module, loading, loader,
+        LibraryStatus, moudle, loading, loader,
         createLesson, getModule
     } = useLibrary()
 
@@ -68,7 +68,7 @@ const AddLessonPage = ({ }) => {
                 code: helper.random(6, true)
             }]
         })
-    }, [module])
+    }, [moudle])
 
     const addNewLesson = () => {
 
@@ -187,7 +187,7 @@ const AddLessonPage = ({ }) => {
         } else {
 
             const response = await createLesson({
-                id: module._id,
+                id: moudle._id,
                 lessons: lessons
             })
 
@@ -201,8 +201,8 @@ const AddLessonPage = ({ }) => {
                     error: 'all',
                     position: 'top-right'
                 })
-                if(module.library && module.library._id){
-                    goTo(`/dashboard/libraries/${module.library._id}`)
+                if(moudle.library && moudle.library._id){
+                    goTo(`/dashboard/libraries/${moudle.library._id}`)
                 } else {
                     goTo(`/dashboard/libraries`)
                 }
@@ -247,7 +247,7 @@ const AddLessonPage = ({ }) => {
                 }
 
                 {
-                    !loading && helper.isEmpty(module, 'object') &&
+                    !loading && helper.isEmpty(moudle, 'object') &&
                     <EmptyState className="min-h-[50vh]" noBound={true} >
                         <span className="font-mona text-[14px] pas-950">Library details not found!</span>
                     </EmptyState>
@@ -255,12 +255,12 @@ const AddLessonPage = ({ }) => {
                 }
 
                 {
-                    !loading && !helper.isEmpty(module, 'object') &&
+                    !loading && !helper.isEmpty(moudle, 'object') &&
                     <>
 
                         <div className="w-full gap-x-[2rem] mb-[1.5rem] flex items-center">
-                            <h2 className="font-mona-medium text-[15px] pag-800">Library: {module?.library?.title || '---'}</h2>
-                            <h2 className="font-mona text-[15px] pag-800">Module: {module?.title || '---'}</h2>
+                            <h2 className="font-mona-medium text-[15px] pag-800">Library: {moudle?.library?.title || '---'}</h2>
+                            <h2 className="font-mona text-[15px] pag-800">Module: {moudle?.title || '---'}</h2>
                         </div>
 
                         <CardUI padding={{ y: 4, x: 2 }}>

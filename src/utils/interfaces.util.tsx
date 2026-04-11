@@ -1464,7 +1464,7 @@ export interface IAppContext {
     libraries: ICollection,
     library: Library,
     modules: ICollection,
-    module: Module,
+    moudle: Module,
     lessons: ICollection,
     lesson: Lesson,
     groups: ICollection,

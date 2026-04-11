@@ -36,7 +36,7 @@ const EditLibraryPage = ({ }) => {
     const { goTo } = useGoTo()
     const { toast, setToast } = useToast()
     const {
-        LibraryStatus, module, loading, loader, library, lesson,
+         moudle, loading, loader, library, lesson,
         getModule, getLibrary, getLesson,
         updateLibrary, updateModule, updateLesson
     } = useLibrary()
@@ -72,7 +72,7 @@ const EditLibraryPage = ({ }) => {
             getLesson(id)
         }
 
-    }, [id])
+    }, [id, view])
 
     useEffect(() => {
 
@@ -97,7 +97,7 @@ const EditLibraryPage = ({ }) => {
         } else if (view === UIEnum.VIEW_MODULE) {
 
             response = await updateModule({
-                id: module._id,
+                id: moudle._id,
                 title: payload.title || undefined,
                 description: payload.description || undefined,
                 banner: file.name || undefined,
@@ -133,8 +133,8 @@ const EditLibraryPage = ({ }) => {
 
             if (library && library._id) {
                 goTo(`/dashboard/libraries/${library._id}`)
-            } else if (module && module.library && module.library._id) {
-                goTo(`/dashboard/libraries/${module.library._id}`)
+            } else if (moudle && moudle.library && moudle.library._id) {
+                goTo(`/dashboard/libraries/${moudle.library._id}`)
             } else if (lesson && lesson.library && lesson.library._id) {
                 goTo(`/dashboard/libraries/${lesson.library._id}`)
             }
@@ -179,7 +179,7 @@ const EditLibraryPage = ({ }) => {
                 }
 
                 {
-                    !loading && (!library && !module && !lesson) &&
+                    !loading && (!library && !moudle && !lesson) &&
                     <EmptyState className="min-h-[50vh]" noBound={true} >
                         <span className="font-mona text-[14px] pas-950">{helper.capitalize(resource)} details not found!</span>
                     </EmptyState>
@@ -257,7 +257,7 @@ const EditLibraryPage = ({ }) => {
                                 }
 
                                 {
-                                    view === UIEnum.VIEW_MODULE && !helper.isEmpty(module, 'object') &&
+                                    view === UIEnum.VIEW_MODULE && moudle && !helper.isEmpty(moudle, 'object') &&
                                     <>
                                         <div className="space-y-[0.6rem]">
 
@@ -267,7 +267,7 @@ const EditLibraryPage = ({ }) => {
                                                 <ImageUI
                                                     title={'Change Module Banner'}
                                                     titleFontSize={13}
-                                                    url={module.banner || ''}
+                                                    url={moudle.banner || ''}
                                                     onChange={(upload) => {
                                                         if (!upload.error) {
                                                             setFile(upload.data)
@@ -283,7 +283,7 @@ const EditLibraryPage = ({ }) => {
                                                     showFocus={true}
                                                     autoComplete={false}
                                                     placeholder="Ex. The Models of Business"
-                                                    defaultValue={module.title}
+                                                    defaultValue={moudle.title}
                                                     label={{
                                                         title: 'Module Title',
                                                         required: false,
@@ -299,7 +299,7 @@ const EditLibraryPage = ({ }) => {
                                                     showFocus={true}
                                                     autoComplete={false}
                                                     placeholder="Type here"
-                                                    defaultValue={module.description}
+                                                    defaultValue={moudle.description}
                                                     isError={false}
                                                     label={{
                                                         required: false,
