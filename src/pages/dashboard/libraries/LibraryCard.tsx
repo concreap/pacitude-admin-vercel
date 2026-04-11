@@ -26,9 +26,10 @@ const LibraryCard = (props: ILibraryCard) => {
                     <div className="min-h-[70px]">
                         <div className="flex items-center gap-x-[2rem] grow">
                             <div className="min-w-[30%] min-h-[86px] rounded-[8px] full-bg" style={{ backgroundImage: `url(${library?.banner ?? ''})` }}></div>
-                            <div className="space-y-[0.67rem]">
+                            <div className="space-y-[0.65rem]">
                                 <h3 className="font-mona-medium pas-950 text-[15px]">{library?.title ?? ''}</h3>
                                 <div className="flex items-center gap-x-[1rem]">
+                                    <h3 className="font-mona-light pag-500 text-[13px]">By: {library?.business?.name || 'Business'}</h3>
 
                                     <Badge
                                         type={getStatusType(library.status)}
@@ -44,7 +45,7 @@ const LibraryCard = (props: ILibraryCard) => {
                                         close={false}
                                     />
 
-                                    <h3 className="font-mona-light pag-500 text-[13px]">Code: {library?.code || ''}</h3>
+                                    
 
                                 </div>
                             </div>
