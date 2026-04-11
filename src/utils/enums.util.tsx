@@ -86,7 +86,13 @@ export const StatusEnum = {
     APPROVED: 'approved',
     REJECTED: 'rejected',
     DRAFT: 'draft',
-    GENERATING: 'generating'
+    REVOKED: 'revoked',
+    SUMMARIZED: 'summarized',
+    QUEUED: 'queued',
+    RUNNING: 'running',
+    GENERATING: 'generating',
+    PUBLISHED: 'published',
+    ARCHIVED: 'archived'
 } as const
 
 export const ActionEnum = {
@@ -119,18 +125,18 @@ export const TaskFieldEnum = {
     GUIDELINES: 'guidelines',
 } as const
 
-export const UIViewEnum = {
+export const UIEnum = {
+    NEW: 'new',
+    OLD: 'old',
     FORM: 'form',
     MESSAGE: 'message',
     BROWSE: 'browse-file',
     FILE_SELECTED: 'file-selected',
     UPLOADED: 'uploaded',
-    UPLOAD_ERROR: 'upload-error'
-} as const
-
-export const UIEnum = {
-    NEW: 'new',
-    OLD: 'old',
+    UPLOAD_ERROR: 'upload-error',
+    VIEW_MODULE: 'view-module',
+    VIEW_LESSON: 'view-lesson',
+    VIEW_LIBRARY: 'view-library',
 } as const
 
 export const EditTaskEnum = {

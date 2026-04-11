@@ -27,7 +27,13 @@ import {
     SET_POLLER,
     SET_ITEM,
     GET_GROUPS,
-    GET_GROUP
+    GET_GROUP,
+    GET_LIBRARIES,
+    GET_LIBRARY,
+    GET_MODULES,
+    GET_MODULE,
+    GET_LESSONS,
+    GET_LESSON
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -57,6 +63,36 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 career: action.payload
+            }
+        case GET_LIBRARIES:
+            return {
+                ...state,
+                libraries: action.payload
+            }
+        case GET_LIBRARY:
+            return {
+                ...state,
+                library: action.payload
+            }
+        case GET_MODULES:
+            return {
+                ...state,
+                modules: action.payload
+            }
+        case GET_MODULE:
+            return {
+                ...state,
+                module: action.payload
+            }
+        case GET_LESSONS:
+            return {
+                ...state,
+                lessons: action.payload
+            }
+        case GET_LESSON:
+            return {
+                ...state,
+                lesson: action.payload
             }
         case GET_FIELDS:
             return {

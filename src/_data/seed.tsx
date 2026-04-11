@@ -1,6 +1,6 @@
 import sidebarRoutes from "../routes/sidebar.route";
 import { StatusEnum } from "../utils/enums.util";
-import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource, IAPIResponse, IPoller } from "../utils/interfaces.util";
+import { IAIQuestion, ICollection, IAppMetrics, IPagination, ISidebarProps, IToast, ICoreResource, IAPIResponse, IPoller, ITopbar } from "../utils/interfaces.util";
 
 const avatars = [
     { name: 'sandra', avatar: 'https://storage.googleapis.com/pacitude-buckets/sandra.png' },
@@ -84,6 +84,12 @@ const sidebar: ISidebarProps = {
     isOpen: false,
     subroutes: [],
     inroutes: []
+}
+
+const topbar: ITopbar = {
+    pageTitle: '',
+    showBack: true,
+    sticky: true
 }
 
 const toast: IToast = {
@@ -205,6 +211,7 @@ const UIPoller: IPoller = {
 
 export {
     sidebar,
+    topbar,
     avatars,
     toast,
     collection, pagination,

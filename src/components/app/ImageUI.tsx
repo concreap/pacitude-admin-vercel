@@ -6,7 +6,8 @@ import Uploader from "../partials/dialogs/Uploader";
 interface IImageUI {
     url?: string,
     className?: string,
-    title: string
+    title: string,
+    titleFontSize?: number,
     onChange(data: IResult): void
 }
 
@@ -16,6 +17,7 @@ const ImageUI = (props: IImageUI) => {
         url,
         title,
         className,
+        titleFontSize,
         onChange
     } = props;
 
@@ -32,7 +34,7 @@ const ImageUI = (props: IImageUI) => {
                 <div className="flex items-center">
                     <div className="flex items-center grow gap-x-[1rem]">
                         <div className="min-h-[60px] min-w-[25%] rounded-[8px] full-bg" style={{ backgroundImage: `url("${url ? url : '../../../images/assets/bg@core_03.webp'}")` }}></div>
-                        <span className="font-mona text-[15px] pag900-800">{ title }</span>
+                        <span className={`font-mona pag900-800`} style={{ fontSize: titleFontSize ? titleFontSize + 'px' : '15px' }}>{ title }</span>
                     </div>
                     <div className="flex items-center gap-x-[1rem] ml-auto">
 
