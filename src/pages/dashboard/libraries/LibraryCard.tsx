@@ -38,7 +38,7 @@ const LibraryCard = (props: ILibraryCard) => {
                                         padding={{ y: 3, x: 12 }}
                                         font={{
                                             weight: 'regular',
-                                            size: 12
+                                            size: 11
                                         }}
                                         upper={true}
                                         close={false}

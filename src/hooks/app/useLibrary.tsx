@@ -144,10 +144,8 @@ const useLibrary = () => {
      */
     const getLibraries = useCallback(async (data: IListQuery) => {
 
-        const { limit, page, select, order, id } = data;
+        const { limit, page, select, order } = data;
         const q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
-
-        const bid = id ? id : storage.getUserID()
 
         setLoading({ option: 'resource', type: GET_LIBRARIES })
 
@@ -155,7 +153,7 @@ const useLibrary = () => {
             type: 'default',
             method: 'GET',
             isAuth: true,
-            path: `${URL_LIBRARIES}/${bid}?${q}`
+            path: `${URL_LIBRARIES}?${q}`
         })
 
         if (response.error === false) {
@@ -205,15 +203,13 @@ const useLibrary = () => {
         const { limit, page, select, order, id } = data;
         const q = `limit=${limit ? limit.toString() : 25}&page=${page ? page.toString() : 1}&order=${order ? order : 'desc'}`;
 
-        const bid = id ? id : storage.getUserID()
-
         setLoading({ option: 'resource', type: GET_MODULES })
 
         const response = await AxiosService.call({
             type: 'default',
             method: 'GET',
             isAuth: true,
-            path: `${URL_MODULES}/${bid}?${q}`
+            path: `${URL_LIBRARIES}/modules/${id}?${q}`
         })
 
         if (response.error === false) {
@@ -269,7 +265,7 @@ const useLibrary = () => {
             type: 'default',
             method: 'GET',
             isAuth: true,
-            path: `${URL_LESSONS}/${id}?${q}`
+            path: `${URL_MODULES}/lessons/${id}?${q}`
         })
 
         if (response.error === false) {

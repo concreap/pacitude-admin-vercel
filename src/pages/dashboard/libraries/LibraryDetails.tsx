@@ -464,7 +464,7 @@ const LibraryDetailsPage = ({ }) => {
                                                 lesson.talents.length > 0 &&
                                                 <div className="flex items-center -space-x-[0.75rem] rtl:space-x-reverse">
                                                     {
-                                                        lesson.talents.slice(0, 3).map((talent: Talent) =>
+                                                        lesson.talents.slice(0, 4).map((talent: Talent) =>
                                                             <Fragment key={talent._id}>
                                                                 <UserAvatar
                                                                     avatar={talent?.avatar || ''}

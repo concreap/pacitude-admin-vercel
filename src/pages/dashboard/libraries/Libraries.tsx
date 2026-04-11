@@ -21,8 +21,8 @@ const LibrariesPage = ({ }) => {
         <>
 
             <PageHeader
-                title="Manage Your Libraries"
-                description="Create video resources for learning"
+                title="Manage Platform Libraries"
+                description="Created video resource by businesses for learning"
             >
                 <div className="flex items-center">
                     <Button
