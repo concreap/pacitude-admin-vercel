@@ -11,6 +11,7 @@ import useAuth from './useAuth'
 interface ISendUsersUpdate {
     title: string,
     content: string,
+    banner?: string,
     users: Array<string>
 }
 
