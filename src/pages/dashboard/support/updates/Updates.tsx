@@ -19,6 +19,7 @@ import TinyMCE from "../../../../components/app/editor/TinyMCE";
 import useGoBack from "../../../../hooks/useGoBack";
 import Button from "../../../../components/partials/buttons/Button";
 import useToast from "../../../../hooks/useToast";
+import ImageUI from "../../../../components/app/ImageUI";
 
 const UpdatesPage = ({ }) => {
 
@@ -34,6 +35,11 @@ const UpdatesPage = ({ }) => {
         title: '',
         content: '',
         users: [] as Array<string>
+    })
+    const [file, setFile] = useState({
+        id: '',
+        name: '',
+        url: ''
     })
 
     useEffect(() => {
@@ -119,7 +125,8 @@ const UpdatesPage = ({ }) => {
             const response = await sendUsersUpdate({
                 content: editorRef.current.content,
                 title: form.title,
-                users: form.users
+                users: form.users,
+                banner: file.name ? file.name : undefined
             });
 
             if (!response.error) {
@@ -332,6 +339,7 @@ const UpdatesPage = ({ }) => {
                                 }
                             </div>
                         }
+
                         <Divider />
 
                         <form onClick={(e) => { }} className="w-[95%] mx-auto space-y-[2rem]">
@@ -352,6 +360,19 @@ const UpdatesPage = ({ }) => {
                                         title: "Enter Title"
                                     }}
                                     onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                />
+                            </FormField>
+
+                            <FormField>
+                                <ImageUI
+                                    title={'Select Banner'}
+                                    titleFontSize={13}
+                                    url={file.url}
+                                    onChange={(upload) => {
+                                        if (!upload.error) {
+                                            setFile(upload.data);
+                                        }
+                                    }}
                                 />
                             </FormField>
 

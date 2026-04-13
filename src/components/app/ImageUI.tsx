@@ -33,7 +33,7 @@ const ImageUI = (props: IImageUI) => {
 
                 <div className="flex items-center">
                     <div className="flex items-center grow gap-x-[1rem]">
-                        <div className="min-h-[60px] min-w-[25%] rounded-[8px] full-bg" style={{ backgroundImage: `url("${url ? url : '../../../images/assets/bg@core_03.webp'}")` }}></div>
+                        <div className="min-h-[60px] min-w-[25%] rounded-[8px] full-bg bg-center" style={{ backgroundImage: `url("${url ? url : '../../../images/assets/bg@banner01.png'}")` }}></div>
                         <span className={`font-mona pag900-800`} style={{ fontSize: titleFontSize ? titleFontSize + 'px' : '15px' }}>{ title }</span>
                     </div>
                     <div className="flex items-center gap-x-[1rem] ml-auto">
