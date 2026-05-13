@@ -14,6 +14,7 @@ import Group from "../models/Group.model";
 import { Library } from "../models/Library.model";
 import { Module } from "../models/Module.model";
 import { Lesson } from "../models/Lesson.model";
+import { Credit } from "../models/Credit.model";
 
 export interface IResult {
     error: boolean,
@@ -878,7 +879,8 @@ export interface IIconButton {
         className?: string,
         size?: number,
         weight?: FontWeightType,
-    }
+    },
+    disable?: boolean,
     active?: boolean,
     url?: string,
     size?: string,
@@ -1479,6 +1481,8 @@ export interface IAppContext {
     task: Task,
     comments: ICollection,
     comment: Comment,
+    credits: ICollection,
+    credit: Credit,
     questionCount: Array<IQuestionCount>
     aiQuestions: Array<IAIQuestion>,
     topics: ICollection,

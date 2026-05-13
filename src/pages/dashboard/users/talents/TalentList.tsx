@@ -375,7 +375,7 @@ const TalentList = (props: IListUI) => {
                                                                         />
                                                                         <div className="leading-[1.2rem]">
                                                                             <h3 className="font-mona text-[14px] pag-800">{getFullname(talent)}</h3>
-                                                                            <span className="pag-400 text-[13px] font-moal-light">@{talent.username}</span>
+                                                                            <span className="pag-400 text-[13px] font-mona-light">@{talent.username}</span>
                                                                         </div>
                                                                     </div>
                                                                 </CellData>
@@ -402,6 +402,7 @@ const TalentList = (props: IListUI) => {
                                                                         noFilter={false}
                                                                     />
                                                                 </CellData>
+                                                                
                                                             </TableRow>
                                                         </Fragment>
                                                     )

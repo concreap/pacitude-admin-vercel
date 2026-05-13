@@ -50,6 +50,10 @@ const AddLessonPage = lazy(() => import('../../../pages/dashboard/libraries/AddL
 const LibraryDetailsPage = lazy(() => import('../../../pages/dashboard/libraries/LibraryDetails'))
 const EditLibraryPage = lazy(() => import('../../../pages/dashboard/libraries/EditLibrary'))
 
+const CreditsPage = lazy(() => import('../../../pages/dashboard/payments/credits/Credits'))
+const GrantCreditPage = lazy(() => import('../../../pages/dashboard/payments/credits/GrantCredit'))
+const CreditDetailsPage = lazy(() => import('../../../pages/dashboard/payments/credits/CreditDetails'))
+
 // users/talents/admins/businesses
 const TalentsPage = lazy(() => import('../../../pages/dashboard/users/talents/Talents'))
 
@@ -143,6 +147,12 @@ const DynamicRoutes = () => {
                 return <LibraryDetailsPage />
             case 'edit-library':
                 return <EditLibraryPage />
+            case 'credits':
+                return <CreditsPage />
+            case 'grant-credit':
+                return <GrantCreditPage />
+            case 'credit-details':
+                return <CreditDetailsPage />
             default:
                 return <NotFound />
         }
