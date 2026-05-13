@@ -1,7 +1,15 @@
-export enum CurrencyType{
-    NGN = 'NGN',
-    USD = 'USD'
-}
+export const CurrencyType = {
+    NGN: 'NGN',
+    USD: 'USD'
+} as const
+export const CurrencyName = {
+    NGN: 'naira',
+    USD: 'dollar'
+} as const
+export const CurrencySymbol = {
+    NGN: '₦',
+    USD: '$'
+} as const
 export enum HeaderType {
     IDEMPOTENT = 'x-idempotent-key'
 }
@@ -16,7 +24,7 @@ export const UserEnum = {
     TALENT: 'talent',
     USER: 'user'
 } as const
-export enum PasswordType{
+export enum PasswordType {
     SELF = 'self',
     GENERATED = 'generated',
     SELF_CHANGED = 'self-changed'
@@ -87,6 +95,8 @@ export const StatusEnum = {
     REJECTED: 'rejected',
     DRAFT: 'draft',
     REVOKED: 'revoked',
+    EXHAUSTED: 'exhausted',
+    ACTIVE: 'active',
     SUMMARIZED: 'summarized',
     QUEUED: 'queued',
     RUNNING: 'running',

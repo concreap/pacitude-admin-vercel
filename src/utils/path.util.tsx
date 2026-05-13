@@ -20,3 +20,5 @@ export const URL_TALENTS = '/talents'
 export const URL_LIBRARIES = '/libraries'
 export const URL_MODULES = '/modules'
 export const URL_LESSONS = '/lessons'
+
+export const URL_CREDITS = '/credits'
