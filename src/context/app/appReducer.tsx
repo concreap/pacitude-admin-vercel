@@ -33,7 +33,9 @@ import {
     GET_MODULES,
     GET_MODULE,
     GET_LESSONS,
-    GET_LESSON
+    GET_LESSON,
+    GET_CREDITS,
+    GET_CREDIT
 } from "../types";
 
 const AppReducer = (state: any, action: any) => {
@@ -93,6 +95,16 @@ const AppReducer = (state: any, action: any) => {
             return {
                 ...state,
                 lesson: action.payload
+            }
+        case GET_CREDITS:
+            return {
+                ...state,
+                credits: action.payload
+            }
+        case GET_CREDIT:
+            return {
+                ...state,
+                credit: action.payload
             }
         case GET_FIELDS:
             return {

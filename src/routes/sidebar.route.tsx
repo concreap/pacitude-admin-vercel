@@ -556,7 +556,7 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/transactions',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
                 content: { collapsed: false, backButton: true }
             },
             {
@@ -566,7 +566,17 @@ const sidebarRoutes: Array<IRoute> = [
                 url: '/subscriptions',
                 action: 'navigate',
                 isAuth: true,
-                params: [{ type: 'url', name: 'id' }],
+                params: [],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                name: 'credits',
+                title: 'Credits',
+                iconName: 'euro',
+                url: '/credits',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
                 content: { collapsed: false, backButton: true }
             },
             {
@@ -576,6 +586,32 @@ const sidebarRoutes: Array<IRoute> = [
                 params: [],
                 content: {}
             }
+        ],
+        inroutes: [
+            {
+                route: 'payments',
+                parent: 'credits',
+                name: 'grant-credit',
+                title: 'Grant Credit',
+                iconName: 'flash',
+                url: '/grant',
+                action: 'navigate',
+                isAuth: true,
+                params: [],
+                content: { collapsed: false, backButton: true }
+            },
+            {
+                route: 'payments',
+                parent: 'credits',
+                name: 'credit-details',
+                title: 'Credit Details',
+                iconName: 'flash',
+                url: '',
+                action: 'navigate',
+                isAuth: true,
+                params: [{ type: 'url', name: 'id' }],
+                content: { collapsed: false, backButton: true }
+            },
         ]
     },
     {

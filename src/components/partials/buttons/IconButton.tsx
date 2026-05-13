@@ -15,6 +15,7 @@ const IconButton = (props: IIconButton) => {
         },
         label = null,
         url = '',
+        disable = false,
         active = false,
         size = 'min-w-[2.2rem] min-h-[2.2rem]',
         radius = 'full',
@@ -33,6 +34,10 @@ const IconButton = (props: IIconButton) => {
 
         if (container && container.className) {
             result = result + ` ${container.className}`
+        }
+
+        if(disable){
+            result = result + ` disabled-light pointer-events-none`
         }
 
         return result;

@@ -38,6 +38,8 @@ export const GET_MODULES = 'GET_MODULES';
 export const GET_MODULE = 'GET_MODULE';
 export const GET_LESSONS = 'GET_LESSONS';
 export const GET_LESSON = 'GET_LESSON';
+export const GET_CREDITS = 'GET_CREDITS';
+export const GET_CREDIT = 'GET_CREDIT';
 
 // generics
 export const SET_PAGINATION = 'SET_PAGINATION';

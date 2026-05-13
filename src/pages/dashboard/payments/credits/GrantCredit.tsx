@@ -1,76 +1,69 @@
-import React, { useEffect, useState, useContext } from "react"
-import useSidebar from "../../../hooks/useSidebar";
-import CardUI from "../../../components/partials/ui/CardUI";
-import FormField from "../../../components/partials/inputs/FormField";
-import ImageUI from "../../../components/app/ImageUI";
-import TextInput from "../../../components/partials/inputs/TextInput";
-import TextAreaInput from "../../../components/partials/inputs/TextAreaInput";
-import Button from "../../../components/partials/buttons/Button";
-import useUser from "../../../hooks/app/useUser";
-import useLibrary from "../../../hooks/app/useLibrary";
-import useToast from "../../../hooks/useToast";
-import useGoTo from "../../../hooks/useGoTo";
+import React, { useEffect, useState, useContext, useRef } from "react"
+import useSidebar from "../../../../hooks/useSidebar";
+import CardUI from "../../../../components/partials/ui/CardUI";
+import FormField from "../../../../components/partials/inputs/FormField";
+import TextAreaInput from "../../../../components/partials/inputs/TextAreaInput";
+import Button from "../../../../components/partials/buttons/Button";
+import useUser from "../../../../hooks/app/useUser";
+import useLibrary from "../../../../hooks/app/useLibrary";
+import useToast from "../../../../hooks/useToast";
+import useGoTo from "../../../../hooks/useGoTo";
+import Filter from "../../../../components/partials/drops/Filter";
+import User from "../../../../models/User.model";
+import NumberInput from "../../../../components/partials/inputs/NumberInput";
+import useCredit from "../../../../hooks/app/useCredit";
 
-const NewLibraryPage = ({ }) => {
+const GrantCreditPage = ({ }) => {
+
+    const bizRef = useRef<any>(null)
 
     useSidebar({ type: 'sidebar', init: false })
-    const { user } = useUser()
+    const { getUsers, users } = useUser()
     const { toast, setToast } = useToast()
     const { goTo } = useGoTo()
-    const { LibraryStatus, createLibrary, loader } = useLibrary()
+    const { grantCredit, loader } = useCredit()
 
     const [success, setSuccess] = useState<boolean>(false)
-    const [file, setFile] = useState({
-        id: '',
-        name: '',
-        url: ''
-    })
     const [form, setForm] = useState({
-        title: '',
-        description: '',
-        status: LibraryStatus.PUBLISHED as string
+        id: '',
+        months: 0,
+        note: ''
     })
 
     useEffect(() => {
-
+        getBusinesses()
     }, [])
 
-    const handleCreate = async (e: any) => {
+    const getBusinesses = () => {
+        getUsers({ limit: 9999, page: 1, type: 'business', order: 'asc' }, true)
+    }
+
+    const handleGrant = async (e: any) => {
 
         if (e) { e.preventDefault() }
 
-        if (!file.name) {
+        if (!form.id) {
             setToast({
                 ...toast,
                 show: true,
                 type: 'error', title: 'Error',
-                message: 'Upload library banner',
+                message: 'Select a business',
                 error: 'all', position: 'top-right'
             })
-        } else if (!form.title) {
+        } else if (!form.months || form.months === 0) {
             setToast({
                 ...toast,
                 show: true,
                 type: 'error', title: 'Error',
-                message: 'provide library title',
-                error: 'all', position: 'top-right'
-            })
-        } else if (!form.description) {
-            setToast({
-                ...toast,
-                show: true,
-                type: 'error', title: 'Error',
-                message: 'library description is required',
+                message: 'Duration is required',
                 error: 'all', position: 'top-right'
             })
         } else {
 
-            const response = await createLibrary({
-                id: user._id,
-                title: form.title,
-                description: form.description,
-                status: form.status,
-                banner: file.name ? file.name : undefined
+            const response = await grantCredit({
+                id: form.id,
+                months: form.months,
+                note: form.note
             })
 
             if (!response.error) {
@@ -86,7 +79,7 @@ const NewLibraryPage = ({ }) => {
                 setSuccess(true)
                 setTimeout(() => {
                     setToast({ ...toast, show: false });
-                    goTo(`/dashboard/libraries/add-module/${response.data._id}`)
+                    goTo(`/dashboard/payments/credits`)
                 }, 1800)
             }
 
@@ -117,37 +110,56 @@ const NewLibraryPage = ({ }) => {
     return (
         <>
             <section className="space-y-[2.5rem]">
-                <CardUI padding={{ y: 4, x: 2 }} className={`${success ? 'disabled-light': ''}`}>
+                <CardUI padding={{ y: 4, x: 2 }} className={`${success ? 'disabled-light' : ''}`}>
                     <form className="min-h-[150px] w-[40%] mx-auto space-y-[1.2rem]" onSubmit={(e) => { e.preventDefault() }}>
 
                         <FormField
-                            className=""
+                            label={{
+                                title: 'Select business',
+                                required: false,
+                                fontSize: 13
+                            }}
                         >
-                            <ImageUI
-                                title={'Select Library Banner'}
-                                url={file.url}
-                                onChange={(upload) => {
-                                    if (!upload.error) {
-                                        setFile(upload.data);
-                                    }
+                            <Filter
+                                ref={bizRef}
+                                size='sm'
+                                className='la-filter'
+                                placeholder="Select"
+                                position="bottom"
+                                defaultValue={''}
+                                menu={{
+                                    style: {},
+                                    search: true,
+                                    fullWidth: true,
+                                    limitHeight: 'md'
+                                }}
+                                items={
+                                    users.data.map((u: User) => ({
+                                        label: u?.business?.name || u.businessName,
+                                        value: u?.business?._id || u._id
+                                    }))
+                                }
+                                noFilter={false}
+                                onChange={async (data) => {
+                                    setForm({ ...form, id: data.value })
                                 }}
                             />
                         </FormField>
 
                         <FormField>
-                            <TextInput
-                                type="text"
+                            <NumberInput
                                 size="sm"
                                 showFocus={true}
                                 autoComplete={false}
-                                placeholder="Ex. The Models of Business"
+                                placeholder="Ex. 3"
                                 defaultValue={''}
+                                min={1}
                                 label={{
-                                    title: 'Library Title',
+                                    title: 'How long? (month)',
                                     required: false,
                                     fontSize: 13
                                 }}
-                                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                                onChange={(e) => setForm({ ...form, months: parseInt(e.target.value) })}
                             />
                         </FormField>
 
@@ -162,10 +174,10 @@ const NewLibraryPage = ({ }) => {
                                 label={{
                                     required: false,
                                     fontSize: 13,
-                                    title: "Describe This Library",
+                                    title: "Add credit notes",
                                     weight: 'regular'
                                 }}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                onChange={(e) => setForm({ ...form, note: e.target.value })}
                             />
                         </FormField>
 
@@ -177,11 +189,11 @@ const NewLibraryPage = ({ }) => {
                                 className="form-button ml-auto"
                                 block={true}
                                 text={{
-                                    label: "Create Library",
+                                    label: "Grant Credits",
                                     size: 13,
                                 }}
                                 loading={loader}
-                                onClick={async (e) => handleCreate(e)}
+                                onClick={async (e) => handleGrant(e)}
                             />
                         </div>
 
@@ -192,4 +204,4 @@ const NewLibraryPage = ({ }) => {
     )
 };
 
-export default NewLibraryPage;
+export default GrantCreditPage;
